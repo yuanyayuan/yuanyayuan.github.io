@@ -79,29 +79,30 @@
 
 
 
-<meta name="description" content="[toc] Nginx日志手动切割vim &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;sbin&#x2F;cut_my_log.sh  123456789#!&#x2F;bin&#x2F;bashLOG_PATH&#x3D;&quot;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;&quot;RECORD_TIME&#x3D;$(date -d &quot;yesterday&quot; +%Y-%m-%d+%H:%M)PID&#x3D;&#x2F;var&#x2F;run&#x2F;nginx&#x2F;nginx.p">
+<meta name="description" content="Nginx日志手动切割vim &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;sbin&#x2F;cut_my_log.sh  123456789#!&#x2F;bin&#x2F;bashLOG_PATH&#x3D;&quot;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;&quot;RECORD_TIME&#x3D;$(date -d &quot;yesterday&quot; +%Y-%m-%d+%H:%M)PID&#x3D;&#x2F;var&#x2F;run&#x2F;nginx&#x2F;nginx.pidmv $">
 <meta property="og:type" content="article">
 <meta property="og:title" content="nginx使用">
 <meta property="og:url" content="https://yuanyayuan.github.io/2021/03/22/nginx%E4%BD%BF%E7%94%A8/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="[toc] Nginx日志手动切割vim &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;sbin&#x2F;cut_my_log.sh  123456789#!&#x2F;bin&#x2F;bashLOG_PATH&#x3D;&quot;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;&quot;RECORD_TIME&#x3D;$(date -d &quot;yesterday&quot; +%Y-%m-%d+%H:%M)PID&#x3D;&#x2F;var&#x2F;run&#x2F;nginx&#x2F;nginx.p">
+<meta property="og:description" content="Nginx日志手动切割vim &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;sbin&#x2F;cut_my_log.sh  123456789#!&#x2F;bin&#x2F;bashLOG_PATH&#x3D;&quot;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;&quot;RECORD_TIME&#x3D;$(date -d &quot;yesterday&quot; +%Y-%m-%d+%H:%M)PID&#x3D;&#x2F;var&#x2F;run&#x2F;nginx&#x2F;nginx.pidmv $">
 <meta property="og:locale">
-<meta property="og:image" content="http://www.macrozheng.com/images/nginx_use_01.png">
-<meta property="og:image" content="http://www.macrozheng.com/images/nginx_use_02.png">
-<meta property="og:image" content="http://www.macrozheng.com/images/nginx_use_03.png">
-<meta property="og:image" content="http://www.macrozheng.com/images/nginx_use_04.png">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1527426/202003/1527426-20200318155444496-279620216.png?ynotemdtimestamp=1616320288924">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1527426/202003/1527426-20200318155531519-2075637426.png?ynotemdtimestamp=1616320288924">
-<meta property="og:image" content="https://img2020.cnblogs.com/blog/1527426/202003/1527426-20200318155704933-112413838.png?ynotemdtimestamp=1616320288924">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/pdf%E4%B8%8A%E4%BC%A0%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx%E8%AE%BF%E9%97%AE%E5%9B%BE%E7%89%87.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx%E8%AE%BF%E9%97%AEpdf.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx_pid%E6%89%93%E5%BC%80%E5%A4%B1%E8%B4%A5.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx_pid%E6%89%93%E5%BC%80%E5%A4%B1%E8%B4%A52.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx_pid%E6%89%93%E5%BC%80%E5%A4%B1%E8%B4%A53.png">
 <meta property="article:published_time" content="2021-03-21T16:17:29.000Z">
-<meta property="article:modified_time" content="2021-03-21T16:32:48.605Z">
+<meta property="article:modified_time" content="2021-03-22T13:24:48.661Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="运维">
 <meta property="article:tag" content="nginx">
 <meta property="article:tag" content="集群">
 <meta property="article:tag" content="静态资源代理">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://www.macrozheng.com/images/nginx_use_01.png">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8.png">
 
 
 
@@ -363,15 +364,14 @@
       
 
       
-        <p>[toc]</p>
-<h1 id="Nginx日志"><a href="#Nginx日志" class="headerlink" title="Nginx日志"></a>Nginx日志</h1><h2 id="手动切割"><a href="#手动切割" class="headerlink" title="手动切割"></a>手动切割</h2><p>vim /usr/local/nginx/sbin/cut_my_log.sh </p>
+        <h1 id="Nginx日志"><a href="#Nginx日志" class="headerlink" title="Nginx日志"></a>Nginx日志</h1><h2 id="手动切割"><a href="#手动切割" class="headerlink" title="手动切割"></a>手动切割</h2><p>vim /usr/local/nginx/sbin/cut_my_log.sh </p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">LOG_PATH=&quot;/var/log/nginx/&quot;</span><br><span class="line">RECORD_TIME=$(date -d &quot;yesterday&quot; +%Y-%m-%d+%H:%M)</span><br><span class="line">PID=/var/run/nginx/nginx.pid</span><br><span class="line">mv $&#123;LOG_PATH&#125;/access.log $&#123;LOG_PATH&#125;/access.$&#123;RECORD_TIME&#125;.log</span><br><span class="line">mv $&#123;LOG_PATH&#125;/error.log $&#123;LOG_PATH&#125;/error.$&#123;RECORD_TIME&#125;.log</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">向Nginx主进程发送信号，用于重新打开日志文件</span></span><br><span class="line">kill -USR1 `cat $PID`</span><br></pre></td></tr></table></figure>
 
 <p>为<code>cut_my_log.sh</code>添加可执行的权限：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x cut_my_log.sh</span><br></pre></td></tr></table></figure>
 
 <p>日记存在目录：/var/log/nginx</p>
-<p>执行shell脚本：/usr/local/nginx/sbin/cut_my_log.sh</p>
+<p>执行shell脚本：./usr/local/nginx/sbin/cut_my_log.sh</p>
 <p>查看日记情况：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-rw-r--r--. 1 root   root 1725 3月  22 11:36 access.2020-05-29+16:34.log</span><br><span class="line">-rw-r--r--. 1 nobody root    0 5月  30 16:34 access.2020-05-29+16:35.log</span><br><span class="line">-rw-r--r--. 1 root   root  407 5月  30 16:42 access.2020-05-29+16:49.log</span><br><span class="line">-rw-r--r--. 1 nobody root    0 5月  30 16:49 access.log</span><br><span class="line">-rw-r--r--. 1 root   root 2317 5月  30 15:34 error.2020-05-29+16:34.log</span><br><span class="line">-rw-r--r--. 1 nobody root    0 5月  30 16:34 error.2020-05-29+16:35.log</span><br><span class="line">-rw-r--r--. 1 root   root  915 5月  30 16:43 error.2020-05-29+16:49.log</span><br><span class="line">-rw-r--r--. 1 nobody root    0 5月  30 16:49 error.log</span><br></pre></td></tr></table></figure>
 
@@ -422,81 +422,69 @@
 <p>反向代理就是当请求访问你的代理服务器时，代理服务器会对你的请求进行转发，可以转发到静态的资源路径上去，也可以转发到动态的服务接口上去。下面我们以对域名进行代理为例，来讲讲如何进行静态代理和动态代理。</p>
 </blockquote>
 <h2 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h2><p>静态代理就是将请求代理到不同的静态资源路径上去</p>
-<h3 id="例子1"><a href="#例子1" class="headerlink" title="例子1"></a>例子1</h3><p>nginx.conf中添加include image.conf</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">    include       mime.types;</span><br><span class="line">    include       image.conf</span><br><span class="line">    default_type  application&#x2F;octet-stream;</span><br><span class="line">	...</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="例子1"><a href="#例子1" class="headerlink" title="例子1"></a>例子1</h3><ul>
+<li><code>nginx.conf</code>中添加<code>include myconf/*.conf</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">    include       mime.types;</span><br><span class="line">    include       muconf&#x2F;*.conf</span><br><span class="line">    default_type  application&#x2F;octet-stream;</span><br><span class="line">	...</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<p>image.conf</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">            listen       90;</span><br><span class="line">            server_name  localhost;</span><br><span class="line"></span><br><span class="line">            location &#x2F; &#123;</span><br><span class="line">                root   &#x2F;home&#x2F;foodie-shop;</span><br><span class="line">                index  index.html;</span><br><span class="line">            &#125;</span><br><span class="line">    		#写法1</span><br><span class="line">            location &#x2F;shop &#123;</span><br><span class="line">                root  &#x2F;home;</span><br><span class="line">            &#125;</span><br><span class="line">    		#写法2</span><br><span class="line">            #location &#x2F;static &#123;</span><br><span class="line">            #    alias &#x2F;home&#x2F;shop;</span><br><span class="line">            #&#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>myconf</code>中添加<code>image.conf</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">server &#123; </span><br><span class="line">	listen 90;</span><br><span class="line">	autoindex off;</span><br><span class="line">    server_name image.hikari.com; </span><br><span class="line">    access_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log combined; </span><br><span class="line">    index index.html index.htm index.jsp index.php; </span><br><span class="line">    #error_page 404 &#x2F;404.html; </span><br><span class="line">    if ( $query_string ~* &quot;.*[\;&#39;\&lt;\&gt;].*&quot; )&#123; </span><br><span class="line">    	return 404; </span><br><span class="line">    &#125; </span><br><span class="line">    location &#x2F; &#123; </span><br><span class="line">    	root &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;share&#x2F;image&#x2F;mall&#x2F;product&#x2F;</span><br><span class="line">    	add_header Access-Control-Allow-Origin *; </span><br><span class="line">    &#125; </span><br><span class="line">    #写法2</span><br><span class="line">    #location &#x2F;static &#123;</span><br><span class="line">    #    alias &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;share&#x2F;image&#x2F;mall;</span><br><span class="line">    #&#125;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
 
-<hr>
-<p>假如服务器路径为：/home/shop/files/img/face.png</p>
+<h4 id="root和alias"><a href="#root和alias" class="headerlink" title="root和alias"></a>root和alias</h4><hr>
+<p>假如服务器路存储图片径为：/usr/local/nginx/share/image/mall/product/hello_world.jpg</p>
 <ul>
 <li><p>root 路径完全匹配访问<br>配置的时候为：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /shop &#123;</span><br><span class="line">    root /home</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<p>用户访问的时候请求为：<code>url:port/shop/files/img/face.png</code></p>
-<ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location / &#123;</span><br><span class="line">  root /usr/local/nginx/share/image/mall/product/</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用户访问的时候请求为：<code>url:port/hello_world.jpg</code></p>
+</li>
 <li><p>alias 可以为你的路径做一个别名，对用户透明<br>配置的时候为：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /hello &#123;</span><br><span class="line">    alias /home/shop</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>用户访问的时候请求为：<code>url:port/hello/files/img/face.png</code>，如此相当于为目录<code>shop</code>做一个自定义的别名。</p>
 </li>
 </ul>
-<h3 id="例子2"><a href="#例子2" class="headerlink" title="例子2"></a>例子2</h3><blockquote>
-<p>摘抄<a target="_blank" rel="noopener" href="http://www.macrozheng.com/#/reference/nginx">Nginx的这些妙用，你肯定有不知道的！</a> </p>
-</blockquote>
-<ul>
-<li>首先我们修改下本机的host文件：</li>
-</ul>
-<p>192.168.6.132 docs.macrozheng.com</p>
-<p>192.168.6.132 mall.macrozheng.com</p>
-<ul>
-<li>然后将我们的文档项目和mall前端项目上传到nginx的html目录中去，并进行解压操作：</li>
-</ul>
-<p><img src="http://www.macrozheng.com/images/nginx_use_01.png" alt="img"></p>
-<ul>
-<li>在/mydata/nginx/conf/conf.d文件夹中添加配置文件docs.conf对文档项目进行反向代理：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  docs.macrozheng.com; #修改域名</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        root   &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html&#x2F;docs; #代理到docs文件夹中</span><br><span class="line">        index  index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    error_page   500 502 503 504  &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">        root   &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /static &#123;</span><br><span class="line">  alias /usr/local/nginx/share/image/mall/product</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li>/mydata/nginx/conf/conf.d文件夹中添加配置文件mall.conf对mall的前端项目进行反向代理：</li>
+<p>用户访问的时候请求为：<code>url:port/static/face.png</code>，如此相当于为目录<code>/usr/local/nginx/share/image/mall/product/</code>做一个自定义<code>static</code>的别名。</p>
+<h3 id="例子2"><a href="#例子2" class="headerlink" title="例子2"></a>例子2</h3><ul>
+<li>首先我们修改下本机的host文件：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">172.19.191.68   image.hikari.com</span><br><span class="line"></span><br><span class="line">172.19.191.68   pdf.hikari.com</span><br></pre></td></tr></table></figure></li>
+<li>然后将我们的图片和pdf上传至服务器：</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  mall.macrozheng.com; #修改域名</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        root   &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html&#x2F;mall; #代理到mall文件夹中</span><br><span class="line">        index  index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    error_page   500 502 503 504  &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">        root   &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8.png" alt="img"><br><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/pdf%E4%B8%8A%E4%BC%A0%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8.png"></p>
 <ul>
+<li>添加并编辑<code>/usr/local/nginx/conf/myconf/image.conf</code>对图片进行反向代理：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">         listen 90;</span><br><span class="line">         autoindex off;</span><br><span class="line">         server_name image.hikari.com;</span><br><span class="line">         access_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log combined;</span><br><span class="line">         index index.html index.htm index.jsp index.php;</span><br><span class="line">         #error_page 404 &#x2F;404.html;</span><br><span class="line">         if ( $query_string ~* &quot;.*[\;&#39;\&lt;\&gt;].*&quot; )&#123;</span><br><span class="line">                return 404;</span><br><span class="line">         &#125;</span><br><span class="line">         location &#x2F; &#123;</span><br><span class="line">                root &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;share&#x2F;image&#x2F;mall&#x2F;product&#x2F;;</span><br><span class="line">                add_header Access-Control-Allow-Origin *;</span><br><span class="line">         &#125;</span><br><span class="line">         #location &#x2F;static &#123;</span><br><span class="line">         #      alias &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;share&#x2F;image&#x2F;mall&#x2F;product;</span><br><span class="line">         #      add_header Access-Control-Allow-Origin *;</span><br><span class="line">         #&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>添加并编辑<code>/usr/local/nginx/conf/myconf/pdf.conf</code>对pdf进行反向代理：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">         listen 90;</span><br><span class="line">         autoindex off;</span><br><span class="line">         server_name pdf.hikari.com;</span><br><span class="line">         access_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log combined;</span><br><span class="line">         index index.html index.htm index.jsp index.php;</span><br><span class="line">         #error_page 404 &#x2F;404.html;</span><br><span class="line">         if ( $query_string ~* &quot;.*[\;&#39;\&lt;\&gt;].*&quot; )&#123;</span><br><span class="line">          return 404;</span><br><span class="line">         &#125;</span><br><span class="line">         location &#x2F; &#123;</span><br><span class="line">          root &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;share&#x2F;pdf;</span><br><span class="line">          add_header Access-Control-Allow-Origin *;</span><br><span class="line">         &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 <li>重启nginx服务：</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./nginx -s reload</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li>通过<code>docs.macrozheng.com</code>即可访问到我们的文档项目了：</li>
+<li>通过<code>http://image.hikari.com:90/hello_world.jpg</code>即可访问到我们的图片了：</li>
 </ul>
-<p><img src="http://www.macrozheng.com/images/nginx_use_02.png" alt="img"></p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx%E8%AE%BF%E9%97%AE%E5%9B%BE%E7%89%87.png" alt="img"></p>
 <ul>
-<li>通过<code>mall.macrozheng.com</code>即可访问到mall的前端项目了：</li>
+<li>通过<code>http://pdf.hikari.com:90/test.pdf</code>即可访问到pdf了：</li>
 </ul>
-<p><img src="http://www.macrozheng.com/images/nginx_use_03.png" alt="img"></p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx%E8%AE%BF%E9%97%AEpdf.png" alt="img"></p>
 <h2 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h2><blockquote>
-<p>摘抄<a target="_blank" rel="noopener" href="http://www.macrozheng.com/#/reference/nginx">Nginx的这些妙用，你肯定有不知道的！</a> </p>
-</blockquote>
-<blockquote>
-<p>动态代理就是把代理服务器的请求转发到另一个服务上去，这里我们将对api.macrozheng.com的请求代理到mall-admin的后台服务上去。</p>
+<p>动态代理就是把代理服务器的请求转发到另一个服务上去，这里我们将对<a target="_blank" rel="noopener" href="http://tomcat.hikari.com/%E7%9A%84%E8%AF%B7%E6%B1%82%E4%BB%A3%E7%90%86%E5%88%B0">http://tomcat.hikari.com/的请求代理到</a> Tomcat服务上去。</p>
 </blockquote>
 <ul>
 <li>首先我们修改下本机的host文件，添加如下规则：</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">192.168.6.132 api.macrozheng.com</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">47.101.161.153   tomcat.hikari.com</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>在/mydata/nginx/conf/conf.d文件夹中添加配置文件api.conf对将请求代理到远程的mall-admin服务上去：</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  api.macrozheng.com; #修改域名</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        proxy_pass   http:&#x2F;&#x2F;120.27.63.9:8080; #修改为代理服务地址</span><br><span class="line">        index  index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    error_page   500 502 503 504  &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">        root   &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       90;</span><br><span class="line">    server_name  tomcat.hikari.com; #修改域名</span><br><span class="line">    access_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log combined;</span><br><span class="line">    index index.html index.htm index.jsp index.php;</span><br><span class="line">    #error_page 404 &#x2F;404.html;</span><br><span class="line">    if ( $query_string ~* &quot;.*[\;&#39;\&lt;\&gt;].*&quot; )&#123;</span><br><span class="line">        return 404;</span><br><span class="line">    &#125;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        proxy_pass   http:&#x2F;&#x2F;127.0.0.1:8080; #修改为代理服务地址</span><br><span class="line">        add_header Access-Control-Allow-Origin *;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li>重启动nginx服务后，通过<code>api.macrozheng.com/swagger-ui.html</code>即可访问到mall-admin的API文档页面了：</li>
+<li>重启动nginx服务后，通过<code>http://tomcat.hikari.com:90/</code>即可访问到tomcat主页了：</li>
 </ul>
-<p><img src="http://www.macrozheng.com/images/nginx_use_04.png" alt="img"></p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86.png" alt="img"></p>
 <h1 id="使用Gzip压缩提高请求效率"><a href="#使用Gzip压缩提高请求效率" class="headerlink" title="使用Gzip压缩提高请求效率"></a>使用Gzip压缩提高请求效率</h1><p>nginx.conf中</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">    #开启gzip压缩功能，目的：提高传输效率，节约带宽</span><br><span class="line">    gzip  on;</span><br><span class="line">    </span><br><span class="line">    #IE6不使用gzip</span><br><span class="line">    gzip_disable &quot;msie6&quot;; </span><br><span class="line">    </span><br><span class="line">    #设置为on会在Header里增加 &quot;Vary: Accept-Encoding&quot;</span><br><span class="line">    gzip_vary on; </span><br><span class="line">    </span><br><span class="line">    #代理结果数据的压缩</span><br><span class="line">    gzip_proxied any; </span><br><span class="line">    </span><br><span class="line">    #限制最小压缩，小于1字节文件不会压缩</span><br><span class="line">    gzip_min_length 1;</span><br><span class="line">    </span><br><span class="line">    #压缩比,定义压缩级别(文件越大，压缩越多，但是CPU使用越多)</span><br><span class="line">    gzip_comp_level 3;</span><br><span class="line">    </span><br><span class="line">    #获取多少内存用于缓存压缩结果</span><br><span class="line">    gzip_buffers 16 8k;</span><br><span class="line">    </span><br><span class="line">    #识别http协议的版本</span><br><span class="line">    gzip_http_version 1.1; </span><br><span class="line">    </span><br><span class="line">    #定义压缩文件的类型</span><br><span class="line">    gzip_types text&#x2F;plain application&#x2F;javascript application&#x2F;x-javascript text&#x2F;css application&#x2F;xml text&#x2F;javascript application&#x2F;x-httpd-php image&#x2F;gif image&#x2F;png application&#x2F;json;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -526,16 +514,26 @@
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location ^~ /imooc/img &#123;</span><br><span class="line">    root /home;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ul>
 <h1 id="nginx-pid打开失败以及失效的解决方案"><a href="#nginx-pid打开失败以及失效的解决方案" class="headerlink" title="nginx.pid打开失败以及失效的解决方案"></a>nginx.pid打开失败以及失效的解决方案</h1><p>cd /var/run/nginx/nginx.pid 会出现 没有那个目录或文件</p>
-<p><img src="https://img2020.cnblogs.com/blog/1527426/202003/1527426-20200318155444496-279620216.png?ynotemdtimestamp=1616320288924" alt="img"></p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx_pid%E6%89%93%E5%BC%80%E5%A4%B1%E8%B4%A5.png" alt="img"></p>
 <ol>
-<li>重新创建了这个文件，使用如下命令：mkdir /var/run/nginx/<img src="https://img2020.cnblogs.com/blog/1527426/202003/1527426-20200318155531519-2075637426.png?ynotemdtimestamp=1616320288924" alt="img"></li>
-<li>cd /var/run/nginx</li>
-<li>cd /usr/local/nginx</li>
-<li>cd sbin</li>
-<li>./nginx -t</li>
-<li>./nginx -s reload 会报PID错误，<strong>nginx.pid</strong>是无效的。<img src="https://img2020.cnblogs.com/blog/1527426/202003/1527426-20200318155704933-112413838.png?ynotemdtimestamp=1616320288924" alt="img"></li>
-<li>./nginx -c /usr/local/nginx/conf/nginx.conf 重新设置nginx.conf默认配置文件</li>
-<li>./nginx -s reload 重启nginx</li>
+<li><p>重新创建了这个文件，使用如下命令：mkdir /var/run/nginx/</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx_pid%E6%89%93%E5%BC%80%E5%A4%B1%E8%B4%A52.png" alt="img"></p>
+</li>
+<li><p>cd /var/run/nginx</p>
+</li>
+<li><p>cd /usr/local/nginx</p>
+</li>
+<li><p>cd sbin</p>
+</li>
+<li><p>./nginx -t</p>
+</li>
+<li><p>./nginx -s reload 会报PID错误，<strong>nginx.pid</strong>是无效的。</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx_pid%E6%89%93%E5%BC%80%E5%A4%B1%E8%B4%A53.png" alt="img"></p>
+</li>
+<li><p>./nginx -c /usr/local/nginx/conf/nginx.conf 重新设置nginx.conf默认配置文件</p>
+</li>
+<li><p>./nginx -s reload 重启nginx</p>
+</li>
 </ol>
 <h1 id="Nginx常用命令"><a href="#Nginx常用命令" class="headerlink" title="Nginx常用命令"></a>Nginx常用命令</h1><p>./nginx -s stop 快速停止nginx 强制关闭</p>
 <p>./nginx -s quit 停止nginx 安全关闭</p>
@@ -691,7 +689,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -740,7 +738,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx%E6%97%A5%E5%BF%97"><span class="nav-number">1.</span> <span class="nav-text">Nginx日志</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E5%88%87%E5%89%B2"><span class="nav-number">1.1.</span> <span class="nav-text">手动切割</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E6%97%B6%E5%88%87%E5%89%B2"><span class="nav-number">1.2.</span> <span class="nav-text">定时切割</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E8%A1%A8%E8%BE%BE%E5%BC%8F%EF%BC%9A"><span class="nav-number">1.2.1.</span> <span class="nav-text">定时任务表达式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E8%A1%A8%E8%BE%BE%E5%BC%8F%EF%BC%9A"><span class="nav-number">1.2.2.</span> <span class="nav-text">常用表达式：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx-%E4%B8%BA%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E6%8F%90%E4%BE%9B%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.</span> <span class="nav-text">Nginx 为静态资源提供服务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E4%BB%A3%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">静态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%AD%901"><span class="nav-number">2.1.1.</span> <span class="nav-text">例子1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%AD%902"><span class="nav-number">2.1.2.</span> <span class="nav-text">例子2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86"><span class="nav-number">2.2.</span> <span class="nav-text">动态代理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Gzip%E5%8E%8B%E7%BC%A9%E6%8F%90%E9%AB%98%E8%AF%B7%E6%B1%82%E6%95%88%E7%8E%87"><span class="nav-number">3.</span> <span class="nav-text">使用Gzip压缩提高请求效率</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%B0%E5%9D%80%E9%87%8D%E5%86%99"><span class="nav-number">4.</span> <span class="nav-text">地址重写</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#location%E5%8C%B9%E9%85%8D%E8%A7%84%E5%88%99"><span class="nav-number">5.</span> <span class="nav-text">location匹配规则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nginx-pid%E6%89%93%E5%BC%80%E5%A4%B1%E8%B4%A5%E4%BB%A5%E5%8F%8A%E5%A4%B1%E6%95%88%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">6.</span> <span class="nav-text">nginx.pid打开失败以及失效的解决方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">7.</span> <span class="nav-text">Nginx常用命令</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx%E6%97%A5%E5%BF%97"><span class="nav-number">1.</span> <span class="nav-text">Nginx日志</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E5%88%87%E5%89%B2"><span class="nav-number">1.1.</span> <span class="nav-text">手动切割</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E6%97%B6%E5%88%87%E5%89%B2"><span class="nav-number">1.2.</span> <span class="nav-text">定时切割</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E8%A1%A8%E8%BE%BE%E5%BC%8F%EF%BC%9A"><span class="nav-number">1.2.1.</span> <span class="nav-text">定时任务表达式：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E8%A1%A8%E8%BE%BE%E5%BC%8F%EF%BC%9A"><span class="nav-number">1.2.2.</span> <span class="nav-text">常用表达式：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx-%E4%B8%BA%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E6%8F%90%E4%BE%9B%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.</span> <span class="nav-text">Nginx 为静态资源提供服务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E4%BB%A3%E7%90%86"><span class="nav-number">2.1.</span> <span class="nav-text">静态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%AD%901"><span class="nav-number">2.1.1.</span> <span class="nav-text">例子1</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#root%E5%92%8Calias"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">root和alias</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%8B%E5%AD%902"><span class="nav-number">2.1.2.</span> <span class="nav-text">例子2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86"><span class="nav-number">2.2.</span> <span class="nav-text">动态代理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Gzip%E5%8E%8B%E7%BC%A9%E6%8F%90%E9%AB%98%E8%AF%B7%E6%B1%82%E6%95%88%E7%8E%87"><span class="nav-number">3.</span> <span class="nav-text">使用Gzip压缩提高请求效率</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%B0%E5%9D%80%E9%87%8D%E5%86%99"><span class="nav-number">4.</span> <span class="nav-text">地址重写</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#location%E5%8C%B9%E9%85%8D%E8%A7%84%E5%88%99"><span class="nav-number">5.</span> <span class="nav-text">location匹配规则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nginx-pid%E6%89%93%E5%BC%80%E5%A4%B1%E8%B4%A5%E4%BB%A5%E5%8F%8A%E5%A4%B1%E6%95%88%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">6.</span> <span class="nav-text">nginx.pid打开失败以及失效的解决方案</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">7.</span> <span class="nav-text">Nginx常用命令</span></a></li></ol></div>
             
 
           </div>

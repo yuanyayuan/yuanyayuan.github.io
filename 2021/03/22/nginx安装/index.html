@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="运维,nginx,集群,静态资源代理," />
+  <meta name="keywords" content="运维,nginx,集群,静态资源代理,软件安装," />
 
 
 
@@ -79,20 +79,21 @@
 
 
 
-<meta name="description" content="Nginx安装去官网http:&#x2F;&#x2F;nginx.org&#x2F;下载对应的nginx包，推荐使用稳定版本 上传nginx到linux系统 安装依赖环境  安装gcc环境  1yum install gcc-c++   安装PCRE库，用于解析正则表达式  1yum install -y pcre pcre-devel   zlib压缩和解压缩依赖，  1yum install -y zlib zlib-de">
+<meta name="description" content="Nginx安装去官网http:&#x2F;&#x2F;nginx.org&#x2F;下载对应的nginx包，推荐使用稳定版本 上传nginx到linux系统 安装依赖环境  安装gcc环境1yum install gcc-c++ 安装PCRE库，用于解析正则表达式1yum install -y pcre pcre-devel zlib压缩和解压缩依赖，1yum install -y zlib zlib-devel SSL 安全">
 <meta property="og:type" content="article">
 <meta property="og:title" content="nginx安装">
 <meta property="og:url" content="https://yuanyayuan.github.io/2021/03/22/nginx%E5%AE%89%E8%A3%85/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="Nginx安装去官网http:&#x2F;&#x2F;nginx.org&#x2F;下载对应的nginx包，推荐使用稳定版本 上传nginx到linux系统 安装依赖环境  安装gcc环境  1yum install gcc-c++   安装PCRE库，用于解析正则表达式  1yum install -y pcre pcre-devel   zlib压缩和解压缩依赖，  1yum install -y zlib zlib-de">
+<meta property="og:description" content="Nginx安装去官网http:&#x2F;&#x2F;nginx.org&#x2F;下载对应的nginx包，推荐使用稳定版本 上传nginx到linux系统 安装依赖环境  安装gcc环境1yum install gcc-c++ 安装PCRE库，用于解析正则表达式1yum install -y pcre pcre-devel zlib压缩和解压缩依赖，1yum install -y zlib zlib-devel SSL 安全">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-03-21T16:17:38.000Z">
-<meta property="article:modified_time" content="2021-03-21T16:32:02.244Z">
+<meta property="article:modified_time" content="2021-03-22T12:28:46.199Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="运维">
 <meta property="article:tag" content="nginx">
 <meta property="article:tag" content="集群">
 <meta property="article:tag" content="静态资源代理">
+<meta property="article:tag" content="软件安装">
 <meta name="twitter:card" content="summary">
 
 
@@ -359,61 +360,74 @@
 <p>上传nginx到linux系统</p>
 <p>安装依赖环境</p>
 <ul>
-<li>安装gcc环境</li>
+<li>安装gcc环境<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc-c++</span><br></pre></td></tr></table></figure></li>
+<li>安装PCRE库，用于解析正则表达式<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y pcre pcre-devel</span><br></pre></td></tr></table></figure></li>
+<li>zlib压缩和解压缩依赖，<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y zlib zlib-devel</span><br></pre></td></tr></table></figure></li>
+<li>SSL 安全的加密的套接字协议层，用于HTTP安全传输，也就是https<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y openssl openssl-devel</span><br></pre></td></tr></table></figure></li>
+<li>解压，需要注意，解压后得到的是源码，源码需要编译后才能安装<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf nginx-1.16.1.tar.gz</span><br></pre></td></tr></table></figure></li>
+<li>编译之前，先创建nginx临时目录，如果不创建，在启动nginx的过程中会报错<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir &#x2F;var&#x2F;temp&#x2F;nginx -p</span><br></pre></td></tr></table></figure></li>
+<li>在nginx的解压目录，输入如下命令进行配置，目的是为了创建makefile文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure \</span><br><span class="line">--prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;nginx \</span><br><span class="line">--pid-path&#x3D;&#x2F;var&#x2F;run&#x2F;nginx&#x2F;nginx.pid \</span><br><span class="line">--lock-path&#x3D;&#x2F;var&#x2F;lock&#x2F;nginx.lock \</span><br><span class="line">--error-log-path&#x3D;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;error.log \</span><br><span class="line">--http-log-path&#x3D;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log \</span><br><span class="line">--with-http_gzip_static_module \</span><br><span class="line">--http-client-body-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;client \</span><br><span class="line">--http-proxy-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;proxy \</span><br><span class="line">--http-fastcgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;fastcgi \</span><br><span class="line">--http-uwsgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;uwsgi \</span><br><span class="line">--http-scgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;scgi</span><br></pre></td></tr></table></figure></li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc-c++</span><br></pre></td></tr></table></figure>
-
+<p><strong>配置命令：</strong></p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>–prefix</td>
+<td>指定nginx安装目录</td>
+</tr>
+<tr>
+<td>–pid-path</td>
+<td>指向nginx的pid</td>
+</tr>
+<tr>
+<td>–lock-path</td>
+<td>锁定安装文件，防止被恶意篡改或误操作</td>
+</tr>
+<tr>
+<td>–error-log</td>
+<td>错误日志</td>
+</tr>
+<tr>
+<td>–http-log-path</td>
+<td>http日志</td>
+</tr>
+<tr>
+<td>–with-http_gzip_static_module</td>
+<td>启用gzip模块，在线实时压缩输出数据流</td>
+</tr>
+<tr>
+<td>–http-client-body-temp-path</td>
+<td>设定客户端请求的临时目录</td>
+</tr>
+<tr>
+<td>–http-proxy-temp-path</td>
+<td>设定http代理临时目录</td>
+</tr>
+<tr>
+<td>–http-fastcgi-temp-path</td>
+<td>设定fastcgi临时目录</td>
+</tr>
+<tr>
+<td>–http-uwsgi-temp-path</td>
+<td>设定uwsgi临时目录</td>
+</tr>
+<tr>
+<td>–http-scgi-temp-path</td>
+<td>设定scgi临时目录</td>
+</tr>
+</tbody></table>
 <ul>
-<li>安装PCRE库，用于解析正则表达式</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y pcre pcre-devel</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>zlib压缩和解压缩依赖，</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y zlib zlib-devel</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>SSL 安全的加密的套接字协议层，用于HTTP安全传输，也就是https</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y openssl openssl-devel</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>解压，需要注意，解压后得到的是源码，源码需要编译后才能安装</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf nginx-1.16.1.tar.gz</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>编译之前，先创建nginx临时目录，如果不创建，在启动nginx的过程中会报错</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir &#x2F;var&#x2F;temp&#x2F;nginx -p</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在nginx目录，输入如下命令进行配置，目的是为了创建makefile文件</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure \n    --prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;nginx \n    --pid-path&#x3D;&#x2F;var&#x2F;run&#x2F;nginx&#x2F;nginx.pid \n    --lock-path&#x3D;&#x2F;var&#x2F;lock&#x2F;nginx.lock \n    --error-log-path&#x3D;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;error.log \n    --http-log-path&#x3D;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log \n    --with-http_gzip_static_module \n    --http-client-body-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;client \n    --http-proxy-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;proxy \n    --http-fastcgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;fastcgi \n    --http-uwsgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;uwsgi \n    --http-scgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;scgi</span><br></pre></td></tr></table></figure>
-
-<p><strong>注：’\n’ 代表在命令行中换行，用于提高可读性</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">配置命令：</span><br><span class="line">命令 	解释</span><br><span class="line">–prefix 	指定nginx安装目录</span><br><span class="line">–pid-path 	指向nginx的pid</span><br><span class="line">–lock-path 	锁定安装文件，防止被恶意篡改或误操作</span><br><span class="line">–error-log 	错误日志</span><br><span class="line">–http-log-path 	http日志</span><br><span class="line">–with-http_gzip_static_module 	启用gzip模块，在线实时压缩输出数据流</span><br><span class="line">–http-client-body-temp-path 	设定客户端请求的临时目录</span><br><span class="line">–http-proxy-temp-path 	设定http代理临时目录</span><br><span class="line">–http-fastcgi-temp-path 	设定fastcgi临时目录</span><br><span class="line">–http-uwsgi-temp-path 	设定uwsgi临时目录</span><br><span class="line">–http-scgi-temp-path 	设定scgi临时目录</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>make编译</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>安装</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make install</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>进入sbin目录启动nginx</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;nginx</span><br></pre></td></tr></table></figure>
-
+<li>make编译<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make</span><br></pre></td></tr></table></figure></li>
+<li>安装<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make install</span><br></pre></td></tr></table></figure></li>
+<li>进入sbin目录启动nginx<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;nginx</span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">停止：.&#x2F;nginx -s stop</span><br><span class="line">重新加载：.&#x2F;nginx -s reload</span><br></pre></td></tr></table></figure>
-
-<p>打开浏览器，访问虚拟机所处内网ip即可打开nginx默认页面，显示如下便表示安装成功：</p>
+打开浏览器，访问虚拟机所处内网ip即可打开nginx默认页面，显示如下便表示安装成功：</li>
+</ul>
 <p><strong>注意事项:</strong></p>
 <p>如果在云服务器安装，需要开启默认的nginx端口：80</p>
 <p>如果在虚拟机安装，需要关闭防火墙</p>
@@ -442,6 +456,8 @@
             <a href="/tags/%E9%9B%86%E7%BE%A4/" rel="tag"># 集群</a>
           
             <a href="/tags/%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E4%BB%A3%E7%90%86/" rel="tag"># 静态资源代理</a>
+          
+            <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85/" rel="tag"># 软件安装</a>
           
         </div>
       
@@ -562,7 +578,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
