@@ -524,7 +524,9 @@
 
 <h1 id="5-在最后添加"><a href="#5-在最后添加" class="headerlink" title="5. 在最后添加"></a>5. 在最后添加</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/<span class="built_in">local</span>/java</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin</span><br><span class="line"><span class="built_in">export</span> CLASSPATH=.:<span class="variable">$JAVA_HOME</span>/lib/dt.jar:<span class="variable">$JAVA_HOME</span>/lib/tools.jar</span><br><span class="line"><span class="built_in">export</span> JRE_HOME=<span class="variable">$JAVA_HOME</span>/jre</span><br></pre></td></tr></table></figure>
 
-<h1 id="6-卸载"><a href="#6-卸载" class="headerlink" title="6. 卸载"></a>6. 卸载</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /usr/<span class="built_in">local</span>/java</span><br></pre></td></tr></table></figure>
+<h1 id="6-使配置文件立即生效"><a href="#6-使配置文件立即生效" class="headerlink" title="6. 使配置文件立即生效"></a>6. 使配置文件立即生效</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /etc/profile</span><br></pre></td></tr></table></figure>
+
+<h1 id="7-卸载"><a href="#7-卸载" class="headerlink" title="7. 卸载"></a>7. 卸载</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /usr/<span class="built_in">local</span>/java</span><br></pre></td></tr></table></figure>
 
 
           
