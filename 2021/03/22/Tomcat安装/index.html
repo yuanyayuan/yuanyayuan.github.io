@@ -79,15 +79,15 @@
 
 
 
-<meta name="description" content="1. 解压下载的Tomcat1tar -zxvf apache-tomcat-8.5.50.tar.gz   2. 安装Java3. 启动1.&#x2F;startup.sh  4. 检查防火墙1systemctl status firewalld.service  重启防火墙1systemctl restart firewalld.service  停止防火墙1systemctl stop firewal">
+<meta name="description" content="解压下载的Tomcat1tar -zxvf apache-tomcat-8.5.50.tar.gz   安装Java启动1.&#x2F;startup.sh  检查防火墙1systemctl status firewalld.service  重启防火墙1systemctl restart firewalld.service  停止防火墙1systemctl stop firewalld.service">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Tomcat安装">
 <meta property="og:url" content="https://yuanyayuan.github.io/2021/03/22/Tomcat%E5%AE%89%E8%A3%85/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="1. 解压下载的Tomcat1tar -zxvf apache-tomcat-8.5.50.tar.gz   2. 安装Java3. 启动1.&#x2F;startup.sh  4. 检查防火墙1systemctl status firewalld.service  重启防火墙1systemctl restart firewalld.service  停止防火墙1systemctl stop firewal">
+<meta property="og:description" content="解压下载的Tomcat1tar -zxvf apache-tomcat-8.5.50.tar.gz   安装Java启动1.&#x2F;startup.sh  检查防火墙1systemctl status firewalld.service  重启防火墙1systemctl restart firewalld.service  停止防火墙1systemctl stop firewalld.service">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-03-22T14:40:13.000Z">
-<meta property="article:modified_time" content="2021-03-22T14:42:46.875Z">
+<meta property="article:modified_time" content="2021-03-23T16:42:16.628Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="软件安装">
 <meta property="article:tag" content="tomcat">
@@ -353,11 +353,11 @@
       
 
       
-        <h1 id="1-解压下载的Tomcat"><a href="#1-解压下载的Tomcat" class="headerlink" title="1. 解压下载的Tomcat"></a>1. 解压下载的Tomcat</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf apache-tomcat-8.5.50.tar.gz </span><br></pre></td></tr></table></figure>
+        <h1 id="解压下载的Tomcat"><a href="#解压下载的Tomcat" class="headerlink" title="解压下载的Tomcat"></a>解压下载的Tomcat</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf apache-tomcat-8.5.50.tar.gz </span><br></pre></td></tr></table></figure>
 
-<h1 id="2-安装Java"><a href="#2-安装Java" class="headerlink" title="2. 安装Java"></a>2. 安装Java</h1><h1 id="3-启动"><a href="#3-启动" class="headerlink" title="3. 启动"></a>3. 启动</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./startup.sh</span><br></pre></td></tr></table></figure>
+<h1 id="安装Java"><a href="#安装Java" class="headerlink" title="安装Java"></a>安装Java</h1><h1 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./startup.sh</span><br></pre></td></tr></table></figure>
 
-<h1 id="4-检查防火墙"><a href="#4-检查防火墙" class="headerlink" title="4. 检查防火墙"></a>4. 检查防火墙</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status firewalld.service</span><br></pre></td></tr></table></figure>
+<h1 id="检查防火墙"><a href="#检查防火墙" class="headerlink" title="检查防火墙"></a>检查防火墙</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status firewalld.service</span><br></pre></td></tr></table></figure>
 
 <h2 id="重启防火墙"><a href="#重启防火墙" class="headerlink" title="重启防火墙"></a>重启防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart firewalld.service</span><br></pre></td></tr></table></figure>
 
@@ -367,7 +367,7 @@
 
 
 
-<h1 id="5-开放8080端口"><a href="#5-开放8080端口" class="headerlink" title="5. 开放8080端口"></a>5. 开放8080端口</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8080/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line">firewall-cmd --zone=public --query-port=8080/tcp</span><br></pre></td></tr></table></figure>
+<h1 id="开放8080端口"><a href="#开放8080端口" class="headerlink" title="开放8080端口"></a>开放8080端口</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8080/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line">firewall-cmd --zone=public --query-port=8080/tcp</span><br></pre></td></tr></table></figure>
 
 
       
@@ -562,7 +562,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E8%A7%A3%E5%8E%8B%E4%B8%8B%E8%BD%BD%E7%9A%84Tomcat"><span class="nav-number">1.</span> <span class="nav-text">1. 解压下载的Tomcat</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%AE%89%E8%A3%85Java"><span class="nav-number">2.</span> <span class="nav-text">2. 安装Java</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E5%90%AF%E5%8A%A8"><span class="nav-number">3.</span> <span class="nav-text">3. 启动</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E6%A3%80%E6%9F%A5%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-number">4.</span> <span class="nav-text">4. 检查防火墙</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%90%AF%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-number">4.1.</span> <span class="nav-text">重启防火墙</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%81%9C%E6%AD%A2%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-number">4.2.</span> <span class="nav-text">停止防火墙</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-number">4.3.</span> <span class="nav-text">启动防火墙</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E5%BC%80%E6%94%BE8080%E7%AB%AF%E5%8F%A3"><span class="nav-number">5.</span> <span class="nav-text">5. 开放8080端口</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%8E%8B%E4%B8%8B%E8%BD%BD%E7%9A%84Tomcat"><span class="nav-number">1.</span> <span class="nav-text">解压下载的Tomcat</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Java"><span class="nav-number">2.</span> <span class="nav-text">安装Java</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8"><span class="nav-number">3.</span> <span class="nav-text">启动</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-number">4.</span> <span class="nav-text">检查防火墙</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%90%AF%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-number">4.1.</span> <span class="nav-text">重启防火墙</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%81%9C%E6%AD%A2%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-number">4.2.</span> <span class="nav-text">停止防火墙</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8%E9%98%B2%E7%81%AB%E5%A2%99"><span class="nav-number">4.3.</span> <span class="nav-text">启动防火墙</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E6%94%BE8080%E7%AB%AF%E5%8F%A3"><span class="nav-number">5.</span> <span class="nav-text">开放8080端口</span></a></li></ol></div>
             
 
           </div>

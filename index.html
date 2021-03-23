@@ -370,6 +370,8 @@
 
 <h2 id="5-2-安装libnl-libnl-3依赖"><a href="#5-2-安装libnl-libnl-3依赖" class="headerlink" title="5.2 安装libnl/libnl-3依赖"></a>5.2 安装<code>libnl/libnl-3</code>依赖</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install libnl libnl-devel  </span><br></pre></td></tr></table></figure>
 
+<h3 id="CentOS8"><a href="#CentOS8" class="headerlink" title="CentOS8"></a>CentOS8</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y libnl3.x86_64 libnl3-devel.x86_64</span><br></pre></td></tr></table></figure>
+
 <h2 id="5-3-重新configure"><a href="#5-3-重新configure" class="headerlink" title="5.3 重新configure"></a>5.3 重新<code>configure</code></h2><h1 id="6-安装keepalived"><a href="#6-安装keepalived" class="headerlink" title="6. 安装keepalived"></a>6. 安装keepalived</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
 
 <h1 id="7-查找keepalived"><a href="#7-查找keepalived" class="headerlink" title="7. 查找keepalived"></a>7. 查找keepalived</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">whereis keepalived</span><br></pre></td></tr></table></figure>
@@ -683,6 +685,7 @@
 <p>主节点Nginx发生宕机</p>
 <p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/Keepalived%20%E5%8F%8C%E6%9C%BA%E4%B8%BB%E5%A4%87%E5%8E%9F%E7%90%862.png"></p>
 <p>虚拟ip指向备用节点Nginx</p>
+<h1 id="高可用集群架构Keepalived双主热备"><a href="#高可用集群架构Keepalived双主热备" class="headerlink" title="高可用集群架构Keepalived双主热备"></a>高可用集群架构Keepalived双主热备</h1><p>使两个节点同时提供服务</p>
 
           
         
@@ -979,11 +982,11 @@
       
         
           
-            <h1 id="1-解压下载的Tomcat"><a href="#1-解压下载的Tomcat" class="headerlink" title="1. 解压下载的Tomcat"></a>1. 解压下载的Tomcat</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf apache-tomcat-8.5.50.tar.gz </span><br></pre></td></tr></table></figure>
+            <h1 id="解压下载的Tomcat"><a href="#解压下载的Tomcat" class="headerlink" title="解压下载的Tomcat"></a>解压下载的Tomcat</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf apache-tomcat-8.5.50.tar.gz </span><br></pre></td></tr></table></figure>
 
-<h1 id="2-安装Java"><a href="#2-安装Java" class="headerlink" title="2. 安装Java"></a>2. 安装Java</h1><h1 id="3-启动"><a href="#3-启动" class="headerlink" title="3. 启动"></a>3. 启动</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./startup.sh</span><br></pre></td></tr></table></figure>
+<h1 id="安装Java"><a href="#安装Java" class="headerlink" title="安装Java"></a>安装Java</h1><h1 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./startup.sh</span><br></pre></td></tr></table></figure>
 
-<h1 id="4-检查防火墙"><a href="#4-检查防火墙" class="headerlink" title="4. 检查防火墙"></a>4. 检查防火墙</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status firewalld.service</span><br></pre></td></tr></table></figure>
+<h1 id="检查防火墙"><a href="#检查防火墙" class="headerlink" title="检查防火墙"></a>检查防火墙</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status firewalld.service</span><br></pre></td></tr></table></figure>
 
 <h2 id="重启防火墙"><a href="#重启防火墙" class="headerlink" title="重启防火墙"></a>重启防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart firewalld.service</span><br></pre></td></tr></table></figure>
 
@@ -993,7 +996,7 @@
 
 
 
-<h1 id="5-开放8080端口"><a href="#5-开放8080端口" class="headerlink" title="5. 开放8080端口"></a>5. 开放8080端口</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8080/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line">firewall-cmd --zone=public --query-port=8080/tcp</span><br></pre></td></tr></table></figure>
+<h1 id="开放8080端口"><a href="#开放8080端口" class="headerlink" title="开放8080端口"></a>开放8080端口</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8080/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line">firewall-cmd --zone=public --query-port=8080/tcp</span><br></pre></td></tr></table></figure>
 
 
           
@@ -1796,8 +1799,8 @@
 <h4 id="fair"><a href="#fair" class="headerlink" title="fair"></a>fair</h4><p>特点：根据后端服务器的响应时间来分配请求，响应时间短的优先分配</p>
 <h5 id="配置-4"><a href="#配置-4" class="headerlink" title="配置"></a>配置</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">upstream www.happymmall.com&#123;</span><br><span class="line">	server www.happymmall.com:8080;</span><br><span class="line">	server www.happymmall.com:9080;</span><br><span class="line">	fair;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="集群upstream参数拓展"><a href="#集群upstream参数拓展" class="headerlink" title="集群upstream参数拓展"></a>集群<code>upstream</code>参数拓展</h3><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/upstream%E5%8F%82%E6%95%B0%E6%8B%93%E5%B1%95.png"></p>
-<h4 id="upstream-指令参数"><a href="#upstream-指令参数" class="headerlink" title="upstream 指令参数"></a>upstream 指令参数</h4><h5 id="max-conns-最大连接数"><a href="#max-conns-最大连接数" class="headerlink" title="max_conns 最大连接数"></a>max_conns 最大连接数</h5><p>限制每台server的连接数，用于保护避免过载，可起到限流作用。</p>
+<h2 id="集群upstream参数拓展"><a href="#集群upstream参数拓展" class="headerlink" title="集群upstream参数拓展"></a>集群<code>upstream</code>参数拓展</h2><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/upstream%E5%8F%82%E6%95%B0%E6%8B%93%E5%B1%95.png"></p>
+<h3 id="upstream-指令参数"><a href="#upstream-指令参数" class="headerlink" title="upstream 指令参数"></a>upstream 指令参数</h3><h4 id="max-conns-最大连接数"><a href="#max-conns-最大连接数" class="headerlink" title="max_conns 最大连接数"></a>max_conns 最大连接数</h4><p>限制每台server的连接数，用于保护避免过载，可起到限流作用。</p>
 <ul>
 <li>nginx.conf</li>
 </ul>
@@ -1811,7 +1814,7 @@
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#配置上游服务器</span><br><span class="line">upstream tomcats &#123;</span><br><span class="line">        server 192.168.113.131:8080 max_conn&#x3D;2;</span><br><span class="line">        server 192.168.113.129:8080 max_conn&#x3D;2;</span><br><span class="line">        server 192.168.113.130:8080 max_conn&#x3D;2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">            listen     80;</span><br><span class="line">            server_name  www.tomcats.com;</span><br><span class="line"></span><br><span class="line">            location &#x2F;&#123;</span><br><span class="line">                proxy_pass http:&#x2F;&#x2F;tomcats;</span><br><span class="line">            &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h5 id="slow-start-缓慢开始，不会直接加入集群"><a href="#slow-start-缓慢开始，不会直接加入集群" class="headerlink" title="slow_start 缓慢开始，不会直接加入集群"></a>slow_start 缓慢开始，不会直接加入集群</h5><blockquote>
+<h4 id="slow-start-缓慢开始，不会直接加入集群"><a href="#slow-start-缓慢开始，不会直接加入集群" class="headerlink" title="slow_start 缓慢开始，不会直接加入集群"></a>slow_start 缓慢开始，不会直接加入集群</h4><blockquote>
 <p>不适用单个服务器</p>
 <p><code>slow_start</code>=<code>time</code>  设置服务器权重从0恢复到标准值的时间，<br>默认值为0,缓慢的启动</p>
 </blockquote>
@@ -1821,20 +1824,20 @@
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#配置上游服务器</span><br><span class="line">upstream tomcats &#123;</span><br><span class="line">        server 192.168.113.131:8080 weight&#x3D;6 slow_start&#x3D;60s;</span><br><span class="line">        server 192.168.113.129:8080 weight&#x3D;2;</span><br><span class="line">        server 192.168.113.130:8080 weight&#x3D;2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">            listen     80;</span><br><span class="line">            server_name  www.tomcats.com;</span><br><span class="line"></span><br><span class="line">            location &#x2F;&#123;</span><br><span class="line">                proxy_pass http:&#x2F;&#x2F;tomcats;</span><br><span class="line">            &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h5 id="down-节点不可用"><a href="#down-节点不可用" class="headerlink" title="down 节点不可用"></a>down 节点不可用</h5><blockquote>
+<h4 id="down-节点不可用"><a href="#down-节点不可用" class="headerlink" title="down 节点不可用"></a>down 节点不可用</h4><blockquote>
 <p>标记服务节点不可用</p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcats &#123;</span><br><span class="line">        server 192.168.1.173:8080 down;</span><br><span class="line">#       server 192.168.1.190:8080;</span><br><span class="line">        server 192.168.1.174:8080 weight&#x3D;1;</span><br><span class="line">        server 192.168.1.175:8080 weight&#x3D;1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h5 id="backup-备用节点"><a href="#backup-备用节点" class="headerlink" title="backup 备用节点"></a>backup 备用节点</h5><blockquote>
+<h4 id="backup-备用节点"><a href="#backup-备用节点" class="headerlink" title="backup 备用节点"></a>backup 备用节点</h4><blockquote>
 <p><code>backup</code>参数不能使用在<code>hash</code>和<code>random load balancing</code>中。</p>
 </blockquote>
 <p>表示当前服务器节点是备用机，只有在其他的服务器都宕机以后，自己才会加入到集群中，被用户访问到：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcats &#123;</span><br><span class="line">        server 192.168.1.173:8080 backup;</span><br><span class="line">#       server 192.168.1.190:8080;</span><br><span class="line">        server 192.168.1.174:8080 weight&#x3D;1;</span><br><span class="line">        server 192.168.1.175:8080 weight&#x3D;1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h5 id="max-fails"><a href="#max-fails" class="headerlink" title="max_fails"></a>max_fails</h5><p>最大失败次数</p>
+<h4 id="max-fails"><a href="#max-fails" class="headerlink" title="max_fails"></a>max_fails</h4><p>最大失败次数</p>
 <p>表示失败几次，则标记server已宕机，剔出上游服务。</p>
-<h5 id="fail-timeout"><a href="#fail-timeout" class="headerlink" title="fail_timeout"></a>fail_timeout</h5><p>表示失败的重试时间。</p>
+<h4 id="fail-timeout"><a href="#fail-timeout" class="headerlink" title="fail_timeout"></a>fail_timeout</h4><p>表示失败的重试时间。</p>
 <p>假设目前设置如下：</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcats &#123;</span><br><span class="line">        server 192.168.1.173:8080 max_fails=2 fail_timeout=15s ;</span><br><span class="line">#       server 192.168.1.190:8080;</span><br><span class="line">        server 192.168.1.174:8080 weight=1;</span><br><span class="line">        server 192.168.1.175:8080 weight=1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
