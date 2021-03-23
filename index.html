@@ -261,6 +261,221 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/24/%E9%85%8D%E7%BD%AEKeepalived%E5%AE%9E%E7%8E%B0nginx%E9%AB%98%E5%8F%AF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/24/%E9%85%8D%E7%BD%AEKeepalived%E5%AE%9E%E7%8E%B0nginx%E9%AB%98%E5%8F%AF%E7%94%A8/" itemprop="url">配置Keepalived实现nginx高可用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-24T01:53:30+08:00">
+                2021-03-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/keepalived-keepalived%E9%85%8D%E7%BD%AE/" itemprop="url" rel="index">
+                    <span itemprop="name">keepalived - keepalived配置</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="启动nginx"><a href="#启动nginx" class="headerlink" title="启动nginx"></a>启动nginx</h1><p>启动两台服务器的nginx</p>
+<ul>
+<li>192.168.159.128</li>
+<li>192.168.159.129</li>
+</ul>
+<h1 id="配置Keepalived-主"><a href="#配置Keepalived-主" class="headerlink" title="配置Keepalived-主"></a>配置Keepalived-主</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">global_defs &#123;</span><br><span class="line">   <span class="comment">#配置节点挂掉后通知的邮箱</span></span><br><span class="line">   <span class="comment">#notification_email &#123;</span></span><br><span class="line">     <span class="comment">#acassen@firewall.loc</span></span><br><span class="line">     <span class="comment">#failover@firewall.loc</span></span><br><span class="line">     <span class="comment">#sysadmin@firewall.loc</span></span><br><span class="line">   <span class="comment">#&#125;</span></span><br><span class="line">   <span class="comment">#notification_email_from Alexandre.Cassen@firewall.loc</span></span><br><span class="line">   <span class="comment">#smtp_server 192.168.200.1</span></span><br><span class="line">   <span class="comment">#smtp_connect_timeout 30</span></span><br><span class="line">   <span class="comment">#配置节点挂掉后通知的邮箱</span></span><br><span class="line">   router_id LVS_DEVEL <span class="comment"># 路由id ：当前安装keepalived节点主机的标识符,全局唯一</span></span><br><span class="line">   <span class="comment">#vrrp_skip_check_adv_addr # 暂用不到</span></span><br><span class="line">   <span class="comment">#vrrp_strict # 暂用不到</span></span><br><span class="line">   <span class="comment">#vrrp_garp_interval 0 # 暂用不到</span></span><br><span class="line">   <span class="comment">#vrrp_gna_interval 0 # 暂用不到</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># 计算机节点</span></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">	<span class="comment"># 表示的状态，当前nginx的主节点，MASTER/BACKUP</span></span><br><span class="line">    state MASTER</span><br><span class="line">    <span class="comment"># 当前实例绑定的网卡</span></span><br><span class="line">    interface ens33</span><br><span class="line">    <span class="comment"># 保证主备节点一致</span></span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    <span class="comment"># 优先级/权重 谁的优先级高，在MASTER挂掉后，就能成为MASTER</span></span><br><span class="line">    priority 100</span><br><span class="line">    <span class="comment"># 主备之间同步检查的时间间隔，默认1s</span></span><br><span class="line">    advert_int 1</span><br><span class="line">    <span class="comment"># 认证和授权的密码，防止非法节点的进入</span></span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment"># VIP</span></span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        <span class="comment">#192.168.200.16</span></span><br><span class="line">        192.168.1.161</span><br><span class="line">        <span class="comment">#192.168.200.18</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动Keepalived"><a href="#启动Keepalived" class="headerlink" title="启动Keepalived"></a>启动Keepalived</h2><ul>
+<li><code>cd /usr/local/keepalived/sbin/</code></li>
+<li><code>./keepalived</code></li>
+</ul>
+<p>通过<code>ip addr</code>查看虚拟IP</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.png" style="zoom: 50%;" />
+
+<p>ens33下出现<code>192.168.1.161</code>的虚拟IP</p>
+<h2 id="停止Keepalived"><a href="#停止Keepalived" class="headerlink" title="停止Keepalived"></a>停止Keepalived</h2><p><code>ps -ef|grep Keepalived</code></p>
+<p><code>kill -9 ...</code></p>
+<h2 id="把Keepalived注册为系统服务"><a href="#把Keepalived注册为系统服务" class="headerlink" title="把Keepalived注册为系统服务"></a>把Keepalived注册为系统服务</h2><p><code>cd /usr/software/keepalived/keepalived-2.2.2/keepalived/etc</code></p>
+<p><code>cp init.d/keepalived /etc/init.d/</code></p>
+<p><code>cp sysconfig/keepalived /etc/sysconfig/</code></p>
+<p><code>systemctl daemon-reload</code></p>
+<p><code>systemctl start keepalived.service</code></p>
+<h1 id="配置Host"><a href="#配置Host" class="headerlink" title="配置Host"></a>配置Host</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># keepalived</span></span><br><span class="line">192.168.159.128 www.128.com</span><br><span class="line">192.168.159.129 www.129.com</span><br><span class="line"></span><br><span class="line">192.168.159.118 www.118.com</span><br></pre></td></tr></table></figure>
+
+<h1 id="验证keepalived生效"><a href="#验证keepalived生效" class="headerlink" title="验证keepalived生效"></a>验证keepalived生效</h1><p>访问虚拟ip可以访问到192.168.159.128的nginx主页</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/%E9%AA%8C%E8%AF%81keepalived%E7%94%9F%E6%95%88.png"></p>
+<h1 id="配置Keepalived-备"><a href="#配置Keepalived-备" class="headerlink" title="配置Keepalived-备"></a>配置Keepalived-备</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">global_defs &#123;</span><br><span class="line">   <span class="comment"># 路由id：当前安装keepalived的节点主机标识符，保证全局唯一</span></span><br><span class="line">   router_id keep_129</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    <span class="comment"># 备用机设置为BACKUP</span></span><br><span class="line">    state BACKUP</span><br><span class="line">    interface ens33</span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    <span class="comment"># 权重低于MASTER</span></span><br><span class="line">    priority 80</span><br><span class="line">    advert_int 2</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        <span class="comment"># 注意：主备两台的vip都是一样的，绑定到同一个vip</span></span><br><span class="line">        192.168.159.118</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="检验主备节点是否生效"><a href="#检验主备节点是否生效" class="headerlink" title="检验主备节点是否生效"></a>检验主备节点是否生效</h1><ul>
+<li>停止192.168.159.128的keepalived</li>
+</ul>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E5%81%9C%E6%AD%A2.png"></p>
+<ul>
+<li>查看192.168.159.129的ip</li>
+</ul>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E4%BB%8E%E8%8A%82%E7%82%B9.png"></p>
+<p>keepalived从节点的ip出现<code>192.168.159.118</code></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://www.118.com仍可以访问/">www.118.com仍可以访问</a></li>
+</ul>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E4%BB%8E%E8%8A%82%E7%82%B9%E6%9B%BF%E4%BB%A3.png"></p>
+<ul>
+<li>重启192.168.159.128的keepalived</li>
+</ul>
+<p>访问<a target="_blank" rel="noopener" href="http://www.118.com/">www.118.com</a></p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/%E9%AA%8C%E8%AF%81keepalived%E7%94%9F%E6%95%88.png"></p>
+<h1 id="Keepalived配置Nginx自动重启"><a href="#Keepalived配置Nginx自动重启" class="headerlink" title="Keepalived配置Nginx自动重启"></a>Keepalived配置Nginx自动重启</h1><blockquote>
+<p> 上述主备情况实在Keepalived失效情况下出现，即服务器宕机。如果仅仅是主节点的nginx挂掉，那整个主备服务会处于不可用状态。</p>
+</blockquote>
+<ul>
+<li>增加Nginx重启检测脚本</li>
+</ul>
+<p><code>vim /etc/keepalived/check_nginx_alive_or_not.sh</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line">A=`ps -C nginx --no-header |wc -l`</span><br><span class="line"><span class="meta">#</span><span class="bash"> 判断nginx是否宕机，如果宕机了，尝试重启</span></span><br><span class="line">if [ $A -eq 0 ];then</span><br><span class="line">    /usr/local/nginx/sbin/nginx</span><br><span class="line">    # 等待一小会再次检查nginx，如果没有启动成功，则停止keepalived，使其启动备用机</span><br><span class="line">    sleep 3</span><br><span class="line">    if [ `ps -C nginx --no-header |wc -l` -eq 0 ];then</span><br><span class="line">        killall keepalived</span><br><span class="line">    fi</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>增加运行权限</li>
+</ul>
+<p><code>chmod +x /etc/keepalived/check_nginx_alive_or_not.sh</code></p>
+<ul>
+<li>配置Keepalived监听nginx脚本(写在Keepalived核心配置文件中)</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vrrp_script check_nginx_alive &#123;</span><br><span class="line">    script &quot;/etc/keepalived/check_nginx_alive_or_not.sh&quot;</span><br><span class="line">    interval 2 # 每隔两秒运行上一行脚本</span><br><span class="line">    weight 10 # 如果脚本运行成功，则升级权重+10</span><br><span class="line">    # weight -10 # 如果脚本运行失败，则升级权重-10</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在vrrp_instance中新增监控的脚本（写在Keepalived核心配置文件中）</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">track_script &#123;</span><br><span class="line">    check_nginx_alive   # 追踪 nginx 脚本</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li> 重启Keepalived使配置文件生效</li>
+</ul>
+<p><code>systemctl restart keepalived</code></p>
+<h1 id="高可用集群架构Keepalived双主热备"><a href="#高可用集群架构Keepalived双主热备" class="headerlink" title="高可用集群架构Keepalived双主热备"></a>高可用集群架构Keepalived双主热备</h1><h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>待完成</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/23/%E5%AE%89%E8%A3%85Keepalived/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2206,7 +2421,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2217,7 +2432,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
