@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="nginx,集群,静态资源代理," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -79,29 +79,15 @@
 
 
 
-<meta name="description" content="跨域为什么会出现跨域问题出于浏览器的同源策略限制。 同源策略（Sameoriginpolicy）是一种约定，它是浏览器最核心也最基本的安全功能，如果缺少了同源策略，则浏览器的正常功能可能都会受到影响。可以说Web是构建在同源策略基础之上的，浏览器只是针对同源策略的一种实现。 同源策略会阻止一个域的javascript脚本和另外一个域的内容进行交互。所谓同源（即指在同一个域）就是两个页面具有相同的协">
-<meta property="og:type" content="article">
-<meta property="og:title" content="nginx进阶">
-<meta property="og:url" content="https://yuanyayuan.github.io/2021/03/22/nginx%E8%BF%9B%E9%98%B6/index.html">
+<meta name="description" content="工作中技术总结">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hikari的Java之路">
+<meta property="og:url" content="https://yuanyayuan.github.io/page/2/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="跨域为什么会出现跨域问题出于浏览器的同源策略限制。 同源策略（Sameoriginpolicy）是一种约定，它是浏览器最核心也最基本的安全功能，如果缺少了同源策略，则浏览器的正常功能可能都会受到影响。可以说Web是构建在同源策略基础之上的，浏览器只是针对同源策略的一种实现。 同源策略会阻止一个域的javascript脚本和另外一个域的内容进行交互。所谓同源（即指在同一个域）就是两个页面具有相同的协">
+<meta property="og:description" content="工作中技术总结">
 <meta property="og:locale">
-<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/ip_hash%E7%AE%97%E6%B3%95.png">
-<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1_ip_hash.png">
-<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1_least_conn.png">
-<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95.png">
-<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95_%E5%87%8F%E5%B0%91%E6%9C%8D%E5%8A%A1%E5%99%A8.png">
-<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95_%E6%96%B0%E5%A2%9E%E6%9C%8D%E5%8A%A1%E5%99%A8.png">
-<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/upstream%E5%8F%82%E6%95%B0%E6%8B%93%E5%B1%95.png">
-<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E7%BC%93%E5%AD%98.png">
-<meta property="article:published_time" content="2021-03-21T16:16:03.000Z">
-<meta property="article:modified_time" content="2021-03-23T16:43:43.991Z">
 <meta property="article:author" content="LiYuan">
-<meta property="article:tag" content="nginx">
-<meta property="article:tag" content="集群">
-<meta property="article:tag" content="静态资源代理">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/ip_hash%E7%AE%97%E6%B3%95.png">
 
 
 
@@ -131,13 +117,13 @@
 
 
 
-  <link rel="canonical" href="https://yuanyayuan.github.io/2021/03/22/nginx进阶/"/>
+  <link rel="canonical" href="https://yuanyayuan.github.io/page/2/"/>
 
 
 
 
 
-  <title>nginx进阶 | Hikari的Java之路</title>
+  <title>Hikari的Java之路</title>
   
 
 
@@ -156,7 +142,8 @@
     
   
 
-  <div class="container sidebar-position-left page-post-detail">
+  <div class="container sidebar-position-left 
+  page-home">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -259,9 +246,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-
-  <div id="posts" class="posts-expand">
+  <section id="posts" class="posts-expand">
     
+      
 
   
 
@@ -291,7 +278,9 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">nginx进阶</h1>
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/22/nginx%E8%BF%9B%E9%98%B6/" itemprop="url">nginx进阶</a></h1>
         
 
         <div class="post-meta">
@@ -363,7 +352,9 @@
       
 
       
-        <h1 id="跨域"><a href="#跨域" class="headerlink" title="跨域"></a>跨域</h1><h2 id="为什么会出现跨域问题"><a href="#为什么会出现跨域问题" class="headerlink" title="为什么会出现跨域问题"></a>为什么会出现跨域问题</h2><p>出于浏览器的同源策略限制。</p>
+        
+          
+            <h1 id="跨域"><a href="#跨域" class="headerlink" title="跨域"></a>跨域</h1><h2 id="为什么会出现跨域问题"><a href="#为什么会出现跨域问题" class="headerlink" title="为什么会出现跨域问题"></a>为什么会出现跨域问题</h2><p>出于浏览器的同源策略限制。</p>
 <p>同源策略（Sameoriginpolicy）是一种约定，它是浏览器最核心也最基本的安全功能，如果缺少了同源策略，则浏览器的正常功能可能都会受到影响。可以说Web是构建在同源策略基础之上的，浏览器只是针对同源策略的一种实现。</p>
 <p>同源策略会阻止一个域的javascript脚本和另外一个域的内容进行交互。所谓同源（即指在同一个域）就是两个页面具有相同的协议（protocol），主机（host）和端口号（port）</p>
 <h2 id="什么是跨域"><a href="#什么是跨域" class="headerlink" title="什么是跨域"></a>什么是跨域</h2><p>当一个请求url的协议、域名、端口三者之间任意一个与当前页面url不同即为跨域</p>
@@ -566,6 +557,8 @@
 <p>在nginx中配置proxy_pass代理转发时，如果在proxy_pass后面的url加/，表示绝对根路径；如果没有/，表示相对路径，把匹配的路径部分也给代理走。</p>
 </blockquote>
 
+          
+        
       
     </div>
     
@@ -580,44 +573,14 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/nginx/" rel="tag"># nginx</a>
-          
-            <a href="/tags/%E9%9B%86%E7%BE%A4/" rel="tag"># 集群</a>
-          
-            <a href="/tags/%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E4%BB%A3%E7%90%86/" rel="tag"># 静态资源代理</a>
-          
-        </div>
+
+      
+
       
 
       
       
-      
-
-      
-        <div class="post-nav">
-          <div class="post-nav-next post-nav-item">
-            
-              <a href="/2021/03/22/nginx%E5%85%A5%E9%97%A8/" rel="next" title="nginx入门">
-                <i class="fa fa-chevron-left"></i> nginx入门
-              </a>
-            
-          </div>
-
-          <span class="post-nav-divider"></span>
-
-          <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2021/03/22/nginx%E4%BD%BF%E7%94%A8/" rel="prev" title="nginx使用">
-                nginx使用 <i class="fa fa-chevron-right"></i>
-              </a>
-            
-          </div>
-        </div>
-      
-
-      
+        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -627,11 +590,262 @@
   </article>
 
 
+    
+      
 
-    <div class="post-spread">
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/nginx%E5%85%A5%E9%97%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/22/nginx%E5%85%A5%E9%97%A8/" itemprop="url">nginx入门</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T00:12:52+08:00">
+                2021-03-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/nginx-nginx%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index">
+                    <span itemprop="name">nginx - nginx理论知识</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="什么是Nginx"><a href="#什么是Nginx" class="headerlink" title="什么是Nginx"></a>什么是Nginx</h1><ul>
+<li>高性能的Http和反向代理web服务器</li>
+<li>主要功能反向代理</li>
+<li>通过配置文件可以实现集群和负载均衡</li>
+<li>静态资源虚拟化</li>
+</ul>
+<h1 id="常见服务器"><a href="#常见服务器" class="headerlink" title="常见服务器"></a>常见服务器</h1><ul>
+<li>MS IIS —— asp.net</li>
+<li>Weblogic，Jboss —— 传统行业 ERP/物流/电信/金融</li>
+<li>Tomcat，Jetty —— J2EE</li>
+<li>Apache，Nginx —— 静态服务器，反向代理</li>
+<li>Netty —— 高性能服务器编程</li>
+</ul>
+<h1 id="代理"><a href="#代理" class="headerlink" title="代理"></a>代理</h1><h2 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h2><ul>
+<li>客户端请求目标服务器之间的一个代理服务器</li>
+<li>请求会先经过代理服务器，然后再装啊请求到目标服务器</li>
+</ul>
+<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E6%AD%A3%E5%90%91%E4%BB%A3%E7%90%86.png" alt="正向代理"></p>
+<h2 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h2><ul>
+<li>用户请求目标服务器，有代理服务器决定访问那个IP</li>
+</ul>
+<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86.png"></p>
+<h1 id="nginx理论知识"><a href="#nginx理论知识" class="headerlink" title="nginx理论知识"></a>nginx理论知识</h1><h2 id="请求Nginx默认界面"><a href="#请求Nginx默认界面" class="headerlink" title="请求Nginx默认界面"></a>请求Nginx默认界面</h2><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E8%AF%B7%E6%B1%82Nginx%E9%BB%98%E8%AE%A4%E9%A1%B5%E9%9D%A2.png"></p>
+<h3 id="cd-conf-vim-nginx-conf"><a href="#cd-conf-vim-nginx-conf" class="headerlink" title="cd conf/  vim nginx.conf"></a>cd conf/  vim nginx.conf</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen       80;&#x2F;&#x2F;监听80端口</span><br><span class="line">        server_name  localhost;&#x2F;&#x2F;请求的IP 域名解析到服务器后可以直接写域名</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        location &#x2F; &#123;</span><br><span class="line">            root   html; &#x2F;&#x2F; &#39;&#x2F;&#39;映射到root 找到根目录 下的html文件夹</span><br><span class="line">            index  index.html index.htm;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        error_page   500 502 503 504  &#x2F;50x.html;</span><br><span class="line">        location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">            root   html;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Nginx的进程模型"><a href="#Nginx的进程模型" class="headerlink" title="Nginx的进程模型"></a>Nginx的进程模型</h2><ul>
+<li>master进程：主进程</li>
+<li>worker进程：工作进程</li>
+</ul>
+<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/Nginx%E7%9A%84%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B.png" alt="image"></p>
+<h2 id="Nginx处理Web请求机制解析"><a href="#Nginx处理Web请求机制解析" class="headerlink" title="Nginx处理Web请求机制解析"></a>Nginx处理Web请求机制解析</h2><h3 id="work抢占机制（互斥锁）"><a href="#work抢占机制（互斥锁）" class="headerlink" title="work抢占机制（互斥锁）"></a>work抢占机制（互斥锁）</h3><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/Nginx_work%E6%8A%A2%E5%8D%A0%E6%9C%BA%E5%88%B6.png" alt="image"></p>
+<h3 id="传统服务器事件处理"><a href="#传统服务器事件处理" class="headerlink" title="传统服务器事件处理"></a>传统服务器事件处理</h3><p><strong>同步阻塞</strong><br><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E4%BC%A0%E7%BB%9F%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86.png" alt="image"> </p>
+<h3 id="Nginx事件处理"><a href="#Nginx事件处理" class="headerlink" title="Nginx事件处理"></a>Nginx事件处理</h3><p><strong>异步非阻塞</strong><br><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/Nginx%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86.png" alt="image"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">events &#123;</span><br><span class="line">	# liunx默认使用epoll</span><br><span class="line">	use epoll;</span><br><span class="line">	# 每个work允许连接的客户端最大连接数</span><br><span class="line">    worker_connections  1024;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="同步，异步，阻塞，非阻塞"><a href="#同步，异步，阻塞，非阻塞" class="headerlink" title="同步，异步，阻塞，非阻塞"></a>同步，异步，阻塞，非阻塞</h4><p><strong>1. 同步阻塞：</strong> 客户端发送请求给服务端，此时服务端处理任务时间很久，则客户端则被服务端堵塞了，所以客户端会一直等待服务端的响应，此时客户端不能做其他任何事，服务端也不会接受其他客户端的请求。这种通信机制比较简单粗暴，但是效率不高。</p>
+<p><strong>2. 同步非阻塞：</strong> 客户端发送请求给服务端，此时服务端处理任务时间很久，这个时候虽然客户端会一直等待响应，但是服务端可以处理其他的请求，过一会回来处理原先的。这种方式很高效，一个服务端可以处理很多请求，不会在因为任务没有处理完而堵着，所以这是非阻塞的。</p>
+<p><strong>3. 异步阻塞：</strong>  客户端发送请求给服务端，此时服务端处理任务时间很久，但是客户端不会等待服务器响应，它可以做其他的任务，等服务器处理完毕后再把结果响应给客户端，客户端得到回调后再处理服务端的响应。这种方式可以避免客户端一直处于等待的状态，优化了用户体验，其实就是类似于网页里发起的ajax异步请求。</p>
+<p><strong>4. 异步非阻塞：</strong> 客户端发送请求给服务端，此时服务端处理任务时间很久，这个时候的任务虽然处理时间会很久，但是客户端可以做其他的任务，因为他是异步的，可以在回调函数里处理响应；同时服务端是非阻塞的，所以服务端可以去处理其他的任务，如此，这个模式就显得非常的高效了。</p>
+<h4 id="BIO-NIO-AIO"><a href="#BIO-NIO-AIO" class="headerlink" title="BIO/NIO/AIO"></a>BIO/NIO/AIO</h4><p>以上四点，除了第三点，其余的分别为BIO/NIO/AIO，面试官如果问你<code>“请简述一下BIO/NIO/AIO之间的概念与区别”</code>，那么你就可以组织一下语言来回答，或者通过如下生活实例来阐述也是可以的：<br> <strong>1. BIO：</strong> 我去上厕所，这个时候坑位都满了，我必须等待坑位释放了，我才能上吧？！此时我啥都不干，站在厕所里盯着，过了一会有人出来了，我就赶紧蹲上去。<br> <strong>2. NIO：</strong> 我去上厕所，这个时候坑位都满了，没关系，哥不急，我出去抽根烟，过会回来看看有没有空位，如果有我就蹲，如果没有我出去接着抽烟或者玩会手机。<br> <strong>3. 异步阻塞：</strong> 我去上厕所，这个时候坑位都满了，没事我等着，等有了新的空位，让他通知我就行，通知了我，我就蹲上去。<br> <strong>4. AIO：</strong> 我去上厕所，这个时候坑位都满了，没事，我一点也不急，我去厕所外面抽根烟再玩玩手机，等有新的坑位释放了，会有人通知我的，通知我了，我就可以进去蹲了。</p>
+<p>从这个生活实例中能可以看得出来：</p>
+<ul>
+<li><code>同步</code>就是我需要自己每隔一段时间，以轮训的方式去看看有没有空的坑位；</li>
+<li><code>异步</code>则是有人拉完茅坑会通知你，通知你后你再回去蹲；</li>
+<li><code>阻塞</code>就是在等待的过程中，你不去做其他任何事情，干等着；</li>
+<li><code>非阻塞</code>就是你再等待的过程中可以去做其他的事，比如抽烟、喝酒、烫头、玩手机。</li>
+</ul>
+<h1 id="nginx-conf-配置结构"><a href="#nginx-conf-配置结构" class="headerlink" title="nginx.conf 配置结构"></a>nginx.conf 配置结构</h1><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/nginx.conf%20%E9%85%8D%E7%BD%AE%E7%BB%93%E6%9E%84.png" alt="image"></p>
+<ol>
+<li>设置worker进程的用户，指的linux中的用户，会涉及到nginx操作目录或文件的一些权限，默认为<code>nobody</code></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">user root;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>worker进程工作数设置，一般来说CPU有几个，就设置几个，或者设置为N-1也行</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">worker_processes 1;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><p>nginx 日志级别<code>debug | info | notice | warn | error | crit | alert | emerg</code>，错误级别从左到右越来越大</p>
+</li>
+<li><p>设置nginx进程 pid</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pid        logs&#x2F;nginx.pid;</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>设置工作模式</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">events &#123;</span><br><span class="line">    # 默认使用epoll</span><br><span class="line">    use epoll;</span><br><span class="line">    # 每个worker允许连接的客户端最大连接数</span><br><span class="line">    worker_connections  10240;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>http 是指令块，针对http网络传输的一些指令配置</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li>include 引入外部配置，提高可读性，避免单个配置文件过大</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">include       mime.types;</span><br></pre></td></tr></table></figure>
+
+<ol start="8">
+<li>设定日志格式，<code>main</code>为定义的格式名称，如此 access_log 就可以直接使用这个变量了<br><img src="https://climg.mukewang.com/5e4265f508e8724d15360230.jpg" alt="图片描述"></li>
+<li>sendfile<code>使用高效文件传输，提升传输性能。启用后才能使用</code>tcp_nopush`，是指当数据表累积一定大小后才发送，提高了效率。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sendfile        on;</span><br><span class="line">tcp_nopush      on;</span><br></pre></td></tr></table></figure>
+
+<ol start="10">
+<li><code>keepalive_timeout</code>设置客户端与服务端请求的超时时间，保证客户端多次请求的时候不会重复建立新的连接，节约资源损耗。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#keepalive_timeout  0;</span><br><span class="line">keepalive_timeout  65;</span><br></pre></td></tr></table></figure>
+
+<ol start="11">
+<li> <code>gzip</code>启用压缩，html/js/css压缩后传输会更快</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gzip on;</span><br></pre></td></tr></table></figure>
+
+<ol start="12">
+<li>server<code>可以在</code>http`指令块中设置多个虚拟主机</li>
+</ol>
+<ul>
+<li>listen 监听端口</li>
+<li>server_name localhost、ip、域名</li>
+<li>location 请求路由映射，匹配拦截</li>
+<li>root 请求位置</li>
+<li>index 首页设置</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">            listen       88;</span><br><span class="line">            server_name  localhost;</span><br><span class="line">    </span><br><span class="line">            location &#x2F; &#123;</span><br><span class="line">                root   html;</span><br><span class="line">                index  index.html index.htm;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+          
+        
       
     </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
   </div>
+  
+  
+  
+  </article>
+
+
+    
+  </section>
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/">&lt;i class&#x3D;&quot;fa fa-angle-left&quot;&gt;&lt;&#x2F;i&gt;</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
+
 
 
           </div>
@@ -639,10 +853,6 @@
 
 
           
-
-  
-
-
 
         </div>
         
@@ -663,17 +873,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <section class="site-overview-wrap sidebar-panel">
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -750,22 +951,6 @@
         </div>
       </section>
 
-      
-      <!--noindex-->
-        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-              
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B7%A8%E5%9F%9F"><span class="nav-number">1.</span> <span class="nav-text">跨域</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E5%87%BA%E7%8E%B0%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98"><span class="nav-number">1.1.</span> <span class="nav-text">为什么会出现跨域问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%B7%A8%E5%9F%9F"><span class="nav-number">1.2.</span> <span class="nav-text">什么是跨域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E5%90%8C%E6%BA%90%E9%99%90%E5%88%B6"><span class="nav-number">1.3.</span> <span class="nav-text">非同源限制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84%E8%B7%A8%E5%9F%9F%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text">常用的跨域方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JSONP"><span class="nav-number">1.4.1.</span> <span class="nav-text">JSONP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CORS-%E2%80%93-%E8%B7%A8%E7%AB%99%E8%B5%84%E6%BA%90%E5%85%B1%E4%BA%AB"><span class="nav-number">1.4.2.</span> <span class="nav-text">CORS – 跨站资源共享</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#webSockets-%E2%80%93-%E4%B8%8D%E5%8F%97%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5%E5%BD%B1%E5%93%8D"><span class="nav-number">1.4.3.</span> <span class="nav-text">webSockets – 不受同源策略影响</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nginx"><span class="nav-number">1.4.4.</span> <span class="nav-text">Nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Nginx%E9%85%8D%E7%BD%AE"><span class="nav-number">1.4.4.1.</span> <span class="nav-text">Nginx配置</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Nginx-%E9%98%B2%E7%9B%97%E9%93%BE%E9%85%8D%E7%BD%AE%E6%94%AF%E6%8C%81"><span class="nav-number">2.</span> <span class="nav-text">Nginx 防盗链配置支持</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">3.</span> <span class="nav-text">负载均衡</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E5%B1%82%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">3.1.</span> <span class="nav-text">四层负载均衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E5%B1%82%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">3.2.</span> <span class="nav-text">七层负载均衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS%E5%9C%B0%E5%9F%9F%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">3.3.</span> <span class="nav-text">DNS地域负载均衡</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4"><span class="nav-number">4.</span> <span class="nav-text">集群</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%8A%E6%B8%B8%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">4.1.</span> <span class="nav-text">配置上游服务器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E7%AD%96%E7%95%A5"><span class="nav-number">4.2.</span> <span class="nav-text">集群策略</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BD%AE%E8%AF%A2"><span class="nav-number">4.2.0.1.</span> <span class="nav-text">轮询</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="nav-number">4.2.0.1.1.</span> <span class="nav-text">优缺点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">4.2.0.1.2.</span> <span class="nav-text">配置</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9D%83%E9%87%8D"><span class="nav-number">4.2.0.2.</span> <span class="nav-text">权重</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-1"><span class="nav-number">4.2.0.2.1.</span> <span class="nav-text">优缺点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-1"><span class="nav-number">4.2.0.2.2.</span> <span class="nav-text">配置</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Ip-hash"><span class="nav-number">4.2.0.3.</span> <span class="nav-text">Ip hash</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Ip-hash-%E7%AE%97%E6%B3%95"><span class="nav-number">4.2.0.3.1.</span> <span class="nav-text">Ip_hash 算法</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-2"><span class="nav-number">4.2.0.3.2.</span> <span class="nav-text">优缺点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-2"><span class="nav-number">4.2.0.3.3.</span> <span class="nav-text">配置</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#least-conn"><span class="nav-number">4.2.0.4.</span> <span class="nav-text">least_conn</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#url-hash-%E7%AC%AC%E4%B8%89%E6%96%B9"><span class="nav-number">4.2.0.5.</span> <span class="nav-text">url hash(第三方)</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9-3"><span class="nav-number">4.2.0.5.1.</span> <span class="nav-text">优缺点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-3"><span class="nav-number">4.2.0.5.2.</span> <span class="nav-text">配置</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%80%E8%87%B4hash%E7%AE%97%E6%B3%95-%E6%B2%A1%E7%94%A8%E8%BF%87%EF%BC%8C%E5%8F%AA%E6%98%AF%E4%BA%86%E8%A7%A3"><span class="nav-number">4.2.0.6.</span> <span class="nav-text">一致hash算法(没用过，只是了解)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#fair"><span class="nav-number">4.2.0.7.</span> <span class="nav-text">fair</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE-4"><span class="nav-number">4.2.0.7.1.</span> <span class="nav-text">配置</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4upstream%E5%8F%82%E6%95%B0%E6%8B%93%E5%B1%95"><span class="nav-number">4.3.</span> <span class="nav-text">集群upstream参数拓展</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#upstream-%E6%8C%87%E4%BB%A4%E5%8F%82%E6%95%B0"><span class="nav-number">4.3.1.</span> <span class="nav-text">upstream 指令参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#max-conns-%E6%9C%80%E5%A4%A7%E8%BF%9E%E6%8E%A5%E6%95%B0"><span class="nav-number">4.3.1.1.</span> <span class="nav-text">max_conns 最大连接数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#slow-start-%E7%BC%93%E6%85%A2%E5%BC%80%E5%A7%8B%EF%BC%8C%E4%B8%8D%E4%BC%9A%E7%9B%B4%E6%8E%A5%E5%8A%A0%E5%85%A5%E9%9B%86%E7%BE%A4"><span class="nav-number">4.3.1.2.</span> <span class="nav-text">slow_start 缓慢开始，不会直接加入集群</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#down-%E8%8A%82%E7%82%B9%E4%B8%8D%E5%8F%AF%E7%94%A8"><span class="nav-number">4.3.1.3.</span> <span class="nav-text">down 节点不可用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#backup-%E5%A4%87%E7%94%A8%E8%8A%82%E7%82%B9"><span class="nav-number">4.3.1.4.</span> <span class="nav-text">backup 备用节点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#max-fails"><span class="nav-number">4.3.1.5.</span> <span class="nav-text">max_fails</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#fail-timeout"><span class="nav-number">4.3.1.6.</span> <span class="nav-text">fail_timeout</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx%E9%85%8D%E7%BD%AEKeeplive"><span class="nav-number">4.3.2.</span> <span class="nav-text">nginx配置Keeplive</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#nginx%E7%9A%84%E7%BC%93%E5%AD%98"><span class="nav-number">5.</span> <span class="nav-text">nginx的缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98-Nginx%E7%BC%93%E5%AD%98"><span class="nav-number">5.1.</span> <span class="nav-text">浏览器缓存|Nginx缓存</span></a></li></ol></li></ol></div>
-            
-
-          </div>
-        </section>
-      <!--/noindex-->
       
 
       
@@ -906,10 +1091,6 @@
 
 
   
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
-
 
   
 
@@ -967,6 +1148,26 @@
   
 
   
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 
 

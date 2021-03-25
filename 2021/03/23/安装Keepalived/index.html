@@ -79,16 +79,16 @@
 
 
 
-<meta name="description" content="1. 下载KeepalivedKeepalived下载地址 2. 上传至服务器3. 解压1tar -zxvf keepalived-2.2.2.tar.gz  4. 解压目录keepalived解压后目录   5. 使用configure配置安装目录与核心配置文件所在位置1.&#x2F;configure --prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;keepalived --sysconf&#x3D;&#x2F;etc   pre">
+<meta name="description" content="下载KeepalivedKeepalived下载地址 上传至服务器解压1tar -zxvf keepalived-2.2.2.tar.gz  解压目录keepalived解压后目录   使用configure配置安装目录与核心配置文件所在位置1.&#x2F;configure --prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;keepalived --sysconf&#x3D;&#x2F;etc   prefix：keepalived安">
 <meta property="og:type" content="article">
 <meta property="og:title" content="安装Keepalived">
 <meta property="og:url" content="https://yuanyayuan.github.io/2021/03/23/%E5%AE%89%E8%A3%85Keepalived/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="1. 下载KeepalivedKeepalived下载地址 2. 上传至服务器3. 解压1tar -zxvf keepalived-2.2.2.tar.gz  4. 解压目录keepalived解压后目录   5. 使用configure配置安装目录与核心配置文件所在位置1.&#x2F;configure --prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;keepalived --sysconf&#x3D;&#x2F;etc   pre">
+<meta property="og:description" content="下载KeepalivedKeepalived下载地址 上传至服务器解压1tar -zxvf keepalived-2.2.2.tar.gz  解压目录keepalived解压后目录   使用configure配置安装目录与核心配置文件所在位置1.&#x2F;configure --prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;keepalived --sysconf&#x3D;&#x2F;etc   prefix：keepalived安">
 <meta property="og:locale">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E7%9B%AE%E5%BD%95.png">
 <meta property="article:published_time" content="2021-03-23T14:37:38.000Z">
-<meta property="article:modified_time" content="2021-03-23T14:59:45.258Z">
+<meta property="article:modified_time" content="2021-03-25T14:20:50.907Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="软件安装">
 <meta property="article:tag" content="keepalived">
@@ -355,27 +355,27 @@
       
 
       
-        <h1 id="1-下载Keepalived"><a href="#1-下载Keepalived" class="headerlink" title="1. 下载Keepalived"></a>1. 下载Keepalived</h1><p><a target="_blank" rel="noopener" href="https://www.keepalived.org/download.html">Keepalived下载地址</a></p>
-<h1 id="2-上传至服务器"><a href="#2-上传至服务器" class="headerlink" title="2. 上传至服务器"></a>2. 上传至服务器</h1><h1 id="3-解压"><a href="#3-解压" class="headerlink" title="3. 解压"></a>3. 解压</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf keepalived-2.2.2.tar.gz</span><br></pre></td></tr></table></figure>
+        <h1 id="下载Keepalived"><a href="#下载Keepalived" class="headerlink" title="下载Keepalived"></a>下载Keepalived</h1><p><a target="_blank" rel="noopener" href="https://www.keepalived.org/download.html">Keepalived下载地址</a></p>
+<h1 id="上传至服务器"><a href="#上传至服务器" class="headerlink" title="上传至服务器"></a>上传至服务器</h1><h1 id="解压"><a href="#解压" class="headerlink" title="解压"></a>解压</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf keepalived-2.2.2.tar.gz</span><br></pre></td></tr></table></figure>
 
-<h1 id="4-解压目录"><a href="#4-解压目录" class="headerlink" title="4. 解压目录"></a>4. 解压目录</h1><p>keepalived解压后目录</p>
+<h1 id="解压目录"><a href="#解压目录" class="headerlink" title="解压目录"></a>解压目录</h1><p>keepalived解压后目录</p>
 <img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E7%9B%AE%E5%BD%95.png" style="zoom:50%;" />
 
-<h1 id="5-使用configure配置安装目录与核心配置文件所在位置"><a href="#5-使用configure配置安装目录与核心配置文件所在位置" class="headerlink" title="5. 使用configure配置安装目录与核心配置文件所在位置"></a>5. 使用<code>configure</code>配置安装目录与核心配置文件所在位置</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure --prefix=/usr/<span class="built_in">local</span>/keepalived --sysconf=/etc</span><br></pre></td></tr></table></figure>
+<h1 id="使用configure配置安装目录与核心配置文件所在位置"><a href="#使用configure配置安装目录与核心配置文件所在位置" class="headerlink" title="使用configure配置安装目录与核心配置文件所在位置"></a>使用<code>configure</code>配置安装目录与核心配置文件所在位置</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure --prefix=/usr/<span class="built_in">local</span>/keepalived --sysconf=/etc</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>prefix：keepalived安装的位置</li>
 <li>sysconf：keepalived核心配置文件所在位置，固定位置，改成其他位置则keepalived启动不了，**/var/log/message中会报错** </li>
 </ul>
-<h2 id="5-1-配置过程中出现警告"><a href="#5-1-配置过程中出现警告" class="headerlink" title="5.1 配置过程中出现警告"></a>5.1 配置过程中出现警告</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*** WARNING - this build will not support IPVS with IPv6. Please install libnl/libnl-3 dev libraries to support IPv6 with IPVS.</span><br></pre></td></tr></table></figure>
+<h2 id="配置过程中出现警告"><a href="#配置过程中出现警告" class="headerlink" title="配置过程中出现警告"></a>配置过程中出现警告</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*** WARNING - this build will not support IPVS with IPv6. Please install libnl/libnl-3 dev libraries to support IPv6 with IPVS.</span><br></pre></td></tr></table></figure>
 
-<h2 id="5-2-安装libnl-libnl-3依赖"><a href="#5-2-安装libnl-libnl-3依赖" class="headerlink" title="5.2 安装libnl/libnl-3依赖"></a>5.2 安装<code>libnl/libnl-3</code>依赖</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install libnl libnl-devel  </span><br></pre></td></tr></table></figure>
+<h2 id="安装libnl-libnl-3依赖"><a href="#安装libnl-libnl-3依赖" class="headerlink" title="安装libnl/libnl-3依赖"></a>安装<code>libnl/libnl-3</code>依赖</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install libnl libnl-devel  </span><br></pre></td></tr></table></figure>
 
 <h3 id="CentOS8"><a href="#CentOS8" class="headerlink" title="CentOS8"></a>CentOS8</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y libnl3.x86_64 libnl3-devel.x86_64</span><br></pre></td></tr></table></figure>
 
-<h2 id="5-3-重新configure"><a href="#5-3-重新configure" class="headerlink" title="5.3 重新configure"></a>5.3 重新<code>configure</code></h2><h1 id="6-安装keepalived"><a href="#6-安装keepalived" class="headerlink" title="6. 安装keepalived"></a>6. 安装keepalived</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+<h2 id="重新configure"><a href="#重新configure" class="headerlink" title="重新configure"></a>重新<code>configure</code></h2><h1 id="安装keepalived"><a href="#安装keepalived" class="headerlink" title="安装keepalived"></a>安装keepalived</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
 
-<h1 id="7-查找keepalived"><a href="#7-查找keepalived" class="headerlink" title="7. 查找keepalived"></a>7. 查找keepalived</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">whereis keepalived</span><br></pre></td></tr></table></figure>
+<h1 id="查找keepalived"><a href="#查找keepalived" class="headerlink" title="查找keepalived"></a>查找keepalived</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">whereis keepalived</span><br></pre></td></tr></table></figure>
 
 
       
@@ -499,7 +499,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -510,7 +510,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -521,7 +521,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -570,7 +570,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E4%B8%8B%E8%BD%BDKeepalived"><span class="nav-number">1.</span> <span class="nav-text">1. 下载Keepalived</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E4%B8%8A%E4%BC%A0%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">2. 上传至服务器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E8%A7%A3%E5%8E%8B"><span class="nav-number">3.</span> <span class="nav-text">3. 解压</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E8%A7%A3%E5%8E%8B%E7%9B%AE%E5%BD%95"><span class="nav-number">4.</span> <span class="nav-text">4. 解压目录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-%E4%BD%BF%E7%94%A8configure%E9%85%8D%E7%BD%AE%E5%AE%89%E8%A3%85%E7%9B%AE%E5%BD%95%E4%B8%8E%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%89%80%E5%9C%A8%E4%BD%8D%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">5. 使用configure配置安装目录与核心配置文件所在位置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%87%BA%E7%8E%B0%E8%AD%A6%E5%91%8A"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 配置过程中出现警告</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-%E5%AE%89%E8%A3%85libnl-libnl-3%E4%BE%9D%E8%B5%96"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 安装libnl&#x2F;libnl-3依赖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CentOS8"><span class="nav-number">5.2.1.</span> <span class="nav-text">CentOS8</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-%E9%87%8D%E6%96%B0configure"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 重新configure</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-%E5%AE%89%E8%A3%85keepalived"><span class="nav-number">6.</span> <span class="nav-text">6. 安装keepalived</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-%E6%9F%A5%E6%89%BEkeepalived"><span class="nav-number">7.</span> <span class="nav-text">7. 查找keepalived</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BDKeepalived"><span class="nav-number">1.</span> <span class="nav-text">下载Keepalived</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">上传至服务器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%8E%8B"><span class="nav-number">3.</span> <span class="nav-text">解压</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%8E%8B%E7%9B%AE%E5%BD%95"><span class="nav-number">4.</span> <span class="nav-text">解压目录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8configure%E9%85%8D%E7%BD%AE%E5%AE%89%E8%A3%85%E7%9B%AE%E5%BD%95%E4%B8%8E%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%89%80%E5%9C%A8%E4%BD%8D%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">使用configure配置安装目录与核心配置文件所在位置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%87%BA%E7%8E%B0%E8%AD%A6%E5%91%8A"><span class="nav-number">5.1.</span> <span class="nav-text">配置过程中出现警告</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85libnl-libnl-3%E4%BE%9D%E8%B5%96"><span class="nav-number">5.2.</span> <span class="nav-text">安装libnl&#x2F;libnl-3依赖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CentOS8"><span class="nav-number">5.2.1.</span> <span class="nav-text">CentOS8</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E6%96%B0configure"><span class="nav-number">5.3.</span> <span class="nav-text">重新configure</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85keepalived"><span class="nav-number">6.</span> <span class="nav-text">安装keepalived</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E6%89%BEkeepalived"><span class="nav-number">7.</span> <span class="nav-text">查找keepalived</span></a></li></ol></div>
             
 
           </div>
