@@ -261,6 +261,247 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/28/redis%E6%8C%81%E4%B9%85%E5%8C%96%E4%B8%8E%E9%9B%86%E7%BE%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/28/redis%E6%8C%81%E4%B9%85%E5%8C%96%E4%B8%8E%E9%9B%86%E7%BE%A4/" itemprop="url">redis持久化与集群</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-28T16:49:43+08:00">
+                2021-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E9%9B%86%E7%BE%A4/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis集群</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h1><h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">* 如果1个缓存更新，则3600 seconds (an hour)后备份</span><br><span class="line">* 如果100个缓存更新，则300 seconds (5 minutes)后备份</span><br><span class="line">* 如果10000个缓存更新，则60 seconds后备份</span><br><span class="line">save 3600 1</span><br><span class="line">save 300 100</span><br><span class="line">save 60 10000</span><br><span class="line"></span><br><span class="line">stop-writes-on-bgsave-error yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> yes:如果save过程出错，则停止写操作</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> no: 可能造成数据不一致</span></span><br><span class="line"></span><br><span class="line">rdbcompression yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> yes:开启rdb压缩模式，会造成cpu耗损</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> no：关闭，但是文件会大</span></span><br><span class="line"></span><br><span class="line">rdbchecksum yes</span><br><span class="line"><span class="meta">#</span><span class="bash">yes：使用CRC64算法校验对rdb进行数据校验</span></span><br><span class="line"><span class="meta">#</span><span class="bash">no：不校验</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> AOF 默认关闭，yes可以开启</span></span><br><span class="line">appendonly no</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> AOF 的文件名</span></span><br><span class="line">appendfilename &quot;appendonly.aof&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> no：不同步</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> everysec：每秒备份，推荐使用</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> always：每次操作都会备份，安全并且数据完整，但是慢性能差</span></span><br><span class="line">appendfsync everysec</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重写的时候是否要同步，no可以保证数据安全</span></span><br><span class="line">no-appendfsync-on-rewrite no</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重写机制：避免文件越来越大，自动优化压缩指令，会fork一个新的进程去完成重写动作，新进程里的内存数据会被重写，此时旧的aof文件不会被读取使用，类似rdb</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 当前AOF文件的大小是上次AOF大小的100% 并且文件体积达到64m，满足两者则触发重写</span></span><br><span class="line">auto-aof-rewrite-percentage 100</span><br><span class="line">auto-aof-rewrite-min-size 64mb</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="主从复制（主从集群）（读写分离）"><a href="#主从复制（主从集群）（读写分离）" class="headerlink" title="主从复制（主从集群）（读写分离）"></a>主从复制（主从集群）（读写分离）</h1><h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6.png"></p>
+<h2 id="树状架构"><a href="#树状架构" class="headerlink" title="树状架构"></a>树状架构</h2><blockquote>
+<p>使用的不多</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E6%A0%91%E7%8A%B6%E6%9E%B6%E6%9E%84.png"></p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h3 id="基于RDB"><a href="#基于RDB" class="headerlink" title="基于RDB"></a>基于RDB</h3><blockquote>
+<p> 初始化复制（全量复制）以后的复制（增量复制）</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%8E%9F%E7%90%86.png"></p>
+<p><strong>注：一定要开启Master的持久化，如果不开启持久化，Master恢复后内存中无数据，也将会同步至从节点</strong></p>
+<h2 id="主从复制的配置"><a href="#主从复制的配置" class="headerlink" title="主从复制的配置"></a>主从复制的配置</h2><ul>
+<li><p>192.168.159.128</p>
+</li>
+<li><p>192.168.159.129</p>
+</li>
+<li><p>192.168.159.130</p>
+</li>
+</ul>
+<h3 id="配置从节点"><a href="#配置从节点" class="headerlink" title="配置从节点"></a>配置从节点</h3><p>192.168.159.129与192.168.159.130</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Master IP host</span></span><br><span class="line">replicaof 192.168.159.128 6379</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> redis密码</span></span><br><span class="line">masterauth redis</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> slave只读</span></span><br><span class="line">replica-read-only yes</span><br></pre></td></tr></table></figure>
+
+<h3 id="重启redis"><a href="#重启redis" class="headerlink" title="重启redis"></a>重启redis</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/redis_init_script stop</span><br><span class="line"></span><br><span class="line">/etc/init.d/redis_init_script start</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看Replication"><a href="#查看Replication" class="headerlink" title="查看Replication"></a>查看Replication</h3><ul>
+<li>192.168.159.128</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication128.png" style="zoom:50%;" />
+
+<ul>
+<li>192.168.159.129</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication.png" style="zoom:50%;" />
+
+<ul>
+<li>192.168.159.130</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication130.png" style="zoom:50%;" />
+
+<h2 id="Redis无磁盘化复制"><a href="#Redis无磁盘化复制" class="headerlink" title="Redis无磁盘化复制"></a>Redis无磁盘化复制</h2><blockquote>
+<p>如果磁盘读写特别慢，但是网速高，RDB不接触磁盘，直接通过sockets传输</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Redis%E6%97%A0%E7%A3%81%E7%9B%98%E5%8C%96%E5%A4%8D%E5%88%B6%E5%8E%9F%E7%90%86.png"></p>
+<h3 id="配置开启"><a href="#配置开启" class="headerlink" title="配置开启"></a>配置开启</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repl-diskless-sync no --&gt;repl-diskless-sync yes</span><br></pre></td></tr></table></figure>
+
+<h1 id="哨兵机制"><a href="#哨兵机制" class="headerlink" title="哨兵机制"></a>哨兵机制</h1><blockquote>
+<p>当Master宕机后，Slave只能提供读操作，整个Redis集群将无法正常的写</p>
+</blockquote>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><ul>
+<li>普通配置</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">port 26379</span><br><span class="line">pidfile &quot;/usr/local/redis/sentinel/redis-sentinel.pid&quot;</span><br><span class="line">dir &quot;/usr/local/redis/sentinel&quot;</span><br><span class="line">daemonize yes</span><br><span class="line">protected-mode no</span><br><span class="line">logfile &quot;/usr/local/redis/sentinel/redis-sentinel.log&quot;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>核心配置</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 配置哨兵  “2”是哨兵个数</span></span><br><span class="line">sentinel monitor mymaster 127.0.0.1 6379 2</span><br><span class="line"><span class="meta">#</span><span class="bash"> 密码</span></span><br><span class="line">sentinel auth-pass &lt;master-name&gt; &lt;password&gt;</span><br><span class="line"><span class="meta">#</span><span class="bash"> master被sentinel认定为失效的间隔时间</span></span><br><span class="line">sentinel down-after-milliseconds mymaster 30000</span><br><span class="line"><span class="meta">#</span><span class="bash"> 剩余的slaves重新和新的master做同步的并行个数</span></span><br><span class="line">sentinel parallel-syncs mymaster 1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 主备切换的超时时间，哨兵要去做故障转移，这个时候哨兵也是一个进程，如果他没有去执行，超过这个时间后，会由其他的哨兵来处理</span></span><br><span class="line">sentinel failover-timeout mymaster 180000</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将配置发送给另外2个服务器</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp sentinel.conf root@192.168.159.129:/usr/local/redis/</span><br><span class="line">scp sentinel.conf root@192.168.159.130:/usr/local/redis/</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>启动哨兵</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> redis-sentinel 的命令在这个文件夹中</span></span><br><span class="line">cd /usr/local/bin/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建日志目录</span></span><br><span class="line">mkdir /usr/local/redis/sentinel -p</span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动哨兵</span></span><br><span class="line">redis-sentinel sentinel.conf</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看是否启动成功</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep redis</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">root      26797      1  0 05:59 ?        00:00:10 /usr/local/bin/redis-server 0.0.0.0:6379</span><br><span class="line">root      29317      1  0 09:05 ?        00:00:00 redis-sentinel *:26379 [sentinel]</span><br><span class="line">root      29332  17688  0 09:05 pts/0    00:00:00 grep --color=auto redis</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>前台查看哨兵日志</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -f /usr/local/redis/sentinel/redis-sentinel.log</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试哨兵"><a href="#测试哨兵" class="headerlink" title="测试哨兵"></a>测试哨兵</h2><ul>
+<li><p>宕机192.168.159.128上的redis</p>
+</li>
+<li><p>查看另外两台服务器上redis信息</p>
+<ul>
+<li><p>192.168.159.129</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication129_1.png" style="zoom:50%;" /></li>
+<li><p>192.168.159.130 (已被选举为Master)</p>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication130_1.png" style="zoom:50%;" /></li>
+<li><p>重启192.168.159.128上的redis</p>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication128_1.png" style="zoom:50%;" />
+
+<p>​    <strong>原先的Master变为Salve</strong></p>
+<p>​    </p>
+<h1 id="Redis-Cluster集群"><a href="#Redis-Cluster集群" class="headerlink" title="Redis-Cluster集群"></a>Redis-Cluster集群</h1><p>待完成</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/28/elasticsearch-kibana%E5%AE%89%E8%A3%85/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -698,13 +939,17 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
 <h1 id="单线程处理的缺点？"><a href="#单线程处理的缺点？" class="headerlink" title="单线程处理的缺点？"></a>单线程处理的缺点？</h1><p>1.耗时的命令会导致并发的下降，不只是读并发，写并发也会下降</p>
 <p>2.无法发挥多核CPU性能，不过可以通过在单机开多个Redis实例来完善</p>
 <h1 id="Redis-的持久化机制是什么？各自的优缺点？"><a href="#Redis-的持久化机制是什么？各自的优缺点？" class="headerlink" title="Redis 的持久化机制是什么？各自的优缺点？"></a>Redis 的持久化机制是什么？各自的优缺点？</h1><p>redis 提供两种持久化方式。</p>
-<p>一种是 <strong>RDB（Redis DataBase）</strong>，用数据集快照的方式，定时将 redis 存储的数据生成快照并存储到磁盘等介质上即在指定目录下生成一个 dump.rdb 文件；</p>
+<p>一种是 <strong>RDB（Redis DataBase）</strong>，<br>用数据集快照的方式，定时将 redis 存储的数据生成快照并存储到磁盘等介质上即在指定目录下生成一个 dump.rdb 文件；</p>
 <p>Redis 提供了 SAVE 和BGSAVE两个命令来生成RDB文件，区别是前者是阻塞的，后者是后台 fork 子进程进行，不会阻塞主进程处理命令请求</p>
 <p>持久化key之前，会检查是否过期，过期的key不进入RDB文件。数据载入数据库之前，会对key先进行过期检查，如果过期，不导入数据库（主库情况）。</p>
-<p>另外一种是 <strong>AOF（Append -only file）</strong>，Redis默认不开启，它采用日志的形式来记录每个写操作，生成一个appendonly.aof 文件，并将日志追加到文件末尾。Redis重启的会根据日志文件的内容将写指令从前到后执行一次以完成数据的恢复工作</p>
+<p>另外一种是 <strong>AOF（Append -only file）</strong>，</p>
+<p>Redis默认不开启，它采用日志的形式来记录每个写操作，生成一个appendonly.aof 文件，并将日志追加到文件末尾。Redis重启的会根据日志文件的内容将写指令从前到后执行一次以完成数据的恢复工作</p>
 <p>重写时，会先判断key是否过期，已过期的key不会重写到aof文件。</p>
 <p>如果同时存在<code>RDB</code>和<code>AOF</code>的话会优先使用<code>AOF</code> 重建数据集，因为其保存的数据更完整。</p>
-<h2 id="RDB-的优点："><a href="#RDB-的优点：" class="headerlink" title="RDB 的优点："></a>RDB 的优点：</h2><p>A 特别适合备份；</p>
+<h2 id="RDB-的优点："><a href="#RDB-的优点：" class="headerlink" title="RDB 的优点："></a>RDB 的优点：</h2><ol>
+<li>每个一段时间备份，全量备份；</li>
+<li></li>
+</ol>
 <p>B. 性能最大化，fork 子进程来完成写操作，让主进程继续处理命令且不会进行任何 IO 操作的，这样就确保了 redis 极高的性能；</p>
 <p>C. 相对于数据集大时，比 AOF 的启动效率更高。</p>
 <h2 id="RDB-的缺点："><a href="#RDB-的缺点：" class="headerlink" title="RDB 的缺点："></a>RDB 的缺点：</h2><p>数据安全性低。RDB 是间隔一段时间进行持久化，如果持久化之间 redis 发 生故障，会发生数据丢失。所以这种方式更适合数据要求不严谨的时候；</p>
@@ -2273,223 +2518,6 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/nginx%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/22/nginx%E5%AE%89%E8%A3%85/" itemprop="url">nginx安装</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T00:17:38+08:00">
-                2021-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/nginx-nginx%E4%BD%BF%E7%94%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">nginx - nginx使用</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Nginx安装"><a href="#Nginx安装" class="headerlink" title="Nginx安装"></a>Nginx安装</h1><p>去官网<a target="_blank" rel="noopener" href="http://nginx.org/%E4%B8%8B%E8%BD%BD%E5%AF%B9%E5%BA%94%E7%9A%84nginx%E5%8C%85%EF%BC%8C%E6%8E%A8%E8%8D%90%E4%BD%BF%E7%94%A8%E7%A8%B3%E5%AE%9A%E7%89%88%E6%9C%AC">http://nginx.org/下载对应的nginx包，推荐使用稳定版本</a></p>
-<p>上传nginx到linux系统</p>
-<p>安装依赖环境</p>
-<ul>
-<li>安装gcc环境<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc-c++</span><br></pre></td></tr></table></figure></li>
-<li>安装PCRE库，用于解析正则表达式<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y pcre pcre-devel</span><br></pre></td></tr></table></figure></li>
-<li>zlib压缩和解压缩依赖，<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y zlib zlib-devel</span><br></pre></td></tr></table></figure></li>
-<li>SSL 安全的加密的套接字协议层，用于HTTP安全传输，也就是https<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y openssl openssl-devel</span><br></pre></td></tr></table></figure></li>
-<li>解压，需要注意，解压后得到的是源码，源码需要编译后才能安装<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf nginx-1.16.1.tar.gz</span><br></pre></td></tr></table></figure></li>
-<li>编译之前，先创建nginx临时目录，如果不创建，在启动nginx的过程中会报错<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir &#x2F;var&#x2F;temp&#x2F;nginx -p</span><br></pre></td></tr></table></figure></li>
-<li>在nginx的解压目录，输入如下命令进行配置，目的是为了创建makefile文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure \</span><br><span class="line">--prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;nginx \</span><br><span class="line">--pid-path&#x3D;&#x2F;var&#x2F;run&#x2F;nginx&#x2F;nginx.pid \</span><br><span class="line">--lock-path&#x3D;&#x2F;var&#x2F;lock&#x2F;nginx.lock \</span><br><span class="line">--error-log-path&#x3D;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;error.log \</span><br><span class="line">--http-log-path&#x3D;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log \</span><br><span class="line">--with-http_gzip_static_module \</span><br><span class="line">--http-client-body-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;client \</span><br><span class="line">--http-proxy-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;proxy \</span><br><span class="line">--http-fastcgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;fastcgi \</span><br><span class="line">--http-uwsgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;uwsgi \</span><br><span class="line">--http-scgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;scgi</span><br></pre></td></tr></table></figure></li>
-</ul>
-<p><strong>配置命令：</strong></p>
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>解释</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>–prefix</td>
-<td>指定nginx安装目录</td>
-</tr>
-<tr>
-<td>–pid-path</td>
-<td>指向nginx的pid</td>
-</tr>
-<tr>
-<td>–lock-path</td>
-<td>锁定安装文件，防止被恶意篡改或误操作</td>
-</tr>
-<tr>
-<td>–error-log</td>
-<td>错误日志</td>
-</tr>
-<tr>
-<td>–http-log-path</td>
-<td>http日志</td>
-</tr>
-<tr>
-<td>–with-http_gzip_static_module</td>
-<td>启用gzip模块，在线实时压缩输出数据流</td>
-</tr>
-<tr>
-<td>–http-client-body-temp-path</td>
-<td>设定客户端请求的临时目录</td>
-</tr>
-<tr>
-<td>–http-proxy-temp-path</td>
-<td>设定http代理临时目录</td>
-</tr>
-<tr>
-<td>–http-fastcgi-temp-path</td>
-<td>设定fastcgi临时目录</td>
-</tr>
-<tr>
-<td>–http-uwsgi-temp-path</td>
-<td>设定uwsgi临时目录</td>
-</tr>
-<tr>
-<td>–http-scgi-temp-path</td>
-<td>设定scgi临时目录</td>
-</tr>
-</tbody></table>
-<ul>
-<li>make编译<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make</span><br></pre></td></tr></table></figure></li>
-<li>安装<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make install</span><br></pre></td></tr></table></figure></li>
-<li>进入sbin目录启动nginx<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;nginx</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">停止：.&#x2F;nginx -s stop</span><br><span class="line">重新加载：.&#x2F;nginx -s reload</span><br></pre></td></tr></table></figure>
-打开浏览器，访问虚拟机所处内网ip即可打开nginx默认页面，显示如下便表示安装成功：</li>
-</ul>
-<p><strong>注意事项:</strong></p>
-<p>如果在云服务器安装，需要开启默认的nginx端口：80</p>
-<p>如果在虚拟机安装，需要关闭防火墙</p>
-<p>本地win或mac需要关闭防火墙</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2541,7 +2569,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">13</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2552,7 +2580,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
