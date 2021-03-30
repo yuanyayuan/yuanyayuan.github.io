@@ -261,7 +261,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/28/redis%E6%8C%81%E4%B9%85%E5%8C%96%E4%B8%8E%E9%9B%86%E7%BE%A4/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/30/redis%E6%8C%81%E4%B9%85%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -280,7 +280,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/03/28/redis%E6%8C%81%E4%B9%85%E5%8C%96%E4%B8%8E%E9%9B%86%E7%BE%A4/" itemprop="url">redis持久化与集群</a></h1>
+                <a class="post-title-link" href="/2021/03/30/redis%E6%8C%81%E4%B9%85%E5%8C%96/" itemprop="url">redis持久化</a></h1>
         
 
         <div class="post-meta">
@@ -292,8 +292,151 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-28T16:49:43+08:00">
-                2021-03-28
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-30T23:39:29+08:00">
+                2021-03-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis理论知识</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h1><h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">* 如果1个缓存更新，则3600 seconds (an hour)后备份</span><br><span class="line">* 如果100个缓存更新，则300 seconds (5 minutes)后备份</span><br><span class="line">* 如果10000个缓存更新，则60 seconds后备份</span><br><span class="line">save 3600 1</span><br><span class="line">save 300 100</span><br><span class="line">save 60 10000</span><br><span class="line"></span><br><span class="line">stop-writes-on-bgsave-error yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> yes:如果save过程出错，则停止写操作</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> no: 可能造成数据不一致</span></span><br><span class="line"></span><br><span class="line">rdbcompression yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> yes:开启rdb压缩模式，会造成cpu耗损</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> no：关闭，但是文件会大</span></span><br><span class="line"></span><br><span class="line">rdbchecksum yes</span><br><span class="line"><span class="meta">#</span><span class="bash">yes：使用CRC64算法校验对rdb进行数据校验</span></span><br><span class="line"><span class="meta">#</span><span class="bash">no：不校验</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> AOF 默认关闭，yes可以开启</span></span><br><span class="line">appendonly no</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> AOF 的文件名</span></span><br><span class="line">appendfilename &quot;appendonly.aof&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> no：不同步</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> everysec：每秒备份，推荐使用</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> always：每次操作都会备份，安全并且数据完整，但是慢性能差</span></span><br><span class="line">appendfsync everysec</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重写的时候是否要同步，no可以保证数据安全</span></span><br><span class="line">no-appendfsync-on-rewrite no</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重写机制：避免文件越来越大，自动优化压缩指令，会fork一个新的进程去完成重写动作，新进程里的内存数据会被重写，此时旧的aof文件不会被读取使用，类似rdb</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 当前AOF文件的大小是上次AOF大小的100% 并且文件体积达到64m，满足两者则触发重写</span></span><br><span class="line">auto-aof-rewrite-percentage 100</span><br><span class="line">auto-aof-rewrite-min-size 64mb</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/30/redis%E5%93%A8%E5%85%B5%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/30/redis%E5%93%A8%E5%85%B5%E6%9C%BA%E5%88%B6/" itemprop="url">redis哨兵机制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-30T23:19:01+08:00">
+                2021-03-30
               </time>
             
 
@@ -354,11 +497,178 @@
       
         
           
-            <h1 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h1><h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">* 如果1个缓存更新，则3600 seconds (an hour)后备份</span><br><span class="line">* 如果100个缓存更新，则300 seconds (5 minutes)后备份</span><br><span class="line">* 如果10000个缓存更新，则60 seconds后备份</span><br><span class="line">save 3600 1</span><br><span class="line">save 300 100</span><br><span class="line">save 60 10000</span><br><span class="line"></span><br><span class="line">stop-writes-on-bgsave-error yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> yes:如果save过程出错，则停止写操作</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> no: 可能造成数据不一致</span></span><br><span class="line"></span><br><span class="line">rdbcompression yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> yes:开启rdb压缩模式，会造成cpu耗损</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> no：关闭，但是文件会大</span></span><br><span class="line"></span><br><span class="line">rdbchecksum yes</span><br><span class="line"><span class="meta">#</span><span class="bash">yes：使用CRC64算法校验对rdb进行数据校验</span></span><br><span class="line"><span class="meta">#</span><span class="bash">no：不校验</span></span><br></pre></td></tr></table></figure>
+            <h1 id="查看哨兵信息"><a href="#查看哨兵信息" class="headerlink" title="查看哨兵信息"></a>查看哨兵信息</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 进入redis配置文件夹爱</span></span><br><span class="line">cd /usr/local/redis/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动哨兵</span></span><br><span class="line">redis-sentinel sentinel.conf</span><br><span class="line"><span class="meta">#</span><span class="bash"> 进入哨兵</span></span><br><span class="line">redis-cli -p 26379</span><br></pre></td></tr></table></figure>
 
-<h2 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> AOF 默认关闭，yes可以开启</span></span><br><span class="line">appendonly no</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> AOF 的文件名</span></span><br><span class="line">appendfilename &quot;appendonly.aof&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> no：不同步</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> everysec：每秒备份，推荐使用</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> always：每次操作都会备份，安全并且数据完整，但是慢性能差</span></span><br><span class="line">appendfsync everysec</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重写的时候是否要同步，no可以保证数据安全</span></span><br><span class="line">no-appendfsync-on-rewrite no</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重写机制：避免文件越来越大，自动优化压缩指令，会fork一个新的进程去完成重写动作，新进程里的内存数据会被重写，此时旧的aof文件不会被读取使用，类似rdb</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 当前AOF文件的大小是上次AOF大小的100% 并且文件体积达到64m，满足两者则触发重写</span></span><br><span class="line">auto-aof-rewrite-percentage 100</span><br><span class="line">auto-aof-rewrite-min-size 64mb</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 查看imooc-master下的master节点信息</span></span><br><span class="line">sentinel master mymaster</span><br></pre></td></tr></table></figure>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5.png" style="zoom:50%;" />
 
-<h1 id="主从复制（主从集群）（读写分离）"><a href="#主从复制（主从集群）（读写分离）" class="headerlink" title="主从复制（主从集群）（读写分离）"></a>主从复制（主从集群）（读写分离）</h1><h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6.png"></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 查看imooc-master下的slaves节点信息</span></span><br><span class="line">sentinel slaves mymaster</span><br></pre></td></tr></table></figure>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B52.png" style="zoom:50%;" />
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 查看imooc-master下的哨兵节点信息</span></span><br><span class="line">sentinel sentinels mymaster</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B53.png" style="zoom:50%;" />
+
+<blockquote>
+<p>在128上查询哨兵信息则显示130和129为哨兵</p>
+</blockquote>
+<h1 id="相关图示"><a href="#相关图示" class="headerlink" title="相关图示"></a>相关图示</h1><ul>
+<li>哨兵节点至少要有3个或奇数个节点</li>
+<li>哨兵分布式部署到不同计算机节点</li>
+<li>一组哨兵只监听一组主从</li>
+</ul>
+<h2 id="哨兵监控"><a href="#哨兵监控" class="headerlink" title="哨兵监控"></a>哨兵监控</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E5%93%A8%E5%85%B5%E7%9B%91%E6%8E%A7.png"></p>
+<h2 id="故障转移"><a href="#故障转移" class="headerlink" title="故障转移"></a>故障转移</h2><blockquote>
+<p>推荐哨兵个数为奇数台，避免对半分</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB.png"></p>
+<h2 id="选举Leader"><a href="#选举Leader" class="headerlink" title="选举Leader"></a>选举Leader</h2><blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">剩余的slaves重新和新的master做同步的并行个数</span></span><br><span class="line">sentinel parallel-syncs mymaster 1</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E9%80%89%E4%B8%BEleader.png"></p>
+<h2 id="原master恢复"><a href="#原master恢复" class="headerlink" title="原master恢复"></a>原master恢复</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redismaster%E8%8A%82%E7%82%B9%E6%81%A2%E5%A4%8D.png"></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/28/redis%E9%9B%86%E7%BE%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/28/redis%E9%9B%86%E7%BE%A4/" itemprop="url">redis集群</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-28T16:49:43+08:00">
+                2021-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E9%9B%86%E7%BE%A4-reids%E9%85%8D%E7%BD%AE/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis集群 - reids配置</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="主从复制（主从集群）（读写分离）"><a href="#主从复制（主从集群）（读写分离）" class="headerlink" title="主从复制（主从集群）（读写分离）"></a>主从复制（主从集群）（读写分离）</h1><h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6.png"></p>
 <h2 id="树状架构"><a href="#树状架构" class="headerlink" title="树状架构"></a>树状架构</h2><blockquote>
 <p>使用的不多</p>
 </blockquote>
@@ -405,6 +715,7 @@
 <h1 id="哨兵机制"><a href="#哨兵机制" class="headerlink" title="哨兵机制"></a>哨兵机制</h1><blockquote>
 <p>当Master宕机后，Slave只能提供读操作，整个Redis集群将无法正常的写</p>
 </blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F.png"></p>
 <h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><ul>
 <li>普通配置</li>
 </ul>
@@ -413,7 +724,7 @@
 <ul>
 <li>核心配置</li>
 </ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 配置哨兵  “2”是哨兵个数</span></span><br><span class="line">sentinel monitor mymaster 127.0.0.1 6379 2</span><br><span class="line"><span class="meta">#</span><span class="bash"> 密码</span></span><br><span class="line">sentinel auth-pass &lt;master-name&gt; &lt;password&gt;</span><br><span class="line"><span class="meta">#</span><span class="bash"> master被sentinel认定为失效的间隔时间</span></span><br><span class="line">sentinel down-after-milliseconds mymaster 30000</span><br><span class="line"><span class="meta">#</span><span class="bash"> 剩余的slaves重新和新的master做同步的并行个数</span></span><br><span class="line">sentinel parallel-syncs mymaster 1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 主备切换的超时时间，哨兵要去做故障转移，这个时候哨兵也是一个进程，如果他没有去执行，超过这个时间后，会由其他的哨兵来处理</span></span><br><span class="line">sentinel failover-timeout mymaster 180000</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 配置哨兵  “2”是哨兵个数  <span class="comment"># 127.0.0.1改为Master的Ip</span></span></span><br><span class="line">sentinel monitor mymaster 127.0.0.1 6379 2</span><br><span class="line"><span class="meta">#</span><span class="bash"> 密码</span></span><br><span class="line">sentinel auth-pass &lt;master-name&gt; &lt;password&gt;</span><br><span class="line"><span class="meta">#</span><span class="bash"> master被sentinel认定为失效的间隔时间</span></span><br><span class="line">sentinel down-after-milliseconds mymaster 30000</span><br><span class="line"><span class="meta">#</span><span class="bash"> 剩余的slaves重新和新的master做同步的并行个数</span></span><br><span class="line">sentinel parallel-syncs mymaster 1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 主备切换的超时时间，哨兵要去做故障转移，这个时候哨兵也是一个进程，如果他没有去执行，超过这个时间后，会由其他的哨兵来处理</span></span><br><span class="line">sentinel failover-timeout mymaster 180000</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>将配置发送给另外2个服务器</li>
@@ -453,7 +764,28 @@
 
 <p>​    <strong>原先的Master变为Salve</strong></p>
 <p>​    </p>
-<h1 id="Redis-Cluster集群"><a href="#Redis-Cluster集群" class="headerlink" title="Redis-Cluster集群"></a>Redis-Cluster集群</h1><p>待完成</p>
+<h1 id="Redis-Cluster集群（多主多从）"><a href="#Redis-Cluster集群（多主多从）" class="headerlink" title="Redis-Cluster集群（多主多从）"></a>Redis-Cluster集群（多主多从）</h1><p><strong>主从模式或哨兵模式存在的问题：</strong>当主节点异步同步数据时，主节点宕机，在同步的这段时间写入的新数据无法同步至从节点，当原主节点恢复成从节点时，在之前同步的那段时间写入的新数据将丢失。</p>
+<h2 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h2><ul>
+<li>修改第一台，并启动redis</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 开启集群模式</span></span><br><span class="line">cluster-enabled yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> 每一个节点需要有一个配置文件，需要6份。每个节点处于集群的角色都需要告知其他所有节点，彼此知道，这个文件用于存储集群模式下的集群状态等信息，这个文件是由redis自己维护，我们不用管。如果你要重新创建集群，那么把这个文件删了就行</span></span><br><span class="line">cluster-config-file nodes-201.conf</span><br><span class="line"><span class="meta">#</span><span class="bash"> 超时时间，超时则认为master宕机，随后主备切换</span></span><br><span class="line">cluster-node-timeout 5000</span><br><span class="line"><span class="meta">#</span><span class="bash"> 开启AOF</span></span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>启动过程出错，删除working中的文件</p>
+</blockquote>
+<ul>
+<li>配置三主三从的环境，配置剩下5台，并启动redis‘</li>
+</ul>
+<h2 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">####</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 注意1：如果你使用的是redis3.x版本，需要使用redis-trib.rb来构建集群，最新版使用C语言来构建了，这个要注意</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 注意2：以下为新版的redis构建方式</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">####</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建集群，主节点和从节点比例为1，1-3为主，4-6为从，1和4，2和5，3和6分别对应为主从关系，这也是最经典用的最多的集群模式</span></span><br><span class="line">redis-cli --cluster create ip1:port1 ip2:port2 ip3:port3 ip4:port4 ip5:port5 ip6:port6 --cluster-replicas 1</span><br></pre></td></tr></table></figure>
+
+<h2 id="检查集群信息"><a href="#检查集群信息" class="headerlink" title="检查集群信息"></a>检查集群信息</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster check ip:host</span><br></pre></td></tr></table></figure>
+
+<h2 id="slots"><a href="#slots" class="headerlink" title="slots"></a>slots</h2><blockquote>
+<p>16384个槽节点被平均分配</p>
+</blockquote>
+<h3 id="槽的分配"><a href="#槽的分配" class="headerlink" title="槽的分配"></a>槽的分配</h3><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E6%A7%BDslot%E6%98%AF%E6%80%8E%E6%A0%B7%E5%88%86%E9%85%8D%E7%9A%84.png" style="zoom: 33%;" />
+
+<h3 id="如何存储数据"><a href="#如何存储数据" class="headerlink" title="如何存储数据"></a>如何存储数据</h3><p>set值时，根据key进行<strong>hash(key)%16384</strong>看结果的值看在那个范围，数据放到该范围的槽里面。</p>
 
           
         
@@ -2206,318 +2538,6 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/Java8%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/22/Java8%E5%AE%89%E8%A3%85/" itemprop="url">Java8安装</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T22:40:31+08:00">
-                2021-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java-Java%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
-                    <span itemprop="name">Java - Java安装</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="检查是否安装Java"><a href="#检查是否安装Java" class="headerlink" title="检查是否安装Java"></a>检查是否安装Java</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -version</span><br></pre></td></tr></table></figure>
-
-<h1 id="解压文件"><a href="#解压文件" class="headerlink" title="解压文件"></a>解压文件</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf /usr/<span class="built_in">local</span>/jdk-8u181-linux-x64.tar.gz</span><br></pre></td></tr></table></figure>
-
-<h1 id="重命名"><a href="#重命名" class="headerlink" title="重命名"></a>重命名</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv /usr/<span class="built_in">local</span>/jdk1.8.0_181 /usr/<span class="built_in">local</span>/java</span><br></pre></td></tr></table></figure>
-
-<h1 id="修改配置文件，配置环境变量，在命令行输入："><a href="#修改配置文件，配置环境变量，在命令行输入：" class="headerlink" title="修改配置文件，配置环境变量，在命令行输入："></a>修改配置文件，配置环境变量，在命令行输入：</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/profile</span><br></pre></td></tr></table></figure>
-
-<h1 id="在最后添加"><a href="#在最后添加" class="headerlink" title="在最后添加"></a>在最后添加</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/<span class="built_in">local</span>/java</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin</span><br><span class="line"><span class="built_in">export</span> CLASSPATH=.:<span class="variable">$JAVA_HOME</span>/lib/dt.jar:<span class="variable">$JAVA_HOME</span>/lib/tools.jar</span><br><span class="line"><span class="built_in">export</span> JRE_HOME=<span class="variable">$JAVA_HOME</span>/jre</span><br></pre></td></tr></table></figure>
-
-<h1 id="使配置文件立即生效"><a href="#使配置文件立即生效" class="headerlink" title="使配置文件立即生效"></a>使配置文件立即生效</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /etc/profile</span><br></pre></td></tr></table></figure>
-
-<h1 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /usr/<span class="built_in">local</span>/java</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/Tomcat%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/22/Tomcat%E5%AE%89%E8%A3%85/" itemprop="url">Tomcat安装</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T22:40:13+08:00">
-                2021-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/tomcat-tomcat%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
-                    <span itemprop="name">tomcat - tomcat安装</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="解压下载的Tomcat"><a href="#解压下载的Tomcat" class="headerlink" title="解压下载的Tomcat"></a>解压下载的Tomcat</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf apache-tomcat-8.5.50.tar.gz </span><br></pre></td></tr></table></figure>
-
-<h1 id="安装Java"><a href="#安装Java" class="headerlink" title="安装Java"></a>安装Java</h1><h1 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./startup.sh</span><br></pre></td></tr></table></figure>
-
-<h1 id="检查防火墙"><a href="#检查防火墙" class="headerlink" title="检查防火墙"></a>检查防火墙</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status firewalld.service</span><br></pre></td></tr></table></figure>
-
-<h2 id="重启防火墙"><a href="#重启防火墙" class="headerlink" title="重启防火墙"></a>重启防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart firewalld.service</span><br></pre></td></tr></table></figure>
-
-<h2 id="停止防火墙"><a href="#停止防火墙" class="headerlink" title="停止防火墙"></a>停止防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld.service</span><br></pre></td></tr></table></figure>
-
-<h2 id="启动防火墙"><a href="#启动防火墙" class="headerlink" title="启动防火墙"></a>启动防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start firewalld.service</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="开放8080端口"><a href="#开放8080端口" class="headerlink" title="开放8080端口"></a>开放8080端口</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8080/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line">firewall-cmd --zone=public --query-port=8080/tcp</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2569,7 +2589,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2580,7 +2600,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
