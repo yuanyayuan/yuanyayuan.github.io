@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="redis,面试," />
+  <meta name="keywords" content="redis,面试,缓存," />
 
 
 
@@ -87,10 +87,11 @@
 <meta property="og:description" content="Redis持久化RDB123456789101112131415161718* 如果1个缓存更新，则3600 seconds (an hour)后备份* 如果100个缓存更新，则300 seconds (5 minutes)后备份* 如果10000个缓存更新，则60 seconds后备份save 3600 1save 300 100save 60 10000stop-writes-on-bgsav">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-03-30T15:39:29.000Z">
-<meta property="article:modified_time" content="2021-03-30T17:06:09.441Z">
+<meta property="article:modified_time" content="2021-04-03T11:25:28.039Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="redis">
 <meta property="article:tag" content="面试">
+<meta property="article:tag" content="缓存">
 <meta name="twitter:card" content="summary">
 
 
@@ -316,8 +317,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis-redis%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index">
-                    <span itemprop="name">redis - redis理论知识</span>
+                  <a href="/categories/redis-redis%E7%9F%A5%E8%AF%86%E7%82%B9-redis%E9%85%8D%E7%BD%AE/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis知识点 - redis配置</span>
                   </a>
                 </span>
 
@@ -356,6 +357,98 @@
         <h1 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h1><h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">* 如果1个缓存更新，则3600 seconds (an hour)后备份</span><br><span class="line">* 如果100个缓存更新，则300 seconds (5 minutes)后备份</span><br><span class="line">* 如果10000个缓存更新，则60 seconds后备份</span><br><span class="line">save 3600 1</span><br><span class="line">save 300 100</span><br><span class="line">save 60 10000</span><br><span class="line"></span><br><span class="line">stop-writes-on-bgsave-error yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> yes:如果save过程出错，则停止写操作</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> no: 可能造成数据不一致</span></span><br><span class="line"></span><br><span class="line">rdbcompression yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> yes:开启rdb压缩模式，会造成cpu耗损</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> no：关闭，但是文件会大</span></span><br><span class="line"></span><br><span class="line">rdbchecksum yes</span><br><span class="line"><span class="meta">#</span><span class="bash">yes：使用CRC64算法校验对rdb进行数据校验</span></span><br><span class="line"><span class="meta">#</span><span class="bash">no：不校验</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> AOF 默认关闭，yes可以开启</span></span><br><span class="line">appendonly no</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> AOF 的文件名</span></span><br><span class="line">appendfilename &quot;appendonly.aof&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> no：不同步</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> everysec：每秒备份，推荐使用</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> always：每次操作都会备份，安全并且数据完整，但是慢性能差</span></span><br><span class="line">appendfsync everysec</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重写的时候是否要同步，no可以保证数据安全</span></span><br><span class="line">no-appendfsync-on-rewrite no</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重写机制：避免文件越来越大，自动优化压缩指令，会fork一个新的进程去完成重写动作，新进程里的内存数据会被重写，此时旧的aof文件不会被读取使用，类似rdb</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 当前AOF文件的大小是上次AOF大小的100% 并且文件体积达到64m，满足两者则触发重写</span></span><br><span class="line">auto-aof-rewrite-percentage 100</span><br><span class="line">auto-aof-rewrite-min-size 64mb</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="Redis-的持久化机制是什么？各自的优缺点？"><a href="#Redis-的持久化机制是什么？各自的优缺点？" class="headerlink" title="Redis 的持久化机制是什么？各自的优缺点？"></a>Redis 的持久化机制是什么？各自的优缺点？</h1><p>redis 提供两种持久化方式。</p>
+<p><strong>RDB（Redis DataBase）</strong>，用数据集快照的方式，定时将 redis 存储的数据生成快照并存储到磁盘等介质上即在指定目录下生成一个 dump.rdb 文件；</p>
+<p>Redis 提供了 SAVE 和BGSAVE两个命令来生成RDB文件，区别是前者是阻塞的，后者是后台 fork 子进程进行，不会阻塞主进程处理命令请求</p>
+<p>持久化key之前，会检查是否过期，过期的key不进入RDB文件。数据载入数据库之前，会对key先进行过期检查，如果过期，不导入数据库（主库情况）。</p>
+<p>RDB适合大量数据的恢复，但是数据的完整性和一致性可能会不足。</p>
+<p> <strong>AOF（Append -only file）</strong>，Redis默认不开启，它采用日志的形式来记录每个写操作，生成一个appendonly.aof 文件，并将日志追加到文件末尾。Redis重启的会根据日志文件的内容将写指令从前到后执行一次以完成数据的恢复工作</p>
+<p>重写时，会先判断key是否过期，已过期的key不会重写到aof文件。</p>
+<p>如果同时存在<code>RDB</code>和<code>AOF</code>的话会优先使用<code>AOF</code> 重建数据集，因为其保存的数据更完整。</p>
+<h2 id="RDB-的优点："><a href="#RDB-的优点：" class="headerlink" title="RDB 的优点："></a>RDB 的优点：</h2><ol>
+<li><p>每个一段时间备份，全量备份；</p>
+</li>
+<li><p>容灾简单，可以远程传输</p>
+</li>
+<li><p>性能最大化，fork 子进程来完成写操作，让主进程继续处理命令且不会进行任何 IO 操作的，这样就确保了 redis 极高的性能；</p>
+</li>
+<li><p>相对于数据集大时，比 AOF 的启动效率更高。</p>
+</li>
+</ol>
+<h2 id="RDB-的缺点："><a href="#RDB-的缺点：" class="headerlink" title="RDB 的缺点："></a>RDB 的缺点：</h2><p>数据安全性低。RDB 是间隔一段时间进行持久化，如果持久化之间 redis 发 生故障，会发生数据丢失。所以这种方式更适合数据要求不严谨的时候；</p>
+<p>备份时占用内存，因为Redis在备份时会独立创建一个子进程，将数据写入到一个临时文件（此时内存中的数据是原来的两倍），最后再将临时文件替换之前的备份文件</p>
+<h2 id="RDB对过期key的处理"><a href="#RDB对过期key的处理" class="headerlink" title="RDB对过期key的处理"></a>RDB对过期key的处理</h2><p>过期key对RDB没有任何影响</p>
+<ul>
+<li>从内存数据库持久化数据到RDB文件<ul>
+<li>持久化key之前，会检查是否过期，过期的key不进入RDB文件</li>
+</ul>
+</li>
+<li>从RDB文件恢复数据到内存数据库<ul>
+<li>数据载入数据库之前，会对key先进行过期检查，如果过期，不导入数据库（主库情况）</li>
+</ul>
+</li>
+</ul>
+<h2 id="AOF-的优点："><a href="#AOF-的优点：" class="headerlink" title="AOF 的优点："></a>AOF 的优点：</h2><p>A. 数据安全，aof 持久化可以配置 append fsync 属性，比如无 fsync，每秒钟一次 fsync，或者每次执行写入命令时 fsync，一般只会丢失一秒钟的数据，或者最后一次执行的数据，对缓存来说，这已经足够。<br>B. 某些场景下还可以恢复数据。比如说某同学在操作 redis 时，不小心执行了 FLUSHALL，导致 redis 内存中的数据全部被清空了。如果 AOF 文件还没有被重写（rewrite），我们就可以用最快的速度暂停 redis 并编辑 AOF 文件，将最后一行的 FLUSHALL 命令删除，然后重启 redis，就可以恢复 redis 的所有数据到 FLUSHALL 之前的状态了。</p>
+<h2 id="AOF-的缺点："><a href="#AOF-的缺点：" class="headerlink" title="AOF 的缺点："></a>AOF 的缺点：</h2><ol>
+<li>相同的数据，同一份数据，AOF比RDB大</li>
+<li>针对不同的同步机制，AOF会比RDB慢，因为AOF每秒都会备份做写操作，这样相对与RDB来说就略低。 每秒备份fsync没毛病，但是如果客户端的每次写入就做一次备份fsync的话，那么redis的性能就会下降。</li>
+<li>AOF发生过bug，就是数据恢复的时候数据不完整，这样显得AOF会比较脆弱，容易出现bug，因为AOF没有RDB那么简单，但是呢为了防止bug的产生，AOF就不会根据旧的指令去重构，而是根据当时缓存中存在的数据指令去做重构，这样就更加健壮和可靠了。</li>
+</ol>
+<h2 id="AOF对过期key的处理"><a href="#AOF对过期key的处理" class="headerlink" title="AOF对过期key的处理"></a>AOF对过期key的处理</h2><p>过期key对AOF没有任何影响</p>
+<ul>
+<li>从内存数据库持久化数据到AOF文件：<ul>
+<li>当key过期后，还没有被删除，此时进行执行持久化操作（该key是不会进入aof文件的，因为没有发生修改命令）</li>
+<li>当key过期后，在发生删除操作时，程序会向aof文件追加一条del命令（在将来的以aof文件恢复数据的时候该过期的键就会被删掉）</li>
+</ul>
+</li>
+<li>AOF重写<ul>
+<li>重写时，会先判断key是否过期，已过期的key不会重写到aof文件</li>
+</ul>
+</li>
+</ul>
+<h2 id="RDB-和-AOF-对比："><a href="#RDB-和-AOF-对比：" class="headerlink" title="RDB 和 AOF 对比："></a>RDB 和 AOF 对比：</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>RDB</th>
+<th>AOF</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>启动优先级</td>
+<td>低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>体积</td>
+<td>小</td>
+<td>大</td>
+</tr>
+<tr>
+<td>恢复速度</td>
+<td>快</td>
+<td>慢</td>
+</tr>
+<tr>
+<td>数据安全性</td>
+<td>丢数据</td>
+<td>根据策略决定</td>
+</tr>
+<tr>
+<td>轻重</td>
+<td>重</td>
+<td>轻</td>
+</tr>
+</tbody></table>
+<h2 id="AOF-文件太大会怎么样？"><a href="#AOF-文件太大会怎么样？" class="headerlink" title="AOF 文件太大会怎么样？"></a>AOF 文件太大会怎么样？</h2><p>AOF 文件过大时，后台会自动地对 AOF 进行重写（rewrite)，重写时会压缩 AOF 文件的内容，只保留可以恢复数据的最小指令集。比如说，假如我们调用了 100 次 INCR 指令，在 AOF 文件中就要存储 100 条指令，但这明显是很低效的，完全可以把这 100 条指令合并成一条 SET 指令。</p>
+<p>在进行 AOF 重写时，仍然是采用先写临时文件，全部完成后再替换的流程，所以断电、磁盘满等问题都不会影响 AOF 文件的可用性。</p>
+<h2 id="采用RDB还是AOF"><a href="#采用RDB还是AOF" class="headerlink" title="采用RDB还是AOF"></a>采用RDB还是AOF</h2><ol>
+<li>如果你能接受一段时间的缓存丢失，那么可以使用RDB</li>
+<li>如果你对实时性的数据比较care，那么就用AOF</li>
+<li>使用RDB和AOF结合一起做持久化，RDB做冷备，可以在不同时期对不同版本做恢复，AOF做热备，保证数据仅仅只有1秒的损失。当AOF破损不可用了，那么再用RDB恢复，这样就做到了两者的相互结合，也就是说Redis恢复会先加载AOF，如果AOF有问题会再加载RDB，这样就达到冷热备份的目的了。</li>
+</ol>
+
       
     </div>
     
@@ -376,6 +469,8 @@
           
             <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
           
+            <a href="/tags/%E7%BC%93%E5%AD%98/" rel="tag"># 缓存</a>
+          
         </div>
       
 
@@ -387,8 +482,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/03/30/redis%E5%93%A8%E5%85%B5%E6%9C%BA%E5%88%B6/" rel="next" title="redis哨兵机制">
-                <i class="fa fa-chevron-left"></i> redis哨兵机制
+              <a href="/2021/03/30/redis%E9%9B%86%E7%BE%A4/" rel="next" title="redis集群">
+                <i class="fa fa-chevron-left"></i> redis集群
               </a>
             
           </div>
@@ -396,6 +491,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/03/31/hashmap%E5%AD%A6%E4%B9%A0/" rel="prev" title="hashmap学习">
+                hashmap学习 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -473,7 +572,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">24</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -484,7 +583,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -495,7 +594,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">14</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -544,7 +643,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">Redis持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RDB"><span class="nav-number">1.1.</span> <span class="nav-text">RDB</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF"><span class="nav-number">1.2.</span> <span class="nav-text">AOF</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">Redis持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RDB"><span class="nav-number">1.1.</span> <span class="nav-text">RDB</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF"><span class="nav-number">1.2.</span> <span class="nav-text">AOF</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96%E6%9C%BA%E5%88%B6%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E5%90%84%E8%87%AA%E7%9A%84%E4%BC%98%E7%BC%BA%E7%82%B9%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">Redis 的持久化机制是什么？各自的优缺点？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RDB-%E7%9A%84%E4%BC%98%E7%82%B9%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">RDB 的优点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RDB-%E7%9A%84%E7%BC%BA%E7%82%B9%EF%BC%9A"><span class="nav-number">2.2.</span> <span class="nav-text">RDB 的缺点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RDB%E5%AF%B9%E8%BF%87%E6%9C%9Fkey%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">2.3.</span> <span class="nav-text">RDB对过期key的处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF-%E7%9A%84%E4%BC%98%E7%82%B9%EF%BC%9A"><span class="nav-number">2.4.</span> <span class="nav-text">AOF 的优点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF-%E7%9A%84%E7%BC%BA%E7%82%B9%EF%BC%9A"><span class="nav-number">2.5.</span> <span class="nav-text">AOF 的缺点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF%E5%AF%B9%E8%BF%87%E6%9C%9Fkey%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">2.6.</span> <span class="nav-text">AOF对过期key的处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RDB-%E5%92%8C-AOF-%E5%AF%B9%E6%AF%94%EF%BC%9A"><span class="nav-number">2.7.</span> <span class="nav-text">RDB 和 AOF 对比：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF-%E6%96%87%E4%BB%B6%E5%A4%AA%E5%A4%A7%E4%BC%9A%E6%80%8E%E4%B9%88%E6%A0%B7%EF%BC%9F"><span class="nav-number">2.8.</span> <span class="nav-text">AOF 文件太大会怎么样？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%87%E7%94%A8RDB%E8%BF%98%E6%98%AFAOF"><span class="nav-number">2.9.</span> <span class="nav-text">采用RDB还是AOF</span></a></li></ol></li></ol></div>
             
 
           </div>
