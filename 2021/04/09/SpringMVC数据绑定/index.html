@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试,Springboot," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="参考SpringMVC参数绑定-细致总结（通俗易懂） 基本类型、包装类型参数绑定基本类型 int12345RequestMapping(&quot;baseType.do&quot;)@ResponseBodypublic String baseType(int age) &amp;#123;    return &quot;age:&quot; + age;&amp;#125; 1http:&#x2F;&amp;#x2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringMVC数据绑定">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/09/SpringMVC%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="参考SpringMVC参数绑定-细致总结（通俗易懂） 基本类型、包装类型参数绑定基本类型 int12345RequestMapping(&quot;baseType.do&quot;)@ResponseBodypublic String baseType(int age) &amp;#123;    return &quot;age:&quot; + age;&amp;#125; 1http:&#x2F;&amp;#x2">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-04-08T16:10:17.000Z">
+<meta property="article:modified_time" content="2021-04-08T16:42:16.098Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="Springboot">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/09/SpringMVC数据绑定/"/>
+
+
+
+
+
+  <title>SpringMVC数据绑定 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/09/SpringMVC%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">SpringMVC数据绑定</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-09T00:10:17+08:00">
+                2021-04-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-Springboot%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - Springboot知识点</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>参考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/139162484">SpringMVC参数绑定-细致总结（通俗易懂）</a></p>
+<h1 id="基本类型、包装类型参数绑定"><a href="#基本类型、包装类型参数绑定" class="headerlink" title="基本类型、包装类型参数绑定"></a>基本类型、包装类型参数绑定</h1><h2 id="基本类型-int"><a href="#基本类型-int" class="headerlink" title="基本类型 int"></a>基本类型 int</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">RequestMapping(<span class="string">&quot;baseType.do&quot;</span>)</span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">baseType</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;age:&quot;</span> + age;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;baseType.do?age&#x3D;30</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">当我们请求时，返回结果：age:30</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>这种情况下，首先 <strong>key 值必须传入</strong>，否则会报 <strong>500 错误</strong>，提示当前 age 不能为空</li>
+<li>其次，<strong>参数只能为 int 类型</strong>，否则报 <strong>400 参数异常错误</strong></li>
+</ul>
+<p><strong>是否可以使用<code>@RequestParam</code>的  required 属性，避免请求参数为空</strong></p>
+<p>答案是不能，虽然这个注解设置 required = false 后不传值后台也不会报错，但是如果其中指定了基本数据类型。例如我们代码中的 int  这个时候如果不传值是依旧会报一个 500 错误因为其不传值就赋 null，但是 int 类型却不能为null，所以想要规避这个参数为空的问题，我们就可以选择包装类型 Integer</p>
+<h2 id="包装类型"><a href="#包装类型" class="headerlink" title="包装类型"></a>包装类型</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;packingType.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">packingType</span><span class="params">(Integer age)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;age:&quot;</span> + age;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;packingType.do?age&#x3D;30</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">正常返回：age:30</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;packingType.do</span><br><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;packingType.do?</span><br><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;packingType.do?&#x3D;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">参数为空不报错，均返回：age:null</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>可以不传 key</strong>，后台接收到的数据则为 age=null</li>
+<li>所以开发中，<strong>对于参数可能为空的数据，建议使用包装类型</strong></li>
+<li>当然，我们也可以使用 @RequestParam 注解 来设置是否请求中必须包含该参数，此注解默认就是必须传参，否则报错</li>
+</ul>
+<h1 id="对象的参数绑定"><a href="#对象的参数绑定" class="headerlink" title="对象的参数绑定"></a>对象的参数绑定</h1><h2 id="多层级对象的绑定"><a href="#多层级对象的绑定" class="headerlink" title="多层级对象的绑定"></a>多层级对象的绑定</h2><ul>
+<li>创建用户类</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    ......补充其 get set toString 方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>直接在参数中写上对应 User 类型就可以了</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;objectType.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">objectType</span><span class="params">(User user)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> user.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;objectType.do?id&#x3D;001&amp;name&#x3D;Steven</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">返回结果：User&#123;uid&#x3D;&#39;001&#39;, name&#x3D;&#39;Steven&#39;&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>创建一个新的类 UserDetails</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserDetails</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">    <span class="keyword">private</span> String address;</span><br><span class="line">    ......补充其 get set toString 方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>在 User 类中引入这个类，这种情况又该如何绑定参数呢</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> UserDetails userDetails;</span><br><span class="line">    </span><br><span class="line">    ......补充其 get set toString 方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;objectType.do?id&#x3D;1&amp;name&#x3D;Steven&amp;userDetails.age&#x3D;20&amp;userDetails.address&#x3D;BeiJing</span><br></pre></td></tr></table></figure>
+
+<p>返回结果：User{uid=’1’, name=’Steven’, userDetails=UserDetails{age=20, address=’BeiJing’}}</p>
+<ul>
+<li>对于引入的对象成员复赋值，格式就例如：<code>userDetails.address=xxxxx</code></li>
+<li>这里地址我没用中文，是因为我是直接返回的，没经过编码的处理，不然会显示</li>
+</ul>
+<h2 id="同属性对象参数绑定"><a href="#同属性对象参数绑定" class="headerlink" title="同属性对象参数绑定"></a>同属性对象参数绑定</h2><p>如果我们想要直接接收两个对象，有时候免不了有相同的成员，例如我们的 User 和 Student 类中均含有</p>
+<p>Integer id 、String name 两个成员，我们试着请求一下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;objectType2.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">objectType2</span><span class="params">(User user, Student student)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> user.toString() + <span class="string">&quot; &quot;</span> + student.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;objectType2.do?id&#x3D;8&amp;name&#x3D;Steven</span><br></pre></td></tr></table></figure>
+
+<p>返回结果：User{id=’8’, name=’Steven’} Student{id=’8’, name=’Steven’}</p>
+<p>可以看到，两个对象的值都被赋上了，但是，大部分情况下，不同的对象的值一般都是不同的，为此，我们还有解决办法</p>
+<p>@InitBinder 注解可以帮助我们分开绑定，下面的代码也就是说分别给 user、student 指定一个前缀</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@InitBinder(&quot;user&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initUser</span><span class="params">(WebDataBinder binder)</span> </span>&#123;</span><br><span class="line">    binder.setFieldDefaultPrefix(<span class="string">&quot;user.&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@InitBinder(&quot;student&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initStudent</span><span class="params">(WebDataBinder binder)</span> </span>&#123;</span><br><span class="line">    binder.setFieldDefaultPrefix(<span class="string">&quot;stu.&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;objectType2.do?user.id&#x3D;1&amp;name&#x3D;Steven&amp;stu.id&#x3D;002</span><br></pre></td></tr></table></figure>
+
+<p>当发起这样一个请求后，我们分别指定了 user 和 student 的 id 值，而 name 则是同样的 Steven</p>
+<p>返回结果：User{id=’1’, name=’Steven’, userDetails=null} Student{id=’2’, name=’Steven’}</p>
+<h1 id="数组类型参数绑定"><a href="#数组类型参数绑定" class="headerlink" title="数组类型参数绑定"></a>数组类型参数绑定</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;arrayType.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">arrayType</span><span class="params">(String[] nickname)</span> </span>&#123;</span><br><span class="line">    StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">    <span class="keyword">for</span> (String s : nickname) &#123;</span><br><span class="line">        sb.append(s).append(<span class="string">&quot;, &quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sb.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;arrayType.do?nickname&#x3D;Jack&amp;nickname&#x3D;Steven&amp;nickname&#x3D;Tom</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">返回结果：Jack, Steven, Tom,</span><br></pre></td></tr></table></figure>
+
+<h1 id="集合类型参数绑定"><a href="#集合类型参数绑定" class="headerlink" title="集合类型参数绑定"></a>集合类型参数绑定</h1><h2 id="List-类型"><a href="#List-类型" class="headerlink" title="List 类型"></a>List 类型</h2><p>集合是不能直接进行参数绑定的，所以我们需要创建出一个类，然后在类中进行对 List 的参数绑定</p>
+<p>首先创建 UserList 类，其中我为了演示，只放了  <code>private List&lt;User&gt; users</code> 补充好 get set toString 方法</p>
+<p>控制层方法中，参数就是这个创建出来的类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;listType.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">listType</span><span class="params">(UserList userList)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> userList.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;listType.do?users[0].id&#x3D;1&amp;users[0].name&#x3D;Jack&amp;users[1].id&#x3D;2&amp;users[1].name&#x3D;Marry</span><br></pre></td></tr></table></figure>
+
+<p>我们的请求，分别将两个user信息存入了 <code>List&lt;User&gt; users</code>中</p>
+<p><strong>特别注意</strong>：如果你的 Tomcat 版本是 7.0 左右 那么上述请求是没问题的，但是如果版本比较高，例如我本身所用的 Tomcat 8.5 ，如果执行上述请求就会报 400 错误</p>
+<blockquote>
+<p><strong>HTTP Status 400 – Bad Request</strong><br><strong>Message</strong> Invalid character found in the request target. The valid characters are defined in RFC 7230 and RFC 3986</p>
+</blockquote>
+<p>这是因为Tomcat高的版本地址中不能使用“[”和“]” ，我们可以将其换成对应的16进制，即 “[” 换成 %5B，“]” 换成 %5D</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;listType.do?users%5B0%5D.id&#x3D;1&amp;users%5B0%5D.name&#x3D;Jack&amp;users%5B1%5D.id&#x3D;2&amp;users%5B1%5D.name&#x3D;Marry</span><br></pre></td></tr></table></figure>
+
+<p>或者直接用 post 请求也是可以的</p>
+<h2 id="Map-类型"><a href="#Map-类型" class="headerlink" title="Map 类型"></a>Map 类型</h2><p>map 类型是一样的套路，我们先创建一个 UserMap类，然后在其中声明 <code>private Map&lt;String,User&gt; users</code> 进而绑定参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;mapType.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">mapType</span><span class="params">(UserMap userMap)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> userMap.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;mapType.do?users[&#39;userA&#39;].id&#x3D;1&amp;users[&#39;userA&#39;].name&#x3D;Jack&amp;users[&#39;userB&#39;].id&#x3D;2&amp;users[&#39;userB&#39;].name&#x3D;Tom</span><br></pre></td></tr></table></figure>
+
+<p>同样 “[]” 会遇到上面的错误，所以如果想要在地址栏请求访问，就需要替换字符，或者发起一个 post 请求</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;mapType.do?users%5B%27userA%27%5D.id&#x3D;1&amp;users%5B%27userA%27%5D.name&#x3D;Jack&amp;users%5B%27userB%27%5D.id&#x3D;2&amp;users%5B%27userB%27%5D.name&#x3D;Tom</span><br></pre></td></tr></table></figure>
+
+<p>返回结果：UserMap{users={userA=User{id=’1’, name=’Jack’}, userB=User{id=’2’, name=’Tom’}}}</p>
+<h1 id="JSON-参数绑定"><a href="#JSON-参数绑定" class="headerlink" title="JSON 参数绑定"></a>JSON 参数绑定</h1><p>除了前面表单等提交的方式，我们还有一种ajax的提交方式，常常用来向后端传递以及接受 json 格式的数据，关于 json 字符串和对象之间的转换会用到下面的 jar包</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-databind<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.10.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.10.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-annotations<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.10.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>这一块的演示，我们创建一个 Admin 实体类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Admin</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    ......补充其 get set toString 方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="实体参数绑定"><a href="#实体参数绑定" class="headerlink" title="实体参数绑定"></a>实体参数绑定</h2><p>当 ajax 传递的参数很多的时候，使用参数名匹配，会非常麻烦，如果请求的参数在后台中有一个匹配的实体类，我们就可以选择前台传一个 json 到后台，后台使用匹配的实体类进行接收</p>
+<p>提交 JSON： {“id”: “37”,”name”: “张三”}</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    $(<span class="string">&quot;#btn&quot;</span>).click(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">//发送ajax请求</span></span><br><span class="line">        $.ajax(&#123;</span><br><span class="line">            url:<span class="string">&quot;ajaxType1.do&quot;</span>,</span><br><span class="line">            contentType:<span class="string">&quot;application/json&quot;</span>,</span><br><span class="line">            data:<span class="string">&#x27;&#123;&quot;id&quot;:&quot;37&quot;,&quot;name&quot;:&quot;张三&quot;&#125;&#x27;</span>,</span><br><span class="line">            dataType:<span class="string">&quot;json&quot;</span>,</span><br><span class="line">            type:<span class="string">&quot;post&quot;</span>,</span><br><span class="line">            success:<span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">            <span class="comment">//解析响应数据</span></span><br><span class="line">            alert(data.id);</span><br><span class="line">            alert(data.name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><strong>Contoller</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//用实体接参数</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;ajaxType1.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Admin <span class="title">ajaxType1</span><span class="params">(<span class="meta">@RequestBody</span> Admin admin)</span> </span>&#123;</span><br><span class="line">    System.out.println(admin.toString());</span><br><span class="line">    admin.setName(<span class="string">&quot;测试管理员&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> admin;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>后端参数中的 admin 就会被绑定好参数，供开发者使用</p>
+<p><code>@RequestBody</code> 注解常用来处理 <code>content-type</code>不是默认的<code>application/x-www-form-urlcoded</code>编码的内容，说常处理<code>application/json</code>类型</p>
+<h2 id="Map-参数绑定"><a href="#Map-参数绑定" class="headerlink" title="Map 参数绑定"></a>Map 参数绑定</h2><p>还有一种情况，那就是请求的参数仍然挺多，但是后台也没有一个合适的实体进行匹配，我们也可以考虑使用map来接收</p>
+<p>依旧提交 JSON： {“id”: “37”,”name”: “张三”}</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    $(<span class="string">&quot;#btn&quot;</span>).click(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">//发送ajax请求</span></span><br><span class="line">        $.ajax(&#123;</span><br><span class="line">            url:<span class="string">&quot;ajaxType1.do&quot;</span>,</span><br><span class="line">            contentType:<span class="string">&quot;application/json&quot;</span>,</span><br><span class="line">            data:<span class="string">&#x27;&#123;&quot;id&quot;:&quot;37&quot;,&quot;name&quot;:&quot;张三&quot;&#125;&#x27;</span>,</span><br><span class="line">            dataType:<span class="string">&quot;json&quot;</span>,</span><br><span class="line">            type:<span class="string">&quot;post&quot;</span>,</span><br><span class="line">            success:<span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">            <span class="comment">//解析响应数据</span></span><br><span class="line">            alert(data.id);</span><br><span class="line">            alert(data.name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>但是 Controller 中我们使用 map 来进行接收，然后简单给了一个实例，将map值封装到 Admin 对象中，然后返回到前端去</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;ajaxType3.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Admin <span class="title">ajaxType3</span><span class="params">(<span class="meta">@RequestBody</span> Map&lt;String, String&gt; map)</span>  </span>&#123;</span><br><span class="line">    Integer id = <span class="keyword">null</span>;</span><br><span class="line">    String name = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (map.containsKey(<span class="string">&quot;id&quot;</span>))&#123;</span><br><span class="line">        id = Integer.parseInt(map.get(<span class="string">&quot;id&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (map.containsKey(<span class="string">&quot;name&quot;</span>))&#123;</span><br><span class="line">        name = map.get(<span class="string">&quot;name&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Admin admin = <span class="keyword">new</span> Admin();</span><br><span class="line">    admin.setId(id);</span><br><span class="line">    admin.setName(name);</span><br><span class="line">    <span class="keyword">return</span> admin;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="List-参数绑定"><a href="#List-参数绑定" class="headerlink" title="List 参数绑定"></a>List 参数绑定</h2><p>同样的，我们还可以使用 list 方式进行接收，它时以 json 数组的形式传递的</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> listType=[];</span><br><span class="line"><span class="keyword">var</span> admin=&#123;&#125;;</span><br><span class="line">admin.id=<span class="number">1</span>;</span><br><span class="line">admin.name=<span class="string">&#x27;汤姆&#x27;</span>;</span><br><span class="line">listType.push(admin);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> admin2=&#123;&#125;;</span><br><span class="line">admin2.id=<span class="number">2</span>;</span><br><span class="line">admin2.name=<span class="string">&#x27;杰克&#x27;</span>;</span><br><span class="line">listType.push(admin2);</span><br><span class="line"></span><br><span class="line">$(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    $(<span class="string">&quot;#btn&quot;</span>).click(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">//发送ajax请求</span></span><br><span class="line">        $.ajax(&#123;</span><br><span class="line">            url:<span class="string">&quot;ajaxType1.do&quot;</span>,</span><br><span class="line">            contentType:<span class="string">&quot;application/json&quot;</span>,</span><br><span class="line">            data:<span class="built_in">JSON</span>.stringify(listType),</span><br><span class="line">            dataType:<span class="string">&quot;json&quot;</span>,</span><br><span class="line">            type:<span class="string">&quot;post&quot;</span>,</span><br><span class="line">            success:<span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">            <span class="comment">//解析响应数据</span></span><br><span class="line">            alert(data.id);</span><br><span class="line">            alert(data.name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>去后台看一下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;ajaxType5.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ajaxType5</span><span class="params">(<span class="meta">@RequestBody</span> List&lt;Admin&gt; list)</span>  </span>&#123;</span><br><span class="line"></span><br><span class="line">    System.out.println(list);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (Admin admin : list)&#123;</span><br><span class="line">        System.out.println(admin.getId() + <span class="string">&quot; &quot;</span> + admin.getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看一下控制台的输出：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[Admin&#123;id=&#x27;1&#x27;, name=&#x27;汤姆&#x27;&#125;, Admin&#123;id=&#x27;2&#x27;, name=&#x27;杰克&#x27;&#125;]</span><br><span class="line">1 汤姆</span><br><span class="line">2 杰克</span><br></pre></td></tr></table></figure>
+
+<h2 id="表单提交"><a href="#表单提交" class="headerlink" title="表单提交"></a>表单提交</h2><p>这是用来提交的表单</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">id</span>=<span class="string">&quot;ajaxForm&quot;</span>  <span class="attr">method</span>=<span class="string">&quot;post&quot;</span>&gt;</span></span><br><span class="line">    id:<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;id&quot;</span>&gt;</span></span><br><span class="line">    name:<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;name&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这是 ajax请求，我们也常用<code>$(&quot;#ajaxForm&quot;).serialize()</code> 进行一个表单的序列化，然后提交，但是它只是将Form序列化拼接成了简单的字符串，并不是JSON格式，它是例如这样的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id=<span class="number">111</span>&amp;name=Steven</span><br></pre></td></tr></table></figure>
+
+<p>所以刚才所说的json那一套就不管用了</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    $(<span class="string">&quot;#btn&quot;</span>).click(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">//发送ajax请求</span></span><br><span class="line">        $.ajax(&#123;</span><br><span class="line">            url:<span class="string">&quot;ajaxType1.do&quot;</span>,</span><br><span class="line">            contentType:<span class="string">&quot;application/json&quot;</span>,</span><br><span class="line">            data:$(<span class="string">&quot;#ajaxForm&quot;</span>).serialize(),</span><br><span class="line">            dataType:<span class="string">&quot;json&quot;</span>,</span><br><span class="line">            type:<span class="string">&quot;post&quot;</span>,</span><br><span class="line">            success:<span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">            <span class="comment">//解析响应数据</span></span><br><span class="line">            alert(data.id);</span><br><span class="line">            alert(data.name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>如果想要使用序列化，同时还想要传递 json 格式到后台，也不是没办法</p>
+<p>我们需要添加一个方法</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$.fn.serializeObject = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> o = &#123;&#125;;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="built_in">this</span>.serializeArray();</span><br><span class="line">    $.each(a, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (o[<span class="built_in">this</span>.name]) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!o[<span class="built_in">this</span>.name].push) &#123;</span><br><span class="line">                o[<span class="built_in">this</span>.name] = [o[<span class="built_in">this</span>.name]];</span><br><span class="line">             &#125;</span><br><span class="line">            o[<span class="built_in">this</span>.name].push(<span class="built_in">this</span>.value || <span class="string">&#x27;&#x27;</span>);</span><br><span class="line">         &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            o[<span class="built_in">this</span>.name] = <span class="built_in">this</span>.value || <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">         &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> o;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>同时将下面 ajax 中的 data修改为</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data:<span class="built_in">JSON</span>.stringify($(<span class="string">&quot;#ajaxForm&quot;</span>).serializeObject()),</span><br></pre></td></tr></table></figure>
+
+<p>后台就能获取到 json 格式了</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">&quot;id&quot;</span>:<span class="string">&quot;111&quot;</span>,<span class="attr">&quot;name&quot;</span>:<span class="string">&quot;Steven&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="XML-参数绑定"><a href="#XML-参数绑定" class="headerlink" title="XML 参数绑定"></a>XML 参数绑定</h1><p>后台非常简单，和前面没什么区别，我们需要在实体中进行一些操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;xmlType.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">xmlType</span><span class="params">(<span class="meta">@RequestBody</span> Student student)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> student.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种情况下，我们需要借助一个jar包 —— spring-oxm，自己可以导入一下</p>
+<p>然后我们需要在接受的实体那里，添加 @XmlRootElement 和 @XmlElement 注解，来代表根节点和子节点</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.ideal.Object;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.xml.bind.annotation.XmlElement;</span><br><span class="line"><span class="keyword">import</span> javax.xml.bind.annotation.XmlRootElement;</span><br><span class="line"></span><br><span class="line"><span class="meta">@XmlRootElement(name = &quot;student&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlElement(name = &quot;id&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(Integer id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlElement(name = &quot;name&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Student&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;id=&#x27;&quot;</span> + id + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, name=&#x27;&quot;</span> + name + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>例如我们xml为</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">student</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">id</span>&gt;</span>66<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>Steven<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">student</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>然后发起请求，注意将Content-Type 改为 application/xml</p>
+<p>返回的结果：Student{id=’66’, name=’Steven’}</p>
+<h1 id="PropertyEditor、Formatter、Converter自定义格式化工具和类型转换器"><a href="#PropertyEditor、Formatter、Converter自定义格式化工具和类型转换器" class="headerlink" title="PropertyEditor、Formatter、Converter自定义格式化工具和类型转换器"></a>PropertyEditor、Formatter、Converter自定义格式化工具和类型转换器</h1><p>​     </p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/Springboot/" rel="tag"># Springboot</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/08/Springboot%E5%AD%A6%E4%B9%A0/" rel="next" title="Springboot学习">
+                <i class="fa fa-chevron-left"></i> Springboot学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E3%80%81%E5%8C%85%E8%A3%85%E7%B1%BB%E5%9E%8B%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A"><span class="nav-number">1.</span> <span class="nav-text">基本类型、包装类型参数绑定</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-int"><span class="nav-number">1.1.</span> <span class="nav-text">基本类型 int</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%85%E8%A3%85%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.2.</span> <span class="nav-text">包装类型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A"><span class="nav-number">2.</span> <span class="nav-text">对象的参数绑定</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E5%B1%82%E7%BA%A7%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%BB%91%E5%AE%9A"><span class="nav-number">2.1.</span> <span class="nav-text">多层级对象的绑定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E5%B1%9E%E6%80%A7%E5%AF%B9%E8%B1%A1%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A"><span class="nav-number">2.2.</span> <span class="nav-text">同属性对象参数绑定</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E7%BB%84%E7%B1%BB%E5%9E%8B%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A"><span class="nav-number">3.</span> <span class="nav-text">数组类型参数绑定</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%86%E5%90%88%E7%B1%BB%E5%9E%8B%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A"><span class="nav-number">4.</span> <span class="nav-text">集合类型参数绑定</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#List-%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.1.</span> <span class="nav-text">List 类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Map-%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.2.</span> <span class="nav-text">Map 类型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JSON-%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A"><span class="nav-number">5.</span> <span class="nav-text">JSON 参数绑定</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E4%BD%93%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A"><span class="nav-number">5.1.</span> <span class="nav-text">实体参数绑定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Map-%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A"><span class="nav-number">5.2.</span> <span class="nav-text">Map 参数绑定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#List-%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A"><span class="nav-number">5.3.</span> <span class="nav-text">List 参数绑定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8%E5%8D%95%E6%8F%90%E4%BA%A4"><span class="nav-number">5.4.</span> <span class="nav-text">表单提交</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#XML-%E5%8F%82%E6%95%B0%E7%BB%91%E5%AE%9A"><span class="nav-number">6.</span> <span class="nav-text">XML 参数绑定</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#PropertyEditor%E3%80%81Formatter%E3%80%81Converter%E8%87%AA%E5%AE%9A%E4%B9%89%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%B7%A5%E5%85%B7%E5%92%8C%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2%E5%99%A8"><span class="nav-number">7.</span> <span class="nav-text">PropertyEditor、Formatter、Converter自定义格式化工具和类型转换器</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
