@@ -1255,7 +1255,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/nginx%E8%BF%9B%E9%98%B6/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/nginx%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%862/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -1274,7 +1274,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/03/22/nginx%E8%BF%9B%E9%98%B6/" itemprop="url">nginx进阶</a></h1>
+                <a class="post-title-link" href="/2021/03/22/nginx%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%862/" itemprop="url">nginx理论知识2</a></h1>
         
 
         <div class="post-meta">
@@ -1501,8 +1501,10 @@
 <ul>
 <li>Nginx 负载均衡</li>
 <li>Haproxy七层负载均衡</li>
-<li>apache启程负载均衡</li>
+<li>apache七层负载均衡</li>
 </ul>
+<p>LVS 由于是基于四层的转发所以只能做端口的转发，而基于 URL 的、基于目录的这种转发 LVS 就做不了。</p>
+<p>HAproxy 和 Nginx 由于可以做七层的转发，所以 URL 和目录的转发都可以做，在很大并发量的时候我们就要选择 LVS ，像中小型公司的话并发量没那么大选择 HAproxy 或者 Nginx 足已。</p>
 <h2 id="DNS地域负载均衡"><a href="#DNS地域负载均衡" class="headerlink" title="DNS地域负载均衡"></a>DNS地域负载均衡</h2><blockquote>
 <p>DNS地域是基于地理的负载均衡 </p>
 </blockquote>
@@ -1535,7 +1537,7 @@
 <h5 id="配置-2"><a href="#配置-2" class="headerlink" title="配置"></a>配置</h5><blockquote>
 <p>如果有一台服务器需临时移除需用<code>down</code></p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">upstream www.happymmall.com&#123;</span><br><span class="line">	ip_hash;</span><br><span class="line">	server www.happymmall.com:8080;</span><br><span class="line">	server www.happymmall.com:9080;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">upstream tomcats &#123;</span><br><span class="line">        ip_hash;</span><br><span class="line"></span><br><span class="line">        server 192.168.1.173:8080;</span><br><span class="line">        server 192.168.1.174:8080 down;</span><br><span class="line">        server 192.168.1.175:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 集群一</span><br><span class="line">upstream www.happymmall.com&#123;</span><br><span class="line">	ip_hash;</span><br><span class="line">	server www.happymmall.com:8080;</span><br><span class="line">	server www.happymmall.com:9080;</span><br><span class="line">&#125;</span><br><span class="line"># 集群二</span><br><span class="line">upstream tomcats &#123;</span><br><span class="line">    ip_hash;</span><br><span class="line"></span><br><span class="line">    server 192.168.1.173:8080;</span><br><span class="line">    server 192.168.1.174:8080 down;</span><br><span class="line">    server 192.168.1.175:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h4 id="least-conn"><a href="#least-conn" class="headerlink" title="least_conn"></a>least_conn</h4><p>根据最少连接数请求</p>
 <p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1_least_conn.png"></p>
@@ -1731,12 +1733,14 @@
 <li><p>./nginx -s reload 重启nginx</p>
 </li>
 </ol>
-<h1 id="Nginx常用命令"><a href="#Nginx常用命令" class="headerlink" title="Nginx常用命令"></a>Nginx常用命令</h1><p>./nginx -s stop 快速停止nginx 强制关闭</p>
-<p>./nginx -s quit 停止nginx 安全关闭</p>
-<p>./nginx -v 查看版本号</p>
-<p>./nginx -V 查看安装信息</p>
-<p>./nginx -?/-h</p>
-<p>./nginx -c 指定配置文件</p>
+<h1 id="Nginx-如何实现后端服务的健康检查？"><a href="#Nginx-如何实现后端服务的健康检查？" class="headerlink" title="Nginx 如何实现后端服务的健康检查？"></a>Nginx 如何实现后端服务的健康检查？</h1><p>方式一，利用 nginx 自带模块 ngx_http_proxy_module 和 ngx_http_upstream_module 对后端节点做健康检查。</p>
+<p>方式二，利用 nginx_upstream_check_module 模块对后端节点做健康检查。</p>
+<h1 id="请解释ngx-http-upstream-module的作用是什么"><a href="#请解释ngx-http-upstream-module的作用是什么" class="headerlink" title="请解释ngx_http_upstream_module的作用是什么?"></a>请解释<code>ngx_http_upstream_module</code>的作用是什么?</h1><p><code>ngx_http_upstream_module</code>用于定义可通过<code>fastcgi</code>传递、<code>proxy</code>传递、<code>uwsgi</code>传递、<code>memcached</code>传递和scgi传递指令来引用的服务器组。</p>
+<h1 id="请解释什么是C10K问题"><a href="#请解释什么是C10K问题" class="headerlink" title="请解释什么是C10K问题?"></a>请解释什么是<code>C10K</code>问题?</h1><p><code>C10K</code>问题是指无法同时处理大量客户端(10,000)的网络套接字。</p>
+<h1 id="解释Nginx是否支持将请求压缩到上游"><a href="#解释Nginx是否支持将请求压缩到上游" class="headerlink" title="解释Nginx是否支持将请求压缩到上游?"></a>解释Nginx是否支持将请求压缩到上游?</h1><p>您可以使用Nginx模块gunzip将请求压缩到上游。gunzip模块是一个过滤器，它可以对不支持“gzip”编码方法的客户机或服务器使用“内容编码:gzip”来解压缩响应。</p>
+<h1 id="解释如何在Nginx中获得当前的时间"><a href="#解释如何在Nginx中获得当前的时间" class="headerlink" title="解释如何在Nginx中获得当前的时间?"></a>解释如何在Nginx中获得当前的时间?</h1><p>要获得Nginx的当前时间，必须使用SSI模块、$date_gmt和$date_local的变量。</p>
+<p>Proxy_set_header THE-TIME $date_gmt;</p>
+<h1 id="用Nginx服务器解释-s的目的是什么"><a href="#用Nginx服务器解释-s的目的是什么" class="headerlink" title="用Nginx服务器解释-s的目的是什么?"></a>用<code>Nginx</code>服务器解释<code>-s</code>的目的是什么?</h1><p>用于运行<code>Nginx -s</code>参数的可执行文件。</p>
 
           
         
@@ -1785,7 +1789,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/nginx%E5%85%A5%E9%97%A8/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/nginx%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%861/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -1804,7 +1808,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/03/22/nginx%E5%85%A5%E9%97%A8/" itemprop="url">nginx入门</a></h1>
+                <a class="post-title-link" href="/2021/03/22/nginx%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%861/" itemprop="url">nginx理论知识1</a></h1>
         
 
         <div class="post-meta">
@@ -1891,6 +1895,12 @@
 <li>Apache，Nginx —— 静态服务器，反向代理</li>
 <li>Netty —— 高性能服务器编程</li>
 </ul>
+<h2 id="Apache和Nginx区别"><a href="#Apache和Nginx区别" class="headerlink" title="Apache和Nginx区别"></a>Apache和Nginx区别</h2><ul>
+<li>轻量级，同样起 web 服务，Nginx 比 Apache 占用更少的内存及资源。</li>
+<li>抗并发，Nginx 处理请求是异步非阻塞的，而 Apache 则是阻塞型的，在高并发下 Nginx 能保持低资源低消耗高性能。</li>
+<li>最核心的区别在于 Apache 是同步多进程模型，一个连接对应一个进程；Nginx 是异步的，多个连接（万级别）可以对应一个进程。</li>
+<li>Nginx 高度模块化的设计，编写模块相对简单。</li>
+</ul>
 <h1 id="代理"><a href="#代理" class="headerlink" title="代理"></a>代理</h1><h2 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h2><ul>
 <li>客户端请求目标服务器之间的一个代理服务器</li>
 <li>请求会先经过代理服务器，然后再装啊请求到目标服务器</li>
@@ -1925,6 +1935,12 @@
 <li><code>阻塞</code>就是在等待的过程中，你不去做其他任何事情，干等着；</li>
 <li><code>非阻塞</code>就是你再等待的过程中可以去做其他的事，比如抽烟、喝酒、烫头、玩手机。</li>
 </ul>
+<h1 id="Nginx常用命令"><a href="#Nginx常用命令" class="headerlink" title="Nginx常用命令"></a>Nginx常用命令</h1><p>./nginx -s stop 快速停止nginx 强制关闭</p>
+<p>./nginx -s quit 停止nginx 安全关闭</p>
+<p>./nginx -v 查看版本号</p>
+<p>./nginx -V 查看安装信息</p>
+<p>./nginx -?/-h</p>
+<p>./nginx -c 指定配置文件</p>
 <h1 id="nginx-conf-配置结构"><a href="#nginx-conf-配置结构" class="headerlink" title="nginx.conf 配置结构"></a>nginx.conf 配置结构</h1><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/nginx.conf%20%E9%85%8D%E7%BD%AE%E7%BB%93%E6%9E%84.png" alt="image"></p>
 <ol>
 <li>设置worker进程的用户，指的linux中的用户，会涉及到nginx操作目录或文件的一些权限，默认为<code>nobody</code></li>
@@ -1986,6 +2002,23 @@
 <li>index 首页设置</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">            listen       88;</span><br><span class="line">            server_name  localhost;</span><br><span class="line">    </span><br><span class="line">            location &#x2F; &#123;</span><br><span class="line">                root   html;</span><br><span class="line">                index  index.html index.htm;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Nginx-常用配置"><a href="#Nginx-常用配置" class="headerlink" title="Nginx 常用配置"></a>Nginx 常用配置</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">worker_processes  8; # 工作进程个数</span><br><span class="line">worker_connections  65535; # 每个工作进程能并发处理（发起）的最大连接数（包含所有连接数）</span><br><span class="line">error_log         &#x2F;data&#x2F;logs&#x2F;nginx&#x2F;error.log; # 错误日志打印地址</span><br><span class="line">access_log      &#x2F;data&#x2F;logs&#x2F;nginx&#x2F;access.log; # 进入日志打印地址</span><br><span class="line">log_format  main  &#39;$remote_addr&quot;$request&quot; &#39;&#39;$status $upstream_addr &quot;$request_time&quot;&#39;; # 进入日志格式</span><br><span class="line"></span><br><span class="line">## 如果未使用 fastcgi 功能的，可以无视</span><br><span class="line">fastcgi_connect_timeout&#x3D;300; # 连接到后端 fastcgi 超时时间</span><br><span class="line">fastcgi_send_timeout&#x3D;300; # 向 fastcgi 请求超时时间(这个指定值已经完成两次握手后向fastcgi传送请求的超时时间)</span><br><span class="line">fastcgi_rend_timeout&#x3D;300; # 接收 fastcgi 应答超时时间，同理也是2次握手后</span><br><span class="line">fastcgi_buffer_size&#x3D;64k; # 读取 fastcgi 应答第一部分需要多大缓冲区，该值表示使用1个64kb的缓冲区读取应答第一部分(应答头),可以设置为fastcgi_buffers选项缓冲区大小</span><br><span class="line">fastcgi_buffers 4 64k; # 指定本地需要多少和多大的缓冲区来缓冲fastcgi应答请求，假设一个php或java脚本所产生页面大小为256kb,那么会为其分配4个64kb的缓冲来缓存</span><br><span class="line">fastcgi_cache TEST; # 开启fastcgi缓存并为其指定为TEST名称，降低cpu负载,防止502错误发生</span><br><span class="line"></span><br><span class="line">listen       80; # 监听端口</span><br><span class="line">server_name  rrc.test.jiedaibao.com; # 允许域名</span><br><span class="line">root  &#x2F;data&#x2F;release&#x2F;rrc&#x2F;web; # 项目根目录</span><br><span class="line">index  index.php index.html index.htm; # 访问根文件</span><br></pre></td></tr></table></figure>
+
+<h1 id="Nginx-如何处理-HTTP-请求"><a href="#Nginx-如何处理-HTTP-请求" class="headerlink" title="Nginx 如何处理 HTTP 请求"></a>Nginx 如何处理 HTTP 请求</h1><ul>
+<li>首先，Nginx 在启动时，会解析配置文件，得到需要监听的端口与 IP 地址，然后在 Nginx 的 Master  进程里面先初始化好这个监控的Socket(创建 Socket，设置 addr、reuse 等选项，绑定到指定的 ip 地址端口，再  listen 监听)。</li>
+<li>然后，再 fork(一个现有进程可以调用 fork 函数创建一个新进程。由 fork 创建的新进程被称为子进程 )出多个子进程出来。</li>
+<li>之后，子进程会竞争 accept 新的连接。此时，客户端就可以向 nginx 发起连接了。当客户端与nginx进行三次握手，与 nginx 建立好一个连接后。此时，某一个子进程会 accept 成功，得到这个建立好的连接的 Socket ，然后创建 nginx 对连接的封装，即 ngx_connection_t 结构体。</li>
+<li>接着，设置读写事件处理函数，并添加读写事件来与客户端进行数据的交换。</li>
+<li>最后，Nginx 或客户端来主动关掉连接，到此，一个连接就寿终正寝了。</li>
+</ul>
+<h1 id="Nginx-是如何实现高并发的"><a href="#Nginx-是如何实现高并发的" class="headerlink" title="Nginx 是如何实现高并发的"></a>Nginx 是如何实现高并发的</h1><ol>
+<li>Nginx 的异步非阻塞工作方式</li>
+<li>Nginx 基于事件模型</li>
+<li>运用了epoll模型，提供了一个队列，排队解决</li>
+</ol>
+<h1 id="为什么-Nginx-不使用多线程"><a href="#为什么-Nginx-不使用多线程" class="headerlink" title="为什么 Nginx 不使用多线程"></a>为什么 Nginx 不使用多线程</h1><p>Apache: 创建多个进程或线程，而每个进程或线程都会为其分配 cpu 和内存（线程要比进程小的多，所以 worker 支持比 perfork 高的并发），并发过大会榨干服务器资源。</p>
+<p>Nginx: 采用单线程来异步非阻塞处理请求（管理员可以配置 Nginx 主进程的工作进程的数量）(epoll)，不会为每个请求分配 cpu 和内存资源，节省了大量资源，同时也减少了大量的 CPU 的上下文切换。所以才使得 Nginx 支持更高的并发。(Netty、Redis 基本采用相同思路)</p>
+
           
         
       
