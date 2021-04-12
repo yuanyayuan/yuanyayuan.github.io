@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java,面试,源码," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="String源码解析12345public final class String     implements java.io.Serializable, Comparable&lt;String&gt;,CharSequence &amp;#123;    &#x2F;** The value is used for character storage. *&#x2F;    private final char valu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="String源码">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/13/String%E6%BA%90%E7%A0%81/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="String源码解析12345public final class String     implements java.io.Serializable, Comparable&lt;String&gt;,CharSequence &amp;#123;    &#x2F;** The value is used for character storage. *&#x2F;    private final char valu">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-04-12T17:14:03.000Z">
+<meta property="article:modified_time" content="2021-04-12T17:20:31.024Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="源码">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/13/String源码/"/>
+
+
+
+
+
+  <title>String源码 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/String%E6%BA%90%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">String源码</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T01:14:03+08:00">
+                2021-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java知识点</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="String源码解析"><a href="#String源码解析" class="headerlink" title="String源码解析"></a>String源码解析</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">String</span> </span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span>, <span class="title">Comparable</span>&lt;<span class="title">String</span>&gt;,<span class="title">CharSequence</span> </span>&#123;</span><br><span class="line">    <span class="comment">/** The value is used for character storage. */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">char</span> value[];</span><br><span class="line">&#125;    </span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>String 被 final 修饰，说明 String 类绝不可能被继承了，也就是说任何对 String 的操作方法，都不会被继承覆写；</li>
+<li>String 中保存数据的是一个 char 的数组 value。 value 也是被 final 修饰的，也就是说 value  一旦被赋值，内存地址是绝对无法修改的，而且 value 的权限是  private 的，外部绝对访问不到，String 也没有开放出可以对  value 进行赋值的方法，所以说 value 一旦产生，内存地址就根本无法被修改。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String str =<span class="string">&quot;hello world !!&quot;</span>;</span><br><span class="line">str.replace(<span class="string">&quot;l&quot;</span>,<span class="string">&quot;dd&quot;</span>); <span class="comment">//这种写法是替换不掉的，必须接受 replace 方法返回的参数才行，这样才行：str = str.replace(&quot;l&quot;,&quot;dd&quot;);</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="为什么大家都说-String-是不可变的"><a href="#为什么大家都说-String-是不可变的" class="headerlink" title="为什么大家都说 String 是不可变的"></a>为什么大家都说 String 是不可变的</h2><p>主要是因为 String 和保存数据的 char 数组，都被 final 关键字所修饰，所以是不可变的</p>
+<p>当一个String变量被第二次赋值时，不是在原有内存地址上修改数据，而是在内存中重新开辟一块内存地址，并指向新地址。</p>
+<h3 id="String类为什么要被设计为是final的？"><a href="#String类为什么要被设计为是final的？" class="headerlink" title="String类为什么要被设计为是final的？"></a>String类为什么要被设计为是final的？</h3><ol>
+<li>不可变性支持线程安全。</li>
+<li>不可变性支持字符串常量池，提升性能。</li>
+<li>String字符串作为最常用数据类型之一，不可变防止了随意修改，保证了数据的安全性。</li>
+</ol>
+<h2 id="String比较"><a href="#String比较" class="headerlink" title="String比较"></a>String比较</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">test4</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">                String a = <span class="keyword">new</span> String(<span class="string">&quot;ab&quot;</span>); <span class="comment">// a 为一个引用</span></span><br><span class="line">                String b = <span class="keyword">new</span> String(<span class="string">&quot;ab&quot;</span>); <span class="comment">// b为另一个引用,对象的内容一样</span></span><br><span class="line">                String aa = <span class="string">&quot;ab&quot;</span>; <span class="comment">// 放在常量池中</span></span><br><span class="line">                String bb = <span class="string">&quot;ab&quot;</span>; <span class="comment">// 从常量池中查找</span></span><br><span class="line">                <span class="keyword">if</span> (aa == bb) <span class="comment">// true</span></span><br><span class="line">                    System.out.println(<span class="string">&quot;aa==bb&quot;</span>);</span><br><span class="line">                <span class="keyword">if</span> (a == b) <span class="comment">// false，非同一对象</span></span><br><span class="line">                    System.out.println(<span class="string">&quot;a==b&quot;</span>);</span><br><span class="line">                <span class="keyword">if</span> (a.equals(b)) <span class="comment">// true</span></span><br><span class="line">                    System.out.println(<span class="string">&quot;aEQb&quot;</span>);</span><br><span class="line">                <span class="keyword">if</span> (<span class="number">42</span> == <span class="number">42.0</span>) &#123; <span class="comment">// true</span></span><br><span class="line">                    System.out.println(<span class="string">&quot;true&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>String类，两个引用所指向的String都是”abc”，但可能出现他们实际对应的对象并不是同一个（和jvm实现方式有关），因此用==判断他们可能不相等，但用equals判断一定是相等的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">test5</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        String a = <span class="string">&quot;Programming&quot;</span>;</span><br><span class="line">        String b = <span class="keyword">new</span> String(<span class="string">&quot;Programming&quot;</span>);</span><br><span class="line">        String c = <span class="string">&quot;Program&quot;</span>+<span class="string">&quot;ming&quot;</span>;</span><br><span class="line"></span><br><span class="line">        System.out.println(a == b);<span class="comment">//false</span></span><br><span class="line">        System.out.println(a == c );<span class="comment">//true</span></span><br><span class="line">        System.out.println(a.equals(b));<span class="comment">//true</span></span><br><span class="line">        System.out.println(a.equals(c));<span class="comment">//true</span></span><br><span class="line">        <span class="comment">//a.intern() 会将字符串添加到常量池中</span></span><br><span class="line">        System.out.println(a.intern() == b.intern());<span class="comment">//true</span></span><br><span class="line">        </span><br><span class="line">        String s = <span class="keyword">new</span> String(“abc”);</span><br><span class="line">        String s1 = “abc”;</span><br><span class="line">        String s2 = <span class="keyword">new</span> String(“abc”);</span><br><span class="line">        System.out.println(s == s1.intern());<span class="comment">//false</span></span><br><span class="line">        System.out.println(s == s2.intern());<span class="comment">//false</span></span><br><span class="line">        System.out.println(s1 == s2.intern()); <span class="comment">//true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String s1 = “abc”;</span><br><span class="line">String s2 = “a”;</span><br><span class="line">String s3 = “bc”;</span><br><span class="line">String s4 = s2 + s3;</span><br><span class="line">System.out.println(s1 == s4);<span class="comment">//false，因为s2+s3实际上是使用StringBuilder.append来完成，会生成不同的对象。</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">String s1 &#x3D; “abc”;</span><br><span class="line">final String s2 &#x3D; “a”;</span><br><span class="line">final String s3 &#x3D; “bc”;</span><br><span class="line">String s4 &#x3D; s2 + s3;</span><br><span class="line">System.out.println(s1 &#x3D;&#x3D; s4);&#x2F;&#x2F;true，因为final变量在编译后会直接替换成对应的值，</span><br><span class="line">&#x2F;&#x2F;所以实际上等于s4&#x3D;”a”+”bc”，而这种情况下，编译器会直接合并为s4&#x3D;”abc”，所以最终s1&#x3D;&#x3D;s4。</span><br></pre></td></tr></table></figure>
+
+<h2 id="字符串乱码"><a href="#字符串乱码" class="headerlink" title="字符串乱码"></a>字符串乱码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">String str  =<span class="string">&quot;nihao 你好 喬亂&quot;</span>;</span><br><span class="line"><span class="comment">// 字符串转化成 byte 数组</span></span><br><span class="line"><span class="keyword">byte</span>[] bytes = str.getBytes(<span class="string">&quot;ISO-8859-1&quot;</span>);</span><br><span class="line"><span class="comment">// byte 数组转化成字符串</span></span><br><span class="line">String s2 = <span class="keyword">new</span> String(bytes);</span><br><span class="line">log.info(s2);</span><br><span class="line"><span class="comment">// 结果打印为：</span></span><br><span class="line">nihao ?? ??</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决：</strong></p>
+<pre><code>唯一的解决办法，就是在所有需要用到编码的地方，都统一使用 UTF-8，对于 String 来说，getBytes 和 new String 两个方法都会使用到编码，我们把这两处的编码替换成 UTF-8 后，打印出的结果就正常了
+</code></pre>
+<h3 id="如何解决-String-乱码的问题"><a href="#如何解决-String-乱码的问题" class="headerlink" title="如何解决 String 乱码的问题"></a>如何解决 String 乱码的问题</h3><p>乱码的问题的根源主要是两个：字符集不支持复杂汉字、二进制进行转化时字符集不匹配，所以在 String 乱码时我们可以这么做：</p>
+<ol>
+<li>所有可以指定字符集的地方强制指定字符集，比如 new String 和 getBytes 这两个地方；</li>
+<li>我们应该使用 UTF-8 这种能完整支持复杂汉字的字符集。</li>
+</ol>
+<h2 id="截取-首字母大小写"><a href="#截取-首字母大小写" class="headerlink" title="截取(首字母大小写)"></a>截取(首字母大小写)</h2><h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><pre><code>项目被 Spring 托管的话，有时候我们会通过 `applicationContext.getBean(className);` 这种方式得到 SpringBean，这时 className 必须是要满足首字母小写的，除了该场景，在反射场景下面，我们也经常要使类属性的首字母小写。
+</code></pre>
+<h3 id="一般处理方法"><a href="#一般处理方法" class="headerlink" title="一般处理方法"></a>一般处理方法</h3><p><code>name.substring(0, 1).toLowerCase() + name.substring(1);</code>，使用 substring 方法，该方法主要是为了截取字符串连续的一部分，substring 有两个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">substring</span><span class="params">(<span class="keyword">int</span> beginIndex, <span class="keyword">int</span> endIndex)</span> #beginIndex：开始位置，endIndex：结束位置；</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">substring</span><span class="params">(<span class="keyword">int</span> beginIndex)</span> # beginIndex 开始位置，结束位置为文本末尾。</span></span><br></pre></td></tr></table></figure>
+
+<p>substring 方法的底层使用的是字符数组范围截取的方法 ：Arrays.copyOfRange(字符数组, 开始位置, 结束位置); 从字符数组中进行一段范围的拷贝。</p>
+<p>相反的，如果要修改成首字母大写，只需要修改成 <code>name.substring(0, 1).toUpperCase() + name.substring(1);</code> 即可。</p>
+<h2 id="相等判断"><a href="#相等判断" class="headerlink" title="相等判断"></a>相等判断</h2><p><code>equals 和 equalsIgnoreCase</code>。后者判断相等时，会忽略大小写</p>
+<h3 id="equals源码"><a href="#equals源码" class="headerlink" title="equals源码"></a>equals源码</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object anObject)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 判断内存地址是否相同</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span> == anObject) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 待比较的对象是否是 String，如果不是 String，直接返回不相等</span></span><br><span class="line">    <span class="keyword">if</span> (anObject <span class="keyword">instanceof</span> String) &#123;</span><br><span class="line">        String anotherString = (String)anObject;</span><br><span class="line">        <span class="keyword">int</span> n = value.length;</span><br><span class="line">        <span class="comment">// 两个字符串的长度是否相等，不等则直接返回不相等</span></span><br><span class="line">        <span class="keyword">if</span> (n == anotherString.value.length) &#123;</span><br><span class="line">            <span class="keyword">char</span> v1[] = value;</span><br><span class="line">            <span class="keyword">char</span> v2[] = anotherString.value;</span><br><span class="line">            <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">            <span class="comment">// 依次比较每个字符是否相等，若有一个不等，直接返回不相等</span></span><br><span class="line">            <span class="keyword">while</span> (n-- != <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (v1[i] != v2[i])</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">                i++;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="替换、删除"><a href="#替换、删除" class="headerlink" title="替换、删除"></a>替换、删除</h2><p><code>replace</code> 替换所有字符、<code>replaceAll</code> 批量替换字符串、<code>replaceFirst</code>替换遇到的第一个字符串三种场景</p>
+<p>replace 有两个方法，一个入参是 char，一个入参是 String，前者表示替换所有字符，如：<code>name.replace(&#39;a&#39;,&#39;b&#39;)</code>，后者表示替换所有字符串，如：<code>name.replace(&quot;a&quot;,&quot;b&quot;)</code>，两者就是单引号和多引号的区别。</p>
+<p><em>需要注意的是， replace 并不只是替换一个，是替换所有匹配到的字符或字符串哦。</em></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testReplace</span><span class="params">()</span></span>&#123;</span><br><span class="line">  String str =<span class="string">&quot;hello word !!&quot;</span>;</span><br><span class="line">  log.info(<span class="string">&quot;替换之前 :&#123;&#125;&quot;</span>,str);</span><br><span class="line">  str = str.replace(<span class="string">&#x27;l&#x27;</span>,<span class="string">&#x27;d&#x27;</span>);</span><br><span class="line">  log.info(<span class="string">&quot;替换所有字符 :&#123;&#125;&quot;</span>,str);</span><br><span class="line">  str = str.replaceAll(<span class="string">&quot;d&quot;</span>,<span class="string">&quot;l&quot;</span>);</span><br><span class="line">  log.info(<span class="string">&quot;替换全部 :&#123;&#125;&quot;</span>,str);</span><br><span class="line">  str = str.replaceFirst(<span class="string">&quot;l&quot;</span>,<span class="string">&quot;&quot;</span>);</span><br><span class="line">  log.info(<span class="string">&quot;替换第一个 l :&#123;&#125;&quot;</span>,str);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//输出的结果是：</span></span><br><span class="line">替换之前 :hello word !!</span><br><span class="line">替换所有字符 :heddo word !!</span><br><span class="line">替换全部 :hello worl !!</span><br><span class="line">替换第一个 :helo worl !!</span><br></pre></td></tr></table></figure>
+
+<p>当然我们想要删除某些字符，也可以使用 replace 方法，把想删除的字符替换成 “” 即可。替换、删除</p>
+<h2 id="拆分和合并"><a href="#拆分和合并" class="headerlink" title="拆分和合并"></a>拆分和合并</h2><p>拆分我们使用 split 方法，该方法有两个入参数。第一个参数是我们拆分的标准字符，第二个参数是一个 int 值，叫 limit，来限制我们需要拆分成几个元素。如果 limit 比实际能拆分的个数小，按照 limit 的个数进行拆分</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">String s =<span class="string">&quot;boo:and:foo&quot;</span>;</span><br><span class="line"><span class="comment">// 我们对 s 进行了各种拆分，演示的代码和结果是：</span></span><br><span class="line">s.split(<span class="string">&quot;:&quot;</span>) 结果:[<span class="string">&quot;boo&quot;</span>,<span class="string">&quot;and&quot;</span>,<span class="string">&quot;foo&quot;</span>]</span><br><span class="line">s.split(<span class="string">&quot;:&quot;</span>,<span class="number">2</span>) 结果:[<span class="string">&quot;boo&quot;</span>,<span class="string">&quot;and:foo&quot;</span>]</span><br><span class="line">s.split(<span class="string">&quot;:&quot;</span>,<span class="number">5</span>) 结果:[<span class="string">&quot;boo&quot;</span>,<span class="string">&quot;and&quot;</span>,<span class="string">&quot;foo&quot;</span>]</span><br><span class="line">s.split(<span class="string">&quot;:&quot;</span>,-<span class="number">2</span>) 结果:[<span class="string">&quot;boo&quot;</span>,<span class="string">&quot;and&quot;</span>,<span class="string">&quot;foo&quot;</span>]</span><br><span class="line">s.split(<span class="string">&quot;o&quot;</span>) 结果:[<span class="string">&quot;b&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="string">&quot;:and:f&quot;</span>]</span><br><span class="line">s.split(<span class="string">&quot;o&quot;</span>,<span class="number">2</span>) 结果:[<span class="string">&quot;b&quot;</span>,<span class="string">&quot;o:and:foo&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>那如果字符串里面有一些空值呢，拆分的结果如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String a =<span class="string">&quot;,a,,b,&quot;</span>;</span><br><span class="line">a.split(<span class="string">&quot;,&quot;</span>) 结果:[<span class="string">&quot;&quot;</span>,<span class="string">&quot;a&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="string">&quot;b&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>从拆分结果中，我们可以看到，空值是拆分不掉的，仍然成为结果数组的一员，如果我们想删除空值，只能自己拿到结果后再做操作，但 Guava（Google 开源的技术工具） 提供了一些可靠的工具类，可以帮助我们快速去掉空值，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">String a =<span class="string">&quot;,a, ,  b  c ,&quot;</span>;</span><br><span class="line"><span class="comment">// Splitter 是 Guava 提供的 API </span></span><br><span class="line">List&lt;String&gt; list = Splitter.on(<span class="string">&#x27;,&#x27;</span>)</span><br><span class="line">    .trimResults()<span class="comment">// 去掉空格</span></span><br><span class="line">    .omitEmptyStrings()<span class="comment">// 去掉空值</span></span><br><span class="line">    .splitToList(a);</span><br><span class="line">log.info(<span class="string">&quot;Guava 去掉空格的分割方法：&#123;&#125;&quot;</span>,JSON.toJSONString(list));</span><br><span class="line"><span class="comment">// 打印出的结果为：</span></span><br><span class="line">[<span class="string">&quot;a&quot;</span>,<span class="string">&quot;b  c&quot;</span>]</span><br></pre></td></tr></table></figure>
+
+<p>从打印的结果中，可以看到去掉了空格和空值，这正是我们工作中常常期望的结果，所以推荐使用 Guava 的 API 对字符串进行分割。</p>
+<p>合并我们使用 join 方法，此方法是静态的，我们可以直接使用。方法有两个入参，参数一是合并的分隔符，参数二是合并的数据源，数据源支持数组和 List，在使用的时候，我们发现有两个不太方便的地方：</p>
+<ol>
+<li>不支持依次 join 多个字符串，比如我们想依次 join 字符串 s 和 s1，如果你这么写的话 <code>String.join(&quot;,&quot;,s).join(&quot;,&quot;,s1)</code> 最后得到的是 s1 的值，第一次 join 的值被第二次 join 覆盖了；</li>
+<li>如果 join 的是一个 List，无法自动过滤掉 null 值。</li>
+</ol>
+<p>而 Guava 正好提供了 API，解决上述问题，我们来演示一下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 依次 join 多个字符串，Joiner 是 Guava 提供的 API</span></span><br><span class="line">Joiner joiner = Joiner.on(<span class="string">&quot;,&quot;</span>).skipNulls();</span><br><span class="line">String result = joiner.join(<span class="string">&quot;hello&quot;</span>,<span class="keyword">null</span>,<span class="string">&quot;china&quot;</span>);</span><br><span class="line">log.info(<span class="string">&quot;依次 join 多个字符串:&#123;&#125;&quot;</span>,result);</span><br><span class="line"></span><br><span class="line">List&lt;String&gt; list = Lists.newArrayList(<span class="keyword">new</span> String[]&#123;<span class="string">&quot;hello&quot;</span>,<span class="string">&quot;china&quot;</span>,<span class="keyword">null</span>&#125;);</span><br><span class="line">log.info(<span class="string">&quot;自动删除 list 中空值:&#123;&#125;&quot;</span>,joiner.join(list));</span><br><span class="line"><span class="comment">// 输出的结果为；</span></span><br><span class="line">依次 join 多个字符串:hello,china</span><br><span class="line">自动删除 list 中空值:hello,china</span><br></pre></td></tr></table></figure>
+
+<p>从结果中，我们可以看到 Guava 不仅仅支持多个字符串的合并，还帮助我们去掉了 List 中的空值，这就是我们在工作中常常需要得到的结果。</p>
+<h1 id="String-StringBuffer-和-StringBuilder-的区别是什么"><a href="#String-StringBuffer-和-StringBuilder-的区别是什么" class="headerlink" title="String, StringBuffer 和 StringBuilder 的区别是什么?"></a>String, StringBuffer 和 StringBuilder 的区别是什么?</h1><p><strong>可变性</strong></p>
+<p>简单的来说：<code>String</code> 类中使用 final 关键字修饰字符数组来保存字符串，<code>private final char value[]</code>，所以<code>String</code> 对象是不可变的。</p>
+<blockquote>
+<p>补充：在 Java 9 之后，String 类的实现改用 byte 数组存储字符串 <code>private final byte[] value</code>;</p>
+</blockquote>
+<p>而 <code>StringBuilder</code> 与 <code>StringBuffer</code> 都继承自 <code>AbstractStringBuilder</code> 类，在 <code>AbstractStringBuilder</code> 中也是使用字符数组保存字符串<code>char[]value</code> 但是没有用 <code>final</code> 关键字修饰，所以这两种对象都是可变的。</p>
+<p><code>StringBuilder</code> 与 <code>StringBuffer</code> 的构造方法都是调用父类构造方法也就是<code>AbstractStringBuilder</code> 实现的</p>
+<p><strong>线程安全性</strong></p>
+<p><code>String</code> 中的对象是不可变的，也就可以理解为常量，线程安全。<code>AbstractStringBuilder</code> 是 <code>StringBuilder</code> 与 <code>StringBuffer</code> 的公共父类，定义了一些字符串的基本操作，如 <code>expandCapacity</code>、<code>append</code>、<code>insert</code>、<code>indexOf</code> 等公共方法。<code>StringBuffer</code> 对方法加了同步锁或者对调用的方法加了同步锁，所以是线程安全的。<code>StringBuilder</code> 并没有对方法进行加同步锁，所以是非线程安全的。</p>
+<p><strong>性能</strong></p>
+<p>每次对 <code>String</code> 类型进行改变的时候，都会生成一个新的 <code>String</code> 对象，然后将指针指向新的 <code>String</code> 对象。<code>StringBuffer</code> 每次都会对 <code>StringBuffer</code> 对象本身进行操作，而不是生成新的对象并改变对象引用。相同情况下使用 <code>StringBuilder</code> 相比使用 <code>StringBuffer</code> 仅能获得 10%~15% 左右的性能提升，但却要冒多线程不安全的风险。</p>
+<p><strong>对于三者使用的总结：</strong></p>
+<ol>
+<li>操作少量的数据: 适用 <code>String</code></li>
+<li>单线程操作字符串缓冲区下操作大量数据: 适用 <code>StringBuilder</code></li>
+<li>多线程操作字符串缓冲区下操作大量数据: 适用 <code>StringBuffer</code></li>
+</ol>
+<h1 id="String-intern"><a href="#String-intern" class="headerlink" title="String().intern()"></a>String().intern()</h1><p>调用这个方法之后把字符串对象加入常量池中</p>
+<ol>
+<li>直接定义字符串变量的时候赋值，如果表达式右边只有字符串常量，那么就是把变量存放在常量池里面。</li>
+<li>new出来的字符串是存放在堆里面。</li>
+<li>对字符串进行拼接操作，也就是做”+”运算的时候，分2中情况：</li>
+</ol>
+<p>i.表达式右边是纯字符串常量，那么存放在栈里面。</p>
+<p>ii.表达式右边如果存在字符串引用，也就是字符串对象的句柄，那么就存放在堆里面。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">String str1 = <span class="string">&quot;aaa&quot;</span>;</span><br><span class="line">String str2 = <span class="string">&quot;bbb&quot;</span>;</span><br><span class="line">String str3 = <span class="string">&quot;aaabbb&quot;</span>;</span><br><span class="line">String str4 = str1 + str2;</span><br><span class="line">String str5 = <span class="string">&quot;aaa&quot;</span> + <span class="string">&quot;bbb&quot;</span>;</span><br><span class="line">System.out.println(str3 == str4); <span class="comment">// false</span></span><br><span class="line">System.out.println(str3 == str4.intern()); <span class="comment">// true</span></span><br><span class="line">System.out.println(str3 == str5);<span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p>结果：str1、str2、str3、str5都是存在于常量池，str4由于表达式右半边有引用类型，所以str4存在于堆内存，而str5表达式右边没有引用类型，是纯字符串常量，就存放在了常量池里面。其实Integer这种包装类型的-128~ +127也是存放在常量池里面，比如Integer i1 = 10;Integer i2 = 10; i1 == i2结果是true，估计也是为了性能优化。</p>
+<h1 id="数组有没有-length-方法-String-有没有-length-方法？"><a href="#数组有没有-length-方法-String-有没有-length-方法？" class="headerlink" title="数组有没有 length()方法?String 有没有 length()方法？"></a>数组有没有 length()方法?String 有没有 length()方法？</h1><p>数组没有 length()方法，有 length 的属性。String 有 length()方法。Jav aScript 中，获得字符串的长度是通过 length 属性得到的</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/%E6%BA%90%E7%A0%81/" rel="tag"># 源码</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/09/SpringMVC%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A/" rel="next" title="SpringMVC数据绑定">
+                <i class="fa fa-chevron-left"></i> SpringMVC数据绑定
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/13/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" rel="prev" title="Java基础知识">
+                Java基础知识 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#String%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">String源码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%A4%A7%E5%AE%B6%E9%83%BD%E8%AF%B4-String-%E6%98%AF%E4%B8%8D%E5%8F%AF%E5%8F%98%E7%9A%84"><span class="nav-number">1.1.</span> <span class="nav-text">为什么大家都说 String 是不可变的</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#String%E7%B1%BB%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%A2%AB%E8%AE%BE%E8%AE%A1%E4%B8%BA%E6%98%AFfinal%E7%9A%84%EF%BC%9F"><span class="nav-number">1.1.1.</span> <span class="nav-text">String类为什么要被设计为是final的？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#String%E6%AF%94%E8%BE%83"><span class="nav-number">1.2.</span> <span class="nav-text">String比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2%E4%B9%B1%E7%A0%81"><span class="nav-number">1.3.</span> <span class="nav-text">字符串乱码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3-String-%E4%B9%B1%E7%A0%81%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.1.</span> <span class="nav-text">如何解决 String 乱码的问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%AA%E5%8F%96-%E9%A6%96%E5%AD%97%E6%AF%8D%E5%A4%A7%E5%B0%8F%E5%86%99"><span class="nav-number">1.4.</span> <span class="nav-text">截取(首字母大小写)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.4.1.</span> <span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E8%88%AC%E5%A4%84%E7%90%86%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.2.</span> <span class="nav-text">一般处理方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E7%AD%89%E5%88%A4%E6%96%AD"><span class="nav-number">1.5.</span> <span class="nav-text">相等判断</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#equals%E6%BA%90%E7%A0%81"><span class="nav-number">1.5.1.</span> <span class="nav-text">equals源码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%BF%E6%8D%A2%E3%80%81%E5%88%A0%E9%99%A4"><span class="nav-number">1.6.</span> <span class="nav-text">替换、删除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%86%E5%88%86%E5%92%8C%E5%90%88%E5%B9%B6"><span class="nav-number">1.7.</span> <span class="nav-text">拆分和合并</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#String-StringBuffer-%E5%92%8C-StringBuilder-%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">2.</span> <span class="nav-text">String, StringBuffer 和 StringBuilder 的区别是什么?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#String-intern"><span class="nav-number">3.</span> <span class="nav-text">String().intern()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E7%BB%84%E6%9C%89%E6%B2%A1%E6%9C%89-length-%E6%96%B9%E6%B3%95-String-%E6%9C%89%E6%B2%A1%E6%9C%89-length-%E6%96%B9%E6%B3%95%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">数组有没有 length()方法?String 有没有 length()方法？</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
