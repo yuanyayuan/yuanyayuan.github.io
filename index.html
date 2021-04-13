@@ -261,6 +261,367 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/Java-CopyOnWriteArrayList%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/13/Java-CopyOnWriteArrayList%E5%AD%A6%E4%B9%A0/" itemprop="url">Java-CopyOnWriteArrayList学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T22:36:51+08:00">
+                2021-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java并发容器</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/Java%E5%9F%BA%E7%A1%80-Java%E6%BA%90%E7%A0%81/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java源码</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/Java%E5%9F%BA%E7%A1%80-Java%E6%BA%90%E7%A0%81/Java%E5%9F%BA%E7%A1%80-Java%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java知识点</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="CopyOnWriteArrayList"><a href="#CopyOnWriteArrayList" class="headerlink" title="CopyOnWriteArrayList"></a>CopyOnWriteArrayList</h1><h2 id="特征："><a href="#特征：" class="headerlink" title="特征："></a>特征：</h2><ol>
+<li>线程安全的，多线程环境下可以直接使用，无需加锁；</li>
+<li>通过锁 + 数组拷贝 + volatile 关键字保证了线程安全；<ul>
+<li>加锁：保证同一时刻数组只能被一个线程操作；</li>
+<li>数组拷贝：保证数组的内存地址被修改，修改后触发 volatile 的可见性，其它线程可以立马知道数组已经被修改；</li>
+<li>volatile：值被修改后，其它线程能够立马感知最新值。</li>
+</ul>
+</li>
+<li>每次数组操作，都会把数组拷贝一份出来，在新数组上进行操作，操作成功之后再赋值回去。</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://www.imooc.com/read/47/article/857">源码学习</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/Java-ConcurrentHashMap%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/13/Java-ConcurrentHashMap%E5%AD%A6%E4%B9%A0/" itemprop="url">Java-ConcurrentHashMap学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T19:32:51+08:00">
+                2021-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java并发容器</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/Java%E5%9F%BA%E7%A1%80-Java%E6%BA%90%E7%A0%81/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java源码</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/Java%E5%9F%BA%E7%A1%80-Java%E6%BA%90%E7%A0%81/Java%E5%9F%BA%E7%A1%80-Java%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java知识点</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h1><ol>
+<li>所有的操作都是线程安全的，我们在使用时，无需再加锁；</li>
+<li>多个线程同时进行 put、remove 等操作时并不会阻塞，可以同时进行，和 HashTable 不同，HashTable 在操作时，会锁住整个 Map；</li>
+<li>迭代过程中，即使 Map 结构被修改，也不会抛 ConcurrentModificationException 异常；</li>
+<li>除了数组 + 链表 + 红黑树的基本结构外，新增了转移节点，是为了保证扩容时的线程安全的节点；</li>
+<li>提供了很多 Stream 流式方法，比如说：forEach、search、reduce 等等。</li>
+</ol>
+<h1 id="Concurrenthashmap为什么键和值不能为null？"><a href="#Concurrenthashmap为什么键和值不能为null？" class="headerlink" title="Concurrenthashmap为什么键和值不能为null？"></a>Concurrenthashmap为什么键和值不能为null？</h1><p>因为concurrenthashmap它们是用于<strong>多线程</strong>的，<strong>并发的</strong> ，如果map.get(key)得到了null，不能判断到底是映射的value是null,还是因为没有找到对应的key而为空，而用于单线程状态的hashmap却可以用containKey（key） 去判断到底是否包含了这个null。</p>
+<ul>
+<li>concurrenthashmap为什么就不能containKey(key) ？一个线程先get(key)再containKey(key)，这两个方法的中间时刻，其他线程怎么操作这个key都会可能发生，例如删掉这个key</li>
+</ul>
+<h1 id="实现线程安全的方式"><a href="#实现线程安全的方式" class="headerlink" title="实现线程安全的方式"></a>实现线程安全的方式</h1><h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>通过自旋 + CAS +  双重 check 等手段保证了数组初始化时的线程安全</p>
+<h2 id="新增槽点值时的线程安全"><a href="#新增槽点值时的线程安全" class="headerlink" title="新增槽点值时的线程安全"></a>新增槽点值时的线程安全</h2><ol>
+<li>通过自旋死循环保证一定可以新增成功。</li>
+<li>当前槽点为空时，通过 CAS 新增。</li>
+<li>当前槽点有值，锁住当前槽点。</li>
+<li>红黑树旋转时，锁住红黑树的根节点，保证同一时刻，当前红黑树只能被一个线程旋转，</li>
+</ol>
+<h2 id="扩容时线程安全"><a href="#扩容时线程安全" class="headerlink" title="扩容时线程安全"></a>扩容时线程安全</h2><ol>
+<li>拷贝槽点时，会把原数组的槽点锁住；</li>
+<li>拷贝成功之后，会把原数组的槽点设置成转移节点</li>
+<li>从尾到头进行拷贝，拷贝成功就把原数组的槽点设置成转移节点</li>
+<li>等扩容拷贝都完成之后，直接把新数组的值赋值给数组容器，之前等待 put 的数据才能继续 put。</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/Java-LinkList%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1281,11 +1642,14 @@
 <p><strong>综上，相比于<code>HashMap</code>来说 <code>TreeMap</code> 主要多了对集合中的元素根据键排序的能力以及对集合内元素的搜索的能力。</strong></p>
 <h3 id="HashSet-如何检查重复"><a href="#HashSet-如何检查重复" class="headerlink" title="HashSet 如何检查重复"></a>HashSet 如何检查重复</h3><p>当你把对象加入<code>HashSet</code>时，<code>HashSet</code> 会先计算对象的<code>hashcode</code>值来判断对象加入的位置，同时也会与其他加入的对象的 <code>hashcode</code> 值作比较，如果没有相符的 <code>hashcode</code>，<code>HashSet</code> 会假设对象没有重复出现。但是如果发现有相同 <code>hashcode</code> 值的对象，这时会调用<code>equals()</code>方法来检查 <code>hashcode</code> 相等的对象是否真的相同。如果两者相同，<code>HashSet</code> 就不会让加入操作成功。</p>
 <h3 id="ConcurrentHashMap-和-Hashtable-的区别"><a href="#ConcurrentHashMap-和-Hashtable-的区别" class="headerlink" title="ConcurrentHashMap 和 Hashtable 的区别"></a>ConcurrentHashMap 和 Hashtable 的区别</h3><ul>
-<li><p><strong>基础特性不同</strong><br>HashMap 的 key 和 value 可以为 null，ConcurrentHashMap 的 key 和 value 不能为 null</p>
+<li><p><strong>基础特性不同</strong><br>HashMap 的 key 和 value 可以为 null，ConcurrentHashMap，hashtable 的 key 和 value 不能为 null</p>
+<p><strong>hashtable,concurrenthashmap为什么键和值不能为null，而hashmap可以？</strong></p>
 <ul>
-<li><strong>hashtable,concurrenthashmap为什么键和值不能为null，而hashmap可以？</strong><br>因为hashtable,concurrenthashmap它们是用于<strong>多线程</strong>的，<strong>并发的</strong> ，如果map.get(key)得到了null，不能判断到底是映射的value是null,还是因为没有找到对应的key而为空，而用于单线程状态的hashmap却可以用containKey（key） 去判断到底是否包含了这个null。</li>
-<li>concurrenthashmap,hashtable为什么就不能containKey(key) 一个线程先get(key)再containKey(key)，这两个方法的中间时刻，其他线程怎么操作这个key都会可能发生，例如删掉这个key</li>
-<li>对于key不为null的设置，倾向于这是一种开发规范的问题，key就和value一起别为null了。</li>
+<li>因为concurrenthashmap它们是用于<strong>多线程</strong>的，<strong>并发的</strong> ，如果map.get(key)得到了null，不能判断到底是映射的value是null,还是因为没有找到对应的key而为空，而用于单线程状态的hashmap却可以用containKey（key） 去判断到底是否包含了这个null。<ul>
+<li>concurrenthashmap为什么就不能containKey(key) ？一个线程先get(key)再containKey(key)，这两个方法的中间时刻，其他线程怎么操作这个key都会可能发生，例如删掉这个key</li>
+</ul>
+</li>
+<li>HashMap计算key的hash值时调用单独的方法，在该方法中会判断key是否为null，如果是则返回0；而Hashtable中则直接调用key的hashCode()方法，因此如果key为null，则抛出空指针异常。</li>
 </ul>
 </li>
 <li><p><strong>底层数据结构：</strong> </p>
@@ -1301,6 +1665,20 @@
 </ul>
 </li>
 </ul>
+<h3 id="ConcurrentHashMap-和-HashMap-两者区别："><a href="#ConcurrentHashMap-和-HashMap-两者区别：" class="headerlink" title="ConcurrentHashMap 和 HashMap 两者区别："></a>ConcurrentHashMap 和 HashMap 两者区别：</h3><ul>
+<li>相同之处：</li>
+</ul>
+<ol>
+<li>数组、链表结构几乎相同，所以底层对数据结构的操作思路是相同的（只是思路相同，底层实现不同）；</li>
+<li>都实现了 Map 接口，继承了 AbstractMap 抽象类，所以大多数的方法也都是相同的，HashMap  有的方法，ConcurrentHashMap 几乎都有，所以当我们需要从 HashMap 切换到 ConcurrentHashMap  时，无需关心两者之间的兼容问题。</li>
+</ol>
+<ul>
+<li>不同之处：</li>
+</ul>
+<ol>
+<li>红黑树结构略有不同，HashMap 的红黑树中的节点叫做 TreeNode，TreeNode  不仅仅有属性，还维护着红黑树的结构，比如说查找，新增等等；ConcurrentHashMap 中红黑树被拆分成两块，TreeNode  仅仅维护的属性和查找功能，新增了 TreeBin，来维护红黑树结构，并负责根节点的加锁和解锁；</li>
+<li>新增 ForwardingNode （转移）节点，扩容的时候会使用到，通过使用该节点，来保证扩容时的线程安全。</li>
+</ol>
 <h3 id="为什么-ConcurrentHashMap-可以在高并发的情况下比-HashMap-更为高效"><a href="#为什么-ConcurrentHashMap-可以在高并发的情况下比-HashMap-更为高效" class="headerlink" title="为什么 ConcurrentHashMap 可以在高并发的情况下比 HashMap 更为高效"></a>为什么 ConcurrentHashMap 可以在高并发的情况下比 HashMap 更为高效</h3><ul>
 <li>HashTable使用一把锁处理并发问题，当有多个线程访问时，需要多个线程竞争一把锁，导致阻塞</li>
 <li>ConcurrentHashMap则使用分段，相当于把一个HashMap分成多个，然后每个部分分配一把锁，这样就可以支持多线程访问</li>
@@ -1320,7 +1698,7 @@
 <li><strong>ConcurrentHashMap</strong>一种线程安全的Map,它不涉及同步加锁。</li>
 <li><strong>IdentityHashMap</strong>使用==代替equals() 对“键”进行比较的散列映射。专为解决特殊问题而设计。</li>
 </ul>
-<h4 id="WeakHashMap与HashMap的区别是什么"><a href="#WeakHashMap与HashMap的区别是什么" class="headerlink" title="WeakHashMap与HashMap的区别是什么"></a>WeakHashMap与HashMap的区别是什么</h4><p>WeakHashMap 的工作与正常的 HashMap 类似，但是使用弱引用作为 key，意思就是当 key 对象没有任何引用时，key/value 将会被回收。</p>
+<h3 id="WeakHashMap与HashMap的区别是什么"><a href="#WeakHashMap与HashMap的区别是什么" class="headerlink" title="WeakHashMap与HashMap的区别是什么"></a>WeakHashMap与HashMap的区别是什么</h3><p>WeakHashMap 的工作与正常的 HashMap 类似，但是使用弱引用作为 key，意思就是当 key 对象没有任何引用时，key/value 将会被回收。</p>
 <h3 id="TreeMap-整体架构"><a href="#TreeMap-整体架构" class="headerlink" title="TreeMap 整体架构"></a>TreeMap 整体架构</h3><p>TreeMap 底层的数据结构就是红黑树，和 HashMap 的红黑树结构一样。</p>
 <p>不同的是，TreeMap 利用了红黑树左节点小，右节点大的性质，根据 key 进行排序，使每个元素能够插入到红黑树大小适当的位置，维护了 key 的大小关系，适用于 key 需要排序的场景。</p>
 <p>因为底层使用的是平衡红黑树的结构，所以 containsKey、get、put、remove 等方法的时间复杂度都是 log(n)。</p>
@@ -1363,7 +1741,7 @@
 <p>2：自动扩容，当数组大小快满的时候，采取自动扩容，可以减少 hash 冲突;</p>
 <p>3：hash 冲突发生时，采用链表来解决;</p>
 <p>4：hash 冲突严重时，链表会自动转化成红黑树，提高遍历速度。</p>
-<h2 id="通过以下代码进行删除，是否可行？"><a href="#通过以下代码进行删除，是否可行？" class="headerlink" title="通过以下代码进行删除，是否可行？"></a>通过以下代码进行删除，是否可行？</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HashMap&lt;String,String &gt; map = Maps.newHashMap();</span><br><span class="line">map.put(<span class="string">&quot;1&quot;</span>,<span class="string">&quot;1&quot;</span>);</span><br><span class="line">map.put(<span class="string">&quot;2&quot;</span>,<span class="string">&quot;2&quot;</span>);</span><br><span class="line">map.forEach((s, s2) -&gt; map.remove(<span class="string">&quot;1&quot;</span>));</span><br></pre></td></tr></table></figure>
+<h3 id="通过以下代码进行删除，是否可行？"><a href="#通过以下代码进行删除，是否可行？" class="headerlink" title="通过以下代码进行删除，是否可行？"></a>通过以下代码进行删除，是否可行？</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">HashMap&lt;String,String &gt; map = Maps.newHashMap();</span><br><span class="line">map.put(<span class="string">&quot;1&quot;</span>,<span class="string">&quot;1&quot;</span>);</span><br><span class="line">map.put(<span class="string">&quot;2&quot;</span>,<span class="string">&quot;2&quot;</span>);</span><br><span class="line">map.forEach((s, s2) -&gt; map.remove(<span class="string">&quot;1&quot;</span>));</span><br></pre></td></tr></table></figure>
 
 <p>答：不行，会报错误 ConcurrentModificationException，原因如下图：</p>
 <img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/%E5%AE%B9%E5%99%A8/image.png" style="zoom:67%;" />
@@ -1902,16 +2280,16 @@
       
         
           
-            <h1 id="Java反射和异常"><a href="#Java反射和异常" class="headerlink" title="Java反射和异常"></a>Java反射和异常</h1><h2 id="反射机制"><a href="#反射机制" class="headerlink" title="反射机制"></a>反射机制</h2><p>JAVA 反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为 java 语言的反射机制。</p>
-<h3 id="静态编译和动态编译"><a href="#静态编译和动态编译" class="headerlink" title="静态编译和动态编译"></a>静态编译和动态编译</h3><ul>
+            <h1 id="反射机制"><a href="#反射机制" class="headerlink" title="反射机制"></a>反射机制</h1><p>JAVA 反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为 java 语言的反射机制。</p>
+<h2 id="静态编译和动态编译"><a href="#静态编译和动态编译" class="headerlink" title="静态编译和动态编译"></a>静态编译和动态编译</h2><ul>
 <li><strong>静态编译：</strong> 在编译时确定类型，绑定对象</li>
 <li><strong>动态编译：</strong> 运行时确定类型，绑定对象</li>
 </ul>
-<h3 id="反射机制优缺点"><a href="#反射机制优缺点" class="headerlink" title="反射机制优缺点"></a>反射机制优缺点</h3><ul>
+<h2 id="反射机制优缺点"><a href="#反射机制优缺点" class="headerlink" title="反射机制优缺点"></a>反射机制优缺点</h2><ul>
 <li><strong>优点：</strong> 运行期类型的判断，动态加载类，提高代码灵活度。</li>
 <li><strong>缺点：</strong> 1,性能瓶颈：反射相当于一系列解释操作，通知 JVM 要做的事情，性能比直接的 java 代码要慢很多。2,安全问题，让我们可以动态操作改变类的属性同时也增加了类的安全隐患。</li>
 </ul>
-<h3 id="反射的应用场景"><a href="#反射的应用场景" class="headerlink" title="反射的应用场景"></a>反射的应用场景</h3><p><strong>反射是框架设计的灵魂。</strong></p>
+<h2 id="反射的应用场景"><a href="#反射的应用场景" class="headerlink" title="反射的应用场景"></a>反射的应用场景</h2><p><strong>反射是框架设计的灵魂。</strong></p>
 <p>在我们平时的项目开发过程中，基本上很少会直接使用到反射机制，但这不能说明反射机制没有用，实际上有很多设计、开发都与反射机制有关，例如模块化的开发，通过反射去调用对应的字节码；动态代理设计模式也采用了反射机制，还有我们日常使用的 Spring／Hibernate 等框架也大量使用到了反射机制。</p>
 <p>举例：</p>
 <ol>
@@ -1919,7 +2297,7 @@
 <li>Spring 框架的 IOC（动态加载管理 Bean）创建对象以及 AOP（动态代理）功能都和反射有联系；</li>
 <li>动态配置实例的属性；</li>
 </ol>
-<h3 id="获取-Class-对象的四种方式"><a href="#获取-Class-对象的四种方式" class="headerlink" title="获取 Class 对象的四种方式"></a>获取 Class 对象的四种方式</h3><p>如果我们动态获取到这些信息，我们需要依靠 Class 对象。Class 类对象将一个类的方法、变量等信息告诉运行的程序。Java 提供了四种方式获取 Class 对象:</p>
+<h2 id="获取-Class-对象的四种方式"><a href="#获取-Class-对象的四种方式" class="headerlink" title="获取 Class 对象的四种方式"></a>获取 Class 对象的四种方式</h2><p>如果我们动态获取到这些信息，我们需要依靠 Class 对象。Class 类对象将一个类的方法、变量等信息告诉运行的程序。Java 提供了四种方式获取 Class 对象:</p>
 <p>1.知道具体类的情况下可以使用：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Class alunbarClass &#x3D; TargetObject.class;</span><br></pre></td></tr></table></figure>
 
@@ -1937,7 +2315,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class clazz &#x3D; ClassLoader.LoadClass(&quot;cn.javaguide.TargetObject&quot;);</span><br></pre></td></tr></table></figure>
 
 <p>通过类加载器获取Class对象不会进行初始化，意味着不进行包括初始化等一些列步骤，静态块和静态对象不会得到执行</p>
-<h3 id="动态代理是指什么？它有哪几种实现方法"><a href="#动态代理是指什么？它有哪几种实现方法" class="headerlink" title="动态代理是指什么？它有哪几种实现方法"></a>动态代理是指什么？它有哪几种实现方法</h3><ul>
+<h2 id="动态代理是指什么？它有哪几种实现方法"><a href="#动态代理是指什么？它有哪几种实现方法" class="headerlink" title="动态代理是指什么？它有哪几种实现方法"></a>动态代理是指什么？它有哪几种实现方法</h2><ul>
 <li>动态代理是指在程序运行时生成代理类。</li>
 <li>有两种实现方式：<ul>
 <li>JDK 动态代理，被代理对象必须实现接口，利用反射机制生成一个实现代理接口的匿名类，在调用具体方法前调用InvokeHandler来处理；</li>
@@ -1946,13 +2324,13 @@
 </li>
 </ul>
 <p>动态代理是和反射机制一脉相承的，其核心也就是两个：动态+代理。动态是指在在运行时生成的代理类，与此对应的就是静态代理，代理类在程序编译时就实现。现在很多框架都是利用类似机制来提供灵活性的扩展性，比如用来包装 RPC 调用，面向切面编程（AOP）等。</p>
-<h4 id="通常使用JDK的动态代理可以分为以下两步："><a href="#通常使用JDK的动态代理可以分为以下两步：" class="headerlink" title="通常使用JDK的动态代理可以分为以下两步："></a>通常使用JDK的动态代理可以分为以下两步：</h4><p>（1）定义一个接口，该接口里有需要实现的方法，并且编写实际的实现类。</p>
+<h3 id="通常使用JDK的动态代理可以分为以下两步："><a href="#通常使用JDK的动态代理可以分为以下两步：" class="headerlink" title="通常使用JDK的动态代理可以分为以下两步："></a>通常使用JDK的动态代理可以分为以下两步：</h3><p>（1）定义一个接口，该接口里有需要实现的方法，并且编写实际的实现类。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//用户管理接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserManager</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">addUser</span><span class="params">(String userName,String password)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//用户管理实现类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserManagerImpl</span> <span class="keyword">implements</span> <span class="title">UserManager</span></span>&#123;</span><br><span class="line"> <span class="meta">@Override</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addUser</span><span class="params">(String userName, String password)</span> </span>&#123;</span><br><span class="line">     System.out.println(<span class="string">&quot;传入参数为 userName: &quot;</span>+userName+<span class="string">&quot; password: &quot;</span>+password);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>（2）定义一个实现InvocationHandler接口的代理类，重写invoke()方法，且添加getProxy()方法。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JdkProxy</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> Object target ;<span class="comment">//需要代理的目标对象</span></span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> </span></span><br><span class="line"><span class="function">Throwable </span>&#123;</span><br><span class="line">     System.out.println(<span class="string">&quot;JDK动态代理，监听开始！&quot;</span>);</span><br><span class="line">     Object result = method.invoke(target, args);</span><br><span class="line">     System.out.println(<span class="string">&quot;JDK动态代理，监听结束！&quot;</span>);</span><br><span class="line">     <span class="keyword">return</span> result;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">//定义获取代理对象方法</span></span><br><span class="line"> <span class="function"><span class="keyword">private</span> Object <span class="title">getProxy</span><span class="params">(Object targetObject)</span></span>&#123;</span><br><span class="line">     <span class="comment">//为目标对象target赋值</span></span><br><span class="line">     <span class="keyword">this</span>.target = targetObject;</span><br><span class="line">     <span class="comment">//JDK动态代理只能针对实现了接口的类进行代理，newProxyInstance 函数所需参数就可看出</span></span><br><span class="line">     <span class="keyword">return</span> Proxy.newProxyInstance(targetObject.getClass().getClassLoader(), </span><br><span class="line">targetObject.getClass().getInterfaces(), <span class="keyword">this</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">     JdkProxy jdkProxy = <span class="keyword">new</span> JdkProxy();<span class="comment">//实例化JDKProxy对象</span></span><br><span class="line">     UserManager user = (UserManager) jdkProxy.getProxy(<span class="keyword">new</span> UserManagerImpl</span><br><span class="line">());<span class="comment">//获取代理对象</span></span><br><span class="line">     user.addUser(<span class="string">&quot;admin&quot;</span>, <span class="string">&quot;123&quot;</span>);<span class="comment">//执行新增方法</span></span><br><span class="line"> &#125;    </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h4 id="而cglibf动态代理的步骤也是类似，但是相对来说要简单一些："><a href="#而cglibf动态代理的步骤也是类似，但是相对来说要简单一些：" class="headerlink" title="而cglibf动态代理的步骤也是类似，但是相对来说要简单一些："></a>而cglibf动态代理的步骤也是类似，但是相对来说要简单一些：</h4><p>（1）定义一个实现类。</p>
+<h3 id="而cglibf动态代理的步骤也是类似，但是相对来说要简单一些："><a href="#而cglibf动态代理的步骤也是类似，但是相对来说要简单一些：" class="headerlink" title="而cglibf动态代理的步骤也是类似，但是相对来说要简单一些："></a>而cglibf动态代理的步骤也是类似，但是相对来说要简单一些：</h3><p>（1）定义一个实现类。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserCglibServiceImpl</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hobby</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     System.out.println(<span class="string">&quot;跳舞&quot;</span>);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>（2）定义一个实现MethodInterceptor接口的代理类，重写intercept()方法，且添加getProxy()方法。</p>
@@ -1990,7 +2368,7 @@
 <td>底层将方法全部存入一个数组中，通过数组索引直接进行方法调用</td>
 </tr>
 </tbody></table>
-<h3 id="为什么反射的性能较差？有没有什么方法可以让他变快"><a href="#为什么反射的性能较差？有没有什么方法可以让他变快" class="headerlink" title="为什么反射的性能较差？有没有什么方法可以让他变快"></a>为什么反射的性能较差？有没有什么方法可以让他变快</h3><p>java反射要解析字节码，将内存中的对象进行解析，包括了一些动态类型，JVM难以优化，而且在调用时还需要拼接参数，执行步骤也更多。因此，反射操作的效率要更低</p>
+<h2 id="为什么反射的性能较差？有没有什么方法可以让他变快"><a href="#为什么反射的性能较差？有没有什么方法可以让他变快" class="headerlink" title="为什么反射的性能较差？有没有什么方法可以让他变快"></a>为什么反射的性能较差？有没有什么方法可以让他变快</h2><p>java反射要解析字节码，将内存中的对象进行解析，包括了一些动态类型，JVM难以优化，而且在调用时还需要拼接参数，执行步骤也更多。因此，反射操作的效率要更低</p>
 <p>常用的改进性能方法主要有：</p>
 <ul>
 <li>m.setAccessible(true);</li>
@@ -2000,7 +2378,7 @@
 <li>用缓存将反射得到的元数据保存起来；</li>
 <li>利用一些高性能的反射库，如ReflectASM ReflectASM 使用字节码生成的方式实现了更为高效的反射机制。执行时会生成一个存取类来 set/get 字段，访问方法或创建实例。一看到 ASM 就能领悟到 ReflectASM 会用字节码生成的方式，而不是依赖于 Java 本身的反射机制来实现的，所以它更快，并且避免了访问原始类型因自动装箱而产生的问题。</li>
 </ul>
-<h2 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h2><h3 id="3-2-1-Java-异常类层次结构图"><a href="#3-2-1-Java-异常类层次结构图" class="headerlink" title="3.2.1. Java 异常类层次结构图"></a>3.2.1. Java 异常类层次结构图</h3><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/java%E5%BC%82%E5%B8%B8.png" alt="img"></p>
+<h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><h2 id="Java-异常类层次结构图"><a href="#Java-异常类层次结构图" class="headerlink" title="Java 异常类层次结构图"></a>Java 异常类层次结构图</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/java%E5%BC%82%E5%B8%B8.png" alt="img"></p>
 <p>在 Java 中，所有的异常都有一个共同的祖先 <code>java.lang</code> 包中的 <code>Throwable</code> 类。<code>Throwable</code> 类有两个重要的子类 <code>Exception</code>（异常）和 <code>Error</code>（错误）。<code>Exception</code> 能被程序本身处理(<code>try-catch</code>)， <code>Error</code> 是无法处理的(只能尽量避免)。</p>
 <p><code>Exception</code> 和 <code>Error</code> 二者都是 Java 异常处理的重要子类，各自都包含大量子类。</p>
 <ul>
@@ -2028,13 +2406,13 @@
 <p><strong>不受检查异常</strong></p>
 <p>Java 代码在编译过程中 ，我们即使不处理不受检查异常也可以正常通过编译。</p>
 <p><code>RuntimeException</code> 及其子类都统称为非受检查异常，例如：<code>NullPointExecrption</code>、<code>NumberFormatException</code>（字符串转换为数字）、<code>ArrayIndexOutOfBoundsException</code>（数组越界）、<code>ClassCastException</code>（类型转换错误）、<code>ArithmeticException</code>（算术错误）等。</p>
-<h3 id="3-2-2-Throwable-类常用方法"><a href="#3-2-2-Throwable-类常用方法" class="headerlink" title="3.2.2. Throwable 类常用方法"></a>3.2.2. Throwable 类常用方法</h3><ul>
+<h2 id="Throwable-类常用方法"><a href="#Throwable-类常用方法" class="headerlink" title="Throwable 类常用方法"></a>Throwable 类常用方法</h2><ul>
 <li><strong><code>public string getMessage()</code></strong>:返回异常发生时的简要描述</li>
 <li><strong><code>public string toString()</code></strong>:返回异常发生时的详细信息</li>
 <li><strong><code>public string getLocalizedMessage()</code></strong>:返回异常对象的本地化信息。使用 <code>Throwable</code> 的子类覆盖这个方法，可以生成本地化信息。如果子类没有覆盖该方法，则该方法返回的信息与 <code>getMessage（）</code>返回的结果相同</li>
 <li><strong><code>public void printStackTrace()</code></strong>:在控制台上打印 <code>Throwable</code> 对象封装的异常信息</li>
 </ul>
-<h3 id="3-2-3-try-catch-finally"><a href="#3-2-3-try-catch-finally" class="headerlink" title="3.2.3. try-catch-finally"></a>3.2.3. try-catch-finally</h3><ul>
+<h2 id="try-catch-finally"><a href="#try-catch-finally" class="headerlink" title="try-catch-finally"></a>try-catch-finally</h2><ul>
 <li><strong><code>try</code>块：</strong> 用于捕获异常。其后可接零个或多个 <code>catch</code> 块，如果没有 <code>catch</code> 块，则必须跟一个 <code>finally</code> 块。</li>
 <li><strong><code>catch</code>块：</strong> 用于处理 try 捕获到的异常。</li>
 <li><strong><code>finally</code> 块：</strong> 无论是否捕获或处理异常，<code>finally</code> 块里的语句都会被执行。当在 <code>try</code> 块或 <code>catch</code> 块中遇到 <code>return</code> 语句时，<code>finally</code> 语句块将在方法返回之前被执行。</li>
@@ -2049,7 +2427,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> value * value;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (value == <span class="number">2</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>如果调用 <code>f(2)</code>，返回值将是 0，因为 finally 语句的返回值覆盖了 try 语句块的返回值。</p>
-<h4 id="try、catch、finally执行顺序"><a href="#try、catch、finally执行顺序" class="headerlink" title="try、catch、finally执行顺序"></a>try、catch、finally执行顺序</h4><p>这三个关键字常用于我们捕捉异常的一整套流程，try 用来确定代码执行的范围，catch 捕捉可能会发生的异常，finally 用来执行一定要执行的代码块，除了这些，我们还需要清楚，每个地方如果发生异常会怎么办，我们举一个例子来演示一下：</p>
+<h3 id="try、catch、finally执行顺序"><a href="#try、catch、finally执行顺序" class="headerlink" title="try、catch、finally执行顺序"></a>try、catch、finally执行顺序</h3><p>这三个关键字常用于我们捕捉异常的一整套流程，try 用来确定代码执行的范围，catch 捕捉可能会发生的异常，finally 用来执行一定要执行的代码块，除了这些，我们还需要清楚，每个地方如果发生异常会怎么办，我们举一个例子来演示一下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testCatchFinally</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;try is run&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;try exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    log.info(<span class="string">&quot;catch is run&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;catch exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;finally is run&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这个代码演示了在 try、catch 中都遇到了异常，代码的执行顺序为：try -&gt; catch -&gt; finally，输出的结果如下：</p>
@@ -2069,9 +2447,9 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123; </span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;<span class="keyword">catch</span>()&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125; <span class="keyword">finally</span>&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">程序执行<span class="keyword">try</span>块中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码；</span><br><span class="line">有异常：</span><br><span class="line">执行<span class="keyword">catch</span>块中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码；</span><br><span class="line">则再执行<span class="keyword">finally</span>块，因为<span class="keyword">finally</span>块中有<span class="keyword">return</span>所以提前退出。</span><br><span class="line">无异常：</span><br><span class="line">则再执行<span class="keyword">finally</span>块，因为<span class="keyword">finally</span>块中有<span class="keyword">return</span>所以提前退出。</span><br></pre></td></tr></table></figure>
 
 <p><strong>最终结论</strong>：任何执行try 或者catch中的return语句之前，都会先执行finally语句，如果finally存在的话。如果finally中有return语句，那么程序就return了，所以finally中的return是一定会被return的，编译器把finally中的return实现为一个warning。</p>
-<h4 id="catch-中发生了未知异常，finally-还会执行么？"><a href="#catch-中发生了未知异常，finally-还会执行么？" class="headerlink" title="catch 中发生了未知异常，finally 还会执行么？"></a>catch 中发生了未知异常，finally 还会执行么？</h4><p>会的，catch 发生了异常，finally 还会执行的，并且是 finally 执行完成之后，才会抛出 catch 中的异常。</p>
+<h3 id="catch-中发生了未知异常，finally-还会执行么？"><a href="#catch-中发生了未知异常，finally-还会执行么？" class="headerlink" title="catch 中发生了未知异常，finally 还会执行么？"></a>catch 中发生了未知异常，finally 还会执行么？</h3><p>会的，catch 发生了异常，finally 还会执行的，并且是 finally 执行完成之后，才会抛出 catch 中的异常。</p>
 <p>不过 catch 会吃掉 try 中抛出的异常，为了避免这种情况，在一些可以预见 catch 中会发生异常的地方，先把 try 抛出的异常打印出来，这样从日志中就可以看到完整的异常了。</p>
-<h3 id="3-2-4-使用-try-with-resources-来代替try-catch-finally"><a href="#3-2-4-使用-try-with-resources-来代替try-catch-finally" class="headerlink" title="3.2.4. 使用 try-with-resources 来代替try-catch-finally"></a>3.2.4. 使用 <code>try-with-resources</code> 来代替<code>try-catch-finally</code></h3><ol>
+<h2 id="使用-try-with-resources-来代替try-catch-finally"><a href="#使用-try-with-resources-来代替try-catch-finally" class="headerlink" title="使用 try-with-resources 来代替try-catch-finally"></a>使用 <code>try-with-resources</code> 来代替<code>try-catch-finally</code></h2><ol>
 <li><strong>适用范围（资源的定义）：</strong> 任何实现 <code>java.lang.AutoCloseable</code>或者``java.io.Closeable` 的对象</li>
 <li><strong>关闭资源和 final 的执行顺序：</strong> 在 <code>try-with-resources</code> 语句中，任何 catch 或 finally 块在声明的资源关闭后运行</li>
 </ol>
@@ -3255,664 +3633,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/09/SpringMVC%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/09/SpringMVC%E6%95%B0%E6%8D%AE%E7%BB%91%E5%AE%9A/" itemprop="url">SpringMVC数据绑定</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-09T00:10:17+08:00">
-                2021-04-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringMVC%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
-                    <span itemprop="name">常用框架 - SpringMVC知识点</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>参考<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/139162484">SpringMVC参数绑定-细致总结（通俗易懂）</a></p>
-<h1 id="基本类型、包装类型参数绑定"><a href="#基本类型、包装类型参数绑定" class="headerlink" title="基本类型、包装类型参数绑定"></a>基本类型、包装类型参数绑定</h1><h2 id="基本类型-int"><a href="#基本类型-int" class="headerlink" title="基本类型 int"></a>基本类型 int</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">RequestMapping(<span class="string">&quot;baseType.do&quot;</span>)</span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">baseType</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;age:&quot;</span> + age;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;baseType.do?age&#x3D;30</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">当我们请求时，返回结果：age:30</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>这种情况下，首先 <strong>key 值必须传入</strong>，否则会报 <strong>500 错误</strong>，提示当前 age 不能为空</li>
-<li>其次，<strong>参数只能为 int 类型</strong>，否则报 <strong>400 参数异常错误</strong></li>
-</ul>
-<p><strong>是否可以使用<code>@RequestParam</code>的  required 属性，避免请求参数为空</strong></p>
-<p>答案是不能，虽然这个注解设置 required = false 后不传值后台也不会报错，但是如果其中指定了基本数据类型。例如我们代码中的 int  这个时候如果不传值是依旧会报一个 500 错误因为其不传值就赋 null，但是 int 类型却不能为null，所以想要规避这个参数为空的问题，我们就可以选择包装类型 Integer</p>
-<h2 id="包装类型"><a href="#包装类型" class="headerlink" title="包装类型"></a>包装类型</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;packingType.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">packingType</span><span class="params">(Integer age)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;age:&quot;</span> + age;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;packingType.do?age&#x3D;30</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">正常返回：age:30</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;packingType.do</span><br><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;packingType.do?</span><br><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;packingType.do?&#x3D;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">参数为空不报错，均返回：age:null</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>可以不传 key</strong>，后台接收到的数据则为 age=null</li>
-<li>所以开发中，<strong>对于参数可能为空的数据，建议使用包装类型</strong></li>
-<li>当然，我们也可以使用 @RequestParam 注解 来设置是否请求中必须包含该参数，此注解默认就是必须传参，否则报错</li>
-</ul>
-<h1 id="对象的参数绑定"><a href="#对象的参数绑定" class="headerlink" title="对象的参数绑定"></a>对象的参数绑定</h1><h2 id="多层级对象的绑定"><a href="#多层级对象的绑定" class="headerlink" title="多层级对象的绑定"></a>多层级对象的绑定</h2><ul>
-<li>创建用户类</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    ......补充其 get set toString 方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>直接在参数中写上对应 User 类型就可以了</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;objectType.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">objectType</span><span class="params">(User user)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> user.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;objectType.do?id&#x3D;001&amp;name&#x3D;Steven</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">返回结果：User&#123;uid&#x3D;&#39;001&#39;, name&#x3D;&#39;Steven&#39;&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>创建一个新的类 UserDetails</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserDetails</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">    <span class="keyword">private</span> String address;</span><br><span class="line">    ......补充其 get set toString 方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在 User 类中引入这个类，这种情况又该如何绑定参数呢</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> UserDetails userDetails;</span><br><span class="line">    </span><br><span class="line">    ......补充其 get set toString 方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;objectType.do?id&#x3D;1&amp;name&#x3D;Steven&amp;userDetails.age&#x3D;20&amp;userDetails.address&#x3D;BeiJing</span><br></pre></td></tr></table></figure>
-
-<p>返回结果：User{uid=’1’, name=’Steven’, userDetails=UserDetails{age=20, address=’BeiJing’}}</p>
-<ul>
-<li>对于引入的对象成员复赋值，格式就例如：<code>userDetails.address=xxxxx</code></li>
-<li>这里地址我没用中文，是因为我是直接返回的，没经过编码的处理，不然会显示</li>
-</ul>
-<h2 id="同属性对象参数绑定"><a href="#同属性对象参数绑定" class="headerlink" title="同属性对象参数绑定"></a>同属性对象参数绑定</h2><p>如果我们想要直接接收两个对象，有时候免不了有相同的成员，例如我们的 User 和 Student 类中均含有</p>
-<p>Integer id 、String name 两个成员，我们试着请求一下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;objectType2.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">objectType2</span><span class="params">(User user, Student student)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> user.toString() + <span class="string">&quot; &quot;</span> + student.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;objectType2.do?id&#x3D;8&amp;name&#x3D;Steven</span><br></pre></td></tr></table></figure>
-
-<p>返回结果：User{id=’8’, name=’Steven’} Student{id=’8’, name=’Steven’}</p>
-<p>可以看到，两个对象的值都被赋上了，但是，大部分情况下，不同的对象的值一般都是不同的，为此，我们还有解决办法</p>
-<p>@InitBinder 注解可以帮助我们分开绑定，下面的代码也就是说分别给 user、student 指定一个前缀</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@InitBinder(&quot;user&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initUser</span><span class="params">(WebDataBinder binder)</span> </span>&#123;</span><br><span class="line">    binder.setFieldDefaultPrefix(<span class="string">&quot;user.&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@InitBinder(&quot;student&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initStudent</span><span class="params">(WebDataBinder binder)</span> </span>&#123;</span><br><span class="line">    binder.setFieldDefaultPrefix(<span class="string">&quot;stu.&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;objectType2.do?user.id&#x3D;1&amp;name&#x3D;Steven&amp;stu.id&#x3D;002</span><br></pre></td></tr></table></figure>
-
-<p>当发起这样一个请求后，我们分别指定了 user 和 student 的 id 值，而 name 则是同样的 Steven</p>
-<p>返回结果：User{id=’1’, name=’Steven’, userDetails=null} Student{id=’2’, name=’Steven’}</p>
-<h1 id="数组类型参数绑定"><a href="#数组类型参数绑定" class="headerlink" title="数组类型参数绑定"></a>数组类型参数绑定</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;arrayType.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">arrayType</span><span class="params">(String[] nickname)</span> </span>&#123;</span><br><span class="line">    StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">    <span class="keyword">for</span> (String s : nickname) &#123;</span><br><span class="line">        sb.append(s).append(<span class="string">&quot;, &quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sb.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;arrayType.do?nickname&#x3D;Jack&amp;nickname&#x3D;Steven&amp;nickname&#x3D;Tom</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">返回结果：Jack, Steven, Tom,</span><br></pre></td></tr></table></figure>
-
-<h1 id="集合类型参数绑定"><a href="#集合类型参数绑定" class="headerlink" title="集合类型参数绑定"></a>集合类型参数绑定</h1><h2 id="List-类型"><a href="#List-类型" class="headerlink" title="List 类型"></a>List 类型</h2><p>集合是不能直接进行参数绑定的，所以我们需要创建出一个类，然后在类中进行对 List 的参数绑定</p>
-<p>首先创建 UserList 类，其中我为了演示，只放了  <code>private List&lt;User&gt; users</code> 补充好 get set toString 方法</p>
-<p>控制层方法中，参数就是这个创建出来的类</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;listType.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">listType</span><span class="params">(UserList userList)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> userList.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;listType.do?users[0].id&#x3D;1&amp;users[0].name&#x3D;Jack&amp;users[1].id&#x3D;2&amp;users[1].name&#x3D;Marry</span><br></pre></td></tr></table></figure>
-
-<p>我们的请求，分别将两个user信息存入了 <code>List&lt;User&gt; users</code>中</p>
-<p><strong>特别注意</strong>：如果你的 Tomcat 版本是 7.0 左右 那么上述请求是没问题的，但是如果版本比较高，例如我本身所用的 Tomcat 8.5 ，如果执行上述请求就会报 400 错误</p>
-<blockquote>
-<p><strong>HTTP Status 400 – Bad Request</strong><br><strong>Message</strong> Invalid character found in the request target. The valid characters are defined in RFC 7230 and RFC 3986</p>
-</blockquote>
-<p>这是因为Tomcat高的版本地址中不能使用“[”和“]” ，我们可以将其换成对应的16进制，即 “[” 换成 %5B，“]” 换成 %5D</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;listType.do?users%5B0%5D.id&#x3D;1&amp;users%5B0%5D.name&#x3D;Jack&amp;users%5B1%5D.id&#x3D;2&amp;users%5B1%5D.name&#x3D;Marry</span><br></pre></td></tr></table></figure>
-
-<p>或者直接用 post 请求也是可以的</p>
-<h2 id="Map-类型"><a href="#Map-类型" class="headerlink" title="Map 类型"></a>Map 类型</h2><p>map 类型是一样的套路，我们先创建一个 UserMap类，然后在其中声明 <code>private Map&lt;String,User&gt; users</code> 进而绑定参数</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;mapType.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">mapType</span><span class="params">(UserMap userMap)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> userMap.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;mapType.do?users[&#39;userA&#39;].id&#x3D;1&amp;users[&#39;userA&#39;].name&#x3D;Jack&amp;users[&#39;userB&#39;].id&#x3D;2&amp;users[&#39;userB&#39;].name&#x3D;Tom</span><br></pre></td></tr></table></figure>
-
-<p>同样 “[]” 会遇到上面的错误，所以如果想要在地址栏请求访问，就需要替换字符，或者发起一个 post 请求</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;localhost:8080&#x2F;mapType.do?users%5B%27userA%27%5D.id&#x3D;1&amp;users%5B%27userA%27%5D.name&#x3D;Jack&amp;users%5B%27userB%27%5D.id&#x3D;2&amp;users%5B%27userB%27%5D.name&#x3D;Tom</span><br></pre></td></tr></table></figure>
-
-<p>返回结果：UserMap{users={userA=User{id=’1’, name=’Jack’}, userB=User{id=’2’, name=’Tom’}}}</p>
-<h1 id="JSON-参数绑定"><a href="#JSON-参数绑定" class="headerlink" title="JSON 参数绑定"></a>JSON 参数绑定</h1><p>除了前面表单等提交的方式，我们还有一种ajax的提交方式，常常用来向后端传递以及接受 json 格式的数据，关于 json 字符串和对象之间的转换会用到下面的 jar包</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-databind<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.10.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.10.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.fasterxml.jackson.core<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>jackson-annotations<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.10.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-
-<p>这一块的演示，我们创建一个 Admin 实体类</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Admin</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    ......补充其 get set toString 方法</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="实体参数绑定"><a href="#实体参数绑定" class="headerlink" title="实体参数绑定"></a>实体参数绑定</h2><p>当 ajax 传递的参数很多的时候，使用参数名匹配，会非常麻烦，如果请求的参数在后台中有一个匹配的实体类，我们就可以选择前台传一个 json 到后台，后台使用匹配的实体类进行接收</p>
-<p>提交 JSON： {“id”: “37”,”name”: “张三”}</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    $(<span class="string">&quot;#btn&quot;</span>).click(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">//发送ajax请求</span></span><br><span class="line">        $.ajax(&#123;</span><br><span class="line">            url:<span class="string">&quot;ajaxType1.do&quot;</span>,</span><br><span class="line">            contentType:<span class="string">&quot;application/json&quot;</span>,</span><br><span class="line">            data:<span class="string">&#x27;&#123;&quot;id&quot;:&quot;37&quot;,&quot;name&quot;:&quot;张三&quot;&#125;&#x27;</span>,</span><br><span class="line">            dataType:<span class="string">&quot;json&quot;</span>,</span><br><span class="line">            type:<span class="string">&quot;post&quot;</span>,</span><br><span class="line">            success:<span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">            <span class="comment">//解析响应数据</span></span><br><span class="line">            alert(data.id);</span><br><span class="line">            alert(data.name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p><strong>Contoller</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//用实体接参数</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;ajaxType1.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Admin <span class="title">ajaxType1</span><span class="params">(<span class="meta">@RequestBody</span> Admin admin)</span> </span>&#123;</span><br><span class="line">    System.out.println(admin.toString());</span><br><span class="line">    admin.setName(<span class="string">&quot;测试管理员&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> admin;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>后端参数中的 admin 就会被绑定好参数，供开发者使用</p>
-<p><code>@RequestBody</code> 注解常用来处理 <code>content-type</code>不是默认的<code>application/x-www-form-urlcoded</code>编码的内容，说常处理<code>application/json</code>类型</p>
-<h2 id="Map-参数绑定"><a href="#Map-参数绑定" class="headerlink" title="Map 参数绑定"></a>Map 参数绑定</h2><p>还有一种情况，那就是请求的参数仍然挺多，但是后台也没有一个合适的实体进行匹配，我们也可以考虑使用map来接收</p>
-<p>依旧提交 JSON： {“id”: “37”,”name”: “张三”}</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    $(<span class="string">&quot;#btn&quot;</span>).click(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">//发送ajax请求</span></span><br><span class="line">        $.ajax(&#123;</span><br><span class="line">            url:<span class="string">&quot;ajaxType1.do&quot;</span>,</span><br><span class="line">            contentType:<span class="string">&quot;application/json&quot;</span>,</span><br><span class="line">            data:<span class="string">&#x27;&#123;&quot;id&quot;:&quot;37&quot;,&quot;name&quot;:&quot;张三&quot;&#125;&#x27;</span>,</span><br><span class="line">            dataType:<span class="string">&quot;json&quot;</span>,</span><br><span class="line">            type:<span class="string">&quot;post&quot;</span>,</span><br><span class="line">            success:<span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">            <span class="comment">//解析响应数据</span></span><br><span class="line">            alert(data.id);</span><br><span class="line">            alert(data.name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p>但是 Controller 中我们使用 map 来进行接收，然后简单给了一个实例，将map值封装到 Admin 对象中，然后返回到前端去</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;ajaxType3.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Admin <span class="title">ajaxType3</span><span class="params">(<span class="meta">@RequestBody</span> Map&lt;String, String&gt; map)</span>  </span>&#123;</span><br><span class="line">    Integer id = <span class="keyword">null</span>;</span><br><span class="line">    String name = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (map.containsKey(<span class="string">&quot;id&quot;</span>))&#123;</span><br><span class="line">        id = Integer.parseInt(map.get(<span class="string">&quot;id&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (map.containsKey(<span class="string">&quot;name&quot;</span>))&#123;</span><br><span class="line">        name = map.get(<span class="string">&quot;name&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Admin admin = <span class="keyword">new</span> Admin();</span><br><span class="line">    admin.setId(id);</span><br><span class="line">    admin.setName(name);</span><br><span class="line">    <span class="keyword">return</span> admin;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="List-参数绑定"><a href="#List-参数绑定" class="headerlink" title="List 参数绑定"></a>List 参数绑定</h2><p>同样的，我们还可以使用 list 方式进行接收，它时以 json 数组的形式传递的</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> listType=[];</span><br><span class="line"><span class="keyword">var</span> admin=&#123;&#125;;</span><br><span class="line">admin.id=<span class="number">1</span>;</span><br><span class="line">admin.name=<span class="string">&#x27;汤姆&#x27;</span>;</span><br><span class="line">listType.push(admin);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> admin2=&#123;&#125;;</span><br><span class="line">admin2.id=<span class="number">2</span>;</span><br><span class="line">admin2.name=<span class="string">&#x27;杰克&#x27;</span>;</span><br><span class="line">listType.push(admin2);</span><br><span class="line"></span><br><span class="line">$(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    $(<span class="string">&quot;#btn&quot;</span>).click(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">//发送ajax请求</span></span><br><span class="line">        $.ajax(&#123;</span><br><span class="line">            url:<span class="string">&quot;ajaxType1.do&quot;</span>,</span><br><span class="line">            contentType:<span class="string">&quot;application/json&quot;</span>,</span><br><span class="line">            data:<span class="built_in">JSON</span>.stringify(listType),</span><br><span class="line">            dataType:<span class="string">&quot;json&quot;</span>,</span><br><span class="line">            type:<span class="string">&quot;post&quot;</span>,</span><br><span class="line">            success:<span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">            <span class="comment">//解析响应数据</span></span><br><span class="line">            alert(data.id);</span><br><span class="line">            alert(data.name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p>去后台看一下</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;ajaxType5.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ajaxType5</span><span class="params">(<span class="meta">@RequestBody</span> List&lt;Admin&gt; list)</span>  </span>&#123;</span><br><span class="line"></span><br><span class="line">    System.out.println(list);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (Admin admin : list)&#123;</span><br><span class="line">        System.out.println(admin.getId() + <span class="string">&quot; &quot;</span> + admin.getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>看一下控制台的输出：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[Admin&#123;id=&#x27;1&#x27;, name=&#x27;汤姆&#x27;&#125;, Admin&#123;id=&#x27;2&#x27;, name=&#x27;杰克&#x27;&#125;]</span><br><span class="line">1 汤姆</span><br><span class="line">2 杰克</span><br></pre></td></tr></table></figure>
-
-<h2 id="表单提交"><a href="#表单提交" class="headerlink" title="表单提交"></a>表单提交</h2><p>这是用来提交的表单</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">id</span>=<span class="string">&quot;ajaxForm&quot;</span>  <span class="attr">method</span>=<span class="string">&quot;post&quot;</span>&gt;</span></span><br><span class="line">    id:<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;id&quot;</span>&gt;</span></span><br><span class="line">    name:<span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;name&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>这是 ajax请求，我们也常用<code>$(&quot;#ajaxForm&quot;).serialize()</code> 进行一个表单的序列化，然后提交，但是它只是将Form序列化拼接成了简单的字符串，并不是JSON格式，它是例如这样的：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id=<span class="number">111</span>&amp;name=Steven</span><br></pre></td></tr></table></figure>
-
-<p>所以刚才所说的json那一套就不管用了</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    $(<span class="string">&quot;#btn&quot;</span>).click(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">//发送ajax请求</span></span><br><span class="line">        $.ajax(&#123;</span><br><span class="line">            url:<span class="string">&quot;ajaxType1.do&quot;</span>,</span><br><span class="line">            contentType:<span class="string">&quot;application/json&quot;</span>,</span><br><span class="line">            data:$(<span class="string">&quot;#ajaxForm&quot;</span>).serialize(),</span><br><span class="line">            dataType:<span class="string">&quot;json&quot;</span>,</span><br><span class="line">            type:<span class="string">&quot;post&quot;</span>,</span><br><span class="line">            success:<span class="function"><span class="keyword">function</span> (<span class="params">data</span>) </span>&#123;</span><br><span class="line">            <span class="comment">//解析响应数据</span></span><br><span class="line">            alert(data.id);</span><br><span class="line">            alert(data.name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p>如果想要使用序列化，同时还想要传递 json 格式到后台，也不是没办法</p>
-<p>我们需要添加一个方法</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">$.fn.serializeObject = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> o = &#123;&#125;;</span><br><span class="line">    <span class="keyword">var</span> a = <span class="built_in">this</span>.serializeArray();</span><br><span class="line">    $.each(a, <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (o[<span class="built_in">this</span>.name]) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!o[<span class="built_in">this</span>.name].push) &#123;</span><br><span class="line">                o[<span class="built_in">this</span>.name] = [o[<span class="built_in">this</span>.name]];</span><br><span class="line">             &#125;</span><br><span class="line">            o[<span class="built_in">this</span>.name].push(<span class="built_in">this</span>.value || <span class="string">&#x27;&#x27;</span>);</span><br><span class="line">         &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            o[<span class="built_in">this</span>.name] = <span class="built_in">this</span>.value || <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">         &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> o;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>同时将下面 ajax 中的 data修改为</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data:<span class="built_in">JSON</span>.stringify($(<span class="string">&quot;#ajaxForm&quot;</span>).serializeObject()),</span><br></pre></td></tr></table></figure>
-
-<p>后台就能获取到 json 格式了</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">&quot;id&quot;</span>:<span class="string">&quot;111&quot;</span>,<span class="attr">&quot;name&quot;</span>:<span class="string">&quot;Steven&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="XML-参数绑定"><a href="#XML-参数绑定" class="headerlink" title="XML 参数绑定"></a>XML 参数绑定</h1><p>后台非常简单，和前面没什么区别，我们需要在实体中进行一些操作</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping(&quot;xmlType.do&quot;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">xmlType</span><span class="params">(<span class="meta">@RequestBody</span> Student student)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> student.toString();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这种情况下，我们需要借助一个jar包 —— spring-oxm，自己可以导入一下</p>
-<p>然后我们需要在接受的实体那里，添加 @XmlRootElement 和 @XmlElement 注解，来代表根节点和子节点</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.ideal.Object;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.xml.bind.annotation.XmlElement;</span><br><span class="line"><span class="keyword">import</span> javax.xml.bind.annotation.XmlRootElement;</span><br><span class="line"></span><br><span class="line"><span class="meta">@XmlRootElement(name = &quot;student&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Student</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlElement(name = &quot;id&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(Integer id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@XmlElement(name = &quot;name&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Student&#123;&quot;</span> +</span><br><span class="line">                <span class="string">&quot;id=&#x27;&quot;</span> + id + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&quot;, name=&#x27;&quot;</span> + name + <span class="string">&#x27;\&#x27;&#x27;</span> +</span><br><span class="line">                <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>例如我们xml为</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">student</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">id</span>&gt;</span>66<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">name</span>&gt;</span>Steven<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">student</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>然后发起请求，注意将Content-Type 改为 application/xml</p>
-<p>返回的结果：Student{id=’66’, name=’Steven’}</p>
-<h1 id="PropertyEditor、Formatter、Converter自定义格式化工具和类型转换器"><a href="#PropertyEditor、Formatter、Converter自定义格式化工具和类型转换器" class="headerlink" title="PropertyEditor、Formatter、Converter自定义格式化工具和类型转换器"></a>PropertyEditor、Formatter、Converter自定义格式化工具和类型转换器</h1><p>​     </p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/08/Springboot%E5%AD%A6%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/08/Springboot%E5%AD%A6%E4%B9%A0/" itemprop="url">Spring学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-08T23:45:08+08:00">
-                2021-04-08
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-Spring%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
-                    <span itemprop="name">常用框架 - Spring知识点</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>参考：</strong><a target="_blank" rel="noopener" href="https://snailclimb.gitee.io/javaguide/#/docs/system-design/framework/spring/Spring%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93?id=_91-%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8jpa%e5%9c%a8%e6%95%b0%e6%8d%ae%e5%ba%93%e4%b8%ad%e9%9d%9e%e6%8c%81%e4%b9%85%e5%8c%96%e4%b8%80%e4%b8%aa%e5%ad%97%e6%ae%b5%ef%bc%9f">Spring 常见问题总结</a></p>
-<h1 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h1><h2 id="什么是-Spring-框架"><a href="#什么是-Spring-框架" class="headerlink" title="什么是 Spring 框架?"></a>什么是 Spring 框架?</h2><p>我们一般说 Spring 框架指的都是 Spring  Framework，它是很多模块的集合，使用这些模块可以很方便地协助我们进行开发。这些模块是：核心容器、数据访问/集成,、Web、AOP（面向切面编程）、工具、消息和测试模块。比如：Core Container 中的 Core 组件是Spring 所有组件的核心，Beans 组件和 Context  组件是实现IOC和依赖注入的基础，AOP组件用来实现面向切面编程。</p>
-<p>Spring 官网列出的 Spring 的 6 个特征:</p>
-<ul>
-<li><strong>核心技术</strong> ：依赖注入(DI)，AOP，事件(events)，资源，i18n，验证，数据绑定，类型转换，SpEL。</li>
-<li><strong>测试</strong> ：模拟对象，TestContext框架，Spring MVC 测试，WebTestClient。</li>
-<li><strong>数据访问</strong> ：事务，DAO支持，JDBC，ORM，编组XML。</li>
-<li><strong>Web支持</strong> : Spring MVC和Spring WebFlux Web框架。</li>
-<li><strong>集成</strong> ：远程处理，JMS，JCA，JMX，电子邮件，任务，调度，缓存。</li>
-<li><strong>语言</strong> ：Kotlin，Groovy，动态语言。</li>
-</ul>
-<h2 id="列举一些重要的Spring模块？"><a href="#列举一些重要的Spring模块？" class="headerlink" title="列举一些重要的Spring模块？"></a>列举一些重要的Spring模块？</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/Spring%E6%A8%A1%E5%9D%97.png" alt="Spring主要模块"></p>
-<ul>
-<li><strong>Spring Core：</strong> 基础,可以说 Spring 其他所有的功能都需要依赖于该类库。主要提供 IoC 依赖注入功能。</li>
-<li><strong>Spring  Aspects</strong> ： 该模块为与AspectJ的集成提供支持。</li>
-<li><strong>Spring AOP</strong> ：提供了面向切面的编程实现。</li>
-<li><strong>Spring JDBC</strong> : Java数据库连接。</li>
-<li><strong>Spring JMS</strong> ：Java消息服务。</li>
-<li><strong>Spring ORM</strong> : 用于支持Hibernate等ORM工具。</li>
-<li><strong>Spring Web</strong> : 为创建Web应用程序提供支持。</li>
-<li><strong>Spring Test</strong> : 提供了对 JUnit 和 TestNG 测试的支持。</li>
-</ul>
-<h2 id="RestController-vs-Controller"><a href="#RestController-vs-Controller" class="headerlink" title="@RestController vs @Controller"></a>@RestController vs @Controller</h2><p><strong><code>Controller</code> 返回一个页面</strong></p>
-<p>单独使用 <code>@Controller</code> 不加 <code>@ResponseBody</code>的话一般使用在要返回一个视图的情况，这种情况属于比较传统的Spring MVC 的应用，对应于前后端不分离的情况。</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/%40RestController%20vs%20%40Controller1.png" alt="SpringMVC 传统工作流程"></p>
-<p><strong><code>@RestController</code> 返回JSON 或 XML 形式数据</strong></p>
-<p>但<code>@RestController</code>只返回对象，对象数据直接以 JSON 或 XML 形式写入 HTTP 响应(Response)中，这种情况属于 RESTful Web服务，这也是目前日常开发所接触的最常用的情况（前后端分离）。</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/%40RestController%20vs%20%40Controller2.png" alt="SpringMVC+RestController"></p>
-<p><strong><code>@Controller +@ResponseBody</code> 返回JSON 或 XML 形式数据</strong></p>
-<p>如果你需要在Spring4之前开发 RESTful Web服务的话，你需要使用<code>@Controller</code> 并结合<code>@ResponseBody</code>注解，也就是说<code>@Controller</code> +<code>@ResponseBody</code>= <code>@RestController</code>（Spring 4 之后新加的注解）。</p>
-<blockquote>
-<p><code>@ResponseBody</code> 注解的作用是将 <code>Controller</code> 的方法返回的对象通过适当的转换器转换为指定的格式之后，写入到HTTP 响应(Response)对象的 body 中，通常用来返回 JSON 或者 XML 数据，返回 JSON 数据的情况比较多。</p>
-</blockquote>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/%40RestController%20vs%20%40Controller3.png" alt="Spring3.xMVC RESTfulWeb服务工作流程"></p>
-<h2 id="Spring-IOC-amp-AOP"><a href="#Spring-IOC-amp-AOP" class="headerlink" title="Spring IOC &amp; AOP"></a>Spring IOC &amp; AOP</h2><h3 id="谈谈自己对于-Spring-IoC-和-AOP-的理解"><a href="#谈谈自己对于-Spring-IoC-和-AOP-的理解" class="headerlink" title="谈谈自己对于 Spring IoC 和 AOP 的理解"></a>谈谈自己对于 Spring IoC 和 AOP 的理解</h3><h4 id="IoC"><a href="#IoC" class="headerlink" title="IoC"></a>IoC</h4><p>IoC（Inverse of Control:控制反转）是一种<strong>设计思想</strong>，就是 <strong>将原本在程序中手动创建对象的控制权，交由Spring框架来管理。</strong>  IoC 在其他语言中也有应用，并非 Spring 特有。 <strong>IoC 容器是 Spring 用来实现 IoC 的载体，  IoC 容器实际上就是个Map（key，value）,Map 中存放的是各种对象。</strong></p>
-<p>将对象之间的相互依赖关系交给 IoC 容器来管理，并由 IoC 容器完成对象的注入。这样可以很大程度上简化应用的开发，把应用从复杂的依赖关系中解放出来。  <strong>IoC 容器就像是一个工厂一样，当我们需要创建一个对象的时候，只需要配置好配置文件/注解即可，完全不用考虑对象是如何被创建出来的。</strong> </p>
-<p>在实际项目中一个 Service 类可能有几百甚至上千个类作为它的底层，假如我们需要实例化这个 Service，你可能要每次都要搞清这个  Service 所有底层类的构造函数，这可能会把人逼疯。如果利用 IoC  的话，你只需要配置好，然后在需要的地方引用就行了，这大大增加了项目的可维护性且降低了开发难度。</p>
-<p>Spring 时代我们一般通过 XML 文件来配置 Bean，后来开发人员觉得 XML 文件来配置不太好，于是 SpringBoot 注解配置就慢慢开始流行起来。</p>
-<p><strong>Spring IoC的初始化过程：</strong> </p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/Spring%20IoC%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.png" alt="Spring IoC的初始化过程"></p>
-<h4 id="AOP"><a href="#AOP" class="headerlink" title="AOP"></a>AOP</h4><p>AOP(Aspect-Oriented Programming:面向切面编程)能够将那些与业务无关，<strong>却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来</strong>，便于<strong>减少系统的重复代码</strong>，<strong>降低模块间的耦合度</strong>，并<strong>有利于未来的可拓展性和可维护性</strong>。</p>
-<p><strong>Spring AOP就是基于动态代理的</strong>，如果要代理的对象，实现了某个接口，那么Spring AOP会使用<strong>JDK Proxy</strong>，去创建代理对象，而对于没有实现接口的对象，就无法使用 JDK Proxy 去进行代理了，这时候Spring AOP会使用<strong>Cglib</strong> ，这时候Spring AOP会使用 <strong>Cglib</strong> 生成一个被代理对象的子类来作为代理，如下图所示：</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/SpringAOP.png" alt="SpringAOPProcess"></p>
-<p>当然你也可以使用 AspectJ ,Spring AOP 已经集成了AspectJ  ，AspectJ  应该算的上是 Java 生态系统中最完整的 AOP 框架了。</p>
-<p>使用 AOP 之后我们可以把一些通用功能抽象出来，在需要用到的地方直接使用即可，这样大大简化了代码量。我们需要增加新功能时也方便，这样也提高了系统扩展性。日志功能、事务管理等等场景都用到了 AOP 。</p>
-<h5 id="Spring-中，优先使用哪种-AOP-呢"><a href="#Spring-中，优先使用哪种-AOP-呢" class="headerlink" title="Spring 中，优先使用哪种 AOP 呢"></a>Spring 中，优先使用哪种 AOP 呢</h5><p>（1）如果目标对象实现了接口，默认会采用 JDK 的动态代理，但也可以强制使用 CGLIB；</p>
-<p>（2）如果目标对象没有实现了接口，则必须采用 CGLIB 库。</p>
-<p>Spring 会自动在 JDK 动态代理和 CGLIB 之间转换。</p>
-<h3 id="Spring-AOP-和-AspectJ-AOP-有什么区别？"><a href="#Spring-AOP-和-AspectJ-AOP-有什么区别？" class="headerlink" title="Spring AOP 和 AspectJ AOP 有什么区别？"></a>Spring AOP 和 AspectJ AOP 有什么区别？</h3><p><strong>Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。</strong> Spring AOP 基于代理(Proxying)，而 AspectJ 基于字节码操作(Bytecode Manipulation)。</p>
-<p> Spring AOP 已经集成了 AspectJ  ，AspectJ  应该算的上是 Java 生态系统中最完整的 AOP 框架了。AspectJ  相比于 Spring AOP 功能更加强大，但是 Spring AOP 相对来说更简单，</p>
-<p>如果我们的切面比较少，那么两者性能差异不大。但是，当切面太多的话，最好选择 AspectJ ，它比Spring AOP 快很多。</p>
-<h3 id="说说-Spring-的-AOP-的原理是什么？实现-AOP-有哪些方式？"><a href="#说说-Spring-的-AOP-的原理是什么？实现-AOP-有哪些方式？" class="headerlink" title="说说 Spring 的 AOP 的原理是什么？实现 AOP 有哪些方式？"></a>说说 Spring 的 AOP 的原理是什么？实现 AOP 有哪些方式？</h3><p>Spring AOP 的底层使用的是<strong>动态代理</strong>，有两种实现方式：</p>
-<p><strong>JDK 动态代理</strong>：利用反射机制生成一个实现代理接口的匿名类，在调用具体方法前调用 InvokeHandler 来处理。</p>
-<p><strong>CGlib 动态代理</strong>：以 CGLIB（Code Generation Library）的方式进行代理，它采用底层字节码技术，将代理对象类的 class 文件加载进来，通过修改其字节码生成子类来处理。</p>
-<p><strong>区别:</strong></p>
-<p>JDK 代理只能对实现接口的类生成代理；</p>
-<p>CGLIB 是针对类实现代理，继承指定类并生成一个子类，因此不能代理 final 修饰的类。</p>
-<h3 id="Spring-中，优先使用哪种-AOP-呢-1"><a href="#Spring-中，优先使用哪种-AOP-呢-1" class="headerlink" title="Spring 中，优先使用哪种 AOP 呢"></a>Spring 中，优先使用哪种 AOP 呢</h3><p>（1）如果目标对象实现了接口，默认会采用 JDK 的动态代理，但也可以强制使用 CGLIB；</p>
-<p>（2）如果目标对象没有实现了接口，则必须采用 CGLIB 库。</p>
-<p>Spring 会自动在 JDK 动态代理和 CGLIB 之间转换。</p>
-<h2 id="Spring-bean"><a href="#Spring-bean" class="headerlink" title="Spring bean"></a>Spring bean</h2><h3 id="Spring-中的-bean-的作用域有哪些"><a href="#Spring-中的-bean-的作用域有哪些" class="headerlink" title="Spring 中的 bean 的作用域有哪些?"></a>Spring 中的 bean 的作用域有哪些?</h3><ul>
-<li>singleton : 唯一 bean 实例，Spring 中的 bean 默认都是单例的。</li>
-<li>prototype : 每次请求都会创建一个新的 bean 实例。</li>
-<li>request : 每一次HTTP请求都会产生一个新的bean，该bean仅在当前HTTP request内有效。</li>
-<li>session : 每一次HTTP请求都会产生一个新的 bean，该bean仅在当前 HTTP session 内有效。</li>
-<li>global-session：  全局session作用域，仅仅在基于portlet的web应用中才有意义，Spring5已经没有了。Portlet是能够生成语义代码(例如：HTML)片段的小型Java Web插件。它们基于portlet容器，可以像servlet一样处理HTTP请求。但是，与 servlet 不同，每个 portlet  都有不同的会话</li>
-</ul>
-<h3 id="Spring-中的单例-bean-的线程安全问题了解吗？"><a href="#Spring-中的单例-bean-的线程安全问题了解吗？" class="headerlink" title="Spring 中的单例 bean 的线程安全问题了解吗？"></a>Spring 中的单例 bean 的线程安全问题了解吗？</h3><p>的确是存在安全问题的。因为，当多个线程操作同一个对象的时候，对这个对象的成员变量的写操作会存在线程安全问题。</p>
-<p>但是，一般情况下，我们常用的 <code>Controller</code>、<code>Service</code>、<code>Dao</code> 这些 Bean 是无状态的。无状态的 Bean 不能保存数据，因此是线程安全的。</p>
-<p>常见的有 2 种解决办法：</p>
-<ol>
-<li>在类中定义一个 <code>ThreadLocal</code> 成员变量，将需要的可变成员变量保存在  <code>ThreadLocal</code>  中（推荐的一种方式）。</li>
-<li>改变 Bean 的作用域为 “prototype”：每次请求都会创建一个新的 bean 实例，自然不会存在线程安全问题。</li>
-</ol>
-<h3 id="Component-和-Bean-的区别是什么？"><a href="#Component-和-Bean-的区别是什么？" class="headerlink" title="@Component 和 @Bean 的区别是什么？"></a>@Component 和 @Bean 的区别是什么？</h3><ol>
-<li>作用对象不同: <code>@Component</code> 注解作用于类，而<code>@Bean</code>注解作用于方法。</li>
-<li><code>@Component</code>通常是通过类路径扫描来自动侦测以及自动装配到Spring容器中（我们可以使用 <code>@ComponentScan</code> 注解定义要扫描的路径从中找出标识了需要装配的类自动装配到 Spring 的 bean 容器中）。<code>@Bean</code> 注解通常是我们在标有该注解的方法中定义产生这个 bean,<code>@Bean</code>告诉了Spring这是某个类的示例，当我需要用它的时候还给我。</li>
-<li><code>@Bean</code> 注解比 <code>Component</code> 注解的自定义性更强，而且很多地方我们只能通过 <code>@Bean</code> 注解来注册bean。比如当我们引用第三方库中的类需要装配到 <code>Spring</code>容器时，则只能通过 <code>@Bean</code>来实现。</li>
-</ol>
-<p><code>@Bean</code>注解使用示例：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppConfig</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> TransferService <span class="title">transferService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> TransferServiceImpl();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p> 上面的代码相当于下面的 xml 配置</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">beans</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;transferService&quot;</span> <span class="attr">class</span>=<span class="string">&quot;com.acme.TransferServiceImpl&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">beans</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>下面这个例子是通过 <code>@Component</code> 无法实现的。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> OneService <span class="title">getService</span><span class="params">(status)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">case</span> (status)  &#123;</span><br><span class="line">        when <span class="number">1</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> serviceImpl1();</span><br><span class="line">        when <span class="number">2</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> serviceImpl2();</span><br><span class="line">        when <span class="number">3</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> serviceImpl3();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="将一个类声明为Spring的-bean-的注解有哪些"><a href="#将一个类声明为Spring的-bean-的注解有哪些" class="headerlink" title="将一个类声明为Spring的 bean 的注解有哪些?"></a>将一个类声明为Spring的 bean 的注解有哪些?</h3><p>我们一般使用 <code>@Autowired</code> 注解自动装配 bean，要想把类标识成可用于 <code>@Autowired</code> 注解自动装配的 bean 的类,采用以下注解可实现：</p>
-<ul>
-<li><code>@Component</code> ：通用的注解，可标注任意类为 <code>Spring</code> 组件。如果一个Bean不知道属于哪个层，可以使用<code>@Component</code> 注解标注。</li>
-<li><code>@Repository</code> : 对应持久层即 Dao 层，主要用于数据库相关操作。</li>
-<li><code>@Service</code> : 对应服务层，主要涉及一些复杂的逻辑，需要用到 Dao层。</li>
-<li><code>@Controller</code> : 对应 Spring MVC 控制层，主要用于接受用户请求并调用 Service 层返回数据给前端页面。</li>
-</ul>
-<h3 id="Spring-中的-bean-生命周期"><a href="#Spring-中的-bean-生命周期" class="headerlink" title="Spring 中的 bean 生命周期?"></a>Spring 中的 bean 生命周期?</h3><ul>
-<li>Bean 容器找到配置文件中 Spring Bean 的定义。</li>
-</ul>
-<p><strong>（1）实例化 Bean：</strong></p>
-<p>对于 BeanFactory 容器，当向容器请求一个尚未初始化的 bean 时，或初始化 bean 的时候需要注入另一个尚未初始化 bean 的依赖时，容器就会调用 createBean 进行实例化；</p>
-<p>对于 ApplicationContext 容器，当容器启动结束后，通过获取 BeanDefinition 对象中的信息，实例化所有的 bean。</p>
-<p><strong>（2）设置对象属性（依赖注入）：</strong></p>
-<p>实例化后的 Bean 被封装在 BeanWrapper 对象中，然后 Spring 根据 BeanDefinition 中的信息以及通过 BeanWrapper 提供的设置属性的接口完成依赖注入。</p>
-<p><strong>（3）处理 Aware 接口：</strong></p>
-<p>Spring 会检测该 Bean 是否实现了 xxxAware 接口，并将相关的 xxxAware 实例注入给 Bean：</p>
-<p>① 如果该 Bean 实现了 BeanNameAware 接口，会调用它实现的 setBeanName (String beanId) 方法，入参是 Spring 配置文件中 Bean 的 id 值；</p>
-<p>② 如果该 Bean 实现了 BeanFactoryAware 接口，会调用它实现的 setBeanFactory () 方法，传递的是 Spring 工厂自身。</p>
-<p>③ 如果该 Bean 已经实现了 ApplicationContextAware 接口，会调用 setApplicationContext (ApplicationContext) 方法，入参是 Spring 上下文；</p>
-<p><strong>（4）处理 BeanPostProcessor 接口：</strong></p>
-<p>如果该 Bean 实现了实现了 BeanPostProcessor 接口，那将会调用 postProcessBeforeInitialization (Object obj, String s) 方法；</p>
-<p><strong>（5）InitializingBean 与 init-method：</strong><br> 如果该 Bean 在 xml 中配置了 init-method 属性，则会自动调用其配置的初始化方法。</p>
-<p>以上几个步骤完成后，Bean 就已经被正确创建了，之后就可以使用这个 Bean 了。</p>
-<p><strong>（6）处理 DisposableBean 接口：</strong></p>
-<p>当 Bean 不再需要时，会经过清理阶段，如果 Bean 实现了 DisposableBean 这个接口，会调用其实现的 destroy () 方法；</p>
-<p><strong>（7）处理 destroy-method 属性：</strong></p>
-<p>最后，如果这个 Bean 的 Spring 配置中配置了 destroy-method 属性，会自动调用其配置的销毁方法。</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/Spring%20%E4%B8%AD%E7%9A%84%20bean%20%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.png" alt="Spring Bean 生命周期"></p>
-<h3 id="Spring常见的依赖注入方式"><a href="#Spring常见的依赖注入方式" class="headerlink" title="Spring常见的依赖注入方式"></a>Spring常见的依赖注入方式</h3><ul>
-<li>构造器注入：利用构造方法的参数注入依赖</li>
-<li>Setter注入：调用Setter的方法注入依赖</li>
-<li>字段注入：在字段上使用@Autowired/Resource注解</li>
-</ul>
-<h4 id="Autowired-VS-Resource"><a href="#Autowired-VS-Resource" class="headerlink" title="@Autowired VS @Resource"></a>@Autowired VS @Resource</h4><p>事实上，他们的基本功能都是通过注解实现依赖注入，只不过@Autowired是Spring定义的，而@Resource是JSR-250定义的。大致功能基本相同，但是还有一些细节不同：</p>
-<ul>
-<li>依赖识别方式：@Autowired默认是byType可以使用@Qualifier指定Name，@Resource默认ByName如果找不到则ByType</li>
-<li>适用对象：@Autowired可以对构造器、方法、参数、字段使用，@Resource只能对方法、字段使用</li>
-<li>提供方：@Autowired是Spring提供的，@Resource是JSR-250提供的</li>
-</ul>
-<h4 id="各种依赖注入方式的优缺点"><a href="#各种依赖注入方式的优缺点" class="headerlink" title="各种依赖注入方式的优缺点"></a>各种依赖注入方式的优缺点</h4><ul>
-<li>构造器注入：强依赖性（即必须使用此依赖），不变性（各依赖不会经常变动）</li>
-<li>Setter注入：可选（没有此依赖也可以工作），可变（依赖会经常变动）</li>
-<li>Field注入：大多数情况下尽量少使用字段注入，一定要使用的话，@Resource相对@Autowired对IoC容器的耦合更低</li>
-</ul>
-<h4 id="Field注入的缺点"><a href="#Field注入的缺点" class="headerlink" title="Field注入的缺点"></a>Field注入的缺点</h4><ul>
-<li>不能像构造器那样注入不可变的对象</li>
-<li>依赖对外部不可见，外界可以看到构造器和setter，但无法看到私有字段，自然无法了解所需依赖</li>
-<li>会导致组件与IoC容器紧耦合（这是最重要的原因，离开了IoC容器去使用组件，在注入依赖时就会十分困难）</li>
-<li>导致单元测试也必须使用IoC容器，原因同上</li>
-<li>依赖过多时不够明显，比如我需要10个依赖，用构造器注入就会显得庞大，这时候应该考虑一下此组件是不是违反了单一职责原则<br>为什么IDEA只对@Autowired警告</li>
-</ul>
-<h4 id="为什么IDEA只对-Autowired警告"><a href="#为什么IDEA只对-Autowired警告" class="headerlink" title="为什么IDEA只对@Autowired警告"></a>为什么IDEA只对@Autowired警告</h4><p>Field注入虽然有很多缺点，但它的好处也不可忽略：那就是太方便了。</p>
-<p>使用构造器或者setter注入需要写更多业务无关的代码，十分麻烦，而字段注入大幅简化了它们。并且绝大多数情况下业务代码和框架就是强绑定的，完全松耦合只是一件理想上的事，牺牲了敏捷度去过度追求松耦合反而得不偿失。</p>
-<p>为什么IDEA只对@Autowired警告，却对@Resource视而不见呢？</p>
-<p>@Autowired是Spring提供的，它是特定IoC提供的特定注解，这就导致了应用与框架的强绑定，一旦换用了其他的IoC框架，是不能够支持注入的。</p>
-<p>@Resource是JSR-250提供的，它是Java标准，我们使用的IoC容器应当去兼容它，这样即使更换容器，也可以正常工作。</p>
-<h5 id="工作中的使用"><a href="#工作中的使用" class="headerlink" title="工作中的使用"></a>工作中的使用</h5><p>给类加<code>@RequiredArgsConstructor</code>注解，使用<code>private final</code>修饰注入对象</p>
-<h3 id="我们在Service层能不能注入Controller的Bean？"><a href="#我们在Service层能不能注入Controller的Bean？" class="headerlink" title="我们在Service层能不能注入Controller的Bean？"></a>我们在Service层能不能注入Controller的Bean？</h3><blockquote>
-<p>一般我们使用Spring的时候可以注入并正常使用的，但是使用SpringMVC+Spring的时候不能</p>
-</blockquote>
-<p>Spring和SpringMVC都会根据自己的配置文件去生成各自的容器，那Spring的叫做父容器，SpringMVC的叫做子容器。但是其主要区别在于：子容器可以访问父容器中的Bean，而父容器不能访问子容器中的Bean，所说我们可以在Controller中注入@Service，@Component，@Repository等Bean，但如果想要在Service中注入@Controller Bean是不可以的 ，因为父容器不能访问子容器中的Bean，实际我们也不会这样用。</p>
-<h3 id="为什么要分两个容器来存放Bean呢，我使用Spring扫描全部的Bean有没有问题？"><a href="#为什么要分两个容器来存放Bean呢，我使用Spring扫描全部的Bean有没有问题？" class="headerlink" title="为什么要分两个容器来存放Bean呢，我使用Spring扫描全部的Bean有没有问题？"></a>为什么要分两个容器来存放Bean呢，我使用Spring扫描全部的Bean有没有问题？</h3><p>如果我们使用Spring扫描所有的Bean，那说明所有的Bean都在父容器中，那SpringMVC会找不到Controller对象的，因为HandleMapping在找Controller时默认是不会去父容器中找的（HandleMapping处理器映射器）。如果你真的想把Controller的Bean存入父容器中，可以通过手动配置让它从父容器中找。但是这样会对HandlerMapping的配置不太好，约定大于配置嘛！（另外，如果所有Bean都在父容器中时，Controller的Bean是可以注入到Service的，因为两者都在Spring容器中）</p>
-<h2 id="Spring-MVC"><a href="#Spring-MVC" class="headerlink" title="Spring MVC"></a>Spring MVC</h2><h3 id="说说自己对于-Spring-MVC-了解"><a href="#说说自己对于-Spring-MVC-了解" class="headerlink" title="说说自己对于 Spring MVC 了解?"></a>说说自己对于 Spring MVC 了解?</h3><p>MVC 是一种设计模式。Spring MVC 可以帮助我们进行更简洁的Web层的开发，并且它天生与 Spring 框架集成。Spring  MVC 下我们一般把后端项目分为  Service层（处理业务）、Dao层（数据库操作）、Entity层（实体类）、Controller层(控制层，返回数据给前台页面)。</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/Spring%20MVC.png" alt="img"></p>
-<h3 id="SpringMVC-工作原理了解吗"><a href="#SpringMVC-工作原理了解吗" class="headerlink" title="SpringMVC 工作原理了解吗?"></a>SpringMVC 工作原理了解吗?</h3><p><strong>原理如下图所示：</strong></p>
-<blockquote>
-<p>笔误的：Spring MVC 的入口函数也就是前端控制器 <code>DispatcherServlet</code> 的作用是接收请求，响应结果。</p>
-</blockquote>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/SpringMVC%20%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86.png" alt="SpringMVC运行原理"></p>
-<p><strong>流程说明（重要）：</strong></p>
-<ol>
-<li>客户端（浏览器）发送请求，直接请求到 <code>DispatcherServlet</code>。</li>
-<li><code>DispatcherServlet</code> 根据请求信息调用 <code>HandlerMapping</code>，解析请求对应的 <code>Handler</code>。</li>
-<li>解析到对应的 <code>Handler</code>（也就是我们平常说的 <code>Controller</code> 控制器）后，开始由 <code>HandlerAdapter</code> 适配器处理。</li>
-<li><code>HandlerAdapter</code> 会根据 <code>Handler </code>来调用真正的处理器来处理请求，并处理相应的业务逻辑。</li>
-<li>处理器处理完业务后，会返回一个 <code>ModelAndView</code> 对象，<code>Model</code> 是返回的数据对象，<code>View</code> 是个逻辑上的 <code>View</code>。</li>
-<li><code>ViewResolver</code> 会根据逻辑 <code>View</code> 查找实际的 <code>View</code>。</li>
-<li><code>DispaterServlet</code> 把返回的 <code>Model</code> 传给 <code>View</code>（视图渲染）。</li>
-<li>把 <code>View</code> 返回给请求者（浏览器）<h2 id="Spring-框架中用到了哪些设计模式？"><a href="#Spring-框架中用到了哪些设计模式？" class="headerlink" title="Spring 框架中用到了哪些设计模式？"></a>Spring 框架中用到了哪些设计模式？</h2></li>
-</ol>
-<ul>
-<li><strong>工厂设计模式</strong> : Spring使用工厂模式通过 <code>BeanFactory</code>、<code>ApplicationContext</code> 创建 bean 对象。</li>
-<li><strong>代理设计模式</strong> : Spring AOP 功能的实现。</li>
-<li><strong>单例设计模式</strong> : Spring 中的 Bean 默认都是单例的。</li>
-<li><strong>模板方法模式</strong> : Spring 中 <code>jdbcTemplate</code>、<code>hibernateTemplate</code> 等以 Template 结尾的对数据库操作的类，它们就使用到了模板模式。</li>
-<li><strong>包装器设计模式</strong> : 我们的项目需要连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。</li>
-<li><strong>观察者模式:</strong> Spring 事件驱动模型就是观察者模式很经典的一个应用。</li>
-<li><strong>适配器模式</strong> :Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配<code>Controller</code>。</li>
-</ul>
-<h2 id="Spring-事务"><a href="#Spring-事务" class="headerlink" title="Spring 事务"></a>Spring 事务</h2><h3 id="Spring-管理事务的方式有几种？"><a href="#Spring-管理事务的方式有几种？" class="headerlink" title="Spring 管理事务的方式有几种？"></a>Spring 管理事务的方式有几种？</h3><ol>
-<li>编程式事务，在代码中硬编码。(不推荐使用)</li>
-<li>声明式事务，在配置文件中配置（推荐使用）</li>
-</ol>
-<p><strong>声明式事务又分为两种：</strong></p>
-<ol>
-<li>基于XML的声明式事务</li>
-<li>基于注解的声明式事务</li>
-</ol>
-<h3 id="Spring-事务中的隔离级别有哪几种"><a href="#Spring-事务中的隔离级别有哪几种" class="headerlink" title="Spring 事务中的隔离级别有哪几种?"></a>Spring 事务中的隔离级别有哪几种?</h3><p><strong>TransactionDefinition 接口中定义了五个表示隔离级别的常量：</strong></p>
-<ul>
-<li><strong>TransactionDefinition.ISOLATION_DEFAULT:</strong>  使用后端数据库默认的隔离级别，Mysql 默认采用的 REPEATABLE_READ隔离级别 Oracle 默认采用的 READ_COMMITTED隔离级别.</li>
-<li><strong>TransactionDefinition.ISOLATION_READ_UNCOMMITTED:</strong> 最低的隔离级别，允许读取尚未提交的数据变更，<strong>可能会导致脏读、幻读或不可重复读</strong></li>
-<li><strong>TransactionDefinition.ISOLATION_READ_COMMITTED:</strong>   允许读取并发事务已经提交的数据，<strong>可以阻止脏读，但是幻读或不可重复读仍有可能发生</strong></li>
-<li><strong>TransactionDefinition.ISOLATION_REPEATABLE_READ:</strong>  对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，<strong>可以阻止脏读和不可重复读，但幻读仍有可能发生。</strong></li>
-<li><strong>TransactionDefinition.ISOLATION_SERIALIZABLE:</strong>   最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，<strong>该级别可以防止脏读、不可重复读以及幻读</strong>。但是这将严重影响程序的性能。通常情况下也不会用到该级别。</li>
-</ul>
-<h3 id="Spring-事务中哪几种事务传播行为"><a href="#Spring-事务中哪几种事务传播行为" class="headerlink" title="Spring 事务中哪几种事务传播行为?"></a>Spring 事务中哪几种事务传播行为?</h3><p><strong>支持当前事务的情况：</strong></p>
-<ul>
-<li><strong>TransactionDefinition.PROPAGATION_REQUIRED：</strong> 如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务。</li>
-<li><strong>TransactionDefinition.PROPAGATION_SUPPORTS：</strong> 如果当前存在事务，则加入该事务；如果当前没有事务，则以非事务的方式继续运行。</li>
-<li><strong>TransactionDefinition.PROPAGATION_MANDATORY：</strong> 如果当前存在事务，则加入该事务；如果当前没有事务，则抛出异常。（mandatory：强制性）</li>
-</ul>
-<p><strong>不支持当前事务的情况：</strong></p>
-<ul>
-<li><strong>TransactionDefinition.PROPAGATION_REQUIRES_NEW：</strong> 创建一个新的事务，如果当前存在事务，则把当前事务挂起。</li>
-<li><strong>TransactionDefinition.PROPAGATION_NOT_SUPPORTED：</strong> 以非事务方式运行，如果当前存在事务，则把当前事务挂起。</li>
-<li><strong>TransactionDefinition.PROPAGATION_NEVER：</strong> 以非事务方式运行，如果当前存在事务，则抛出异常。</li>
-</ul>
-<p><strong>其他情况：</strong></p>
-<ul>
-<li><strong>TransactionDefinition.PROPAGATION_NESTED：</strong> 如果当前存在事务，则创建一个事务作为当前事务的嵌套事务来运行；如果当前没有事务，则该取值等价于TransactionDefinition.PROPAGATION_REQUIRED。</li>
-</ul>
-<h3 id="Transactional-rollbackFor-Exception-class-注解了解吗？"><a href="#Transactional-rollbackFor-Exception-class-注解了解吗？" class="headerlink" title="@Transactional(rollbackFor = Exception.class)注解了解吗？"></a>@Transactional(rollbackFor = Exception.class)注解了解吗？</h3><p>我们知道：Exception分为运行时异常RuntimeException和非运行时异常。事务管理对于企业应用来说是至关重要的，即使出现异常情况，它也可以保证数据的一致性。</p>
-<p>当<code>@Transactional</code>注解作用于类上时，该类的所有 public 方法将都具有该类型的事务属性，同时，我们也可以在方法级别使用该标注来覆盖类级别的定义。如果类或者方法加了这个注解，那么这个类里面的方法抛出异常，就会回滚，数据库里面的数据也会回滚。</p>
-<p>在<code>@Transactional</code>注解中如果不配置<code>rollbackFor</code>属性,那么事务只会在遇到<code>RuntimeException</code>的时候才会回滚,加上<code>rollbackFor=Exception.class</code>,可以让事务在遇到非运行时异常时也回滚。</p>
-<h2 id="JPA"><a href="#JPA" class="headerlink" title="JPA"></a>JPA</h2><h3 id="如何使用JPA在数据库中非持久化一个字段？"><a href="#如何使用JPA在数据库中非持久化一个字段？" class="headerlink" title="如何使用JPA在数据库中非持久化一个字段？"></a>如何使用JPA在数据库中非持久化一个字段？</h3><p>假如我们有有下面一个类：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Entity(name=<span class="string">&quot;USER&quot;</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="meta">@GeneratedValue(strategy = GenerationType.AUTO)</span></span><br><span class="line">    <span class="meta">@Column(name = &quot;ID&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Column(name=&quot;USER_NAME&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String userName;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Column(name=&quot;PASSWORD&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> String secrect;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果我们想让<code>secrect</code> 这个字段不被持久化，也就是不被数据库存储怎么办？我们可以采用下面几种方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> String transient1; <span class="comment">// not persistent because of static</span></span><br><span class="line"><span class="keyword">final</span> String transient2 = “Satish”; <span class="comment">// not persistent because of final</span></span><br><span class="line"><span class="keyword">transient</span> String transient3; <span class="comment">// not persistent because of transient</span></span><br><span class="line"><span class="meta">@Transient</span></span><br><span class="line">String transient4; <span class="comment">// not persistent because of @Transient</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3964,7 +3684,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-count">37</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

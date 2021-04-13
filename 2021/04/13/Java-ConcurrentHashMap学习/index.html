@@ -79,15 +79,15 @@
 
 
 
-<meta name="description" content="CopyOnWriteArrayList特征： 线程安全的，多线程环境下可以直接使用，无需加锁； 通过锁 + 数组拷贝 + volatile 关键字保证了线程安全； 加锁：保证同一时刻数组只能被一个线程操作； 数组拷贝：保证数组的内存地址被修改，修改后触发 volatile 的可见性，其它线程可以立马知道数组已经被修改； volatile：值被修改后，其它线程能够立马感知最新值。   每次数组操作">
+<meta name="description" content="ConcurrentHashMap 所有的操作都是线程安全的，我们在使用时，无需再加锁； 多个线程同时进行 put、remove 等操作时并不会阻塞，可以同时进行，和 HashTable 不同，HashTable 在操作时，会锁住整个 Map； 迭代过程中，即使 Map 结构被修改，也不会抛 ConcurrentModificationException 异常； 除了数组 + 链表 + 红黑树的基">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java-CopyOnWriteArrayList学习">
-<meta property="og:url" content="https://yuanyayuan.github.io/2021/03/31/Java-CopyOnWriteArrayList%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:title" content="Java-ConcurrentHashMap学习">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/13/Java-ConcurrentHashMap%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="CopyOnWriteArrayList特征： 线程安全的，多线程环境下可以直接使用，无需加锁； 通过锁 + 数组拷贝 + volatile 关键字保证了线程安全； 加锁：保证同一时刻数组只能被一个线程操作； 数组拷贝：保证数组的内存地址被修改，修改后触发 volatile 的可见性，其它线程可以立马知道数组已经被修改； volatile：值被修改后，其它线程能够立马感知最新值。   每次数组操作">
+<meta property="og:description" content="ConcurrentHashMap 所有的操作都是线程安全的，我们在使用时，无需再加锁； 多个线程同时进行 put、remove 等操作时并不会阻塞，可以同时进行，和 HashTable 不同，HashTable 在操作时，会锁住整个 Map； 迭代过程中，即使 Map 结构被修改，也不会抛 ConcurrentModificationException 异常； 除了数组 + 链表 + 红黑树的基">
 <meta property="og:locale">
-<meta property="article:published_time" content="2021-03-31T14:36:51.000Z">
-<meta property="article:modified_time" content="2021-04-13T11:31:54.984Z">
+<meta property="article:published_time" content="2021-04-13T11:32:51.000Z">
+<meta property="article:modified_time" content="2021-04-13T11:52:36.657Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="面试">
@@ -122,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="https://yuanyayuan.github.io/2021/03/31/Java-CopyOnWriteArrayList学习/"/>
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/13/Java-ConcurrentHashMap学习/"/>
 
 
 
 
 
-  <title>Java-CopyOnWriteArrayList学习 | Hikari的Java之路</title>
+  <title>Java-ConcurrentHashMap学习 | Hikari的Java之路</title>
   
 
 
@@ -265,7 +265,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/31/Java-CopyOnWriteArrayList%E5%AD%A6%E4%B9%A0/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/Java-ConcurrentHashMap%E5%AD%A6%E4%B9%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -282,7 +282,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java-CopyOnWriteArrayList学习</h1>
+          <h1 class="post-title" itemprop="name headline">Java-ConcurrentHashMap学习</h1>
         
 
         <div class="post-meta">
@@ -294,8 +294,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-31T22:36:51+08:00">
-                2021-03-31
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T19:32:51+08:00">
+                2021-04-13
               </time>
             
 
@@ -376,17 +376,30 @@
       
 
       
-        <h1 id="CopyOnWriteArrayList"><a href="#CopyOnWriteArrayList" class="headerlink" title="CopyOnWriteArrayList"></a>CopyOnWriteArrayList</h1><h2 id="特征："><a href="#特征：" class="headerlink" title="特征："></a>特征：</h2><ol>
-<li>线程安全的，多线程环境下可以直接使用，无需加锁；</li>
-<li>通过锁 + 数组拷贝 + volatile 关键字保证了线程安全；<ul>
-<li>加锁：保证同一时刻数组只能被一个线程操作；</li>
-<li>数组拷贝：保证数组的内存地址被修改，修改后触发 volatile 的可见性，其它线程可以立马知道数组已经被修改；</li>
-<li>volatile：值被修改后，其它线程能够立马感知最新值。</li>
-</ul>
-</li>
-<li>每次数组操作，都会把数组拷贝一份出来，在新数组上进行操作，操作成功之后再赋值回去。</li>
+        <h1 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h1><ol>
+<li>所有的操作都是线程安全的，我们在使用时，无需再加锁；</li>
+<li>多个线程同时进行 put、remove 等操作时并不会阻塞，可以同时进行，和 HashTable 不同，HashTable 在操作时，会锁住整个 Map；</li>
+<li>迭代过程中，即使 Map 结构被修改，也不会抛 ConcurrentModificationException 异常；</li>
+<li>除了数组 + 链表 + 红黑树的基本结构外，新增了转移节点，是为了保证扩容时的线程安全的节点；</li>
+<li>提供了很多 Stream 流式方法，比如说：forEach、search、reduce 等等。</li>
 </ol>
-<p><a target="_blank" rel="noopener" href="https://www.imooc.com/read/47/article/857">源码学习</a></p>
+<h1 id="Concurrenthashmap为什么键和值不能为null？"><a href="#Concurrenthashmap为什么键和值不能为null？" class="headerlink" title="Concurrenthashmap为什么键和值不能为null？"></a>Concurrenthashmap为什么键和值不能为null？</h1><p>因为concurrenthashmap它们是用于<strong>多线程</strong>的，<strong>并发的</strong> ，如果map.get(key)得到了null，不能判断到底是映射的value是null,还是因为没有找到对应的key而为空，而用于单线程状态的hashmap却可以用containKey（key） 去判断到底是否包含了这个null。</p>
+<ul>
+<li>concurrenthashmap为什么就不能containKey(key) ？一个线程先get(key)再containKey(key)，这两个方法的中间时刻，其他线程怎么操作这个key都会可能发生，例如删掉这个key</li>
+</ul>
+<h1 id="实现线程安全的方式"><a href="#实现线程安全的方式" class="headerlink" title="实现线程安全的方式"></a>实现线程安全的方式</h1><h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>通过自旋 + CAS +  双重 check 等手段保证了数组初始化时的线程安全</p>
+<h2 id="新增槽点值时的线程安全"><a href="#新增槽点值时的线程安全" class="headerlink" title="新增槽点值时的线程安全"></a>新增槽点值时的线程安全</h2><ol>
+<li>通过自旋死循环保证一定可以新增成功。</li>
+<li>当前槽点为空时，通过 CAS 新增。</li>
+<li>当前槽点有值，锁住当前槽点。</li>
+<li>红黑树旋转时，锁住红黑树的根节点，保证同一时刻，当前红黑树只能被一个线程旋转，</li>
+</ol>
+<h2 id="扩容时线程安全"><a href="#扩容时线程安全" class="headerlink" title="扩容时线程安全"></a>扩容时线程安全</h2><ol>
+<li>拷贝槽点时，会把原数组的槽点锁住；</li>
+<li>拷贝成功之后，会把原数组的槽点设置成转移节点</li>
+<li>从尾到头进行拷贝，拷贝成功就把原数组的槽点设置成转移节点</li>
+<li>等扩容拷贝都完成之后，直接把新数组的值赋值给数组容器，之前等待 put 的数据才能继续 put。</li>
+</ol>
 
       
     </div>
@@ -421,8 +434,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/03/31/Java-hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="next" title="Java-hashmap源码学习">
-                <i class="fa fa-chevron-left"></i> Java-hashmap源码学习
+              <a href="/2021/04/13/Java-LinkList%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="next" title="Java-LinkList源码学习">
+                <i class="fa fa-chevron-left"></i> Java-LinkList源码学习
               </a>
             
           </div>
@@ -431,8 +444,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/04/03/redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="prev" title="redis数据结构">
-                redis数据结构 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/04/13/Java-CopyOnWriteArrayList%E5%AD%A6%E4%B9%A0/" rel="prev" title="Java-CopyOnWriteArrayList学习">
+                Java-CopyOnWriteArrayList学习 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -511,7 +524,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">36</span>
+                  <span class="site-state-item-count">37</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -582,7 +595,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CopyOnWriteArrayList"><span class="nav-number">1.</span> <span class="nav-text">CopyOnWriteArrayList</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">特征：</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ConcurrentHashMap"><span class="nav-number">1.</span> <span class="nav-text">ConcurrentHashMap</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Concurrenthashmap%E4%B8%BA%E4%BB%80%E4%B9%88%E9%94%AE%E5%92%8C%E5%80%BC%E4%B8%8D%E8%83%BD%E4%B8%BAnull%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">Concurrenthashmap为什么键和值不能为null？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">实现线程安全的方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">3.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E%E6%A7%BD%E7%82%B9%E5%80%BC%E6%97%B6%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">3.2.</span> <span class="nav-text">新增槽点值时的线程安全</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A9%E5%AE%B9%E6%97%B6%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">3.3.</span> <span class="nav-text">扩容时线程安全</span></a></li></ol></li></ol></div>
             
 
           </div>
