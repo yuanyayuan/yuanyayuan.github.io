@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="java,面试," />
+  <meta name="keywords" content="java,面试,Java基础知识," />
 
 
 
@@ -81,8 +81,8 @@
 
 <meta name="description" content="HashMap 简介HashMap 主要用来存放键值对，它基于哈希表的Map接口实现，是常用的Java集合之一。  JDK1.8 之前  HashMap 由 数组+链表 组成的，数组是 HashMap 的主体，链表则是主要为了解决哈希冲突而存在的（“拉链法”解决冲突）. JDK1.8 当链表长度大于阈值（默认为8）时，将链表转化为红黑树（将链表转换成红黑树前会判断，如果当前数组的长度小于64，那么">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hashmap学习">
-<meta property="og:url" content="https://yuanyayuan.github.io/2021/03/31/hashmap%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:title" content="Java-hashmap源码学习">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/03/31/Java-hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
 <meta property="og:description" content="HashMap 简介HashMap 主要用来存放键值对，它基于哈希表的Map接口实现，是常用的Java集合之一。  JDK1.8 之前  HashMap 由 数组+链表 组成的，数组是 HashMap 的主体，链表则是主要为了解决哈希冲突而存在的（“拉链法”解决冲突）. JDK1.8 当链表长度大于阈值（默认为8）时，将链表转化为红黑树（将链表转换成红黑树前会判断，如果当前数组的长度小于64，那么">
 <meta property="og:locale">
@@ -90,10 +90,11 @@
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/collection/images/jdk1.8%E4%B9%8B%E5%90%8E%E7%9A%84%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84-HashMap.png">
 <meta property="og:image" content="https://img1.sycdn.imooc.com/5d5fc7e200016af809121188.jpg">
 <meta property="article:published_time" content="2021-03-31T14:36:51.000Z">
-<meta property="article:modified_time" content="2021-04-12T17:33:22.147Z">
+<meta property="article:modified_time" content="2021-04-13T11:23:56.152Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="面试">
+<meta property="article:tag" content="Java基础知识">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://snailclimb.gitee.io/javaguide/docs/java/collection/images/jdk1.8%E4%B9%8B%E5%89%8D%E7%9A%84%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84-HashMap.png">
 
@@ -125,13 +126,13 @@
 
 
 
-  <link rel="canonical" href="https://yuanyayuan.github.io/2021/03/31/hashmap学习/"/>
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/03/31/Java-hashmap源码学习/"/>
 
 
 
 
 
-  <title>hashmap学习 | Hikari的Java之路</title>
+  <title>Java-hashmap源码学习 | Hikari的Java之路</title>
   
 
 
@@ -268,7 +269,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/31/hashmap%E5%AD%A6%E4%B9%A0/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/31/Java-hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -285,7 +286,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">hashmap学习</h1>
+          <h1 class="post-title" itemprop="name headline">Java-hashmap源码学习</h1>
         
 
         <div class="post-meta">
@@ -322,6 +323,28 @@
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
                     <span itemprop="name">Java基础 - Java容器</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%AE%B9%E5%99%A8/Java%E5%9F%BA%E7%A1%80-Java%E6%BA%90%E7%A0%81/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java源码</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%AE%B9%E5%99%A8/Java%E5%9F%BA%E7%A1%80-Java%E6%BA%90%E7%A0%81/Java%E5%9F%BA%E7%A1%80-Java%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java知识点</span>
                   </a>
                 </span>
 
@@ -611,6 +634,8 @@
           
             <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
           
+            <a href="/tags/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" rel="tag"># Java基础知识</a>
+          
         </div>
       
 
@@ -632,8 +657,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/04/03/redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="prev" title="redis数据结构">
-                redis数据结构 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/03/31/Java-CopyOnWriteArrayList%E5%AD%A6%E4%B9%A0/" rel="prev" title="Java-CopyOnWriteArrayList学习">
+                Java-CopyOnWriteArrayList学习 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -712,7 +737,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -723,7 +748,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">30</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -734,7 +759,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

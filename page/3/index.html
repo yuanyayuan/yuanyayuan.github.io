@@ -261,6 +261,1101 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/30/redis%E9%9B%86%E7%BE%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/30/redis%E9%9B%86%E7%BE%A4/" itemprop="url">redis集群</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-30T23:19:01+08:00">
+                2021-03-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E9%9B%86%E7%BE%A4-redis%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis集群 - redis知识点</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="主从（复制-集群-同步）"><a href="#主从（复制-集群-同步）" class="headerlink" title="主从（复制|集群|同步）"></a>主从（复制|集群|同步）</h1><p>Redis的主从结构可以采用一主多从或者级联结构，Redis主从复制可以根据是否是全量分为全量同步和增量同步</p>
+<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/redis%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6.png"></p>
+<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><p>备份数据，这样当一个节点损坏（指不可恢复的硬件损坏）时，数据因为有备份，可以方便恢复。</p>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><p>master节点挂了以后，redis就不能对外提供写服务了，因为剩下的slave不能成为master。</p>
+<h2 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h2><p>读请求较多场景</p>
+<h2 id="Redis主从同步策略"><a href="#Redis主从同步策略" class="headerlink" title="Redis主从同步策略"></a>Redis主从同步策略</h2><p>主从刚刚连接的时候，进行全量同步；</p>
+<p>全同步结束后，进行增量同步。</p>
+<p>当然，如果有需要，slave 在任何时候都可以发起全量同步。</p>
+<p>redis 策略是，无论如何，首先会尝试进行增量同步，如不成功，要求从机进行全量同步。</p>
+<h2 id="Redis-的同步机制"><a href="#Redis-的同步机制" class="headerlink" title="Redis 的同步机制"></a>Redis 的同步机制</h2><h3 id="全量同步"><a href="#全量同步" class="headerlink" title="全量同步"></a>全量同步</h3><p>Redis全量复制一般发生在Slave初始化阶段，这时Slave需要将Master上的所有数据都复制一份。具体步骤如下：</p>
+<ul>
+<li> 从服务器连接主服务器，发送SYNC命令；</li>
+<li> 主服务器接收到SYNC命名后，开始执行BGSAVE命令生成RDB文件并使用缓冲区记录此后执行的所有写命令；</li>
+<li> 主服务器BGSAVE执行完后，向所有从服务器发送快照文件，并在发送期间继续记录被执行的写命令；</li>
+<li> 从服务器收到快照文件后丢弃所有旧数据，载入收到的快照；</li>
+<li> 主服务器快照发送完毕后开始向从服务器发送缓冲区中的写命令；</li>
+<li> 从服务器完成对快照的载入，开始接收命令请求，并执行来自主服务器缓冲区的写命令；</li>
+</ul>
+<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E5%85%A8%E9%87%8F%E5%90%8C%E6%AD%A5.png" alt="image"></p>
+<p>完成上面几个步骤后就完成了从服务器数据初始化的所有操作，从服务器此时可以接收来自用户的读请求。</p>
+<h3 id="增量同步"><a href="#增量同步" class="headerlink" title="增量同步"></a>增量同步</h3><p>Redis增量复制是指Slave初始化后开始正常工作时主服务器发生的写操作同步到从服务器的过程。<br>增量复制的过程主要是主服务器每执行一个写命令就会向从服务器发送相同的写命令，从服务器接收并执行收到的写命令。</p>
+<h2 id="全量同步时需要注意："><a href="#全量同步时需要注意：" class="headerlink" title="全量同步时需要注意："></a>全量同步时需要注意：</h2><p>如果多个Slave断线了，需重启时，因为只要Slave启动，就会发送sync请求和主机全量同步，当多个同时出现的时候，可能会导致Master IO剧增宕机。</p>
+<h2 id="Redis主从复制重要内容"><a href="#Redis主从复制重要内容" class="headerlink" title="Redis主从复制重要内容"></a>Redis主从复制重要内容</h2><blockquote>
+<p>Redis主从复制的配置十分简单，它可以使从服务器是主服务器的完全拷贝。需要清楚知道Redis主从复制的几点重要内容：</p>
+</blockquote>
+<p>1）Redis使用异步复制。但从Redis 2.8开始，从服务器会周期性的应答从复制流中处理的数据量。</p>
+<p>2）一个主服务器可以有多个从服务器。</p>
+<p>3）从服务器也可以接受其他从服务器的连接。除了多个从服务器连接到一个主服务器之外，多个从服务器也可以连接到一个从服务器上，形成一个图状结构（级联）。</p>
+<p>4）Redis主从复制不阻塞主服务器端。也就是说当若干个从服务器在进行初始同步时，主服务器仍然可以处理请求。</p>
+<p>5）主从复制也不阻塞从服务器端。当从服务器进行初始同步时，它使用旧版本的数据来应对查询请求（假设你在redis.conf配置文件是这么配置的)。如果不想这样，你可以配置当复制流关闭时让从服务器给客户端返回一个错误。但是当初始同步完成后，需删除旧数据集和加载新的数据集，在这个短暂时间内，从服务器会阻塞连接进来的请求。</p>
+<p>6）主从复制可以用来增强扩展性，使用多个从服务器来处理只读的请求（比如，繁重的排序操作可以放到从服务器去做），也可以简单的用来做数据冗余。</p>
+<p>7）使用主从复制可以为主服务器免除把数据写入磁盘的消耗：在主服务器的redis.conf文件中配置“避免保存”（注释掉所有“保存“命令），然后连接一个配置为“进行保存”的从服务器即可。但是这个配置要确保主服务器不会自动重启，主redis服务器一旦重启，因为主redis服务器数据为空，这时候通过主从同步可能导致从redis服务器上的数据也被清空；</p>
+<h2 id="主从同步注意问题"><a href="#主从同步注意问题" class="headerlink" title="主从同步注意问题"></a>主从同步注意问题</h2><ul>
+<li><p>主从服务器之间会定期进行通话，但是如果master上设置了密码，那么如果不给slave设置密码就会导致slave不能跟master进行任何操作</p>
+</li>
+<li><p>关于slave服务器上过期键的处理，由master服务器负责键的过期删除处理，然后将相关删除命令已数据同步的方式同步给slave服务器，slave服务器根据删除命令删除本地的key。</p>
+</li>
+</ul>
+<h2 id="当主服务器不进行持久化时复制的安全性"><a href="#当主服务器不进行持久化时复制的安全性" class="headerlink" title="当主服务器不进行持久化时复制的安全性"></a>当主服务器不进行持久化时复制的安全性</h2><p>在进行主从复制设置时，强烈建议在主服务器上开启持久化，当不能这么做时，比如考虑到延迟的问题，应该将实例配置为避免自动重启。</p>
+<h3 id="为什么不持久化的主服务器自动重启非常危险呢？"><a href="#为什么不持久化的主服务器自动重启非常危险呢？" class="headerlink" title="为什么不持久化的主服务器自动重启非常危险呢？"></a>为什么不持久化的主服务器自动重启非常危险呢？</h3><p>为了更好的理解这个问题，看下面这个失败的例子，其中主服务器和从服务器中数据库都被删除了</p>
+<p>设置节点A为主服务器，关闭持久化，节点B和C从节点A复制数据。这时出现了一个崩溃，但Redis具有自动重启系统，重启了进程，因为关闭了持久化，节点重启后只有一个空的数据集。节点B和C从节点A进行复制，现在节点A是空的，所以节点B和C上的复制数据也会被删除。当在高可用系统中使用Redis Sentinel，关闭了主服务器的持久化，并且允许自动重启，这种情况是很危险的。比如主服务器可能在很短的时间就完成了重启，以至于Sentinel都无法检测到这次失败，那么上面说的这种失败的情况就发生了。如果数据比较重要，并且在使用主从复制时关闭了主服务器持久化功能的场景中，都应该禁止实例自动重启。</p>
+<hr>
+<h1 id="Redis无磁盘化复制"><a href="#Redis无磁盘化复制" class="headerlink" title="Redis无磁盘化复制"></a>Redis无磁盘化复制</h1><p>通过内存之间的传输，通过socket实现。</p>
+<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/Redis%E6%97%A0%E7%A3%81%E7%9B%98%E5%8C%96%E5%A4%8D%E5%88%B6.png" alt="image"></p>
+<ul>
+<li><p>磁盘有普通机械硬盘和SSD固定硬盘。如果是普通机械硬盘，硬盘读写效率低下。这样就出现了无磁盘化复制，从而提高了效率。</p>
+</li>
+<li><p>默认是关闭的</p>
+</li>
+<li><p>开启式将<code>repl-diskless-sync no --&gt;repl-diskless-sync yes</code></p>
+</li>
+</ul>
+<h1 id="哨兵机制"><a href="#哨兵机制" class="headerlink" title="哨兵机制"></a>哨兵机制</h1><h2 id="为何要有哨兵模式"><a href="#为何要有哨兵模式" class="headerlink" title="为何要有哨兵模式"></a>为何要有哨兵模式</h2><p>主从模式下<br>Master挂了，如何保证可用性，实现继续读写</p>
+<h2 id="什么是哨兵"><a href="#什么是哨兵" class="headerlink" title="什么是哨兵"></a>什么是哨兵</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F.png"></p>
+<p>Sentinel(哨兵)是用于监控Redis集群中Master状态的工具，是 Redis 高可用解决方案，哨兵可以监视一个或者多个redis master服务，以及这些master服务的所有从服务；当某个master服务宕机后，会把这个master下的某个从服务升级为master来替代已宕机的master继续工作。</p>
+<h2 id="哨兵模式的作用"><a href="#哨兵模式的作用" class="headerlink" title="哨兵模式的作用"></a>哨兵模式的作用</h2><ul>
+<li>通过发送命令，让Redis服务器返回监控其运行状态，包括主服务器和从服务器；</li>
+<li>当哨兵监测到master宕机，会自动将slave切换成master，然后通过发布订阅模式通知其他的从服务器，修改配置文件，让它们切换主机；</li>
+</ul>
+<h2 id="哨兵模式的工作方式："><a href="#哨兵模式的工作方式：" class="headerlink" title="哨兵模式的工作方式："></a>哨兵模式的工作方式：</h2><ul>
+<li>每个Sentinel（哨兵）进程以每秒钟一次的频率向整个集群中的Master主服务器，Slave从服务器以及其他Sentinel（哨兵）进程发送一个 PING 命令。</li>
+<li>如果一个实例（instance）距离最后一次有效回复 PING 命令的时间超过 down-after-milliseconds 选项所指定的值， 则这个实例会被 Sentinel（哨兵）进程标记为主观下线（SDOWN）</li>
+<li>如果一个Master主服务器被标记为主观下线（SDOWN），则正在监视这个Master主服务器的所有 Sentinel（哨兵）进程要以每秒一次的频率确认Master主服务器的确进入了主观下线状态</li>
+<li>当有足够数量的 Sentinel（哨兵）进程（大于等于配置文件指定的值）在指定的时间范围内确认Master主服务器进入了主观下线状态（SDOWN）， 则Master主服务器会被标记为客观下线（ODOWN）</li>
+<li>在一般情况下， 每个 Sentinel（哨兵）进程会以每 10 秒一次的频率向集群中的所有Master主服务器、Slave从服务器发送 INFO 命令。</li>
+<li>当Master主服务器被 Sentinel（哨兵）进程标记为客观下线（ODOWN）时，Sentinel（哨兵）进程向下线的 Master主服务器的所有 Slave从服务器发送 INFO 命令的频率会从 10 秒一次改为每秒一次。</li>
+<li>若没有足够数量的 Sentinel（哨兵）进程同意 Master主服务器下线， Master主服务器的客观下线状态就会被移除。若 Master主服务器重新向 Sentinel（哨兵）进程发送 PING 命令返回有效回复，Master主服务器的主观下线状态就会被移除。</li>
+</ul>
+<h2 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h2><p>哨兵模式是基于主从模式的，解决了主从模式下master挂了无法提供写服务的情况</p>
+<h2 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h2><p>当数据量过大到一台服务器存放不下的情况（内存不够时），主从模式或sentinel模式就不能满足需求了</p>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><p>存储量不大，单机可承受。</p>
+<h2 id="部署归约"><a href="#部署归约" class="headerlink" title="部署归约"></a>部署归约</h2><ul>
+<li>哨兵节点至少要有3个或奇数个节点</li>
+<li>哨兵分布式部署到不同计算机节点</li>
+<li>一组哨兵只监听一组主从</li>
+</ul>
+<h3 id="哨兵监控"><a href="#哨兵监控" class="headerlink" title="哨兵监控"></a>哨兵监控</h3><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E5%93%A8%E5%85%B5%E7%9B%91%E6%8E%A7.png"></p>
+<h3 id="故障转移"><a href="#故障转移" class="headerlink" title="故障转移"></a>故障转移</h3><blockquote>
+<p>推荐哨兵个数为奇数台，避免对半分</p>
+</blockquote>
+<p>假设主服务器宕机，哨兵1先检测到这个结果，系统并不会马上进行故障转移（ failover） 过程，仅仅是哨兵1主观的认为主服务器不可用，这个现象成为主观下线。</p>
+<p>当后面的哨兵也检测到主服务器不可用，并且数量达到一定值时，那么哨兵之间就会进行一次投票，投票的结果由一个哨兵发起，进行故障转移（ failover）操作。</p>
+<p>切换成功后，就会通过发布订阅模式，让各个哨兵把自己监控的从服务器实现切换主机，这个过程称为客观下线。 </p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB%E8%BF%87%E7%A8%8B.png"></p>
+<h3 id="选举Leader"><a href="#选举Leader" class="headerlink" title="选举Leader"></a>选举Leader</h3><blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">剩余的slaves重新和新的master做同步的并行个数</span></span><br><span class="line">sentinel parallel-syncs mymaster 1</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E9%80%89%E4%B8%BEleader.png"></p>
+<h3 id="原master恢复"><a href="#原master恢复" class="headerlink" title="原master恢复"></a>原master恢复</h3><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redismaster%E8%8A%82%E7%82%B9%E6%81%A2%E5%A4%8D.png"></p>
+<h1 id="Cluster集群模式"><a href="#Cluster集群模式" class="headerlink" title="Cluster集群模式"></a>Cluster集群模式</h1><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/Cluster%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F.png" alt="image"></p>
+<h2 id="工作模式"><a href="#工作模式" class="headerlink" title="工作模式"></a>工作模式</h2><p>在 Redis 的每一个节点上，都有这么两个东西，一个是<strong>插槽（slot）</strong>，它的的取值范围是：0-16383。还有一个就是<strong>cluster</strong>，可以理解为是一个集群管理的插件。<strong>当我们的存取的 Key到达的时候，Redis 会根据 crc16的算法得出一个结果，然后把结果对 16384 求余数，这样每个 key 都会对应一个编号在 0-16383 之间的哈希槽</strong>，通过这个值，去找到对应的插槽所对应的节点，然后直接自动跳转到这个<strong>对应的节点上</strong>进行存取操作。</p>
+<p>为了保证高可用，redis-cluster集群引入了<strong>主从模式</strong>，一个主节点对应一个或者多个从节点，当主节点宕机的时候，就会启用从节点。当其它主节点ping一个主节点A时，<strong>如果半数以上的主节点与A通信超时，那么认为主节点A宕机了</strong>。如果主节点A和它的从节点A1都宕机了，那么该集群就无法再提供服务了。</p>
+<p><strong>优点</strong>：</p>
+<ol>
+<li>无中心架构：三机房部署，其中一主一从构成一个分片，之间通过异步复制同步数据，异步复制存在数据不一致的时间窗口，保证高性能的同时牺牲了部分一致性一旦某个机房掉线，则分片上位于另一个机房的 slave 会被提升为 master 从而可以继续提供服务</li>
+<li>可扩展性：可线性扩展到 1000 多个节点，节点可动态添加或删除。</li>
+<li>降低运维成本，提高系统的扩展性和可用性。</li>
+</ol>
+<p><strong>使用场景</strong>：数据量大，高并发场景</p>
+<h2 id="集群容错"><a href="#集群容错" class="headerlink" title="集群容错"></a>集群容错</h2><p>构建Redis集群，需要至少3个节点作为master，以此组成一个高可用的集群，此外每个master都需要配备一个slave，所以整个集群需要6个节点，这也是最经典的Redis集群，也可以称之为三主三从，容错性更佳。所以在搭建的时候需要有6台虚拟机。</p>
+<h2 id="Redis-Cluster-实现的功能："><a href="#Redis-Cluster-实现的功能：" class="headerlink" title="Redis Cluster 实现的功能："></a>Redis Cluster 实现的功能：</h2><ul>
+<li>将数据分片到多个实例 (按照 slot 存储)；</li>
+<li>集群节点宕掉会自动 failover；</li>
+<li>提供相对平滑扩容 (缩容) 节点。</li>
+</ul>
+<h2 id="Redis-Cluster动态扩容和收缩"><a href="#Redis-Cluster动态扩容和收缩" class="headerlink" title="Redis Cluster动态扩容和收缩"></a>Redis Cluster动态扩容和收缩</h2><ul>
+<li>redis 的动态扩容操作都是通过redis源码文件夹中, redis-trib.rb脚本文件来完成的, 运行此脚本需要 ruby环境</li>
+<li>为Cluster动态增加节点(也就是添加的时候不影响正在运行的节点), 需要先主后从, slot迁移在添加主节点之后; 反之, 动态删除节点, 需要先从后主, slot迁移在删除主节点之前</li>
+<li>添加主节点到集群命令 <code>ruby redis-trib.rb add-node &lt;new node&gt; &lt;existing node&gt;</code>, 其中new node和 existing node(Cluster中任意一个master均可) 自行替换</li>
+<li>重新分片, 为新节点迁移slot: <code>ruby redis-trib.rb reshard &lt;existing node&gt;</code>此后按提示操作, 需要指定新的node中迁移的slot数量, 以及从哪些节点迁移</li>
+<li>删除主节点前, 先迁出slot, 移除slot 输入值要比slot总数小</li>
+<li>执行主节点删除:<code> ruby redis-trib.rb del-node &lt;existing node&gt; &lt;node id&gt;</code></li>
+</ul>
+<hr>
+<h1 id="Redis-集群方案什么情况下会导致整个集群不可用？"><a href="#Redis-集群方案什么情况下会导致整个集群不可用？" class="headerlink" title="Redis 集群方案什么情况下会导致整个集群不可用？"></a>Redis 集群方案什么情况下会导致整个集群不可用？</h1><p>有 A，B，C 三个节点的集群,在没有复制模型的情况下,如果节点 B 失败了，那么整个集群就会以为缺少 5501-11000 这个范围的槽而不可用。</p>
+<h1 id="redis集群相关问题"><a href="#redis集群相关问题" class="headerlink" title="redis集群相关问题"></a>redis集群相关问题</h1><h2 id="说说-Redis-哈希槽的概念？"><a href="#说说-Redis-哈希槽的概念？" class="headerlink" title="说说 Redis 哈希槽的概念？"></a>说说 Redis 哈希槽的概念？</h2><p>Redis 集群没有使用一致性 hash,而是引入了哈希槽的概念，Redis 集群有16384 个哈希槽，每个 key 通过 CRC16 校验后对 16384 取模来决定放置哪个槽，集群的每个节点负责一部分 hash 槽。</p>
+<h2 id="Redis-集群的主从复制模型是怎样的？"><a href="#Redis-集群的主从复制模型是怎样的？" class="headerlink" title="Redis 集群的主从复制模型是怎样的？"></a>Redis 集群的主从复制模型是怎样的？</h2><p>为了是在部分节点失败或者大部分节点无法通信的的情况下集群仍然可用，所以集群使用了主从复制模型，<br>每个节点都会有N-1个复制品</p>
+<h2 id="Redis-集群会有写操作丢失吗？为什么？"><a href="#Redis-集群会有写操作丢失吗？为什么？" class="headerlink" title="Redis 集群会有写操作丢失吗？为什么？"></a>Redis 集群会有写操作丢失吗？为什么？</h2><p>Redis 并不能保证数据的强一致性，这意味这在实际中集群在特定的条件下可能会丢失写操作。</p>
+<h2 id="Redis-集群之间是如何复制的？"><a href="#Redis-集群之间是如何复制的？" class="headerlink" title="Redis 集群之间是如何复制的？"></a>Redis 集群之间是如何复制的？</h2><p>异步复制</p>
+<h2 id="Redis-集群最大节点个数是多少？"><a href="#Redis-集群最大节点个数是多少？" class="headerlink" title="Redis 集群最大节点个数是多少？"></a>Redis 集群最大节点个数是多少？</h2><p>16384 个。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/28/redis%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/28/redis%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/" itemprop="url">redis集群配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-28T16:49:43+08:00">
+                2021-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E9%9B%86%E7%BE%A4-reids%E9%85%8D%E7%BD%AE/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis集群 - reids配置</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="主从复制（主从集群）（读写分离）"><a href="#主从复制（主从集群）（读写分离）" class="headerlink" title="主从复制（主从集群）（读写分离）"></a>主从复制（主从集群）（读写分离）</h1><h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6.png"></p>
+<h2 id="树状架构"><a href="#树状架构" class="headerlink" title="树状架构"></a>树状架构</h2><blockquote>
+<p>使用的不多</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E6%A0%91%E7%8A%B6%E6%9E%B6%E6%9E%84.png"></p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h3 id="基于RDB"><a href="#基于RDB" class="headerlink" title="基于RDB"></a>基于RDB</h3><blockquote>
+<p> 初始化复制（全量复制）以后的复制（增量复制）</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%8E%9F%E7%90%86.png"></p>
+<p><strong>注：一定要开启Master的持久化，如果不开启持久化，Master恢复后内存中无数据，也将会同步至从节点</strong></p>
+<h2 id="主从复制的配置"><a href="#主从复制的配置" class="headerlink" title="主从复制的配置"></a>主从复制的配置</h2><ul>
+<li><p>192.168.159.128</p>
+</li>
+<li><p>192.168.159.129</p>
+</li>
+<li><p>192.168.159.130</p>
+</li>
+</ul>
+<h3 id="配置从节点"><a href="#配置从节点" class="headerlink" title="配置从节点"></a>配置从节点</h3><p>192.168.159.129与192.168.159.130</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Master IP host</span></span><br><span class="line">replicaof 192.168.159.128 6379</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> redis密码</span></span><br><span class="line">masterauth redis</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> slave只读</span></span><br><span class="line">replica-read-only yes</span><br></pre></td></tr></table></figure>
+
+<h3 id="重启redis"><a href="#重启redis" class="headerlink" title="重启redis"></a>重启redis</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/redis_init_script stop</span><br><span class="line"></span><br><span class="line">/etc/init.d/redis_init_script start</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看Replication"><a href="#查看Replication" class="headerlink" title="查看Replication"></a>查看Replication</h3><ul>
+<li>192.168.159.128</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication128.png" style="zoom:50%;" />
+
+<ul>
+<li>192.168.159.129</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication.png" style="zoom:50%;" />
+
+<ul>
+<li>192.168.159.130</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication130.png" style="zoom:50%;" />
+
+<h2 id="Redis无磁盘化复制"><a href="#Redis无磁盘化复制" class="headerlink" title="Redis无磁盘化复制"></a>Redis无磁盘化复制</h2><blockquote>
+<p>如果磁盘读写特别慢，但是网速高，RDB不接触磁盘，直接通过sockets传输</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Redis%E6%97%A0%E7%A3%81%E7%9B%98%E5%8C%96%E5%A4%8D%E5%88%B6%E5%8E%9F%E7%90%86.png"></p>
+<h3 id="配置开启"><a href="#配置开启" class="headerlink" title="配置开启"></a>配置开启</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repl-diskless-sync no --&gt;repl-diskless-sync yes</span><br></pre></td></tr></table></figure>
+
+<h1 id="哨兵机制"><a href="#哨兵机制" class="headerlink" title="哨兵机制"></a>哨兵机制</h1><blockquote>
+<p>当Master宕机后，Slave只能提供读操作，整个Redis集群将无法正常的写</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F.png"></p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><ul>
+<li>普通配置</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">port 26379</span><br><span class="line">pidfile &quot;/usr/local/redis/sentinel/redis-sentinel.pid&quot;</span><br><span class="line">dir &quot;/usr/local/redis/sentinel&quot;</span><br><span class="line">daemonize yes</span><br><span class="line">protected-mode no</span><br><span class="line">logfile &quot;/usr/local/redis/sentinel/redis-sentinel.log&quot;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>核心配置</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 配置哨兵  “2”是哨兵个数  <span class="comment"># 127.0.0.1改为Master的Ip</span></span></span><br><span class="line">sentinel monitor mymaster 127.0.0.1 6379 2</span><br><span class="line"><span class="meta">#</span><span class="bash"> 密码</span></span><br><span class="line">sentinel auth-pass &lt;master-name&gt; &lt;password&gt;</span><br><span class="line"><span class="meta">#</span><span class="bash"> master被sentinel认定为失效的间隔时间</span></span><br><span class="line">sentinel down-after-milliseconds mymaster 30000</span><br><span class="line"><span class="meta">#</span><span class="bash"> 剩余的slaves重新和新的master做同步的并行个数</span></span><br><span class="line">sentinel parallel-syncs mymaster 1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 主备切换的超时时间，哨兵要去做故障转移，这个时候哨兵也是一个进程，如果他没有去执行，超过这个时间后，会由其他的哨兵来处理</span></span><br><span class="line">sentinel failover-timeout mymaster 180000</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将配置发送给另外2个服务器</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp sentinel.conf root@192.168.159.129:/usr/local/redis/</span><br><span class="line">scp sentinel.conf root@192.168.159.130:/usr/local/redis/</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>启动哨兵</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> redis-sentinel 的命令在这个文件夹中</span></span><br><span class="line">cd /usr/local/bin/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建日志目录</span></span><br><span class="line">mkdir /usr/local/redis/sentinel -p</span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动哨兵</span></span><br><span class="line">redis-sentinel sentinel.conf</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看是否启动成功</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep redis</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">root      26797      1  0 05:59 ?        00:00:10 /usr/local/bin/redis-server 0.0.0.0:6379</span><br><span class="line">root      29317      1  0 09:05 ?        00:00:00 redis-sentinel *:26379 [sentinel]</span><br><span class="line">root      29332  17688  0 09:05 pts/0    00:00:00 grep --color=auto redis</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>前台查看哨兵日志</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -f /usr/local/redis/sentinel/redis-sentinel.log</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试哨兵"><a href="#测试哨兵" class="headerlink" title="测试哨兵"></a>测试哨兵</h2><ul>
+<li><p>宕机192.168.159.128上的redis</p>
+</li>
+<li><p>查看另外两台服务器上redis信息</p>
+<ul>
+<li><p>192.168.159.129</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication129_1.png" style="zoom:50%;" /></li>
+<li><p>192.168.159.130 (已被选举为Master)</p>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication130_1.png" style="zoom:50%;" /></li>
+<li><p>重启192.168.159.128上的redis</p>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication128_1.png" style="zoom:50%;" />
+
+<p>​    <strong>原先的Master变为Salve</strong></p>
+<h2 id="查看哨兵信息"><a href="#查看哨兵信息" class="headerlink" title="查看哨兵信息"></a>查看哨兵信息</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 进入redis配置文件夹爱</span></span><br><span class="line">cd /usr/local/redis/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动哨兵</span></span><br><span class="line">redis-sentinel sentinel.conf</span><br><span class="line"><span class="meta">#</span><span class="bash"> 进入哨兵</span></span><br><span class="line">redis-cli -p 26379</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 查看imooc-master下的master节点信息</span></span><br><span class="line">sentinel master mymaster</span><br></pre></td></tr></table></figure>
+
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5.png" style="zoom:50%;" />
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 查看imooc-master下的slaves节点信息</span></span><br><span class="line">sentinel slaves mymaster</span><br></pre></td></tr></table></figure>
+
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B52.png" style="zoom:50%;" />
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 查看imooc-master下的哨兵节点信息</span></span><br><span class="line">sentinel sentinels mymaster</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B53.png" style="zoom:50%;" />
+
+<blockquote>
+<p>在128上查询哨兵信息则显示130和129为哨兵</p>
+</blockquote>
+<h1 id="Redis-Cluster集群（多主多从）"><a href="#Redis-Cluster集群（多主多从）" class="headerlink" title="Redis-Cluster集群（多主多从）"></a>Redis-Cluster集群（多主多从）</h1><p><strong>主从模式或哨兵模式存在的问题：</strong>当主节点异步同步数据时，主节点宕机，在同步的这段时间写入的新数据无法同步至从节点，当原主节点恢复成从节点时，在之前同步的那段时间写入的新数据将丢失。</p>
+<h2 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h2><ul>
+<li>修改第一台，并启动redis</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 开启集群模式</span></span><br><span class="line">cluster-enabled yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> 每一个节点需要有一个配置文件，需要6份。每个节点处于集群的角色都需要告知其他所有节点，彼此知道，这个文件用于存储集群模式下的集群状态等信息，这个文件是由redis自己维护，我们不用管。如果你要重新创建集群，那么把这个文件删了就行</span></span><br><span class="line">cluster-config-file nodes-201.conf</span><br><span class="line"><span class="meta">#</span><span class="bash"> 超时时间，超时则认为master宕机，随后主备切换</span></span><br><span class="line">cluster-node-timeout 5000</span><br><span class="line"><span class="meta">#</span><span class="bash"> 开启AOF</span></span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>启动过程出错，删除working中的文件</p>
+</blockquote>
+<ul>
+<li>配置三主三从的环境，配置剩下5台，并启动redis</li>
+</ul>
+<h2 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">####</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 注意1：如果你使用的是redis3.x版本，需要使用redis-trib.rb来构建集群，最新版使用C语言来构建了，这个要注意</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 注意2：以下为新版的redis构建方式</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">####</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建集群，主节点和从节点比例为1，1-3为主，4-6为从，1和4，2和5，3和6分别对应为主从关系，这也是最经典用的最多的集群模式</span></span><br><span class="line">redis-cli --cluster create ip1:port1 ip2:port2 ip3:port3 ip4:port4 ip5:port5 ip6:port6 --cluster-replicas 1</span><br></pre></td></tr></table></figure>
+
+<h2 id="检查集群信息"><a href="#检查集群信息" class="headerlink" title="检查集群信息"></a>检查集群信息</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster check ip:host</span><br></pre></td></tr></table></figure>
+
+<h2 id="动态扩容与收缩"><a href="#动态扩容与收缩" class="headerlink" title="动态扩容与收缩"></a>动态扩容与收缩</h2><p>学习链接<a target="_blank" rel="noopener" href="https://www.cnblogs.com/PatrickLiu/p/8473135.html">Redis进阶实践之十二 Redis的Cluster集群动态扩容</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> redis-cli 查看集群信息</span></span><br><span class="line">cluster nodes</span><br></pre></td></tr></table></figure>
+
+<h3 id="动态增加Master主服务器节点"><a href="#动态增加Master主服务器节点" class="headerlink" title="动态增加Master主服务器节点"></a>动态增加Master主服务器节点</h3><h4 id="增"><a href="#增" class="headerlink" title="增"></a>增</h4><ol>
+<li>启动两台redis</li>
+<li>添加新主节点redis添加至集群</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby redis-trib.rb add-node ip1:host1 ip:host</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：当添加新节点成功以后，新的节点不会有任何数据，因为他没有分配任何的数据Slot（哈希slots）,这一步需要手动操作。</p>
+<p>ip2和host2是集群中已经存在的任意实例地址和其端口</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> redis-cli验证</span></span><br><span class="line">cluster info</span><br><span class="line">cluster nodes</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>为新主节点分配数据<strong>Slots</strong>，分配方法是从集群中知道任何一个主节点（因为只有Master主节点才有数据slots）,然后对其进行重新分片工作。</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby redis-trib.rb reshard ip:host</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>分配数据槽（分配多少数据槽）</li>
+<li>选择接收数据槽的节点和数据槽产生的方式</li>
+<li>执行分配计划</li>
+</ul>
+<ol start="4">
+<li>增加Slave从服务器节点</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby redis-trib.rb add-node ip2:host2 ip:host</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>指定ip2:host2节点作为ip1:host1的从节点，实现主从的配置。</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cluster replicate ...ID...(主节点的ID，ip1:host1的)</span><br></pre></td></tr></table></figure>
+
+<h4 id="删"><a href="#删" class="headerlink" title="删"></a>删</h4><p><strong>删除的顺序是先删除Slave从节点，然后在删除Master主节点</strong></p>
+<ol>
+<li><p>动态删除Slave从服务器节点</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 删除ip2:host2从节点，输入del-node命令，指定删除节点的IP地址和Port端口号，同时还要提供该从节点ID名称。</span></span><br><span class="line">ruby redis-trib.rb del-node ip2:host2 ...ID...</span><br></pre></td></tr></table></figure></li>
+<li><p>动态删除Master主服务器节点</p>
+<p><strong>要想删除Master主节点，可能要繁琐一些。因为在Master主节点上有数据槽（slots）,为了保证数据的不丢失，必须把这些数据槽迁移到其他Master主节点上，然后在删除主节点。</strong></p>
+<ol>
+<li>重新分片，把要删除的Master主节点的数据槽移动到其他Master主节点上，以免数据丢失。</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby redis-trib.rb reshard ip1:host1</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p><strong>移除多少槽如图：创建输入200，这里要输入199，因为计数是从0开始的，切记。</strong></p>
+</li>
+<li><p>接受槽的Master主节点ID：这个节点可以是任意一个主节点都可以，<strong>输入</strong>ID****</p>
+</li>
+<li><p>从哪个主节点移除，<strong>输入</strong>ID****</p>
+</li>
+<li><p><strong>删除主节点，提供要删除节点的IP地址和Port端口，当然还有要删除的节点的ID名称。</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby redis-trib.rb del-node ip1:host1 ...ID...</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ol>
+<h2 id="slots"><a href="#slots" class="headerlink" title="slots"></a>slots</h2><blockquote>
+<p>16384个槽节点被平均分配</p>
+</blockquote>
+<h3 id="槽的分配"><a href="#槽的分配" class="headerlink" title="槽的分配"></a>槽的分配</h3><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E6%A7%BDslot%E6%98%AF%E6%80%8E%E6%A0%B7%E5%88%86%E9%85%8D%E7%9A%84.png" style="zoom: 33%;" />
+
+<h3 id="如何存储数据"><a href="#如何存储数据" class="headerlink" title="如何存储数据"></a>如何存储数据</h3><p>set值时，根据key进行<strong>hash(key)%16384</strong>看结果的值看在那个范围，数据放到该范围的槽里面。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/28/elasticsearch+kibana%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/28/elasticsearch+kibana%E5%AE%89%E8%A3%85/" itemprop="url">elasticsearch+kibana安装</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-28T16:11:08+08:00">
+                2021-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-elasticsearch%E5%AE%89%E8%A3%85-kibana%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
+                    <span itemprop="name">软件安装 - elasticsearch安装 - kibana安装</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="上传后解压"><a href="#上传后解压" class="headerlink" title="上传后解压"></a>上传后解压</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf elasticsearch-7.12.0-linux-x86_64.tar.gz</span><br></pre></td></tr></table></figure>
+
+<h2 id="解压后将文件移至-usr-local-下"><a href="#解压后将文件移至-usr-local-下" class="headerlink" title="解压后将文件移至/usr/local/下"></a>解压后将文件移至<code>/usr/local/</code>下</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv elasticsearch-7.12.0 /usr/local/</span><br></pre></td></tr></table></figure>
+
+<h1 id="进入-usr-local-elasticsearch-7-12-0"><a href="#进入-usr-local-elasticsearch-7-12-0" class="headerlink" title="进入/usr/local/elasticsearch-7.12.0"></a>进入/usr/local/elasticsearch-7.12.0</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/elasticsearch-7.12.0</span><br></pre></td></tr></table></figure>
+
+<h2 id="ES目录介绍"><a href="#ES目录介绍" class="headerlink" title="ES目录介绍"></a>ES目录介绍</h2><ul>
+<li>bin : 可执行文件，运行es的命令，包含一些脚本文件</li>
+<li>config ： 配置文件</li>
+<li>JDK ：java环境</li>
+<li>lib：依赖的jar，类库</li>
+<li>logs：日志文件</li>
+<li>modules：es相关的模块</li>
+<li>plugins：插件</li>
+<li>data : 需自行创建的目录，作为索引目录<code>mkdir data</code></li>
+</ul>
+<h1 id="进入config文件修改配置文件elasticsearch-yml"><a href="#进入config文件修改配置文件elasticsearch-yml" class="headerlink" title="进入config文件修改配置文件elasticsearch.yml"></a>进入config文件修改配置文件elasticsearch.yml</h1><ul>
+<li>cluster.name : 集群名称</li>
+</ul>
+<p><code>cluster.name: my-elasticsearch-1</code></p>
+<ul>
+<li>node.name ：节点名称</li>
+</ul>
+<p><code>node.name: es-node0</code></p>
+<ul>
+<li>path.data ：data数据保存地址</li>
+</ul>
+<p><code>path.data: /usr/local/elasticsearch-7.12.0/data</code></p>
+<ul>
+<li>path.logs : 修改日志保存地址</li>
+</ul>
+<p><code>path.logs: /usr/local/elasticsearch-7.12.0/logs</code></p>
+<ul>
+<li>network.host ：绑定es网络IP</li>
+</ul>
+<p><code>network.host: 0.0.0.0</code></p>
+<ul>
+<li>cluster.initial_master_nodes ：集群节点，名字可以改成之前那个节点名称</li>
+</ul>
+<p><code>cluster.initial_master_nodes: [&quot;es-node0&quot;]</code></p>
+<h1 id="修改JVM参数"><a href="#修改JVM参数" class="headerlink" title="修改JVM参数"></a>修改JVM参数</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /usr/local/elasticsearch-7.12.0/config/jvm.options</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-Xms128m</span><br><span class="line">-Xmx128m</span><br></pre></td></tr></table></figure>
+
+<h1 id="添加用户"><a href="#添加用户" class="headerlink" title="添加用户"></a>添加用户</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">useradd esuser</span><br><span class="line">chown -R esuser:esuser /usr/local/elasticsearch-7.12.0</span><br><span class="line">su esuser</span><br><span class="line">whoami</span><br></pre></td></tr></table></figure>
+
+<h1 id="启动ES"><a href="#启动ES" class="headerlink" title="启动ES"></a>启动ES</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/elasticsearch-7.12.0/bin</span><br><span class="line">./elasticsearch</span><br></pre></td></tr></table></figure>
+
+<h2 id="报错"><a href="#报错" class="headerlink" title="报错"></a>报错</h2><blockquote>
+<p>忘截图了，找了慕课网上的图片</p>
+</blockquote>
+<p><img src="https://climg.mukewang.com/5df7334308055a7a14420130.jpg" alt="图片描述"></p>
+<ul>
+<li><p>切换root</p>
+</li>
+<li><p>```shell<br>vim /etc/security/limits.conf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">添加</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;shell</span><br><span class="line">* soft nofile 65536</span><br><span class="line">* hard nofile 131072</span><br><span class="line">* soft nproc 2048</span><br><span class="line">* hard nproc 4096</span><br></pre></td></tr></table></figure></li>
+<li><p>```shell<br>vim /etc/sysctl.conf</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">添加</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;shell</span><br><span class="line">vm.max_map_count&#x3D;262145</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl -p</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="后台启动Elasticsearch"><a href="#后台启动Elasticsearch" class="headerlink" title="后台启动Elasticsearch"></a>后台启动Elasticsearch</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./elasticsearch -d</span><br></pre></td></tr></table></figure>
+
+<h2 id="查看是否启动成功"><a href="#查看是否启动成功" class="headerlink" title="查看是否启动成功"></a>查看是否启动成功</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps</span><br></pre></td></tr></table></figure>
+
+<h1 id="端口号"><a href="#端口号" class="headerlink" title="端口号"></a>端口号</h1><ul>
+<li>9200 ——Http协议，用于外部通信</li>
+<li>9300——Tcp协议，ES集群之间的通信</li>
+</ul>
+<h1 id="配置elasticsearch用户名和密码"><a href="#配置elasticsearch用户名和密码" class="headerlink" title="配置elasticsearch用户名和密码"></a>配置elasticsearch用户名和密码</h1><ul>
+<li>编辑elasticsearch.yml，添加以下内容</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">xpack.security.enabled: true</span><br><span class="line">xpack.license.self_generated.type: basic</span><br><span class="line">xpack.security.transport.ssl.enabled: true</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>开启elasticsearch，在bin目录下输入</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./elasticsearch-setup-passwords interactive</span><br></pre></td></tr></table></figure>
+
+<p>其中，用户权限分别如下：</p>
+<pre><code>elastic 账号：拥有 superuser 角色，是内置的超级用户。
+
+kibana 账号：拥有 kibana_system 角色，用户 kibana 用来连接 elasticsearch 并与之通信。Kibana 服务器以该用户身份提交请求以访问集群监视 API 和 .kibana 索引。不能访问 index。
+
+logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Elasticsearch 中存储监控信息时使用。
+</code></pre>
+<ul>
+<li><p>记住你所设置的密码</p>
+</li>
+<li><p>重新设置密码</p>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 修改密码</span></span><br><span class="line">curl -XPOST -u elastic &quot;ip:9200/_security/user/elastic/_password&quot; -H &#x27;Content-Type: application/json&#x27; -d&#x27;&#123;&quot;password&quot; : &quot;abcd1234&quot;&#125;&#x27;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 重新设置密码</span></span><br><span class="line">1. 修改config/elasticsearch.yml;注释掉 xpack.security.enabled: true这一行</span><br><span class="line">2. 重启es，删除掉.security-7索引</span><br><span class="line">3. 重新执行设置密码</span><br></pre></td></tr></table></figure>
+
+<h2 id="elasitcsearch-开启认证后，报异常"><a href="#elasitcsearch-开启认证后，报异常" class="headerlink" title="elasitcsearch 开启认证后，报异常"></a>elasitcsearch 开启认证后，报异常</h2><blockquote>
+<p>elasitcsearch 开启认证后，报DecoderException: javax.net.ssl.SSLHandshakeException: No available authentic异常</p>
+</blockquote>
+<p><strong>是TCP通信，使用ssl加密通信</strong></p>
+<p>第一步：在ES的根目录生成CA证书</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/elasticsearch-certutil ca</span><br></pre></td></tr></table></figure>
+
+<p>中间需要设置密码，直接回车(<strong>不要设置密码，后续启动时会报错</strong>)</p>
+<p>第二步：使用第一步生成的证书，产生p12密钥</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/elasticsearch-certutil cert --ca elastic-stack-ca.p12</span><br></pre></td></tr></table></figure>
+
+<p>第三步：在config目录创建certs目录</p>
+<p>第四步：拷贝p12文件至certs目录</p>
+<p>第五步：修改设置</p>
+<p>修改后的配置如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">xpack.security.enabled: true</span><br><span class="line">xpack.license.self_generated.type: basic</span><br><span class="line">xpack.security.transport.ssl.enabled: true</span><br><span class="line">xpack.security.transport.ssl.verification_mode: certificate</span><br><span class="line">xpack.security.transport.ssl.keystore.path: certs/elastic-certificates.p12</span><br><span class="line">xpack.security.transport.ssl.truststore.path: certs/elastic-certificates.p12</span><br></pre></td></tr></table></figure>
+
+<p>第六步：重启ES,错误消失</p>
+<h1 id="kibnan-安准"><a href="#kibnan-安准" class="headerlink" title="kibnan 安准"></a>kibnan 安准</h1><h1 id="上传后解压-1"><a href="#上传后解压-1" class="headerlink" title="上传后解压"></a>上传后解压</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf kibana-7.12.0-linux-x86_64.tar.gz</span><br></pre></td></tr></table></figure>
+
+<h2 id="解压后将文件移至-usr-local-下-1"><a href="#解压后将文件移至-usr-local-下-1" class="headerlink" title="解压后将文件移至/usr/local/下"></a>解压后将文件移至<code>/usr/local/</code>下</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv kibana-7.12.0-linux-x86_64 &#x2F;usr&#x2F;local&#x2F;</span><br></pre></td></tr></table></figure>
+
+<h1 id="进入-usr-local-elasticsearch-7-12-0-1"><a href="#进入-usr-local-elasticsearch-7-12-0-1" class="headerlink" title="进入/usr/local/elasticsearch-7.12.0"></a>进入/usr/local/elasticsearch-7.12.0</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;local&#x2F;kibana-7.12.0-linux-x86_64</span><br></pre></td></tr></table></figure>
+
+<h1 id="编辑kibana-yml配置ES信息"><a href="#编辑kibana-yml配置ES信息" class="headerlink" title="编辑kibana.yml配置ES信息"></a>编辑kibana.yml配置ES信息</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">切换目录</span></span><br><span class="line">cd /config/ &amp;&amp; ll</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">编辑命令</span></span><br><span class="line">vim kibana.yml </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">编辑内容</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">Kibana 运行端口</span></span><br><span class="line">server.port: 5601</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">Kibana服务主机</span></span><br><span class="line">server.host: &quot;10.xxx.xx.xxx&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">Kibana服务名称</span></span><br><span class="line">server.name: &quot;kibana-101&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">指定ES地址</span></span><br><span class="line">elasticsearch.hosts: [&quot;http://ip:host&quot;]</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> elasticsearch密码</span></span><br><span class="line">elasticsearch.username: &quot;之前是设置的用户名&quot;</span><br><span class="line">elasticsearch.password: &quot;之前是设置的密码&quot;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="新建Kibana用户并授权"><a href="#新建Kibana用户并授权" class="headerlink" title="新建Kibana用户并授权"></a>新建Kibana用户并授权</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 增加用户--》示例: useradd kibanauser</span></span><br><span class="line">useradd 用户名</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置密码--》示例: passwd kibanauser</span></span><br><span class="line">passwd 用户名</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">设置授权--》示例: chown kibana-sys:kibana-sys /usr/<span class="built_in">local</span>/kibana-7.12.0-linux-x86_64 -R</span></span><br><span class="line">chown  用户名:用户名 Kibana安装目录 -R</span><br></pre></td></tr></table></figure>
+
+<h1 id="启动或关闭kibana"><a href="#启动或关闭kibana" class="headerlink" title="启动或关闭kibana"></a>启动或关闭kibana</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">切换用户</span></span><br><span class="line">su kibanauser</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">切换目录</span></span><br><span class="line">cd /usr/local/kibana-7.12.0-linux-x86_64/bin/</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">控制台启动--》root账户启动需要带参数--》示例: ./kibana --allow-root</span></span><br><span class="line">./kibana</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">后台启动</span></span><br><span class="line">nohup ./kibana &amp;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 查询kibana进程</span></span><br><span class="line">ps -ef|grep node</span><br><span class="line">或者</span><br><span class="line">fuser -n tcp 5601</span><br><span class="line">或者</span><br><span class="line">netstat -anltp|grep 5601来查看pid</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 关闭kibana</span></span><br><span class="line">kill -9...</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/25/redis%E7%9F%A5%E8%AF%86%E7%82%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/25/redis%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url">redis知识点</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-25T22:32:27+08:00">
+                2021-03-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis知识点</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="什么是-Redis"><a href="#什么是-Redis" class="headerlink" title="什么是 Redis?"></a>什么是 Redis?</h1><ul>
+<li>内存数据库，速度快，也支持数据的持久化</li>
+<li>Redis不仅仅支持简单的key-value类型的数据，同时还提供list，set，zset，hash等数据结构的存储。</li>
+<li>Redis支持数据的备份，即master-slave模式的数据备份。Redis 还支持事务 、持久化、Lua 脚本、多种集群方案</li>
+<li>Redis 除了做缓存之外，Redis也经常用来做分布式锁，甚至是消息队列。</li>
+</ul>
+<h1 id="Redis的key和value大小限制"><a href="#Redis的key和value大小限制" class="headerlink" title="Redis的key和value大小限制"></a>Redis的key和value大小限制</h1><p>redis的key和string类型value限制均为512MB。</p>
+<h1 id="Redis服务器和客户端的通信"><a href="#Redis服务器和客户端的通信" class="headerlink" title="Redis服务器和客户端的通信"></a>Redis服务器和客户端的通信</h1><p>Redis客户端使用RESP（Redis序列化协议）与Redis服务器进行通信</p>
+<h1 id="使用-Redis-有哪些好处？"><a href="#使用-Redis-有哪些好处？" class="headerlink" title="使用 Redis 有哪些好处？"></a>使用 Redis 有哪些好处？</h1><p>（1）速度快，因为数据存在内存中，类似于 HashMap，HashMap 的优势就是查找和操作的时间复杂度都是 O1)</p>
+<p>（2）支持丰富数据类型，支持 string，list，set，Zset，hash 等</p>
+<p>（3）支持事务，操作都是原子性，所谓的原子性就是对数据的更改要么全部执行，要么全部不执行</p>
+<p>（4）丰富的特性：可用于缓存，消息，按 key 设置过期时间，过期后将会自动删除</p>
+<h1 id="Redis如何解决key冲突？"><a href="#Redis如何解决key冲突？" class="headerlink" title="Redis如何解决key冲突？"></a>Redis如何解决key冲突？</h1><p>拉链法。这个问题可以考虑到另一个问题，HashMap是如何解决key冲突的，同样也是采用拉链地址法。如果被问到解决key值冲突还有什么方法？一般来说解决key值冲突的方法有俩种，一种是开放地址法，另一种就是拉链法。</p>
+<h1 id="缓存数据的处理流程是怎样的？"><a href="#缓存数据的处理流程是怎样的？" class="headerlink" title="缓存数据的处理流程是怎样的？"></a>缓存数据的处理流程是怎样的？</h1><ol>
+<li>如果用户请求的数据在缓存中就直接返回。</li>
+<li>缓存中不存在的话就看数据库中是否存在。</li>
+<li>数据库中存在的话就更新缓存中的数据。</li>
+<li>数据库中不存在的话就返回空数据。</li>
+</ol>
+<h1 id="为什么选择redis"><a href="#为什么选择redis" class="headerlink" title="为什么选择redis"></a>为什么选择redis</h1><p>磁盘IO及网络开销是直接请求内存IO千百上千倍，通过缓存技术，减少数据传输时间，提高处理效率</p>
+<ul>
+<li>首先 Redis 支持丰富的数据结构，新版本数据结构从最初的5种变成9种。</li>
+<li>其次 Redis 是读写单进程单线程，不用考虑并发读写的复杂场景，速度也快。</li>
+<li>Reids 功能完备，支持数据持久化，支持主从复制和集群。</li>
+<li>还有Lua脚本，事务，发布订阅模型，Reids 都支持。</li>
+</ul>
+<h1 id="Memcached-与-Redis-的区别都有哪些？"><a href="#Memcached-与-Redis-的区别都有哪些？" class="headerlink" title="Memcached 与 Redis 的区别都有哪些？"></a>Memcached 与 Redis 的区别都有哪些？</h1><ol>
+<li><strong>Redis 支持更丰富的数据类型（支持更复杂的应用场景）</strong>。Redis 不仅仅支持简单的 k/v 类型的数据，同时还提供 list，set，zset，hash 等数据结构的存储。Memcached 只支持最简单的 k/v 数据类型。</li>
+<li><strong>Redis 支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用,而 Memecache 把数据全部存在内存之中。</strong></li>
+<li><strong>Redis 有灾难恢复机制。</strong> 因为可以把缓存中的数据持久化到磁盘上。</li>
+<li><strong>Redis 在服务器内存使用完之后，可以将不用的数据放到磁盘上。但是，Memcached 在服务器内存使用完之后，就会直接报异常。</strong></li>
+<li><strong>Memcached 没有原生的集群模式，需要依靠客户端来实现往集群中分片写入数据；但是 Redis 目前是原生支持 cluster 模式的.</strong></li>
+<li><strong>Memcached 是多线程，非阻塞 IO 复用的网络模型；Redis 使用单线程的多路 IO 复用模型。</strong> （Redis 6.0 引入了多线程 IO ）</li>
+<li><strong>Redis 支持发布订阅模型、Lua 脚本、事务等功能，而 Memcached 不支持。并且，Redis 支持更多的编程语言。</strong></li>
+<li><strong>Memcached过期数据的删除策略只用了惰性删除，而 Redis 同时使用了惰性删除与定期删除。</strong></li>
+</ol>
+<h1 id="Redis相比Memcached有哪些优势"><a href="#Redis相比Memcached有哪些优势" class="headerlink" title="Redis相比Memcached有哪些优势"></a>Redis相比Memcached有哪些优势</h1><ol>
+<li>Memcached所有的值均是简单的字符串，redis作为其代替者，支持更为丰富的数据类型</li>
+<li>Redis的速度比Memcached快得多</li>
+<li>Redis可以持久化数据</li>
+</ol>
+<h1 id="Redis-常见性能问题和解决方案有哪些"><a href="#Redis-常见性能问题和解决方案有哪些" class="headerlink" title="Redis 常见性能问题和解决方案有哪些?"></a>Redis 常见性能问题和解决方案有哪些?</h1><p>（1）Master 最好不要写内存快照，如果 Master 写内存快照，save 命令调度 rdbSave函数，会阻塞主线程的工作，当快照比较大时对性能影响是非常大的，会间断性暂停服务；</p>
+<p>（2）如果数据比较重要，某个 Slave 开启 AOF 备份数据，策略设置为每秒同步一次；</p>
+<p>（3）为了主从复制的速度和连接的稳定性，Master 和 Slave 最好在同一个局域网；</p>
+<p>（4）尽量避免在压力很大的主库上增加从库；</p>
+<h1 id="为什么Redis-需要把所有数据放到内存中？"><a href="#为什么Redis-需要把所有数据放到内存中？" class="headerlink" title="为什么Redis 需要把所有数据放到内存中？"></a>为什么Redis 需要把所有数据放到内存中？</h1><p>Redis 为了达到最快的读写速度将数据都读到内存中，并通过异步的方式将数据写入磁盘。所以 redis 具有快速和数据持久化的特征。如果不将数据放在内存中，磁盘 I/O 速度为严重影响 redis 的性能。在内存越来越便宜的今天，redis 将会越来越受欢迎。如果设置了最大使用的内存，则数据已有记录数达到内存限值后不能继续插入新值。</p>
+<h1 id="Pipeline-有什么好处，为什么要用-Pipeline？"><a href="#Pipeline-有什么好处，为什么要用-Pipeline？" class="headerlink" title="Pipeline 有什么好处，为什么要用 Pipeline？"></a>Pipeline 有什么好处，为什么要用 Pipeline？</h1><p>多个指令之间没有依赖关系，可以使用 pipeline 一次性执行多个指令，减少 IO，缩减时间。</p>
+<h1 id="Jedis-与-Redisson-对比有什么优缺点？"><a href="#Jedis-与-Redisson-对比有什么优缺点？" class="headerlink" title="Jedis 与 Redisson 对比有什么优缺点？"></a>Jedis 与 Redisson 对比有什么优缺点？</h1><p>Jedis 是 Redis 的 Java 实现的客户端，其 API 提供了比较全面的 Redis 命令的支持；</p>
+<p>Redisson 实现了分布式和可扩展的 Java 数据结构，和 Jedis 相比，功能较为简单，不支持字符串操作，不支持排序、事务、管道、分区等 Redis 特性。</p>
+<p>Redisson 的宗旨是促进使用者对 Redis 的关注分离，从而让使用者能够将精力更集中地放在处理业务逻辑上。</p>
+<h1 id="Redis-如何设置密码及验证密码？"><a href="#Redis-如何设置密码及验证密码？" class="headerlink" title="Redis 如何设置密码及验证密码？"></a>Redis 如何设置密码及验证密码？</h1><p>设置密码： config set requirepass 123456<br>授权密码： auth 123456</p>
+<h1 id="Redis-集群如何选择数据库？"><a href="#Redis-集群如何选择数据库？" class="headerlink" title="Redis 集群如何选择数据库？"></a>Redis 集群如何选择数据库？</h1><p>目前无法做数据库选择，默认在0数据库，可以在application.yml中配置</p>
+<h1 id="怎么理解-Redis-事务？"><a href="#怎么理解-Redis-事务？" class="headerlink" title="怎么理解 Redis 事务？"></a>怎么理解 Redis 事务？</h1><p>1）事务是一个单独的隔离操作：事务中的所有命令都会序列化、按顺序地执行。事务在执行的过程中，不会被其他客户端发送来的命令请求所打断。</p>
+<p>2）事务是一个原子操作：事务中的命令要么全部被执行，要么全部都不执行。</p>
+<h1 id="Redis-事务相关的命令有哪几个？"><a href="#Redis-事务相关的命令有哪几个？" class="headerlink" title="Redis 事务相关的命令有哪几个？"></a>Redis 事务相关的命令有哪几个？</h1><ul>
+<li>MULTI</li>
+</ul>
+<p>使用该命令，标记一个事务块的开始，通常在执行之后会回复OK，（但不一定真的OK），这个时候用户可以输入多个操作来代替逐条操作，redis会将这些操作放入队列中。</p>
+<ul>
+<li>EXEC</li>
+</ul>
+<p>执行这个事务内的所有命令</p>
+<ul>
+<li>DISCARD</li>
+</ul>
+<p>放弃事务，即该事务内的所有命令都将取消</p>
+<ul>
+<li>WATCH</li>
+</ul>
+<p>监控一个或者多个key，如果这些key在提交事务（EXEC）之前被其他用户修改过，那么事务将执行失败，需要重新获取最新数据重头操作（类似于乐观锁）。</p>
+<h1 id="redis事务的性质"><a href="#redis事务的性质" class="headerlink" title="redis事务的性质"></a>redis事务的性质</h1><ol>
+<li>单独的隔离操作：事务中的所有命令会被序列化、按顺序执行，在执行的过程中不会被其他客户端发送来的命令打断</li>
+<li>没有隔离级别的概念：队列中的命令在事务没有被提交之前不会被实际执行</li>
+<li>不保证原子性：redis中的一个事务中如果存在命令执行失败，那么其他命令依然会被执行，没有回滚机制</li>
+</ol>
+<h1 id="Redis-key-的过期时间和永久有效分别怎么设置？"><a href="#Redis-key-的过期时间和永久有效分别怎么设置？" class="headerlink" title="Redis key 的过期时间和永久有效分别怎么设置？"></a>Redis key 的过期时间和永久有效分别怎么设置？</h1><p>EXPIRE 和 PERSIST 命令。</p>
+<h1 id="Redis-如何做内存优化？"><a href="#Redis-如何做内存优化？" class="headerlink" title="Redis 如何做内存优化？"></a>Redis 如何做内存优化？</h1><p>尽可能使用散列表（hashes），散列表（是说散列表里面存储的数少）使用的内存非常小，所以你应该尽可能的将你的数据模型抽象到一个散列表里面。比如你的 web 系统中有一个用户对象，不要为这个用户的名称，姓氏，邮箱，密码设置单独的 key,而是应该把这个用户的所有信息存储到一张散列表里面。</p>
+<h1 id="Redis-回收进程如何工作的？"><a href="#Redis-回收进程如何工作的？" class="headerlink" title="Redis 回收进程如何工作的？"></a>Redis 回收进程如何工作的？</h1><p>一个客户端运行了新的命令，添加了新的数据。Redi 检查内存使用情况，如<br>果大于 maxmemory 的限制, 则根据设定好的策略进行回收。一个新的命令被执<br>行，等等。所以我们不断地穿越内存限制的边界，通过不断达到边界然后不断地<br>回收回到边界以下。如果一个命令的结果导致大量内存被使用（例如很大的集合<br>的交集保存到一个新的键），不用多久内存限制就会被这个内存使用量超越。 </p>
+<h1 id="都有哪些办法可以降低-Redis-的内存使用情况呢？"><a href="#都有哪些办法可以降低-Redis-的内存使用情况呢？" class="headerlink" title="都有哪些办法可以降低 Redis 的内存使用情况呢？"></a>都有哪些办法可以降低 Redis 的内存使用情况呢？</h1><p>如果你使用的是 32 位的 Redis 实例，可以好好利用 Hash,list,sorted set,set等集合类型数据，因为通常情况下很多小的 Key-Value 可以用更紧凑的方式存放到一起。</p>
+<h1 id="Redis-的内存用完了会发生什么？"><a href="#Redis-的内存用完了会发生什么？" class="headerlink" title="Redis 的内存用完了会发生什么？"></a>Redis 的内存用完了会发生什么？</h1><p>如果达到设置的上限，Redis 的写命令会返回错误信息（但是读命令还可以正常返回。）</p>
+<p>或者你可以将 Redis 当缓存来使用配置淘汰机制，当 Redis 达到内存上限时会冲刷掉旧的内容。</p>
+<h1 id="一个-Redis-实例最多能存放多少的-keys？List、Set、Sorted-Set他们最多能存放多少元素？"><a href="#一个-Redis-实例最多能存放多少的-keys？List、Set、Sorted-Set他们最多能存放多少元素？" class="headerlink" title="一个 Redis 实例最多能存放多少的 keys？List、Set、Sorted Set他们最多能存放多少元素？"></a>一个 Redis 实例最多能存放多少的 keys？List、Set、Sorted Set他们最多能存放多少元素？</h1><p>理论上 Redis 可以处理多达 232 的 keys，每个实例至少存放了 2 亿 5 千万的 keys。任何 list、set、和 sorted set 都可以放 232 个元素。换句话说，Redis 的存储极限是系统中的可用内存值。</p>
+<h1 id="假如-Redis-里面有-1-亿个-key，其中有-10w-个-key-是以某个固定的已知的前缀开头的，如果将它们全部找出来？"><a href="#假如-Redis-里面有-1-亿个-key，其中有-10w-个-key-是以某个固定的已知的前缀开头的，如果将它们全部找出来？" class="headerlink" title="假如 Redis 里面有 1 亿个 key，其中有 10w 个 key 是以某个固定的已知的前缀开头的，如果将它们全部找出来？"></a>假如 Redis 里面有 1 亿个 key，其中有 10w 个 key 是以某个固定的已知的前缀开头的，如果将它们全部找出来？</h1><p>使用 keys 指令可以扫出指定模式的 key 列表。</p>
+<h2 id="如果这个-redis-正在给线上的业务提供服务，那使用-keys-指令会有什么问题？"><a href="#如果这个-redis-正在给线上的业务提供服务，那使用-keys-指令会有什么问题？" class="headerlink" title="如果这个 redis 正在给线上的业务提供服务，那使用 keys 指令会有什么问题？"></a>如果这个 redis 正在给线上的业务提供服务，那使用 keys 指令会有什么问题？</h2><blockquote>
+<p>这个时候你要回答 redis 关键的一个特性：redis 的单线程的。</p>
+</blockquote>
+<p>keys 指令会导致线程阻塞一段时间，线上服务会停顿，直到指令执行完毕，服务才能恢复。这个时候可以使用 scan 指令，scan 指令可以无阻塞的提取出指定模式的 key 列表，但是会有一定的重复概率，在客户端做一次去重就可以了，但是整体所花费的时间会比直接用 keys 指令长。</p>
+<h1 id="如果有大量的-key-需要设置同一时间过期，一般需要注意什么？"><a href="#如果有大量的-key-需要设置同一时间过期，一般需要注意什么？" class="headerlink" title="如果有大量的 key 需要设置同一时间过期，一般需要注意什么？"></a>如果有大量的 key 需要设置同一时间过期，一般需要注意什么？</h1><p>如果大量的 key 过期时间设置的过于集中，到过期的那个时间点，redis 可能会出现短暂的卡顿现象。一般需要在时间上加一个随机值，使得过期时间分散一些。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/25/redis%E5%AE%89%E8%A3%85/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1269,845 +2364,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/Tomcat%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/22/Tomcat%E5%AE%89%E8%A3%85/" itemprop="url">Tomcat安装</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T22:40:13+08:00">
-                2021-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-tomcat%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
-                    <span itemprop="name">软件安装 - tomcat安装</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="解压下载的Tomcat"><a href="#解压下载的Tomcat" class="headerlink" title="解压下载的Tomcat"></a>解压下载的Tomcat</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf apache-tomcat-8.5.50.tar.gz </span><br></pre></td></tr></table></figure>
-
-<h1 id="安装Java"><a href="#安装Java" class="headerlink" title="安装Java"></a>安装Java</h1><h1 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./startup.sh</span><br></pre></td></tr></table></figure>
-
-<h1 id="检查防火墙"><a href="#检查防火墙" class="headerlink" title="检查防火墙"></a>检查防火墙</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status firewalld.service</span><br></pre></td></tr></table></figure>
-
-<h2 id="重启防火墙"><a href="#重启防火墙" class="headerlink" title="重启防火墙"></a>重启防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart firewalld.service</span><br></pre></td></tr></table></figure>
-
-<h2 id="停止防火墙"><a href="#停止防火墙" class="headerlink" title="停止防火墙"></a>停止防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld.service</span><br></pre></td></tr></table></figure>
-
-<h2 id="启动防火墙"><a href="#启动防火墙" class="headerlink" title="启动防火墙"></a>启动防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start firewalld.service</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="开放8080端口"><a href="#开放8080端口" class="headerlink" title="开放8080端口"></a>开放8080端口</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8080/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line">firewall-cmd --zone=public --query-port=8080/tcp</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/nginx%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/22/nginx%E5%AE%89%E8%A3%85/" itemprop="url">nginx安装</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T00:17:38+08:00">
-                2021-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-nginx%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/" itemprop="url" rel="index">
-                    <span itemprop="name">软件安装 - nginx安装教程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Nginx安装"><a href="#Nginx安装" class="headerlink" title="Nginx安装"></a>Nginx安装</h1><p>去官网<a target="_blank" rel="noopener" href="http://nginx.org/%E4%B8%8B%E8%BD%BD%E5%AF%B9%E5%BA%94%E7%9A%84nginx%E5%8C%85%EF%BC%8C%E6%8E%A8%E8%8D%90%E4%BD%BF%E7%94%A8%E7%A8%B3%E5%AE%9A%E7%89%88%E6%9C%AC">http://nginx.org/下载对应的nginx包，推荐使用稳定版本</a></p>
-<p>上传nginx到linux系统</p>
-<p>安装依赖环境</p>
-<ul>
-<li>安装gcc环境<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc-c++</span><br></pre></td></tr></table></figure></li>
-<li>安装PCRE库，用于解析正则表达式<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y pcre pcre-devel</span><br></pre></td></tr></table></figure></li>
-<li>zlib压缩和解压缩依赖，<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y zlib zlib-devel</span><br></pre></td></tr></table></figure></li>
-<li>SSL 安全的加密的套接字协议层，用于HTTP安全传输，也就是https<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y openssl openssl-devel</span><br></pre></td></tr></table></figure></li>
-<li>解压，需要注意，解压后得到的是源码，源码需要编译后才能安装<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf nginx-1.16.1.tar.gz</span><br></pre></td></tr></table></figure></li>
-<li>编译之前，先创建nginx临时目录，如果不创建，在启动nginx的过程中会报错<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir &#x2F;var&#x2F;temp&#x2F;nginx -p</span><br></pre></td></tr></table></figure></li>
-<li>在nginx的解压目录，输入如下命令进行配置，目的是为了创建makefile文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure \</span><br><span class="line">--prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;nginx \</span><br><span class="line">--pid-path&#x3D;&#x2F;var&#x2F;run&#x2F;nginx&#x2F;nginx.pid \</span><br><span class="line">--lock-path&#x3D;&#x2F;var&#x2F;lock&#x2F;nginx.lock \</span><br><span class="line">--error-log-path&#x3D;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;error.log \</span><br><span class="line">--http-log-path&#x3D;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log \</span><br><span class="line">--with-http_gzip_static_module \</span><br><span class="line">--http-client-body-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;client \</span><br><span class="line">--http-proxy-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;proxy \</span><br><span class="line">--http-fastcgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;fastcgi \</span><br><span class="line">--http-uwsgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;uwsgi \</span><br><span class="line">--http-scgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;scgi</span><br></pre></td></tr></table></figure></li>
-</ul>
-<p><strong>配置命令：</strong></p>
-<table>
-<thead>
-<tr>
-<th>命令</th>
-<th>解释</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>–prefix</td>
-<td>指定nginx安装目录</td>
-</tr>
-<tr>
-<td>–pid-path</td>
-<td>指向nginx的pid</td>
-</tr>
-<tr>
-<td>–lock-path</td>
-<td>锁定安装文件，防止被恶意篡改或误操作</td>
-</tr>
-<tr>
-<td>–error-log</td>
-<td>错误日志</td>
-</tr>
-<tr>
-<td>–http-log-path</td>
-<td>http日志</td>
-</tr>
-<tr>
-<td>–with-http_gzip_static_module</td>
-<td>启用gzip模块，在线实时压缩输出数据流</td>
-</tr>
-<tr>
-<td>–http-client-body-temp-path</td>
-<td>设定客户端请求的临时目录</td>
-</tr>
-<tr>
-<td>–http-proxy-temp-path</td>
-<td>设定http代理临时目录</td>
-</tr>
-<tr>
-<td>–http-fastcgi-temp-path</td>
-<td>设定fastcgi临时目录</td>
-</tr>
-<tr>
-<td>–http-uwsgi-temp-path</td>
-<td>设定uwsgi临时目录</td>
-</tr>
-<tr>
-<td>–http-scgi-temp-path</td>
-<td>设定scgi临时目录</td>
-</tr>
-</tbody></table>
-<ul>
-<li>make编译<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make</span><br></pre></td></tr></table></figure></li>
-<li>安装<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make install</span><br></pre></td></tr></table></figure></li>
-<li>进入sbin目录启动nginx<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;nginx</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">停止：.&#x2F;nginx -s stop</span><br><span class="line">重新加载：.&#x2F;nginx -s reload</span><br></pre></td></tr></table></figure>
-打开浏览器，访问虚拟机所处内网ip即可打开nginx默认页面，显示如下便表示安装成功：</li>
-</ul>
-<p><strong>注意事项:</strong></p>
-<p>如果在云服务器安装，需要开启默认的nginx端口：80</p>
-<p>如果在虚拟机安装，需要关闭防火墙</p>
-<p>本地win或mac需要关闭防火墙</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/LVS-DR%E6%A8%A1%E5%BC%8F%E6%90%AD%E5%BB%BA%E9%85%8D%E7%BD%AE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/22/LVS-DR%E6%A8%A1%E5%BC%8F%E6%90%AD%E5%BB%BA%E9%85%8D%E7%BD%AE/" itemprop="url">LVS-DR模式搭建配置</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T00:17:38+08:00">
-                2021-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/LVS-nginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4-LVS%E4%BD%BF%E7%94%A8%E9%85%8D%E7%BD%AE/" itemprop="url" rel="index">
-                    <span itemprop="name">LVS+nginx实现高可用集群 - LVS使用配置</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="服务器与IP约定"><a href="#服务器与IP约定" class="headerlink" title="服务器与IP约定"></a>服务器与IP约定</h1><ul>
-<li>LVS-1台<ul>
-<li>VIP（虚拟IP）：192.168.159.120</li>
-<li>DIP（转发者IP/内网IP）：192.168.159.128</li>
-</ul>
-</li>
-<li>Nginx-两台（RealServer）<ul>
-<li>RIP（真实IP/内网IP）：192.168.159.129</li>
-<li>RIP（真实IP/内网IP）：192.168.159.130</li>
-</ul>
-</li>
-</ul>
-<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><h2 id="关闭网络配置管理器"><a href="#关闭网络配置管理器" class="headerlink" title="关闭网络配置管理器"></a>关闭网络配置管理器</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# systemctl stop NetworkManager</span><br><span class="line">[root@localhost ~]# systemctl disable NetworkManager</span><br></pre></td></tr></table></figure>
-<h2 id="配置LVS节点"><a href="#配置LVS节点" class="headerlink" title="配置LVS节点"></a>配置LVS节点</h2><h3 id="复制-etc-sysconfig-network-scripts-下的ifcfg-ens33"><a href="#复制-etc-sysconfig-network-scripts-下的ifcfg-ens33" class="headerlink" title="复制/etc/sysconfig/network-scripts/下的ifcfg-ens33"></a>复制<code>/etc/sysconfig/network-scripts/</code>下的ifcfg-ens33</h3><blockquote>
-<p>ifcfg-ens33网卡名称可能不一样</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost network-scripts]# cp ifcfg-ens33 ifcfg-ens33:1</span><br><span class="line">[root@localhost network-scripts]# ls</span><br><span class="line">ifcfg-ens33      ifdown-bnep  ifdown-isdn    ifdown-Team      ifup-bnep  ifup-isdn   ifup-routes    ifup-wireless</span><br><span class="line">ifcfg-ens33:1    ifdown-eth   ifdown-post    ifdown-TeamPort  ifup-eth   ifup-plip   ifup-sit       init.ipv6-global</span><br><span class="line">ifcfg-ens33.bak  ifdown-ib    ifdown-ppp     ifdown-tunnel    ifup-ib    ifup-plusb  ifup-Team      network-functions</span><br><span class="line">ifcfg-lo         ifdown-ippp  ifdown-routes  ifup             ifup-ippp  ifup-post   ifup-TeamPort  network-functions-ipv6</span><br><span class="line">ifdown           ifdown-ipv6  ifdown-sit     ifup-aliases     ifup-ipv6  ifup-ppp    ifup-tunnel</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<ul>
-<li>注：<code>数字1</code>为别名，可以任取其他数字都行</li>
-</ul>
-</blockquote>
-<h3 id="修改ifcfg-ens33-1"><a href="#修改ifcfg-ens33-1" class="headerlink" title="修改ifcfg-ens33:1"></a>修改ifcfg-ens33:1</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">BOOTPROTO=&quot;static&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 网卡名称</span></span><br><span class="line">DEVICE=&quot;ens33:1&quot;</span><br><span class="line">ONBOOT=&quot;yes&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 虚拟ip</span></span><br><span class="line">IPADDR=&quot;192.168.159.120&quot;</span><br><span class="line">NETMASK=&quot;255.255.255.0&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="重启网卡"><a href="#重启网卡" class="headerlink" title="重启网卡"></a>重启网卡</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service network restart</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost network-scripts]# ip addr</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 ::1/128 scope host </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">2: ens33: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000</span><br><span class="line">    link/ether 00:0c:29:a3:cd:89 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 192.168.159.128/24 brd 192.168.159.255 scope global dynamic ens33</span><br><span class="line">       valid_lft 1791sec preferred_lft 1791sec</span><br><span class="line">    inet 192.168.159.120/24 brd 192.168.159.255 scope global secondary ens33:1</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 fe80::20c:29ff:fea3:cd89/64 scope link </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">3: virbr0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default qlen 1000</span><br><span class="line">    link/ether 52:54:00:26:56:3b brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 192.168.122.1/24 brd 192.168.122.255 scope global virbr0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">4: virbr0-nic: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc pfifo_fast master virbr0 state DOWN group default qlen 1000</span><br><span class="line">    link/ether 52:54:00:26:56:3b brd ff:ff:ff:ff:ff:ff</span><br></pre></td></tr></table></figure>
-
-<p>ens33下多了一个虚拟ip<code>inet 192.168.159.120/24</code></p>
-<h3 id="安装ipvsadm"><a href="#安装ipvsadm" class="headerlink" title="安装ipvsadm"></a>安装ipvsadm</h3><blockquote>
-<p>centos都是集成LVS的，所以ipvs是自带的，只需要安装ipvsadm</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install ipvsadm</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">IP Virtual Server version 1.2.1 (size=4096)</span><br><span class="line">Prot LocalAddress:Port Scheduler Flags</span><br><span class="line"><span class="meta">  -&gt;</span><span class="bash"> RemoteAddress:Port           Forward Weight ActiveConn InActConn</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="配置2台Nginx"><a href="#配置2台Nginx" class="headerlink" title="配置2台Nginx"></a>配置2台Nginx</h2><h3 id="配置虚拟网络子接口（回环接口）"><a href="#配置虚拟网络子接口（回环接口）" class="headerlink" title="配置虚拟网络子接口（回环接口）"></a>配置虚拟网络子接口（回环接口）</h3><ol>
-<li>拷贝lo（本地回环接口，用户构建虚拟网络子接口）</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# cd /etc/sysconfig/network-scripts/</span><br><span class="line">[root@localhost network-scripts]# cp ifcfg-lo ifcfg-lo:1</span><br><span class="line">[root@localhost network-scripts]# ls</span><br><span class="line">ifcfg-ens33      ifdown-bnep  ifdown-isdn    ifdown-Team      ifup-bnep  ifup-isdn   ifup-routes    ifup-wireless</span><br><span class="line">ifcfg-ens33.bak  ifdown-eth   ifdown-post    ifdown-TeamPort  ifup-eth   ifup-plip   ifup-sit       init.ipv6-global</span><br><span class="line">ifcfg-lo         ifdown-ib    ifdown-ppp     ifdown-tunnel    ifup-ib    ifup-plusb  ifup-Team      network-functions</span><br><span class="line">ifcfg-lo:1       ifdown-ippp  ifdown-routes  ifup             ifup-ippp  ifup-post   ifup-TeamPort  network-functions-ipv6</span><br><span class="line">ifdown           ifdown-ipv6  ifdown-sit     ifup-aliases     ifup-ipv6  ifup-ppp    ifup-tunnel</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost network-scripts]# vim ifcfg-lo:1</span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li>修改内容<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">DEVICE=lo:1</span><br><span class="line">IPADDR=192.168.159.120</span><br><span class="line">NETMASK=255.255.255.255</span><br><span class="line">NETWORK=127.0.0.0</span><br><span class="line"><span class="meta">#</span><span class="bash"> If you<span class="string">&#x27;re having problems with gated making 127.0.0.0/8 a martian,</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> you can change this to something <span class="keyword">else</span> (255.255.255.255, <span class="keyword">for</span> example)</span></span><br><span class="line">BROADCAST=127.255.255.255</span><br><span class="line">ONBOOT=yes</span><br><span class="line">NAME=loopback</span><br></pre></td></tr></table></figure></li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost network-scripts]# ifup lo</span><br><span class="line">[root@localhost network-scripts]# ip addr</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet 192.168.159.120/32 brd 192.168.159.120 scope global lo:1</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 ::1/128 scope host </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">2: ens33: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000</span><br><span class="line">    link/ether 00:0c:29:b7:a5:86 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 192.168.159.129/24 brd 192.168.159.255 scope global dynamic ens33</span><br><span class="line">       valid_lft 1345sec preferred_lft 1345sec</span><br><span class="line">    inet6 fe80::20c:29ff:feb7:a586/64 scope link </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">3: virbr0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default qlen 1000</span><br><span class="line">    link/ether 52:54:00:82:4f:65 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 192.168.122.1/24 brd 192.168.122.255 scope global virbr0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">4: virbr0-nic: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc pfifo_fast master virbr0 state DOWN group default qlen 1000</span><br><span class="line">    link/ether 52:54:00:82:4f:65 brd ff:ff:ff:ff:ff:ff</span><br></pre></td></tr></table></figure>
-
-<p><strong>第二台重复操作</strong></p>
-<h2 id="为两台RealServer配置arp"><a href="#为两台RealServer配置arp" class="headerlink" title="为两台RealServer配置arp"></a>为两台RealServer配置arp</h2><ol>
-<li><p>arp-ignore：ARP响应级别（处理请求）</p>
-<ul>
-<li>0：只要本机配置了ip，就能够响应请求</li>
-<li>1：请求的目标地址到达对应的网络接口，才算响应请求（采用）</li>
-</ul>
-</li>
-<li><p>arp-announce：ARP通告行为（返回响应）</p>
-<ul>
-<li>0：本机上任何网络接口都向外通告，所有的网卡都能接受到通告</li>
-<li>1：尽可能避免本网卡与不匹配的目标进行通告</li>
-<li>2：只在本网咖通告（采用）</li>
-</ul>
-</li>
-</ol>
-<h3 id="打开sysctl-conf"><a href="#打开sysctl-conf" class="headerlink" title="打开sysctl.conf"></a>打开<code>sysctl.conf</code></h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
-
-<h3 id="配置所有网卡、默认网卡、虚拟网卡的arp响应级别和通告行为"><a href="#配置所有网卡、默认网卡、虚拟网卡的arp响应级别和通告行为" class="headerlink" title="配置所有网卡、默认网卡、虚拟网卡的arp响应级别和通告行为"></a>配置<code>所有网卡</code>、<code>默认网卡</code>、<code>虚拟网卡</code>的arp响应级别和通告行为</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> configration <span class="keyword">for</span> lvs</span></span><br><span class="line">net.ipv4.conf.all.arp_ignore = 1</span><br><span class="line">net.ipv4.conf.default.arp_ignore = 1</span><br><span class="line">net.ipv4.conf.lo.arp_ignore = 1</span><br><span class="line"></span><br><span class="line">net.ipv4.conf.all.arp_announce = 2</span><br><span class="line">net.ipv4.conf.default.arp_announce = 2</span><br><span class="line">net.ipv4.conf.lo.arp_announce = 2</span><br></pre></td></tr></table></figure>
-
-<h3 id="刷新配置"><a href="#刷新配置" class="headerlink" title="刷新配置"></a>刷新配置</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
-
-<h3 id="增加网关用于接受数据报文，当有请求到本机后，会交给lo去处理"><a href="#增加网关用于接受数据报文，当有请求到本机后，会交给lo去处理" class="headerlink" title="增加网关用于接受数据报文，当有请求到本机后，会交给lo去处理"></a>增加网关用于接受数据报文，当有请求到本机后，会交给lo去处理</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost network-scripts]# route add -host 192.168.159.120 dev lo:1</span><br><span class="line">[root@localhost network-scripts]# route -n</span><br><span class="line">Kernel IP routing table</span><br><span class="line">Destination     Gateway         Genmask         Flags Metric Ref    Use Iface</span><br><span class="line">0.0.0.0         192.168.159.2   0.0.0.0         UG    0      0        0 ens33</span><br><span class="line">169.254.0.0     0.0.0.0         255.255.0.0     U     1002   0        0 ens33</span><br><span class="line">192.168.122.0   0.0.0.0         255.255.255.0   U     0      0        0 virbr0</span><br><span class="line">192.168.159.0   0.0.0.0         255.255.255.0   U     0      0        0 ens33</span><br><span class="line">192.168.159.120 0.0.0.0         255.255.255.255 UH    0      0        0 lo</span><br></pre></td></tr></table></figure>
-
-<h3 id="防止重启后失效"><a href="#防止重启后失效" class="headerlink" title="防止重启后失效"></a>防止重启后失效</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;route add -host 192.168.159.120 dev lo:1&quot; &gt;&gt; /etc/rc.local</span><br></pre></td></tr></table></figure>
-
-<h2 id="使用ipvsadm配置集群规则"><a href="#使用ipvsadm配置集群规则" class="headerlink" title="使用ipvsadm配置集群规则"></a>使用ipvsadm配置集群规则</h2><h3 id="创建LVS节点，用户访问的集群调度者"><a href="#创建LVS节点，用户访问的集群调度者" class="headerlink" title="创建LVS节点，用户访问的集群调度者"></a>创建LVS节点，用户访问的集群调度者</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -A -t 192.168.159.120:80 -s rr -p 5</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-A: 添加集群</span><br><span class="line">-t: tcp协议</span><br><span class="line">ip：设定集群的访问IP，也就是LVS的虚拟ip</span><br><span class="line">-s：设置负载均衡的算法，rr表示轮询</span><br><span class="line">-p：设置连接持久化的时间</span><br></pre></td></tr></table></figure>
-
-<h3 id="创建2台RS真实服务器"><a href="#创建2台RS真实服务器" class="headerlink" title="创建2台RS真实服务器"></a>创建2台RS真实服务器</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -a -t 192.168.159.129:80 -r 192.168.1.171:80 -g</span><br><span class="line">ipvsadm -a -t 192.168.159.130:80 -r 192.168.1.172:80 -g</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-a:添加真实服务器</span><br><span class="line">-t:tcp协议</span><br><span class="line">-r：真实服务器的IP地址</span><br><span class="line">-g：设定DR模式</span><br></pre></td></tr></table></figure>
-
-<h3 id="保存到规则库，否则重启失效"><a href="#保存到规则库，否则重启失效" class="headerlink" title="保存到规则库，否则重启失效"></a>保存到规则库，否则重启失效</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -S</span><br></pre></td></tr></table></figure>
-
-<h3 id="检查集群"><a href="#检查集群" class="headerlink" title="检查集群"></a>检查集群</h3><ul>
-<li><p>查看集群列表</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -Ln</span><br></pre></td></tr></table></figure></li>
-<li><p>查看集群状态</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -Ln --stats</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="其他指令"><a href="#其他指令" class="headerlink" title="其他指令"></a>其他指令</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 重启ipvsadm，重启后需要重新配置</span></span><br><span class="line">service ipvsadm restart</span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看持久化连接</span></span><br><span class="line">ipvsadm -Ln --persistent-conn</span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看连接请求过期时间以及请求源ip和目标ip</span></span><br><span class="line">ipvsadm -Lnc</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置tcp tcpfin udp 的过期时间（一般保持默认）</span></span><br><span class="line">ipvsadm --set 1 1 1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看过期时间</span></span><br><span class="line">ipvsadm -Ln --timeout</span><br></pre></td></tr></table></figure>
-
-<h2 id="帮助文档"><a href="#帮助文档" class="headerlink" title="帮助文档"></a>帮助文档</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -h</span><br><span class="line">man ipvsadm</span><br></pre></td></tr></table></figure>
-
-<h2 id="Keepalived-LVS高可用"><a href="#Keepalived-LVS高可用" class="headerlink" title="Keepalived+LVS高可用"></a>Keepalived+LVS高可用</h2><blockquote>
-<p>与之前keepalived配置Ngxin高可用差不多</p>
-</blockquote>
-<ol>
-<li><p>上传keepalived</p>
-</li>
-<li><p>./configure</p>
-</li>
-<li><p>make&amp;&amp;make install</p>
-</li>
-<li><p>/etc/keepalived</p>
-</li>
-<li><p>把keepalived注册到系统服务</p>
-</li>
-<li><p>配置keepalived核心配置文件</p>
-</li>
-</ol>
-<h3 id="配置节点"><a href="#配置节点" class="headerlink" title="配置节点"></a>配置节点</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 配置集群访问的IP+端口，端口和nginx保持一致，都是80</span></span><br><span class="line">virtual_server 192.168.159.120 80 &#123;</span><br><span class="line">    # 健康检查的时间，单位：秒</span><br><span class="line">    delay_loop 6</span><br><span class="line">    # 配置负载均衡的算法，默认是轮询</span><br><span class="line">    lb_algo rr</span><br><span class="line">    # 配置LVS的模式 NAT|TUN|DR</span><br><span class="line">    lb_kind NAT</span><br><span class="line">    # 配置会话持久化的事件</span><br><span class="line">    persistence_timeout 50</span><br><span class="line">    # 协议 -t</span><br><span class="line">    protocol TCP</span><br><span class="line"></span><br><span class="line">    # 负载均衡的真实服务器，也就是nginx节点的具体的真实ip地址</span><br><span class="line">    real_server 192.168.159.129 80 &#123;</span><br><span class="line">        # 轮询的默认权重配比 默认为1</span><br><span class="line">        weight 1</span><br><span class="line">        # 设置健康检查</span><br><span class="line">        TCP_CHECK &#123;</span><br><span class="line">            # 检查的80端口</span><br><span class="line">            connect_port 80</span><br><span class="line">            # 超时时间 2s</span><br><span class="line">            connent_timeout 2</span><br><span class="line">            # 重试次数 2次</span><br><span class="line">            nb_get_retry 2</span><br><span class="line">            # 间隔时间 3s</span><br><span class="line">            delay_before_retry 3</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    real_server 192.168.159.129 80 &#123;</span><br><span class="line">        weight 1</span><br><span class="line">        # 设置健康检查</span><br><span class="line">        TCP_CHECK &#123;</span><br><span class="line">            # 检查的80端口</span><br><span class="line">            connect_port 80</span><br><span class="line">            # 超时时间 2s</span><br><span class="line">            connent_timeout 2</span><br><span class="line">            # 重试次数 2次</span><br><span class="line">            nb_get_retry 2</span><br><span class="line">            # 间隔时间 3s</span><br><span class="line">            delay_before_retry 3</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>从节点和主节点LVS配置相同，state改为backup，权重调低</strong></p>
-<h3 id="健康检查"><a href="#健康检查" class="headerlink" title="健康检查"></a>健康检查</h3><p>会监控nginx是否正常运行，并进行剔除或加入集群。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/LVS%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/22/LVS%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/" itemprop="url">LVS理论知识</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T00:17:38+08:00">
-                2021-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/LVS-nginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4-LVS%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
-                    <span itemprop="name">LVS+nginx实现高可用集群 - LVS知识点</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="LVS负载均衡"><a href="#LVS负载均衡" class="headerlink" title="LVS负载均衡"></a>LVS负载均衡</h1><ul>
-<li>Linux Virtual Server</li>
-<li>章文嵩博士主导的开源的负载均衡项目</li>
-<li>LVS（ipvs）已被集成到linux内核中</li>
-<li>负载均衡调度器（4层）</li>
-</ul>
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/lvs%E7%BD%91%E7%BB%9C%E6%8B%93%E6%89%91%E5%9B%BE2.png" alt="LVS网络拓扑" style="zoom: 50%;" />
-
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx%E7%BD%91%E7%BB%9C%E6%8B%93%E6%89%91%E5%9B%BE.png"></p>
-<h1 id="为什么要使用LVS-Nginx"><a href="#为什么要使用LVS-Nginx" class="headerlink" title="为什么要使用LVS+Nginx"></a>为什么要使用LVS+Nginx</h1><ul>
-<li>LVS基于四层，工作效率高</li>
-<li>单个Nginx承受不了压力，需要集群</li>
-<li>LVS充当Nginx集群的调度者</li>
-<li>Nginx接受请求来回，LVS可以只接受不响应</li>
-</ul>
-<h1 id="LVS工作模式"><a href="#LVS工作模式" class="headerlink" title="LVS工作模式"></a>LVS工作模式</h1><h2 id="NAT模式——基于网络地址"><a href="#NAT模式——基于网络地址" class="headerlink" title="NAT模式——基于网络地址"></a>NAT模式——基于网络地址</h2><blockquote>
-<p>NAT模式请求和响应都需要经过LVS本质上合Nginx没有区别，LVS处于公网，Real Server处于内网</p>
-</blockquote>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/NAT%E6%A8%A1%E5%BC%8F.png"></p>
-<h2 id="TUN模式——IP隧道"><a href="#TUN模式——IP隧道" class="headerlink" title="TUN模式——IP隧道"></a>TUN模式——IP隧道</h2><blockquote>
-<p>请求和响应都不经过LVS，大大提高并发量，但每个节点都要配备网卡，Real Server处于公网</p>
-</blockquote>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/TUN%E6%A8%A1%E5%BC%8F2.png"></p>
-<h2 id="DR模式——直接路由"><a href="#DR模式——直接路由" class="headerlink" title="DR模式——直接路由"></a>DR模式——直接路由</h2><blockquote>
-<p>构建虚拟IP接受响应，避免Real Server处于公网</p>
-</blockquote>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/DR%E6%A8%A1%E5%BC%8F.png"></p>
-<h1 id="Keepalived实现高可用"><a href="#Keepalived实现高可用" class="headerlink" title="Keepalived实现高可用"></a>Keepalived实现高可用</h1><blockquote>
-<p>避免单节点LVS宕机导致服务不可用</p>
-</blockquote>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/LVS%E9%AB%98%E5%8F%AF%E7%94%A8.png"></p>
-<h1 id="LVS负载均衡算法"><a href="#LVS负载均衡算法" class="headerlink" title="LVS负载均衡算法"></a>LVS负载均衡算法</h1><h2 id="静态算法"><a href="#静态算法" class="headerlink" title="静态算法"></a>静态算法</h2><blockquote>
-<p>根据LVS本身自有的固定算法分发用户请求</p>
-</blockquote>
-<ol>
-<li>轮询（rr）:平均分配给各个服务器（同nginx的轮询）</li>
-<li>加权轮询（wrr）：按照权重分配用户请求。权重越高被分配到的请求越多（同nginx的权重）</li>
-<li>原地址散列（sh）：同一个用户ip的请求，会有同一个RS来处理（同nginx的ip_hash）</li>
-<li>目标地址（dh）：根据url的不同，请求到不同的RS（同nginx的url_hash）</li>
-</ol>
-<h2 id="动态算法"><a href="#动态算法" class="headerlink" title="动态算法"></a>动态算法</h2><blockquote>
-<p>根据流量的不同，或者服务器的压力不同来分配用户请求，这是动态计算的<br>使用较多的是wlc或wrr</p>
-</blockquote>
-<ol>
-<li><p>最小连接数（lc）：把新的连接请求分配到当前连接数最小的服务器</p>
-</li>
-<li><p>加权最小连接数（wlc）：服务器的处理性能用数值来表示，权重越大处理的请求越多。Real Server 有可能会存在性能上的差异，wlc动态回去不同的服务器的负载状况，把请求分发到性能好并且比较空闲的服务器</p>
-</li>
-<li><p>最短期望延迟（sed）：特殊的wlc算法。</p>
-<ol>
-<li><p>例如：假设有ABC三台服务器，权重分别为1、2、3。</p>
-<ul>
-<li><p>如果使用wlc算法的话，当一个新情求进来，它可能会分给ABC中任意的一个。</p>
-</li>
-<li><p>如果使用sed算法的话，会进行如下运算</p>
-<ul>
-<li>A：（1+1）/1=2</li>
-<li>B：（1+2）/2=3/2</li>
-<li>C：（1+3）/3=4/2</li>
-</ul>
-<p>最终结果，会把这个请求交给得出运算结果最小的服务器</p>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-<li><p>最少队列调度（nq）：永不使用队列。如果有Real Server的连接数等于0，则直接把这个请求分配过去，不需要再排队等待运算</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2159,7 +2415,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2170,7 +2426,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">30</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2181,7 +2437,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

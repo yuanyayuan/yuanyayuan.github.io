@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="java,面试," />
+  <meta name="keywords" content="java,面试,Java基础知识," />
 
 
 
@@ -87,12 +87,13 @@
 <meta property="og:description" content="Java反射和异常反射机制JAVA 反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为 java 语言的反射机制。 静态编译和动态编译 静态编译： 在编译时确定类型，绑定对象 动态编译： 运行时确定类型，绑定对象  反射机制优缺点 优点： 运行期类型的判断，动态加载类，提高">
 <meta property="og:locale">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/java%E5%BC%82%E5%B8%B8.png">
-<meta property="og:image" content="https://img1.sycdn.imooc.com/5d5fc0d40001ede717880302.png?ynotemdtimestamp=1618200308388">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/Java%E5%BC%82%E5%B8%B8%E9%A1%BA%E5%BA%8F.png">
 <meta property="article:published_time" content="2021-04-12T17:14:56.000Z">
-<meta property="article:modified_time" content="2021-04-12T17:17:16.425Z">
+<meta property="article:modified_time" content="2021-04-13T10:53:01.506Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="面试">
+<meta property="article:tag" content="Java基础知识">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/java%E5%BC%82%E5%B8%B8.png">
 
@@ -507,7 +508,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testCatchFinally</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;try is run&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;try exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    log.info(<span class="string">&quot;catch is run&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;catch exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;finally is run&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这个代码演示了在 try、catch 中都遇到了异常，代码的执行顺序为：try -&gt; catch -&gt; finally，输出的结果如下：</p>
-<p><img src="https://img1.sycdn.imooc.com/5d5fc0d40001ede717880302.png?ynotemdtimestamp=1618200308388" alt="图片描述"></p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/Java%E5%BC%82%E5%B8%B8%E9%A1%BA%E5%BA%8F.png" alt="图片描述"></p>
 <p>可以看到两点：</p>
 <p>1、不管有没有出现异常，finally块中代码都会执行； 2、当try和catch中有return时，finally仍然会执行； 3、finally是在return后面的表达式运算后执行的（此时并没有返回运算后的值，而是先把要返回的值保存起来，不管finally中的代码怎么样，返回的值都不会改变，任然是之前保存的值），所以函数返回值是在finally执行前确定的； 4、finally中最好不要包含return，否则程序会提前退出，返回值不是try或catch中保存的返回值。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">catch</span>()&#123;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">finally</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125; </span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">显然程序按顺序执行。</span><br></pre></td></tr></table></figure>
@@ -561,6 +562,8 @@
             <a href="/tags/java/" rel="tag"># java</a>
           
             <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" rel="tag"># Java基础知识</a>
           
         </div>
       
@@ -663,7 +666,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-count">36</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -674,7 +677,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">30</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -685,7 +688,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
