@@ -261,6 +261,379 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/13/%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" itemprop="url">网络相关知识</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T16:30:02+08:00">
+                2021-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C%E9%83%A8%E5%88%86/" itemprop="url" rel="index">
+                    <span itemprop="name">网络部分</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="网络相关"><a href="#网络相关" class="headerlink" title="网络相关"></a>网络相关</h1><h1 id="OSI与TCP-IP各层的结构与功能-都有哪些协议"><a href="#OSI与TCP-IP各层的结构与功能-都有哪些协议" class="headerlink" title="OSI与TCP/IP各层的结构与功能,都有哪些协议?"></a>OSI与TCP/IP各层的结构与功能,都有哪些协议?</h1><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE.png"></p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE2.png"></p>
+<h1 id="TCP三次握手和四次挥手"><a href="#TCP三次握手和四次挥手" class="headerlink" title="TCP三次握手和四次挥手"></a>TCP三次握手和四次挥手</h1><h2 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B.png" alt="image" style="zoom:50%;" />
+
+<ul>
+<li>客户端–发送带有 SYN 标志的数据包–一次握手–服务端 C进入SYN_SENT状态</li>
+<li>服务端–发送带有 SYN/ACK 标志的数据包–二次握手–客户端 S进入SYN_RCVD状态</li>
+<li>客户端–发送带有带有 ACK 标志的数据包–三次握手–服务端 C进入Established状态。S收到后也随即进入Established状态</li>
+</ul>
+<h2 id="为什么要三次握手"><a href="#为什么要三次握手" class="headerlink" title="为什么要三次握手"></a>为什么要三次握手</h2><p><strong>三次握手的目的是建立可靠的通信信道，三次握手最主要的目的就是双方确认自己与对方的发送与接收是正常的。</strong></p>
+<p>第一次握手：Client 什么都不能确认；Server 确认了对方发送正常，自己接收正常。</p>
+<p>第二次握手：Client 确认了：自己发送、接收正常，对方发送、接收正常；Server 确认了：自己接收正常，对方发送正常</p>
+<p>第三次握手：Client 确认了：自己发送、接收正常，对方发送、接收正常；Server 确认了：自己发送、接收正常，对方发送接收正常</p>
+<p>所以三次握手就能确认<strong>双发收发</strong>功能都正常，缺一不可。</p>
+<h2 id="第二次握手回传SYN和ACK的意义分别是什么"><a href="#第二次握手回传SYN和ACK的意义分别是什么" class="headerlink" title="第二次握手回传SYN和ACK的意义分别是什么"></a>第二次握手回传SYN和ACK的意义分别是什么</h2><ul>
+<li><p>接收方传回发送端所发送的SYN是为了告诉客户端，我接收到的信息确实就是你所发送的信号了，这表明从客户端到服务端的通信是正常的。</p>
+</li>
+<li><p>回传ACK则是为了建立并确认从服务端到客户端的通信。</p>
+</li>
+</ul>
+<h2 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B.png" alt="image" style="zoom:50%;" />
+
+<ul>
+<li>客户端-发送一个FIN，用来关闭客户端到服务器的数据传送</li>
+<li>服务器-收到这个FIN，它发回一个ACK，确认序号为收到的序号加1 。和SYN一样，一个FIN将占用一个序号</li>
+<li>服务器-关闭与客户端的连接，发送一个FIN给客户端</li>
+<li>客户端-发回ACK报文确认，并将确认序号设置为收到序号加1</li>
+</ul>
+<h2 id="为什么要四次挥手"><a href="#为什么要四次挥手" class="headerlink" title="为什么要四次挥手"></a>为什么要四次挥手</h2><p>任何一方都可以在数据传送结束后发出连接释放的通知，待对方确认后进入半关闭状态。当另一方也没有数据再发送的时候，则发出连接释放通知，对方确认后就完全关闭了TCP连接。</p>
+<h1 id="在浏览器中输入URL地址-gt-gt-显示主页的过程，整个过程会使用那些协议"><a href="#在浏览器中输入URL地址-gt-gt-显示主页的过程，整个过程会使用那些协议" class="headerlink" title="在浏览器中输入URL地址-&gt;&gt;显示主页的过程，整个过程会使用那些协议"></a>在浏览器中输入URL地址-&gt;&gt;显示主页的过程，整个过程会使用那些协议</h1><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/%E5%8D%8F%E8%AE%AE.png" style="zoom: 50%;" />
+
+<h2 id="浏览器地址栏输入-URL-到页面展示，这中间发生了什么？越详细越好。"><a href="#浏览器地址栏输入-URL-到页面展示，这中间发生了什么？越详细越好。" class="headerlink" title="浏览器地址栏输入 URL 到页面展示，这中间发生了什么？越详细越好。"></a>浏览器地址栏输入 URL 到页面展示，这中间发生了什么？越详细越好。</h2><p>(1). 浏览器处理 URL。</p>
+<p>A. 浏览器进程检查 URL，组装协议，构成完整的 URL；</p>
+<p>B. 浏览器进程通过进程间通信把 URL 请求发送给网络进程；</p>
+<ul>
+<li>传输层会把 http 请求加上 TCP 头部 —— 包括源端口号、目标程序端口号和用于校验数据完整性的序号，然后向下传输到网络层；</li>
+<li>网络层在数据包上加上 IP 头部 —— 包括源 IP 地址和目标 IP 地址，继续向下传输到底层；</li>
+<li>层通过物理网络传输给目标服务器主机；</li>
+<li>目标服务器网络层接收到数据包，解析出 IP 头部，识别出数据部分，将解开的数据包向上传输到传输层；</li>
+<li>目标服务器传输层获取到数据包，解析出 TCP 头部，识别端口，将解开的数据包向上传输到应用层</li>
+</ul>
+<blockquote>
+<p>就是：TCP/IP 链路：源应用层 —&gt; 源传输层 —&gt; 源网络层 —&gt; 目标网络层 —&gt; 目标传输层 —&gt; 目标应用层。</p>
+</blockquote>
+<p>C. 网络进程获取到 URL，先去本地缓存中查找是否有缓存文件，如果有，拦截请求，直接 200 返回；否则，进入网络请求过程；</p>
+<p>(2). 建立网络连接</p>
+<p>A. 网络进程请求 DNS 返回域名对应的 IP 和端口号，如果之前 DNS 数据缓存服务缓存过当前域名信息，就会直接返回缓存信息；否则，请求将使用域名解析得到的 IP 和端口号。如果没有端口号，http 默认 80，https 默认 443。如果是 https 请求，还需要建立 TLS 连接。</p>
+<p>B. TCP 通过三次握手同服务端建立起链接；</p>
+<p>(3). 服务端处理数据流程 服务端由于规模不同架构不同，通常处理流程有一些差异。大体上可以分为：</p>
+<p>A 网络接入层处理请求 URL，并路由给真正的应用服务器集群。网络接入层一般是 nginx/apache 服务器，进行请求转发、负载均衡等；</p>
+<p>B 应用服务器处理真正的业务逻辑。通常会通过 SOA、微服务等方式调用下游的业务服务，通常还包括缓存读写逻辑等；</p>
+<p>C 业务逻辑最终会和数据库结合起来，在进行一系列的数据增删查改后，通过 SOA、微服务等方式返回给调用方具有业务语义的数据。</p>
+<p>(4). 浏览器解析渲染过程 A 网络进程将获取到的数据包进行解析，根据响应头中的 Content-type 来判断响应数据的类型，如果是字节流类型，就将该请求交给下载管理器，流程结束；如果是 text/html 类型，就通知浏览器进程获取文档准备渲染；</p>
+<p>B 浏览器进程获取到通知，根据当前页面 B 是否是从页面 A 打开的并且和页面 A 是否是同一个站点（根域名和协议一样就被认为是同一个站点），如果满足上述条件，就复用之前网页的进程，否则，新创建一个单独的渲染进程；</p>
+<p>C 渲染进程对文档进行页面解析和子资源加载，HTML 通过 HTM 解析器转成 DOM Tree，CSS 按照 CSS 规则和 CSS 解释器转成 CSSOM TREE，两个 tree 结合，形成 render tree（不包含 HTML 的具体元素和元素要画的具体位置），通过 Layout 可以计算出每个元素具体的宽高颜色位置，结合起来，开始绘制，最后显示在屏幕中新页面显示出来。</p>
+<p><strong>总结</strong></p>
+<ol>
+<li>DNS解析</li>
+<li>TCP连接</li>
+<li>发送HTTP请求</li>
+<li>服务器处理请求并返回HTTP报文</li>
+<li>浏览器解析渲染页面</li>
+<li>连接结束</li>
+</ol>
+<h1 id="UDP-TCP区别"><a href="#UDP-TCP区别" class="headerlink" title="UDP/TCP区别"></a>UDP/TCP区别</h1><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/TCP_UDP.png" alt="image"></p>
+<ul>
+<li><p>UDP在传送数据之前不需要先建立连接，远地主机在收到UDP报文后，不需要给出任何确认。虽然UDP不提供可靠交付，但在某些情况下UDP确是一种最有效的工作方式（一般用于即时通信），比如： QQ语音 QQ视频 、直播等等</p>
+</li>
+<li><p>TCP提供面向连接的服务。在传送数据之前必须先建立连接，数据传送结束后要释放连接。TCP不提供广播或多播服务。TCP一般用于文件传输、发送和接收邮件、远程登录等场景。</p>
+</li>
+</ul>
+<h1 id="TCP的滑动窗口作用"><a href="#TCP的滑动窗口作用" class="headerlink" title="TCP的滑动窗口作用"></a>TCP的滑动窗口作用</h1><p>使用滑动窗口做流量控制，乱序重排</p>
+<p>作用：1、保证TCP的可靠性，2、保证TCP的流控特性</p>
+<h1 id="TCP-协议如何保证可靠传输？"><a href="#TCP-协议如何保证可靠传输？" class="headerlink" title="TCP 协议如何保证可靠传输？"></a>TCP 协议如何保证可靠传输？</h1><ol>
+<li>应用数据被分割成 TCP 认为最适合发送的数据块。</li>
+<li>TCP 给发送的每一个包进行编号，接收方对数据包进行排序，把有序数据传送给应用层。</li>
+<li><strong>校验和：</strong> TCP 将保持它首部和数据的检验和。这是一个端到端的检验和，目的是检测数据在传输过程中的任何变化。如果收到段的检验和有差错，TCP 将丢弃这个报文段和不确认收到此报文段。</li>
+<li>TCP 的接收端会丢弃重复的数据。</li>
+<li><strong>流量控制：</strong> TCP连接的每一方都有固定大小的缓冲空间，TCP的接收端只允许发送端发送接收端缓冲区能接纳的数据。当接收方来不及处理发送方的数据，能提示发送方降低发送的速率，防止包丢失。TCP 使用的流量控制协议是可变大小的滑动窗口协议。 （TCP 利用滑动窗口实现流量控制）</li>
+<li>拥塞控制： 当网络拥塞时，减少数据的发送。</li>
+<li>ARQ协议： 也是为了实现可靠传输的，它的基本原理就是每发完一个分组就停止发送，等待对方确认。在收到确认后再发下一个分组。</li>
+<li>超时重传： 当 TCP 发出一个段后，它启动一个定时器，等待目的端确认收到这个报文段。如果不能及时收到一个确认，将重发这个报文段。</li>
+</ol>
+<h1 id="Http与Https的区别："><a href="#Http与Https的区别：" class="headerlink" title="Http与Https的区别："></a>Http与Https的区别：</h1><ol>
+<li>HTTP 的URL 以http:// 开头，而HTTPS 的URL 以https:// 开头</li>
+<li>HTTP 是不安全的，而 HTTPS 是安全的</li>
+<li>HTTP 标准端口是80 ，而 HTTPS 的标准端口是443</li>
+<li>在OSI 网络模型中，HTTP工作于应用层，而HTTPS 的安全传输机制工作在传输层</li>
+<li>HTTP 无法加密，而HTTPS 对传输的数据进行加密</li>
+<li>HTTP无需证书，而HTTPS 需要CA机构wosign的颁发的SSL证书</li>
+</ol>
+<h1 id="常用的HTTP方法有哪些"><a href="#常用的HTTP方法有哪些" class="headerlink" title="常用的HTTP方法有哪些?"></a>常用的HTTP方法有哪些?</h1><ul>
+<li>GET： 用于请求访问已经被URI（统一资源标识符）识别的资源，可以通过URL传参给服务器</li>
+<li>POST：用于传输信息给服务器，主要功能与GET方法类似，但一般推荐使用POST方式。</li>
+<li>PUT： 传输文件，报文主体中包含文件内容，保存到对应URI位置。</li>
+<li>HEAD： 获得报文首部，与GET方法类似，只是不返回报文主体，一般用于验证URI是否有效。</li>
+<li>DELETE：删除文件，与PUT方法相反，删除对应URI位置的文件。</li>
+<li>OPTIONS：查询相应URI支持的HTTP方法。</li>
+</ul>
+<h1 id="常见的HTTP相应状态码"><a href="#常见的HTTP相应状态码" class="headerlink" title="常见的HTTP相应状态码"></a>常见的HTTP相应状态码</h1><p>（1）信息性状态码（Informational），表示请求已被接受，需要继续处理。码值范围：1xx。</p>
+<p>（2）成功状态码（Success），表示请求已成功被服务器接收、理解、并接受。码值范围：2xx。</p>
+<p>（3）重定向状态码 （Redirection） 。表示需要客户端采取进一步的操作才能完成请求。码值范围：3xx。</p>
+<p>（4） 客户端错误状态码 （Client Error）。表示请求语法错误或者请求无法完成。码值范围：4xx。</p>
+<p>（5） 服务器端错误状态码（Server Error）。表示服务器在处理请求的过程中发生了错误或者无法执行请求。码值范围：5xx。</p>
+<blockquote>
+<p>其中。<strong>302</strong>表示暂时性重定向。可以简单的理解为该资源原本确实存在，但已经被<strong>临时</strong>改变了位置；换而言之，就是请求的资源暂时驻留在不同的URI下。</p>
+</blockquote>
+<blockquote>
+<p>304 表示资源在由请求头中的 If-Modified-Since 或 If-None-Match 参数指定的这一版本之后，未曾被修改。表示客户端不用请求该资源，直接使用本地的资源即可。</p>
+</blockquote>
+<h2 id="常见的状态码"><a href="#常见的状态码" class="headerlink" title="常见的状态码"></a>常见的状态码</h2><table>
+<thead>
+<tr>
+<th>状态码</th>
+<th>英文名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>200</td>
+<td>OK</td>
+<td>请求已成功，请求所希望的响应头或数据体将随此响应返回</td>
+</tr>
+<tr>
+<td>400</td>
+<td>BadRequest</td>
+<td>通常有两种情况：一是语义有误，当前请求无法被服务器理解；二是请求参数有误</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Forbidden</td>
+<td>服务器已经理解请求，但是拒绝执行它</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Not Found</td>
+<td>服务器找不到请求的资源</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Internal Server Error</td>
+<td>服务器内部错误，不知道如何处理</td>
+</tr>
+</tbody></table>
+<h1 id="说说HTTP长连接和短连接。"><a href="#说说HTTP长连接和短连接。" class="headerlink" title="说说HTTP长连接和短连接。"></a>说说HTTP长连接和短连接。</h1><p>在HTTP/1.0中默认使用短连接。也就是说，客户端和服务器每进行一次HTTP操作，就建立一次连接，任务结束就中断连接。当客户端浏览器访问的某个HTML或其他类型的Web页中包含有其他的Web资源（如JavaScript文件、图像文件、CSS文件等），每遇到这样一个Web资源，浏览器就会重新建立一个HTTP会话。</p>
+<p>而从HTTP/1.1起，默认使用长连接，用以保持连接特性。使用长连接的HTTP协议，会在响应头加入这行代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Connection:keep-alive</span><br></pre></td></tr></table></figure>
+
+<p>在使用长连接的情况下，当一个网页打开完成后，客户端和服务器之间用于传输HTTP数据的TCP连接不会关闭，客户端再次访问这个服务器时，会继续使用这一条已经建立的连接。Keep-Alive不会永久保持连接，它有一个保持时间，可以在不同的服务器软件（如Apache）中设定这个时间。实现长连接需要客户端和服务端都支持长连接。</p>
+<h1 id="HTTP-1-0和HTTP-1-1的主要区别是什么"><a href="#HTTP-1-0和HTTP-1-1的主要区别是什么" class="headerlink" title="HTTP 1.0和HTTP 1.1的主要区别是什么"></a>HTTP 1.0和HTTP 1.1的主要区别是什么</h1><p>HTTP1.0最早在网页中使用是在1996年，那个时候只是使用一些较为简单的网页上和网络请求上，而HTTP1.1则在1999年才开始广泛应用于现在的各大浏览器网络请求中，同时HTTP1.1也是当前使用最为广泛的HTTP协议。 主要区别主要体现在：</p>
+<ol>
+<li>长连接 : 在HTTP/1.0中，默认使用的是短连接，也就是说每次请求都要重新建立一次连接。HTTP 是基于TCP/IP协议的,每一次建立或者断开连接都需要三次握手四次挥手的开销，如果每次请求都要这样的话，开销会比较大。因此最好能维持一个长连接，可以用个长连接来发多个请求。HTTP 1.1起，默认使用长连接 ,默认开启Connection： keep-alive。 HTTP/1.1的持续连接有非流水线方式和流水线方式 。流水线方式是客户在收到HTTP的响应报文之前就能接着发送新的请求报文。与之相对应的非流水线方式是客户在收到前一个响应后才能发送下一个请求。</li>
+<li>错误状态响应码 :在HTTP1.1中新增了24个错误状态响应码，如409（Conflict）表示请求的资源与资源的当前状态发生冲突；410（Gone）表示服务器上的某个资源被永久性的删除。</li>
+<li>缓存处理 :在HTTP1.0中主要使用header里的If-Modified-Since,Expires来做为缓存判断的标准，HTTP1.1则引入了更多的缓存控制策略例如Entity tag，If-Unmodified-Since, If-Match, If-None-Match等更多可供选择的缓存头来控制缓存策略。</li>
+<li>带宽优化及网络连接的使用 :HTTP1.0中，存在一些浪费带宽的现象，例如客户端只是需要某个对象的一部分，而服务器却将整个对象送过来了，并且不支持断点续传功能，HTTP1.1则在请求头引入了range头域，它允许只请求资源的某个部分，即返回码是206（Partial Content），这样就方便了开发者自由的选择以便于充分利用带宽和连接。</li>
+</ol>
+<h1 id="URI和URL的区别是什么"><a href="#URI和URL的区别是什么" class="headerlink" title="URI和URL的区别是什么?"></a>URI和URL的区别是什么?</h1><ul>
+<li>URI(Uniform Resource Identifier) 是同一资源标志符，可以唯一标识一个资源。</li>
+<li>URL(Uniform Resource Location) 是同一资源定位符，可以提供该资源的路径。它是一种具体的 URI，即 URL 可以用来标识一个资源，而且还指明了如何 locate 这个资源。</li>
+</ul>
+<p>URI的作用像身份证号一样，URL的作用更像家庭住址一样。URL是一种具体的URI，它不仅唯一标识资源，而且还提供了定位该资源的信息。</p>
+<h1 id="Socket"><a href="#Socket" class="headerlink" title="Socket"></a>Socket</h1><p>Socket是对TCp/IP协议的抽象，是操作系统对外开放的接口</p>
+<h2 id="Socket通信流程"><a href="#Socket通信流程" class="headerlink" title="Socket通信流程"></a>Socket通信流程</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/Socket.png"></p>
+<h1 id="HTTP是不保存状态的协议-如何保存用户状态"><a href="#HTTP是不保存状态的协议-如何保存用户状态" class="headerlink" title="HTTP是不保存状态的协议,如何保存用户状态?"></a>HTTP是不保存状态的协议,如何保存用户状态?</h1><p>HTTP 是一种不保存状态，即无状态（stateless）协议。也就是说 HTTP 协议自身不对请求和响应之间的通信状态进行保存。那么我们保存用户状态呢？Session 机制的存在就是为了解决这个问题，Session 的主要作用就是通过服务端记录用户的状态。典型的场景是购物车，当你要添加商品到购物车的时候，系统不知道是哪个用户操作的，因为 HTTP 协议是无状态的。服务端给特定的用户创建特定的 Session 之后就可以标识这个用户并且跟踪这个用户了（一般情况下，服务器会在一定时间内保存这个 Session，过了时间限制，就会销毁这个Session）。在服务端保存 Session 的方法很多，最常用的就是内存和数据库(比如是使用内存数据库redis保存)。既然 Session 存放在服务器端。</p>
+<p>那么我们如何实现 Session 跟踪呢？大部分情况下，我们都是通过在 Cookie 中附加一个 Session ID 来方式来跟踪。Cookie 被禁用怎么办?最常用的就是利用 URL 重写把 Session ID 直接附加在URL路径的后面。</p>
+<h1 id="Cookie和Session"><a href="#Cookie和Session" class="headerlink" title="Cookie和Session"></a>Cookie和Session</h1><h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>HTTP 协议是一种无状态协议，即每次服务端接收到客户端的请求时，都是一个全新的请求，服务器并不知道客户端的历史请求记录；Session 和 Cookie 的主要目的就是为了弥补 HTTP 的无状态特性。</p>
+<h2 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h2><p>客户端请求服务端，服务端会为这次请求开辟一块内存空间，这个对象便是 Session 对象，存储结构为 ConcurrentHashMap。Session 弥补了 HTTP 无状态特性，服务器可以利用 Session 存储客户端在同一个会话期间的一些操作记录。</p>
+<h2 id="Session-如何判断是否是同一会话"><a href="#Session-如何判断是否是同一会话" class="headerlink" title="Session 如何判断是否是同一会话"></a>Session 如何判断是否是同一会话</h2><p>服务器第一次接收到请求时，开辟了一块 Session 空间（创建了Session对象），同时生成一个 sessionId ，并通过响应头的 Set-Cookie：JSESSIONID=XXXXXXX 命令，向客户端发送要求设置 Cookie 的响应；客户端收到响应后，在本机客户端设置了一个 JSESSIONID=XXXXXXX 的 Cookie 信息，该 Cookie 的过期时间为浏览器会话结束。</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/session.png"></p>
+<p>接下来客户端每次向同一个网站发送请求时，请求头都会带上该 Cookie 信息（包含 sessionId ）， 然后，服务器通过读取请求头中的 Cookie 信息，获取名称为 JSESSIONID 的值，得到此次请求的 sessionId。</p>
+<h2 id="Session-的缺点"><a href="#Session-的缺点" class="headerlink" title="Session 的缺点"></a>Session 的缺点</h2><p>Session 机制有个缺点，比如 A 服务器存储了 Session，就是做了负载均衡后，假如一段时间内 A 的访问量激增，会转发到 B 进行访问，但是 B 服务器并没有存储 A 的 Session，会导致 Session 的失效。</p>
+<h2 id="Cookie"><a href="#Cookie" class="headerlink" title="Cookie"></a>Cookie</h2><p>HTTP 协议中的 Cookie 包括 Web Cookie 和浏览器 Cookie，它是服务器发送到 Web 浏览器的一小块数据。服务器发送到浏览器的 Cookie，浏览器会进行存储，并与下一个请求一起发送到服务器。通常，它用于判断两个请求是否来自于同一个浏览器，例如用户保持登录状态。</p>
+<blockquote>
+<p>HTTP Cookie 机制是 HTTP 协议无状态的一种补充和改良</p>
+</blockquote>
+<h3 id="Cookie-主要使用目的"><a href="#Cookie-主要使用目的" class="headerlink" title="Cookie 主要使用目的"></a>Cookie 主要使用目的</h3><ul>
+<li>会话管理 登陆、购物车、游戏得分或者服务器应该记住的其他内容</li>
+<li>个性化 用户偏好、主题或者其他设置</li>
+<li>追踪 记录和分析用户行为</li>
+</ul>
+<h3 id="cookie分类"><a href="#cookie分类" class="headerlink" title="cookie分类"></a>cookie分类</h3><h4 id="会话-Cookies（Session-Cookies）"><a href="#会话-Cookies（Session-Cookies）" class="headerlink" title="会话 Cookies（Session Cookies）"></a>会话 Cookies（Session Cookies）</h4><p>如果 Cookie 不包含到期日期，则将其视为会话 Cookie。会话 Cookie 存储在内存中，永远不会写入磁盘，当浏览器关闭时，此后 Cookie 将永久丢失</p>
+<h4 id="永久性-Cookies（Persistent-Cookies）"><a href="#永久性-Cookies（Persistent-Cookies）" class="headerlink" title="永久性 Cookies（Persistent Cookies）"></a>永久性 Cookies（Persistent Cookies）</h4><p>Cookie 包含有效期 ，则将其视为持久性 Cookie。在到期指定的日期，Cookie 将从磁盘中删除。</p>
+<h2 id="Session和Cookie的区别"><a href="#Session和Cookie的区别" class="headerlink" title="Session和Cookie的区别"></a>Session和Cookie的区别</h2><p>1、cookie数据存放在客户的浏览器上，session数据放在服务器上。</p>
+<p>2、cookie不是很安全，别人可以分析存放在本地的COOKIE并进行COOKIE欺骗，考虑到安全应当使用session。</p>
+<p>3、session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能，考虑到减轻服务器性能方面，应当使用COOKIE。</p>
+<p>4、单个cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。</p>
+<h1 id="什么是Json-Web-Tokens"><a href="#什么是Json-Web-Tokens" class="headerlink" title="什么是Json Web Tokens"></a>什么是Json Web Tokens</h1><p>Json Web Token 的简称就是 JWT，通常可以称为 Json 令牌。JWT 中存储的信息是经过数字签名的，因此可以被信任和理解</p>
+<h2 id="使用-JWT-主要用来下面两点"><a href="#使用-JWT-主要用来下面两点" class="headerlink" title="使用 JWT 主要用来下面两点"></a>使用 JWT 主要用来下面两点</h2><ul>
+<li>认证(Authorization)：这是使用 JWT 最常见的一种情况，一旦用户登录，后面每个请求都会包含 JWT，从而允许用户访问该令牌所允许的路由、服务和资源。单点登录是当今广泛使用 JWT 的一项功能，因为它的开销很小。</li>
+<li>信息交换(Information Exchange)：JWT 是能够安全传输信息的一种方式。通过使用公钥/私钥对 JWT 进行签名认证。此外，由于签名是使用 head 和 payload 计算的，因此你还可以验证内容是否遭到篡改。</li>
+</ul>
+<h2 id="JWT格式"><a href="#JWT格式" class="headerlink" title="JWT格式"></a>JWT格式</h2><p>JWT 主要由三部分组成，每个部分用 . 进行分割，各个部分分别是</p>
+<ul>
+<li>Header header的格式（算法、token的类型）：</li>
+<li>Payload payload的格式（用户名、创建时间、生成时间）：</li>
+<li>Signature 生成算法：HMACSHA512(base64UrlEncode(header) + “.” +base64UrlEncode(payload),secret)</li>
+</ul>
+<h1 id="JSON-Web-Token-和-Session-Cookies-的对比"><a href="#JSON-Web-Token-和-Session-Cookies-的对比" class="headerlink" title="JSON Web Token 和 Session Cookies 的对比"></a>JSON Web Token 和 Session Cookies 的对比</h1><h2 id="相同作用"><a href="#相同作用" class="headerlink" title="相同作用"></a>相同作用</h2><ul>
+<li>jwt 和 Session都可以为网站提供用户的身份认证</li>
+<li>JWT 和 Session Cookies 用来处理在不同页面之间切换，保存用户登录信息的机制。</li>
+<li>能够支持你在发送不同请求之间，记录并验证你的登录状态</li>
+</ul>
+<h2 id="不同点"><a href="#不同点" class="headerlink" title="不同点"></a>不同点</h2><ul>
+<li>密码签名</li>
+</ul>
+<p>JWT 具有加密签名，而 Session Cookies 则没有。</p>
+<ul>
+<li>JSON 是无状态的</li>
+</ul>
+<p>JWT 是无状态的，因为声明被存储在客户端，而不是服务端内存中。</p>
+<p>身份验证可以在本地进行，而不是在请求必须通过服务器数据库或类似位置中进行。这意味着可以对用户进行多次身份验证，而无需与站点或应用程序的数据库进行通信，也无需在此过程中消耗大量资源。</p>
+<ul>
+<li>可扩展性</li>
+</ul>
+<p>Session Cookies 是存储在服务器内存中，这就意味着如果网站或者应用很大的情况下会耗费大量的资源。由于 JWT 是无状态的，在许多情况下，它们可以节省服务器资源。因此 JWT 要比 Session Cookies 具有更强的可扩展性。</p>
+<ul>
+<li>JWT 支持跨域认证</li>
+</ul>
+<p>Session Cookies 只能用在单个节点的域或者它的子域中有效。如果它们尝试通过第三个节点访问，就会被禁止。如果你希望自己的网站和其他站点建立安全连接时，这是一个问题。</p>
+<p>使用 JWT 可以解决这个问题，使用 JWT 能够通过多个节点进行用户认证，也就是我们常说的跨域认证。</p>
+<h1 id="JWT-和-Session-Cookies-的选型"><a href="#JWT-和-Session-Cookies-的选型" class="headerlink" title="JWT 和 Session Cookies 的选型"></a>JWT 和 Session Cookies 的选型</h1><p>对于只需要登录用户并访问存储在站点数据库中的一些信息的中小型网站来说，Session Cookies 通常就能满足。</p>
+<p>如果你有企业级站点，应用程序或附近的站点，并且需要处理大量的请求，尤其是第三方或很多第三方（包括位于不同域的API），则 JWT 显然更适合。</p>
+<h1 id="post和get请求"><a href="#post和get请求" class="headerlink" title="post和get请求"></a>post和get请求</h1><h2 id="直观："><a href="#直观：" class="headerlink" title="直观："></a>直观：</h2><ul>
+<li>GET把参数包含在URL中，POST通过request body传递参数。</li>
+<li>GET请求会被浏览器主动cache，而POST不会，除非手动设置。</li>
+<li>GET请求只能进行url编码，而POST支持多种编码方式。</li>
+<li>GET请求参数会被完整保留在浏览器历史记录里，而POST中的参数不会被保留。</li>
+<li>GET请求在URL中传送的参数是有长度限制的，而POST么有。</li>
+<li>GET比POST更不安全，因为参数直接暴露在URL上，所以不能用来传递敏感信息。</li>
+</ul>
+<h2 id="进阶"><a href="#进阶" class="headerlink" title="进阶"></a>进阶</h2><p>GET和POST本质上就是TCP链接，并无差别。但是由于HTTP的规定和浏览器/服务器的限制，导致他们在应用过程中体现出一些不同。</p>
+<p>都是通过TCP进行数据运输服务，HTTP划分服务类型（GET、POST、DELETE、PUT）</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/Java%E5%8F%8D%E5%B0%84%E5%92%8C%E5%BC%82%E5%B8%B8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3164,255 +3537,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/03/redis%E6%8C%87%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/03/redis%E6%8C%87%E4%BB%A4/" itemprop="url">redis指令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-03T16:32:25+08:00">
-                2021-04-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis-redis%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
-                    <span itemprop="name">redis - redis知识点</span>
-                  </a>
-                </span>
-
-                
-                
-                  ， 
-                
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis-redis%E7%9F%A5%E8%AF%86%E7%82%B9/redis-redis%E5%BA%94%E7%94%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">redis - redis应用</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="redis指令"><a href="#redis指令" class="headerlink" title="redis指令"></a>redis指令</h1><ul>
-<li>keys *：查看所有的key (不建议在生产上使用，有性能影响)</li>
-<li>type key：key的类型</li>
-<li>select index：切换数据库，总共默认16个</li>
-<li>flushdb：删除当前下边db中的数据</li>
-<li>flushall：删除所有db中的数据</li>
-</ul>
-<h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2><p>string: 最简单的字符串类型键值对缓存，也是最基本的</p>
-<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><ul>
-<li><p>get/set/del：查询/设置/删除</p>
-</li>
-<li><p>set rekey data：设置已经存在的key，会覆盖</p>
-</li>
-<li><p>setnx rekey data：设置已经存在的key，不会覆盖</p>
-</li>
-<li><p>set key value ex time：设置带过期时间的数据</p>
-</li>
-<li><p>expire key：设置过期时间</p>
-</li>
-<li><p>ttl：查看剩余时间，-1永不过期，-2过期</p>
-</li>
-<li><p>append key：合并字符串</p>
-</li>
-<li><p>strlen key：字符串长度</p>
-</li>
-<li><p>incr key：累加1</p>
-</li>
-<li><p>decr key：类减1</p>
-</li>
-<li><p>incrby key num：累加给定数值</p>
-</li>
-<li><p>decrby key num：累减给定数值</p>
-</li>
-<li><p>getrange key start end：截取数据，end=-1 代表到最后</p>
-</li>
-<li><p>setrange key start newdata：从start位置开始替换数据</p>
-</li>
-<li><p>mset：连续设值</p>
-</li>
-<li><p>mget：连续取值</p>
-</li>
-<li><p>msetnx：连续设置，如果存在则不设置</p>
-</li>
-</ul>
-<h2 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h2><h3 id="hash-1"><a href="#hash-1" class="headerlink" title="hash"></a>hash</h3><p>hash：类似map，存储结构化数据结构，比如存储一个对象（不能有嵌套对象）</p>
-<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><ul>
-<li>hset key property value：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-&gt; hset user name imooc</span><br><span class="line">-&gt; 创建一个user对象，这个对象中包含name属性，name值为imooc</span><br></pre></td></tr></table></figure></li>
-<li>hget user name：获得用户对象中name的值<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hmset：设置对象中的多个键值对</span><br><span class="line"> -&gt; hset user age 18 phone 139123123</span><br><span class="line"> hmsetnx：设置对象中的多个键值对，存在则不添加</span><br><span class="line"> -&gt; hset user age 18 phone 139123123</span><br></pre></td></tr></table></figure></li>
-<li>hmget：获得对象中的多个属性<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-&gt; hmget user age phone</span><br></pre></td></tr></table></figure></li>
-<li>hgetall user：获得整个对象的内容</li>
-<li>hincrby user age 2：累加属性</li>
-<li>hincrbyfloat user age 2.2：累加属性</li>
-<li>hlen user：有多少个属性</li>
-<li>hexists user age：判断属性是否存在</li>
-<li>hkeys user：获得所有属性</li>
-<li>hvals user：获得所有值</li>
-<li>hdel user：删除对象</li>
-</ul>
-<h2 id="list"><a href="#list" class="headerlink" title="list"></a>list</h2><h3 id="list-1"><a href="#list-1" class="headerlink" title="list"></a>list</h3><p>list：列表，[a, b, c, d, …]</p>
-<h3 id="使用-2"><a href="#使用-2" class="headerlink" title="使用"></a>使用</h3><ul>
-<li>lpush userList 1 2 3 4 5：构建一个list，从左边开始存入数据</li>
-<li>rpush userList 1 2 3 4 5：构建一个list，从右边开始存入数据</li>
-<li>lrange list start end：获得数据</li>
-<li>lpop：从左侧开始拿出一个数据</li>
-<li>rpop：从右侧开始拿出一个数据</li>
-<li>llen list：list长度</li>
-<li>lindex list index：获取list下标的值</li>
-<li>lset list index value：把某个下标的值替换</li>
-<li>linsert list before/after value：插入一个新的值</li>
-<li>lrem list num value：删除几个相同数据</li>
-<li>ltrim list start end：截取值，替换原来的list</li>
-</ul>
-<h2 id="zset"><a href="#zset" class="headerlink" title="zset"></a>zset</h2><h3 id="sorted-set："><a href="#sorted-set：" class="headerlink" title="sorted set："></a>sorted set：</h3><p>sorted set：排序的set，可以去重可以排序，比如可以根据用户积分做排名，积分作为set的一个数值，根据数值可以做排序。set中的每一个memeber都带有一个分数</p>
-<h3 id="使用-3"><a href="#使用-3" class="headerlink" title="使用"></a>使用</h3><ul>
-<li><p>zadd zset 10 value1 20 value2 30 value3：设置member和对应的分数</p>
-</li>
-<li><p>zrange zset 0 -1：查看所有zset中的内容</p>
-</li>
-<li><p>zrange zset 0 -1 withscores：带有分数</p>
-</li>
-<li><p>zrank zset value：获得对应的下标</p>
-</li>
-<li><p>zscore zset value：获得对应的分数</p>
-</li>
-<li><p>zcard zset：统计个数</p>
-</li>
-<li><p>zcount zset 分数1 分数2：统计个数</p>
-</li>
-<li><p>zrangebyscore zset 分数1 分数2：查询分数之间的member(包含分数1 分数2)</p>
-</li>
-<li><p>zrangebyscore zset (分数1 (分数2：查询分数之间的member（不包含分数1 和 分数2）</p>
-</li>
-<li><p>zrangebyscore zset 分数1 分数2 limit start end：查询分数之间的member(包含分数1 分数2)，获得的结果集再次根据下标区间做查询</p>
-</li>
-<li><p>zrem zset value：删除member</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3464,7 +3588,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-count">32</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3475,7 +3599,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -3486,7 +3610,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
