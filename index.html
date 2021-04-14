@@ -561,7 +561,18 @@
       
         
           
-            <h1 id="内存分配策略"><a href="#内存分配策略" class="headerlink" title="内存分配策略"></a>内存分配策略</h1><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/01d330d8-2710-4fad-a91c-7bbbfaaefc0e.png?ynotemdtimestamp=1618390160630" alt="img"><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%A0%86%E5%86%85%E5%AD%98.png?ynotemdtimestamp=1618390160630" alt="堆内存常见分配策略 "></p>
+            <h1 id="什么是内存溢出，内存泄漏，区别是什么"><a href="#什么是内存溢出，内存泄漏，区别是什么" class="headerlink" title="什么是内存溢出，内存泄漏，区别是什么"></a>什么是内存溢出，内存泄漏，区别是什么</h1><ul>
+<li><p>内存溢出</p>
+<p>程序在申请内存时，没有足够的内存空间供其使用，出现<code>out of memory</code></p>
+</li>
+<li><p>内存泄漏</p>
+<p>程序在申请内存后无法事发申请的内存。</p>
+</li>
+</ul>
+<p>内存溢出是要求分配的内存超过系统能给你的，于是造成溢出；内存泄漏是指申请分配内存进行使用（new）,可使用完后却不及时归还（delete），结果申请到的那块内存自己又不能再访问（地址弄丢了），而系统也不能在此将他分配给需要的程序。</p>
+<h1 id="内存分配策略"><a href="#内存分配策略" class="headerlink" title="内存分配策略"></a>内存分配策略</h1><h1 id="Eden和Survivor比例是多少？"><a href="#Eden和Survivor比例是多少？" class="headerlink" title="Eden和Survivor比例是多少？"></a>Eden和Survivor比例是多少？</h1><p>Eden区是一块，Survivor区是两块。Eden区和Survivor区的比例是8：1：1。</p>
+<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/01d330d8-2710-4fad-a91c-7bbbfaaefc0e.png?ynotemdtimestamp=1618390160630" alt="img"></p>
+<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%A0%86%E5%86%85%E5%AD%98.png?ynotemdtimestamp=1618390160630" alt="堆内存常见分配策略 "></p>
 <h2 id="对象优先在-eden-区分配"><a href="#对象优先在-eden-区分配" class="headerlink" title="对象优先在 eden 区分配"></a>对象优先在 eden 区分配</h2><p>目前主流的垃圾收集器都会采用分代回收算法，因此需要将堆内存分为新生代和老年代，这样我们就可以根据各个年代的特点选择合适的垃圾收集算法。</p>
 <p>大多数情况下，对象在新生代中 eden 区分配。当 eden 区没有足够空间进行分配时，虚拟机将发起一次 Minor GC</p>
 <h2 id="大对象直接进入老年代"><a href="#大对象直接进入老年代" class="headerlink" title="大对象直接进入老年代"></a>大对象直接进入老年代</h2><p>大对象就是需要大量连续内存空间的对象（比如：字符串、数组）。</p>
@@ -594,7 +605,7 @@
 
 <h2 id="可达性分析算法"><a href="#可达性分析算法" class="headerlink" title="可达性分析算法"></a>可达性分析算法</h2><p>这个算法的基本思想就是通过一系列的称为 <strong>“GC Roots”</strong> 的对象作为起点，从这些节点开始向下搜索，节点所走过的路径称为引用链，当一个对象到 GC Roots 没有任何引用链相连的话，则证明此对象是不可用的。</p>
 <p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/72762049.png?ynotemdtimestamp=1618390160630" alt="可达性分析算法 "></p>
-<p>可作为 GC Roots 的对象包括下面几种:</p>
+<p>可作为<strong>GC Roots 的对象包括下面几种</strong>:</p>
 <ul>
 <li>虚拟机栈(栈帧中的本地变量表)中引用的对象</li>
 <li>本地方法栈(Native 方法)中引用的对象</li>
@@ -626,6 +637,7 @@
 <li>如果对象进行可达性分析之后没发现与GC Roots相连的引用链，那它将会第一次标记并且进行一次筛选。判断的条件是决定这个对象是否有必要执行finalize()方法。如果对象有必要执行finalize()方法，则被放入F-Queue队列中。</li>
 <li>GC对F-Queue队列中的对象进行二次标记。如果对象在finalize()方法中重新与引用链上的任何一个对象建立了关联，那么二次标记时则会将它移出“即将回收”集合。如果此时对象还没成功逃脱，那么只能被回收了。</li>
 </ol>
+<h2 id="在-Java-中，对象什么时候可以被垃圾回收"><a href="#在-Java-中，对象什么时候可以被垃圾回收" class="headerlink" title="在 Java 中，对象什么时候可以被垃圾回收"></a>在 Java 中，对象什么时候可以被垃圾回收</h2><p>首先先由可达性算法去判断对象是否可回收<br>二次标记，相当于二次审判。finalize方法<br>其次再去根据GC的回收机制，择时回收</p>
 <h1 id="垃圾收集算法"><a href="#垃圾收集算法" class="headerlink" title="垃圾收集算法"></a>垃圾收集算法</h1><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E7%AE%97%E6%B3%95.png?ynotemdtimestamp=1618390160630" alt="垃圾收集算法分类"></p>
 <h2 id="标记-清除算法"><a href="#标记-清除算法" class="headerlink" title="标记-清除算法"></a>标记-清除算法</h2><p>该算法分为“标记”和“清除”阶段：首先标记出所有不需要回收的对象，在标记完成后统一回收掉所有没有被标记的对象。它是最基础的收集算法，后续的算法都是对其不足进行改进得到。这种垃圾收集算法会带来两个明显的问题：</p>
 <ol>
@@ -641,71 +653,20 @@
 <p><strong>比如在新生代中，每次收集都会有大量对象死去，所以可以选择”标记-复制“算法，只需要付出少量对象的复制成本就可以完成每次垃圾收集。而老年代的对象存活几率是比较高的，而且没有额外的空间对它进行分配担保，所以我们必须选择“标记-清除”或“标记-整理”算法进行垃圾收集。</strong></p>
 <p><strong>延伸面试问题：</strong> HotSpot 为什么要分为新生代和老年代？</p>
 <p>根据上面的对分代收集算法的介绍回答。</p>
-<h1 id="垃圾收集器（了解）"><a href="#垃圾收集器（了解）" class="headerlink" title="垃圾收集器（了解）"></a>垃圾收集器（了解）</h1><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8.png?ynotemdtimestamp=1618390160630" alt="垃圾收集器分类"></p>
+<h1 id="垃圾收集器"><a href="#垃圾收集器" class="headerlink" title="垃圾收集器"></a>垃圾收集器</h1><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8.png?ynotemdtimestamp=1618390160630" alt="垃圾收集器分类"></p>
 <h1 id="垃圾回收器的基本原理"><a href="#垃圾回收器的基本原理" class="headerlink" title="垃圾回收器的基本原理"></a>垃圾回收器的基本原理</h1><p>创建对象时，垃圾回收器就开始监控这个对象的地址，大小以及使用情况</p>
 <h1 id="垃圾回收器可以马上回收内存吗"><a href="#垃圾回收器可以马上回收内存吗" class="headerlink" title="垃圾回收器可以马上回收内存吗"></a>垃圾回收器可以马上回收内存吗</h1><p>不会，在下一个垃圾回收周期，垃圾收集器才会释放对象占用的内存</p>
 <h1 id="有什么办法主动通知虚拟机进行垃圾回收"><a href="#有什么办法主动通知虚拟机进行垃圾回收" class="headerlink" title="有什么办法主动通知虚拟机进行垃圾回收"></a>有什么办法主动通知虚拟机进行垃圾回收</h1><p><code>System.gc()</code></p>
-<h2 id="Serial-收集器"><a href="#Serial-收集器" class="headerlink" title="Serial 收集器"></a>Serial 收集器</h2><p>Serial（串行）收集器是最基本、历史最悠久的垃圾收集器了。大家看名字就知道这个收集器是一个单线程收集器了。它的 <strong>“单线程”</strong> 的意义不仅仅意味着它只会使用一条垃圾收集线程去完成垃圾收集工作，更重要的是它在进行垃圾收集工作的时候必须暂停其他所有的工作线程（ <strong>“Stop The World”</strong> ），直到它收集结束。</p>
-<p><strong>新生代采用标记-复制算法，老年代采用标记-整理算法。</strong></p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/46873026.png?ynotemdtimestamp=1618390160630" alt=" Serial 收集器 "></p>
-<p>虚拟机的设计者们当然知道 Stop The World 带来的不良用户体验，所以在后续的垃圾收集器设计中停顿时间在不断缩短（仍然还有停顿，寻找最优秀的垃圾收集器的过程仍然在继续）。</p>
-<p>但是 Serial 收集器有没有优于其他垃圾收集器的地方呢？当然有，它<strong>简单而高效（与其他收集器的单线程相比）</strong>。Serial 收集器由于没有线程交互的开销，自然可以获得很高的单线程收集效率。Serial 收集器对于运行在 Client 模式下的虚拟机来说是个不错的选择。</p>
-<h2 id="ParNew-收集器"><a href="#ParNew-收集器" class="headerlink" title="ParNew 收集器"></a>ParNew 收集器</h2><p><strong>ParNew 收集器其实就是 Serial 收集器的多线程版本，除了使用多线程进行垃圾收集外，其余行为（控制参数、收集算法、回收策略等等）和 Serial 收集器完全一样。</strong></p>
-<p><strong>新生代采用标记-复制算法，老年代采用标记-整理算法。</strong></p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/22018368.png?ynotemdtimestamp=1618390160630" alt="ParNew 收集器 "></p>
-<p>它是许多运行在 Server 模式下的虚拟机的首要选择，除了 Serial 收集器外，只有它能与 CMS 收集器（真正意义上的并发收集器，后面会介绍到）配合工作。</p>
-<p><strong>并行和并发概念补充：</strong></p>
 <ul>
-<li><strong>并行（Parallel）</strong> ：指多条垃圾收集线程并行工作，但此时用户线程仍然处于等待状态。</li>
-<li><strong>并发（Concurrent）</strong>：指用户线程与垃圾收集线程同时执行（但不一定是并行，可能会交替执行），用户程序在继续运行，而垃圾收集器运行在另一个 CPU 上。</li>
+<li>Serial收集器：单线程的收集器，收集垃圾时，必须stoptheworld，使用复制算法。</li>
+<li>ParNew收集器：Serial收集器的多线程版本，也需要stoptheworld，复制算法。</li>
+<li>ParallelScavenge收集器：新生代收集器，复制算法的收集器，并发的多线程收集器，目标是达到一个可控的吞吐量。如果虚拟机总共运行100分钟，其中垃圾花掉1分钟，吞吐量就是99%。</li>
+<li>SerialOld收集器：是Serial收集器的老年代版本，单线程收集器，使用标记整理算法。</li>
+<li>ParallelOld收集器：是ParallelScavenge收集器的老年代版本，使用多线程，标记-整理算法。</li>
+<li>CMS(ConcurrentMarkSweep)收集器：是一种以获得最短回收停顿时间为目标的收集器，标记清除算法，运作过程：初始标记，并发标记，重<br>新标记，并发清除，收集结束会产生大量空间碎片。</li>
+<li>G1收集器：标记整理算法实现，运作流程主要包括以下：初始标记，并发标记，最终标记，筛选标记。不会产生空间碎片，可以精确地控制停顿。</li>
 </ul>
-<h2 id="Parallel-Scavenge-收集器"><a href="#Parallel-Scavenge-收集器" class="headerlink" title="Parallel Scavenge 收集器"></a>Parallel Scavenge 收集器</h2><p>Parallel Scavenge 收集器也是使用标记-复制算法的多线程收集器，它看上去几乎和 ParNew 都一样。 <strong>那么它有什么特别之处呢？</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UseParallelGC</span><br><span class="line"></span><br><span class="line">    使用 Parallel 收集器+ 老年代串行</span><br><span class="line"></span><br><span class="line">-XX:+UseParallelOldGC</span><br><span class="line"></span><br><span class="line">    使用 Parallel 收集器+ 老年代并行</span><br></pre></td></tr></table></figure>
-
-<p><strong>Parallel Scavenge 收集器关注点是吞吐量（高效率的利用 CPU）。CMS 等垃圾收集器的关注点更多的是用户线程的停顿时间（提高用户体验）。所谓吞吐量就是 CPU 中用于运行用户代码的时间与 CPU 总消耗时间的比值。</strong> Parallel Scavenge 收集器提供了很多参数供用户找到最合适的停顿时间或最大吞吐量，如果对于收集器运作不太了解，手工优化存在困难的时候，使用 Parallel Scavenge 收集器配合自适应调节策略，把内存管理优化交给虚拟机去完成也是一个不错的选择。</p>
-<p><strong>新生代采用标记-复制算法，老年代采用标记-整理算法。</strong></p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/parllel-scavenge%E6%94%B6%E9%9B%86%E5%99%A8.png?ynotemdtimestamp=1618390160630" alt="Parallel Scavenge 收集器 "></p>
-<p><strong>这是 JDK1.8 默认收集器</strong></p>
-<p>使用 java -XX:+PrintCommandLineFlags -version 命令查看</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-XX:InitialHeapSize&#x3D;262921408 -XX:MaxHeapSize&#x3D;4206742528 -XX:+PrintCommandLineFlags -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseParallelGC</span><br><span class="line">java version &quot;1.8.0_211&quot;</span><br><span class="line">Java(TM) SE Runtime Environment (build 1.8.0_211-b12)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.211-b12, mixed mode)</span><br></pre></td></tr></table></figure>
-
-<p>JDK1.8 默认使用的是 Parallel Scavenge + Parallel Old，如果指定了-XX:+UseParallelGC 参数，则默认指定了-XX:+UseParallelOldGC，可以使用-XX:-UseParallelOldGC 来禁用该功能</p>
-<h2 id="Serial-Old-收集器"><a href="#Serial-Old-收集器" class="headerlink" title="Serial Old 收集器"></a>Serial Old 收集器</h2><p><strong>Serial 收集器的老年代版本</strong>，它同样是一个单线程收集器。它主要有两大用途：一种用途是在 JDK1.5 以及以前的版本中与 Parallel Scavenge 收集器搭配使用，另一种用途是作为 CMS 收集器的后备方案。</p>
-<h2 id="Parallel-Old-收集器"><a href="#Parallel-Old-收集器" class="headerlink" title="Parallel Old 收集器"></a>Parallel Old 收集器</h2><p><strong>Parallel Scavenge 收集器的老年代版本</strong>。使用多线程和“标记-整理”算法。在注重吞吐量以及 CPU 资源的场合，都可以优先考虑 Parallel Scavenge 收集器和 Parallel Old 收集器。</p>
-<h2 id="CMS-收集器"><a href="#CMS-收集器" class="headerlink" title="CMS 收集器"></a>CMS 收集器</h2><p><strong>CMS（Concurrent Mark Sweep）收集器是一种以获取最短回收停顿时间为目标的收集器。它非常符合在注重用户体验的应用上使用。</strong></p>
-<p><strong>CMS（Concurrent Mark Sweep）收集器是 HotSpot 虚拟机第一款真正意义上的并发收集器，它第一次实现了让垃圾收集线程与用户线程（基本上）同时工作。</strong></p>
-<p>从名字中的<strong>Mark Sweep</strong>这两个词可以看出，CMS 收集器是一种 <strong>“标记-清除”算法</strong>实现的，它的运作过程相比于前面几种垃圾收集器来说更加复杂一些。整个过程分为四个步骤：</p>
-<ul>
-<li><strong>初始标记：</strong> 暂停所有的其他线程，并记录下直接与 root 相连的对象，速度很快 ；</li>
-<li><strong>并发标记：</strong> 同时开启 GC 和用户线程，用一个闭包结构去记录可达对象。但在这个阶段结束，这个闭包结构并不能保证包含当前所有的可达对象。因为用户线程可能会不断的更新引用域，所以 GC 线程无法保证可达性分析的实时性。所以这个算法里会跟踪记录这些发生引用更新的地方。</li>
-<li><strong>重新标记：</strong> 重新标记阶段就是为了修正并发标记期间因为用户程序继续运行而导致标记产生变动的那一部分对象的标记记录，这个阶段的停顿时间一般会比初始标记阶段的时间稍长，远远比并发标记阶段时间短</li>
-<li><strong>并发清除：</strong> 开启用户线程，同时 GC 线程开始对未标记的区域做清扫。</li>
-</ul>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/CMS%E6%94%B6%E9%9B%86%E5%99%A8.png?ynotemdtimestamp=1618390160630" alt="CMS 垃圾收集器 "></p>
-<p>从它的名字就可以看出它是一款优秀的垃圾收集器，主要优点：<strong>并发收集、低停顿</strong>。但是它有下面三个明显的缺点：</p>
-<ul>
-<li><strong>对 CPU 资源敏感；</strong></li>
-<li><strong>无法处理浮动垃圾；</strong></li>
-<li><strong>它使用的回收算法-“标记-清除”算法会导致收集结束时会有大量空间碎片产生。</strong></li>
-</ul>
-<h2 id="G1-收集器"><a href="#G1-收集器" class="headerlink" title="G1 收集器"></a>G1 收集器</h2><p><strong>G1 (Garbage-First) 是一款面向服务器的垃圾收集器,主要针对配备多颗处理器及大容量内存的机器. 以极高概率满足 GC 停顿时间要求的同时,还具备高吞吐量性能特征.</strong></p>
-<p>被视为 JDK1.7 中 HotSpot 虚拟机的一个重要进化特征。它具备一下特点：</p>
-<ul>
-<li><strong>并行与并发</strong>：G1 能充分利用 CPU、多核环境下的硬件优势，使用多个 CPU（CPU 或者 CPU 核心）来缩短 Stop-The-World 停顿时间。部分其他收集器原本需要停顿 Java 线程执行的 GC 动作，G1 收集器仍然可以通过并发的方式让 java 程序继续执行。</li>
-<li><strong>分代收集</strong>：虽然 G1 可以不需要其他收集器配合就能独立管理整个 GC 堆，但是还是保留了分代的概念。</li>
-<li><strong>空间整合</strong>：与 CMS 的“标记-清理”算法不同，G1 从整体来看是基于“标记-整理”算法实现的收集器；从局部上来看是基于“标记-复制”算法实现的。</li>
-<li><strong>可预测的停顿</strong>：这是 G1 相对于 CMS 的另一个大优势，降低停顿时间是 G1 和 CMS 共同的关注点，但 G1 除了追求低停顿外，还能建立可预测的停顿时间模型，能让使用者明确指定在一个长度为 M 毫秒的时间片段内。</li>
-</ul>
-<p>G1 收集器的运作大致分为以下几个步骤：</p>
-<ul>
-<li><strong>初始标记</strong></li>
-<li><strong>并发标记</strong></li>
-<li><strong>最终标记</strong></li>
-<li><strong>筛选回收</strong></li>
-</ul>
-<p><strong>G1 收集器在后台维护了一个优先列表，每次根据允许的收集时间，优先选择回收价值最大的 Region(这也就是它的名字 Garbage-First 的由来)</strong> 。这种使用 Region 划分内存空间以及有优先级的区域回收方式，保证了 G1 收集器在有限时间内可以尽可能高的收集效率（把内存化整为零）。</p>
-<h2 id="ZGC-收集器"><a href="#ZGC-收集器" class="headerlink" title="ZGC 收集器"></a>ZGC 收集器</h2><p>与 CMS 中的 ParNew 和 G1 类似，ZGC 也采用标记-复制算法，不过 ZGC 对该算法做了重大改进。</p>
-<p>在 ZGC 中出现 Stop The World 的情况会更少！</p>
+<p><strong>CMS收集器和G1收集器的区别：</strong> CMS收集器是老年代的收集器，可以配合新生代的Serial和ParNew收集器一起使用；G1收集器收集范围是老年代和新生代，不需要结合其他收集器使用； CMS收集器以最小的停顿时间为目标的收集器；G1收集器可预测垃圾回收的停顿时间 CMS收集器是使用“标记-清除”算法进行的垃圾回收，容易产生内存碎片G1收集器使用的是“标记-整理”算法，进行了空间整合，降低了内存空间碎片。</p>
 
           
         
@@ -1017,7 +978,7 @@
 </li>
 </ul>
 <h1 id="Java中会存在内存泄漏吗，简述一下。"><a href="#Java中会存在内存泄漏吗，简述一下。" class="headerlink" title="Java中会存在内存泄漏吗，简述一下。"></a>Java中会存在内存泄漏吗，简述一下。</h1><p>理论上Java因为有垃圾回收机制（GC）不会存在内存泄露问题；然而在实际开发中，可能会存在无用但可达的对象，这些对象不能被GC回收，因此也会导致内存泄露的发生。例如hibernate的Session（一级缓存）中的对象属于持久态，垃圾回收器是不会回收这些对象的，然而这些对象中可能存在无用的垃圾对象，如果不及时关闭（close）或清空（flush）一级缓存就可能导致内存泄露。</p>
-<h1 id="Java-中都有哪些引用类型"><a href="#Java-中都有哪些引用类型" class="headerlink" title="Java 中都有哪些引用类型"></a>Java 中都有哪些引用类型</h1><p>强引用：发生 gc 的时候不会被回收<br>软引用：有用但不是必须的对象，在发生内存溢出之前会被回收<br>弱引用：有用但不是必须的对象，在下一次GC时会被回收<br>虚引用：无法通过虚引用获得对象，用 PhantomReference 实现虚引用，虚引<br>用的用途是在 gc 时返回一个通知。</p>
+<h1 id="Java-中都有哪些引用类型以及他们和gc的关系"><a href="#Java-中都有哪些引用类型以及他们和gc的关系" class="headerlink" title="Java 中都有哪些引用类型以及他们和gc的关系"></a>Java 中都有哪些引用类型以及他们和gc的关系</h1><p>强引用：发生 gc 的时候不会被回收<br>软引用：有用但不是必须的对象，在发生内存溢出之前会被回收<br>弱引用：有用但不是必须的对象，在下一次GC时会被回收<br>虚引用：无法通过虚引用获得对象，用 PhantomReference 实现虚引用，虚引<br>用的用途是在 gc 时返回一个通知。</p>
 <h1 id="Java-内存结构（或者说-Java-内存分布）和-Java-内存模型（Java-Memory-Model）"><a href="#Java-内存结构（或者说-Java-内存分布）和-Java-内存模型（Java-Memory-Model）" class="headerlink" title="Java 内存结构（或者说 Java 内存分布）和 Java 内存模型（Java Memory Model）"></a>Java 内存结构（或者说 Java 内存分布）和 Java 内存模型（Java Memory Model）</h1><ul>
 <li>java 内存结构（或者说 java 内存分布）就是下文提到的五大区块的划分。</li>
 <li>java 内存模型是为了屏蔽各种硬件和操作系统差异，保证 Java 程序在各种平台下对内存的访问都能保证效果一致而提出的一套规范。其主要解决问题的手段是 限制处理器优化和使用内存屏障。</li>
@@ -1069,7 +1030,7 @@
 <p><strong>虚拟机栈的生命周期</strong> 对于栈来说，不存在垃圾回收。只要程序运行结束，栈的空间自然就会释放了。栈的生命周期和所处的线程是一致的。</p>
 <p><strong>虚拟机栈的执行</strong> 我们经常说的栈帧数据，说白了在JVM中叫栈帧，放到Java中其实就是方法，它也是存放在栈中的。</p>
 <p><strong>局部变量的复用</strong> 局部变量表用于存放方法参数和方法内部所定义的局部变量。</p>
-<h3 id="栈帧"><a href="#栈帧" class="headerlink" title="栈帧"></a>栈帧</h3><p>栈帧(Stack Frame)是用于⽀持虚拟机进⾏⽅法调用和⽅法执⾏的数据结构。栈帧存<br>储了⽅法的局部变量表、操作数栈、动态连接和⽅法返回地址等信息。每⼀个⽅法从调用⾄执⾏完成的<br>过程，都对应着⼀个栈帧在虚拟机栈⾥从⼊栈到出栈的过程。</p>
+<h3 id="栈帧"><a href="#栈帧" class="headerlink" title="栈帧"></a>栈帧</h3><p>栈帧(Stack Frame)是用于⽀持虚拟机进⾏⽅法调用和⽅法执⾏的数据结构。栈帧存<br>储了方法的局部变量表、操作数栈、动态连接和⽅法返回地址等信息。每⼀个⽅法从调用⾄执⾏完成的<br>过程，都对应着⼀个栈帧在虚拟机栈⾥从⼊栈到出栈的过程。</p>
 <h2 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h2><p><strong>为虚拟机使用到的 Native 方法服务</strong></p>
 <p>本地方法栈也会创建一个栈帧，用于存放该本地方法的局部变量表、操作数栈、动态链接、出口信息。</p>
 <p>方法执行完毕后相应的栈帧也会出栈并释放内存空间，也会出现 <code>StackOverFlowError</code> 和 <code>OutOfMemoryError</code> 两种错误。</p>
@@ -1091,9 +1052,16 @@
 <li><p>堆的大小可通过参数 –Xms（堆的初始容量）、-Xmx（堆的最大容量） 来指定。</p>
 </li>
 </ul>
-<h2 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h2><p>用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据</p>
-<p>方法区也被称为永久代，<strong>方法区和永久代的关系很像 Java 中接口和类的关系，永久代就是方法区的一种实现方式</strong></p>
-<p>jkd1.8将永久代替换为元空间</p>
+<h2 id="方法区-是Java虚拟机规范中的定义"><a href="#方法区-是Java虚拟机规范中的定义" class="headerlink" title="方法区(是Java虚拟机规范中的定义)"></a>方法区(是Java虚拟机规范中的定义)</h2><ul>
+<li><p>用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据</p>
+</li>
+<li><p>方法区也被称为永久代，<strong>方法区和永久代的关系很像 Java 中接口和类的关系，永久代就是方法区的一种实现方式</strong></p>
+</li>
+<li><p>jkd1.8将永久代替换为元空间</p>
+</li>
+<li><p>会出现<code>java.lang.OutOfMemoryError</code></p>
+</li>
+</ul>
 <h2 id="为什么要将永久代-PermGen-替换为元空间-MetaSpace-呢"><a href="#为什么要将永久代-PermGen-替换为元空间-MetaSpace-呢" class="headerlink" title="为什么要将永久代 (PermGen) 替换为元空间 (MetaSpace) 呢?"></a>为什么要将永久代 (PermGen) 替换为元空间 (MetaSpace) 呢?</h2><ol>
 <li>整个永久代有一个 JVM 本身设置固定大小上限，无法进行调整，而元空间使用的是直接内存，受本机可用内存的限制，虽然元空间仍旧可能溢出，但是比原来出现的几率会更小。</li>
 <li>元空间里面存放的是类的元数据，这样加载多少类的元数据就不由 <code>MaxPermSize</code> 控制了, 而由系统的实际可用空间来控制，这样能加载的类就更多了。  </li>
@@ -1111,9 +1079,15 @@
 <li><strong>加载</strong></li>
 </ul>
 <ol>
-<li>将class文件加载到内存</li>
-<li>将静态数据结构转化成方法区中运行时的数据结构</li>
-<li>在堆中生成一个代表这个类的 java.lang.Class对象作为数据访问的入口</li>
+<li><p>将class文件加载到内存</p>
+<blockquote>
+<p>什么是class文件： 8为字节为基础单位的二进制流</p>
+</blockquote>
+</li>
+<li><p>将静态数据结构转化成方法区中运行时的数据结构</p>
+</li>
+<li><p>在堆中生成一个代表这个类的 java.lang.Class对象作为数据访问的入口</p>
+</li>
 </ol>
 <ul>
 <li><strong>验证</strong></li>
@@ -1171,6 +1145,7 @@
 <img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D-%E7%9B%B4%E6%8E%A5%E6%8C%87%E9%92%88.png?ynotemdtimestamp=1618390160630" alt="对象的访问定位-直接指针" style="zoom:33%;" />
 
 <p><strong>这两种对象访问方式各有优势。使用句柄来访问的最大好处是 reference 中存储的是稳定的句柄地址，在对象被移动时只会改变句柄中的实例数据指针，而 reference 本身不需要修改。使用直接指针访问方式最大的好处就是速度快，它节省了一次指针定位的时间开销。</strong></p>
+<h1 id="Java-虚拟机是如何判定两个-Java-类是相同的？"><a href="#Java-虚拟机是如何判定两个-Java-类是相同的？" class="headerlink" title="Java 虚拟机是如何判定两个 Java 类是相同的？"></a>Java 虚拟机是如何判定两个 Java 类是相同的？</h1><p>①类的全限定名是否相等<br>②类加载器是否相等<br>即便是同样的字节代码，被不同的类加载器加载之后所得到的类，也是不同的。比如一个 Java 类<br>com.example.Sample，编译之后生成了字节代码文件 Sample.class。两个不同的类加载器<br>ClassLoaderA和 ClassLoaderB分别读取了这个 Sample.class文件，并定义出两个 java.lang.Class类的<br>实例来表示这个类。这两个实例是不相同的。对于 Java 虚拟机来说，它们是不同的类。</p>
 <h1 id="64-位-JVM-中，int-的长度是多数？"><a href="#64-位-JVM-中，int-的长度是多数？" class="headerlink" title="64 位 JVM 中，int 的长度是多数？"></a>64 位 JVM 中，int 的长度是多数？</h1><p>Java 中，int 类型变量的长度是一个固定值，与平台无关，都是 32 位。意思就是说，在 32 位 和 64 位<br>的 Java 虚拟机中，int 类型的长度是相同的。</p>
 <h1 id="尝试回答下列问题"><a href="#尝试回答下列问题" class="headerlink" title="尝试回答下列问题"></a>尝试回答下列问题</h1><ol>
 <li>介绍下 Java 内存区域（运行时数据区）</li>
@@ -1200,6 +1175,20 @@
 
 <p>这种时候，我们的代码肯定会报错，因为在加载的时候其实是找到了rt.jar中的String.class，然后发现这也没有main方法</p>
 <h3 id="自定义类加载器"><a href="#自定义类加载器" class="headerlink" title="自定义类加载器"></a>自定义类加载器</h3><p>除了 BootstrapClassLoader 其他类加载器均由 Java 实现且全部继承自java.lang.ClassLoader。如果我们要自定义自己的类加载器，很明显需要继承 ClassLoader。</p>
+<h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><h2 id="CPU占用过高"><a href="#CPU占用过高" class="headerlink" title="CPU占用过高"></a>CPU占用过高</h2><ol>
+<li><code>top</code>查看当前CPU情况，找到占用CPU过高的进程PID，如<code>PID=123</code></li>
+<li><code>top -H -p123</code>找出两个CPU占用较高的线程，记录下来PID，如<code>PID=2345,PID=3456</code>转为十六进制</li>
+<li><code>jstack -l 123 &gt; temp.txt</code>打印出当前进程的线程栈</li>
+<li>查找到对应于第二部的两个线程运行栈，分析代码</li>
+</ol>
+<h2 id="OOM异常排查"><a href="#OOM异常排查" class="headerlink" title="OOM异常排查"></a>OOM异常排查</h2><ol>
+<li><code>top</code>查看当前CPU情况</li>
+<li><code>jps</code>或<code>ps -ef | grep java</code>找出当前Java进程的PID</li>
+<li><code>jstat -gcutil pid interval</code> 查询当前的GC状态</li>
+<li><code>jmap -histo:live pid</code> 可用统计存活对象的分布情况，从高到低查看占据内存最多的对象</li>
+<li><code>jmap -dump:format=b,file=文件名[pid]</code></li>
+<li>使用性能分析器工具对上一步dump出来的文件进行分析，工具有MAT等 </li>
+</ol>
 
           
         
@@ -2547,6 +2536,8 @@
 </ul>
 <p><strong>Vector和CopyOnWriteList都是通过 synchronized 来保证集合的安全性 只不过 Vector 的 synchronized 关键字加在方法外面，Collections.synchronizedList (new ArrayList ()) 的 synchronized 关键字加在方法里面。</strong></p>
 <h3 id="ArrayList-和-LinkedList-两者有没有最大容量"><a href="#ArrayList-和-LinkedList-两者有没有最大容量" class="headerlink" title="ArrayList 和 LinkedList 两者有没有最大容量"></a>ArrayList 和 LinkedList 两者有没有最大容量</h3><p>答：ArrayList 有最大容量的，为 Integer  的最大值，大于这个值 JVM 是不会为数组分配内存空间的，LinkedList 底层是双向链表，理论上可以无限大。但源码中，LinkedList 实际大小用的是 int 类型，这也说明了 LinkedList 不能超过 Integer 的最大值，不然会溢出。</p>
+<h3 id="ArrayList-和-LinedList-是线程安全的么，为什么？"><a href="#ArrayList-和-LinedList-是线程安全的么，为什么？" class="headerlink" title="ArrayList 和 LinedList 是线程安全的么，为什么？"></a>ArrayList 和 LinedList 是线程安全的么，为什么？</h3><p>答：当两者作为非共享变量时，比如说仅仅是在方法里面的局部变量时，是没有线程安全问题的，只有当两者是共享变量时，才会有线程安全问题。主要的问题点在于多线程环境下，所有线程任何时刻都可对数组和链表进行操作，这会导致值被覆盖，甚至混乱的情况。</p>
+<p>如果有线程安全问题，在迭代的过程中，会频繁报 ConcurrentModificationException 的错误，意思是在我当前循环的过程中，数组或链表的结构被其它线程修改了。</p>
 <h3 id="ArrayList-无参数构造器构造，现在-add-一个值进去，此时数组的大小是多少，下一次扩容前最大可用大小是多少？"><a href="#ArrayList-无参数构造器构造，现在-add-一个值进去，此时数组的大小是多少，下一次扩容前最大可用大小是多少？" class="headerlink" title="ArrayList 无参数构造器构造，现在 add 一个值进去，此时数组的大小是多少，下一次扩容前最大可用大小是多少？"></a>ArrayList 无参数构造器构造，现在 add 一个值进去，此时数组的大小是多少，下一次扩容前最大可用大小是多少？</h3><p>此处数组的大小是 1，下一次扩容前最大可用大小是 10，因为 ArrayList 第一次扩容时，是有默认值的，默认值是 10，在第一次 add 一个值进去时，数组的可用大小被扩容到 10 了。</p>
 <h3 id="如果我连续往-list-里面新增值，增加到第-11-个的时候，数组的大小是多少？"><a href="#如果我连续往-list-里面新增值，增加到第-11-个的时候，数组的大小是多少？" class="headerlink" title="如果我连续往 list 里面新增值，增加到第 11 个的时候，数组的大小是多少？"></a>如果我连续往 list 里面新增值，增加到第 11 个的时候，数组的大小是多少？</h3><p>这里的考查点就是扩容的公式，当增加到 11 的时候，此时我们希望数组的大小为 11，但实际上数组的最大容量只有  10，不够了就需要扩容，扩容的公式是：oldCapacity + (oldCapacity&gt;&gt; 1)，oldCapacity  表示数组现有大小，目前场景计算公式是：10 + 10 ／2 = 15，然后我们发现 15 已经够用了，所以数组的大小会被扩容到 15。</p>
 <h3 id="数组初始化，被加入一个值后，如果我使用-addAll-方法，一下子加入-15-个值，那么最终数组的大小是多少"><a href="#数组初始化，被加入一个值后，如果我使用-addAll-方法，一下子加入-15-个值，那么最终数组的大小是多少" class="headerlink" title="数组初始化，被加入一个值后，如果我使用 addAll 方法，一下子加入 15 个值，那么最终数组的大小是多少"></a>数组初始化，被加入一个值后，如果我使用 addAll 方法，一下子加入 15 个值，那么最终数组的大小是多少</h3><p>数组在加入一个值后，实际大小是 1，最大可用大小是 10  ，现在需要一下子加入 15 个值，那我们期望数组的大小值就是 16，此时数组最大可用大小只有 10，明显不够，需要扩容，扩容后的大小是：10 + 10 ／2 = 15，这时候发现扩容后的大小仍然不到我们期望的值 16，这时候源码中有一种策略如下：</p>
@@ -2565,10 +2556,13 @@
 <h4 id="还是上面的-ArrayList-数组，我们通过增强-for-循环进行删除，可以么"><a href="#还是上面的-ArrayList-数组，我们通过增强-for-循环进行删除，可以么" class="headerlink" title="还是上面的 ArrayList 数组，我们通过增强 for 循环进行删除，可以么"></a>还是上面的 ArrayList 数组，我们通过增强 for 循环进行删除，可以么</h4><p>不可以，会报错。因为增强 for 循环过程其实调用的就是迭代器的 next () 方法，当你调用 list#remove ()  方法进行删除时，modCount 的值会 +1，而这时候迭代器中的 expectedModCount 的值却没有变，导致在迭代器下次执行  next () 方法时，expectedModCount !=  modCount 就会报  ConcurrentModificationException 的错误。</p>
 <h4 id="还是上面的数组，如果删除时使用-Iterator-remove-方法可以删除么，为什么"><a href="#还是上面的数组，如果删除时使用-Iterator-remove-方法可以删除么，为什么" class="headerlink" title="还是上面的数组，如果删除时使用 Iterator.remove () 方法可以删除么，为什么"></a>还是上面的数组，如果删除时使用 Iterator.remove () 方法可以删除么，为什么</h4><p>可以的，因为 Iterator.remove () 方法在执行的过程中，会把最新的 modCount 赋值给 expectedModCount，这样在下次循环过程中，modCount 和 expectedModCount 两者就会相等。</p>
 <h4 id="以上三个问题对于-LinkedList-也是同样的结果么？"><a href="#以上三个问题对于-LinkedList-也是同样的结果么？" class="headerlink" title="以上三个问题对于 LinkedList 也是同样的结果么？"></a>以上三个问题对于 LinkedList 也是同样的结果么？</h4><p>是的，虽然 LinkedList 底层结构是双向链表，但对于上述三个问题，结果和 ArrayList 是一致的。</p>
-<h3 id="ArrayList-和-LinedList-是线程安全的么，为什么？"><a href="#ArrayList-和-LinedList-是线程安全的么，为什么？" class="headerlink" title="ArrayList 和 LinedList 是线程安全的么，为什么？"></a>ArrayList 和 LinedList 是线程安全的么，为什么？</h3><p>答：当两者作为非共享变量时，比如说仅仅是在方法里面的局部变量时，是没有线程安全问题的，只有当两者是共享变量时，才会有线程安全问题。主要的问题点在于多线程环境下，所有线程任何时刻都可对数组和链表进行操作，这会导致值被覆盖，甚至混乱的情况。</p>
+<h3 id="ArrayList-和-LinedList-是线程安全的么，为什么？-1"><a href="#ArrayList-和-LinedList-是线程安全的么，为什么？-1" class="headerlink" title="ArrayList 和 LinedList 是线程安全的么，为什么？"></a>ArrayList 和 LinedList 是线程安全的么，为什么？</h3><p>答：当两者作为非共享变量时，比如说仅仅是在方法里面的局部变量时，是没有线程安全问题的，只有当两者是共享变量时，才会有线程安全问题。主要的问题点在于多线程环境下，所有线程任何时刻都可对数组和链表进行操作，这会导致值被覆盖，甚至混乱的情况。</p>
 <p>如果有线程安全问题，在迭代的过程中，会频繁报 ConcurrentModificationException 的错误，意思是在我当前循环的过程中，数组或链表的结构被其它线程修改了。</p>
 <h3 id="如何解决线程安全问题？"><a href="#如何解决线程安全问题？" class="headerlink" title="如何解决线程安全问题？"></a>如何解决线程安全问题？</h3><p>Java 源码中推荐使用  Collections#synchronizedList 进行解决，Collections#synchronizedList 的返回值是  List 的每个方法都加了 synchronized 锁，保证了在同一时刻，数组和链表只会被一个线程所修改，或者采用  CopyOnWriteArrayList 并发 List 来解决</p>
-<h2 id="双向链表"><a href="#双向链表" class="headerlink" title="双向链表"></a>双向链表</h2><h2 id="Collection-子接口之-Set"><a href="#Collection-子接口之-Set" class="headerlink" title="Collection 子接口之 Set"></a>Collection 子接口之 Set</h2><h3 id="comparable-和-Comparator-的区别"><a href="#comparable-和-Comparator-的区别" class="headerlink" title="comparable 和 Comparator 的区别"></a>comparable 和 Comparator 的区别</h3><ul>
+<h2 id="双向链表"><a href="#双向链表" class="headerlink" title="双向链表"></a>双向链表</h2><p>双向链表中双向的意思是说前后节点之间互相有引用，链表的节点我们称为 Node。Node  有三个属性组成：其前一个节点，本身节点的值，其下一个节点，假设 A、B 节点相邻，A 节点的下一个节点就是 B，B 节点的上一个节点就是  A，两者互相引用，在链表的头部节点，我们称为头节点。头节点的前一个节点是 null，尾部称为尾节点，尾节点的后一个节点是  null，如果链表数据为空的话，头尾节点是同一个节点，本身是 null，指向前后节点的值也是 null。</p>
+<h2 id="双向链表的新增和删除"><a href="#双向链表的新增和删除" class="headerlink" title="双向链表的新增和删除"></a>双向链表的新增和删除</h2><p>新增：我们可以选择从链表头新增，也可以选择从链表尾新增，如果是从链表尾新增的话，直接把当前节点追加到尾节点之后，本身节点自动变为尾节点。</p>
+<p>删除：把删除节点的后一个节点的 prev 指向其前一个节点，把删除节点的前一个节点的 next 指向其后一个节点，最后把删除的节点置为 null 即可。</p>
+<h2 id="Collection-子接口之-Set"><a href="#Collection-子接口之-Set" class="headerlink" title="Collection 子接口之 Set"></a>Collection 子接口之 Set</h2><h3 id="comparable-和-Comparator-的区别"><a href="#comparable-和-Comparator-的区别" class="headerlink" title="comparable 和 Comparator 的区别"></a>comparable 和 Comparator 的区别</h3><ul>
 <li><code>comparable</code> 接口实际上是出自<code>java.lang</code>包 它有一个 <code>compareTo(Object obj)</code>方法用来排序</li>
 <li><code>comparator</code>接口实际上是出自 java.util 包它有一个<code>compare(Object obj1, Object obj2)</code>方法用来排序</li>
 </ul>

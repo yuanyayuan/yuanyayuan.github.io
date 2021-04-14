@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="内存分配策略 对象优先在 eden 区分配目前主流的垃圾收集器都会采用分代回收算法，因此需要将堆内存分为新生代和老年代，这样我们就可以根据各个年代的特点选择合适的垃圾收集算法。 大多数情况下，对象在新生代中 eden 区分配。当 eden 区没有足够空间进行分配时，虚拟机将发起一次 Minor GC 大对象直接进入老年代大对象就是需要大量连续内存空间的对象（比如：字符串、数组）。 为什么要这样呢？">
+<meta name="description" content="什么是内存溢出，内存泄漏，区别是什么 内存溢出 程序在申请内存时，没有足够的内存空间供其使用，出现out of memory  内存泄漏 程序在申请内存后无法事发申请的内存。   内存溢出是要求分配的内存超过系统能给你的，于是造成溢出；内存泄漏是指申请分配内存进行使用（new）,可使用完后却不及时归还（delete），结果申请到的那块内存自己又不能再访问（地址弄丢了），而系统也不能在此将他分配给需">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java内存分配和垃圾回收">
 <meta property="og:url" content="https://yuanyayuan.github.io/2021/04/14/Java%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E5%92%8C%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="内存分配策略 对象优先在 eden 区分配目前主流的垃圾收集器都会采用分代回收算法，因此需要将堆内存分为新生代和老年代，这样我们就可以根据各个年代的特点选择合适的垃圾收集算法。 大多数情况下，对象在新生代中 eden 区分配。当 eden 区没有足够空间进行分配时，虚拟机将发起一次 Minor GC 大对象直接进入老年代大对象就是需要大量连续内存空间的对象（比如：字符串、数组）。 为什么要这样呢？">
+<meta property="og:description" content="什么是内存溢出，内存泄漏，区别是什么 内存溢出 程序在申请内存时，没有足够的内存空间供其使用，出现out of memory  内存泄漏 程序在申请内存后无法事发申请的内存。   内存溢出是要求分配的内存超过系统能给你的，于是造成溢出；内存泄漏是指申请分配内存进行使用（new）,可使用完后却不及时归还（delete），结果申请到的那块内存自己又不能再访问（地址弄丢了），而系统也不能在此将他分配给需">
 <meta property="og:locale">
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/01d330d8-2710-4fad-a91c-7bbbfaaefc0e.png?ynotemdtimestamp=1618390160630">
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%A0%86%E5%86%85%E5%AD%98.png?ynotemdtimestamp=1618390160630">
@@ -95,12 +95,8 @@
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/90984624.png?ynotemdtimestamp=1618390160630">
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/94057049.png?ynotemdtimestamp=1618390160630">
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8.png?ynotemdtimestamp=1618390160630">
-<meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/46873026.png?ynotemdtimestamp=1618390160630">
-<meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/22018368.png?ynotemdtimestamp=1618390160630">
-<meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/parllel-scavenge%E6%94%B6%E9%9B%86%E5%99%A8.png?ynotemdtimestamp=1618390160630">
-<meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/CMS%E6%94%B6%E9%9B%86%E5%99%A8.png?ynotemdtimestamp=1618390160630">
 <meta property="article:published_time" content="2021-04-14T11:14:59.000Z">
-<meta property="article:modified_time" content="2021-04-14T13:29:02.298Z">
+<meta property="article:modified_time" content="2021-04-14T14:02:58.039Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="面试">
@@ -368,7 +364,18 @@
       
 
       
-        <h1 id="内存分配策略"><a href="#内存分配策略" class="headerlink" title="内存分配策略"></a>内存分配策略</h1><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/01d330d8-2710-4fad-a91c-7bbbfaaefc0e.png?ynotemdtimestamp=1618390160630" alt="img"><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%A0%86%E5%86%85%E5%AD%98.png?ynotemdtimestamp=1618390160630" alt="堆内存常见分配策略 "></p>
+        <h1 id="什么是内存溢出，内存泄漏，区别是什么"><a href="#什么是内存溢出，内存泄漏，区别是什么" class="headerlink" title="什么是内存溢出，内存泄漏，区别是什么"></a>什么是内存溢出，内存泄漏，区别是什么</h1><ul>
+<li><p>内存溢出</p>
+<p>程序在申请内存时，没有足够的内存空间供其使用，出现<code>out of memory</code></p>
+</li>
+<li><p>内存泄漏</p>
+<p>程序在申请内存后无法事发申请的内存。</p>
+</li>
+</ul>
+<p>内存溢出是要求分配的内存超过系统能给你的，于是造成溢出；内存泄漏是指申请分配内存进行使用（new）,可使用完后却不及时归还（delete），结果申请到的那块内存自己又不能再访问（地址弄丢了），而系统也不能在此将他分配给需要的程序。</p>
+<h1 id="内存分配策略"><a href="#内存分配策略" class="headerlink" title="内存分配策略"></a>内存分配策略</h1><h1 id="Eden和Survivor比例是多少？"><a href="#Eden和Survivor比例是多少？" class="headerlink" title="Eden和Survivor比例是多少？"></a>Eden和Survivor比例是多少？</h1><p>Eden区是一块，Survivor区是两块。Eden区和Survivor区的比例是8：1：1。</p>
+<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/01d330d8-2710-4fad-a91c-7bbbfaaefc0e.png?ynotemdtimestamp=1618390160630" alt="img"></p>
+<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%A0%86%E5%86%85%E5%AD%98.png?ynotemdtimestamp=1618390160630" alt="堆内存常见分配策略 "></p>
 <h2 id="对象优先在-eden-区分配"><a href="#对象优先在-eden-区分配" class="headerlink" title="对象优先在 eden 区分配"></a>对象优先在 eden 区分配</h2><p>目前主流的垃圾收集器都会采用分代回收算法，因此需要将堆内存分为新生代和老年代，这样我们就可以根据各个年代的特点选择合适的垃圾收集算法。</p>
 <p>大多数情况下，对象在新生代中 eden 区分配。当 eden 区没有足够空间进行分配时，虚拟机将发起一次 Minor GC</p>
 <h2 id="大对象直接进入老年代"><a href="#大对象直接进入老年代" class="headerlink" title="大对象直接进入老年代"></a>大对象直接进入老年代</h2><p>大对象就是需要大量连续内存空间的对象（比如：字符串、数组）。</p>
@@ -401,7 +408,7 @@
 
 <h2 id="可达性分析算法"><a href="#可达性分析算法" class="headerlink" title="可达性分析算法"></a>可达性分析算法</h2><p>这个算法的基本思想就是通过一系列的称为 <strong>“GC Roots”</strong> 的对象作为起点，从这些节点开始向下搜索，节点所走过的路径称为引用链，当一个对象到 GC Roots 没有任何引用链相连的话，则证明此对象是不可用的。</p>
 <p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/72762049.png?ynotemdtimestamp=1618390160630" alt="可达性分析算法 "></p>
-<p>可作为 GC Roots 的对象包括下面几种:</p>
+<p>可作为<strong>GC Roots 的对象包括下面几种</strong>:</p>
 <ul>
 <li>虚拟机栈(栈帧中的本地变量表)中引用的对象</li>
 <li>本地方法栈(Native 方法)中引用的对象</li>
@@ -433,6 +440,7 @@
 <li>如果对象进行可达性分析之后没发现与GC Roots相连的引用链，那它将会第一次标记并且进行一次筛选。判断的条件是决定这个对象是否有必要执行finalize()方法。如果对象有必要执行finalize()方法，则被放入F-Queue队列中。</li>
 <li>GC对F-Queue队列中的对象进行二次标记。如果对象在finalize()方法中重新与引用链上的任何一个对象建立了关联，那么二次标记时则会将它移出“即将回收”集合。如果此时对象还没成功逃脱，那么只能被回收了。</li>
 </ol>
+<h2 id="在-Java-中，对象什么时候可以被垃圾回收"><a href="#在-Java-中，对象什么时候可以被垃圾回收" class="headerlink" title="在 Java 中，对象什么时候可以被垃圾回收"></a>在 Java 中，对象什么时候可以被垃圾回收</h2><p>首先先由可达性算法去判断对象是否可回收<br>二次标记，相当于二次审判。finalize方法<br>其次再去根据GC的回收机制，择时回收</p>
 <h1 id="垃圾收集算法"><a href="#垃圾收集算法" class="headerlink" title="垃圾收集算法"></a>垃圾收集算法</h1><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E7%AE%97%E6%B3%95.png?ynotemdtimestamp=1618390160630" alt="垃圾收集算法分类"></p>
 <h2 id="标记-清除算法"><a href="#标记-清除算法" class="headerlink" title="标记-清除算法"></a>标记-清除算法</h2><p>该算法分为“标记”和“清除”阶段：首先标记出所有不需要回收的对象，在标记完成后统一回收掉所有没有被标记的对象。它是最基础的收集算法，后续的算法都是对其不足进行改进得到。这种垃圾收集算法会带来两个明显的问题：</p>
 <ol>
@@ -448,71 +456,20 @@
 <p><strong>比如在新生代中，每次收集都会有大量对象死去，所以可以选择”标记-复制“算法，只需要付出少量对象的复制成本就可以完成每次垃圾收集。而老年代的对象存活几率是比较高的，而且没有额外的空间对它进行分配担保，所以我们必须选择“标记-清除”或“标记-整理”算法进行垃圾收集。</strong></p>
 <p><strong>延伸面试问题：</strong> HotSpot 为什么要分为新生代和老年代？</p>
 <p>根据上面的对分代收集算法的介绍回答。</p>
-<h1 id="垃圾收集器（了解）"><a href="#垃圾收集器（了解）" class="headerlink" title="垃圾收集器（了解）"></a>垃圾收集器（了解）</h1><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8.png?ynotemdtimestamp=1618390160630" alt="垃圾收集器分类"></p>
+<h1 id="垃圾收集器"><a href="#垃圾收集器" class="headerlink" title="垃圾收集器"></a>垃圾收集器</h1><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8.png?ynotemdtimestamp=1618390160630" alt="垃圾收集器分类"></p>
 <h1 id="垃圾回收器的基本原理"><a href="#垃圾回收器的基本原理" class="headerlink" title="垃圾回收器的基本原理"></a>垃圾回收器的基本原理</h1><p>创建对象时，垃圾回收器就开始监控这个对象的地址，大小以及使用情况</p>
 <h1 id="垃圾回收器可以马上回收内存吗"><a href="#垃圾回收器可以马上回收内存吗" class="headerlink" title="垃圾回收器可以马上回收内存吗"></a>垃圾回收器可以马上回收内存吗</h1><p>不会，在下一个垃圾回收周期，垃圾收集器才会释放对象占用的内存</p>
 <h1 id="有什么办法主动通知虚拟机进行垃圾回收"><a href="#有什么办法主动通知虚拟机进行垃圾回收" class="headerlink" title="有什么办法主动通知虚拟机进行垃圾回收"></a>有什么办法主动通知虚拟机进行垃圾回收</h1><p><code>System.gc()</code></p>
-<h2 id="Serial-收集器"><a href="#Serial-收集器" class="headerlink" title="Serial 收集器"></a>Serial 收集器</h2><p>Serial（串行）收集器是最基本、历史最悠久的垃圾收集器了。大家看名字就知道这个收集器是一个单线程收集器了。它的 <strong>“单线程”</strong> 的意义不仅仅意味着它只会使用一条垃圾收集线程去完成垃圾收集工作，更重要的是它在进行垃圾收集工作的时候必须暂停其他所有的工作线程（ <strong>“Stop The World”</strong> ），直到它收集结束。</p>
-<p><strong>新生代采用标记-复制算法，老年代采用标记-整理算法。</strong></p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/46873026.png?ynotemdtimestamp=1618390160630" alt=" Serial 收集器 "></p>
-<p>虚拟机的设计者们当然知道 Stop The World 带来的不良用户体验，所以在后续的垃圾收集器设计中停顿时间在不断缩短（仍然还有停顿，寻找最优秀的垃圾收集器的过程仍然在继续）。</p>
-<p>但是 Serial 收集器有没有优于其他垃圾收集器的地方呢？当然有，它<strong>简单而高效（与其他收集器的单线程相比）</strong>。Serial 收集器由于没有线程交互的开销，自然可以获得很高的单线程收集效率。Serial 收集器对于运行在 Client 模式下的虚拟机来说是个不错的选择。</p>
-<h2 id="ParNew-收集器"><a href="#ParNew-收集器" class="headerlink" title="ParNew 收集器"></a>ParNew 收集器</h2><p><strong>ParNew 收集器其实就是 Serial 收集器的多线程版本，除了使用多线程进行垃圾收集外，其余行为（控制参数、收集算法、回收策略等等）和 Serial 收集器完全一样。</strong></p>
-<p><strong>新生代采用标记-复制算法，老年代采用标记-整理算法。</strong></p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/22018368.png?ynotemdtimestamp=1618390160630" alt="ParNew 收集器 "></p>
-<p>它是许多运行在 Server 模式下的虚拟机的首要选择，除了 Serial 收集器外，只有它能与 CMS 收集器（真正意义上的并发收集器，后面会介绍到）配合工作。</p>
-<p><strong>并行和并发概念补充：</strong></p>
 <ul>
-<li><strong>并行（Parallel）</strong> ：指多条垃圾收集线程并行工作，但此时用户线程仍然处于等待状态。</li>
-<li><strong>并发（Concurrent）</strong>：指用户线程与垃圾收集线程同时执行（但不一定是并行，可能会交替执行），用户程序在继续运行，而垃圾收集器运行在另一个 CPU 上。</li>
+<li>Serial收集器：单线程的收集器，收集垃圾时，必须stoptheworld，使用复制算法。</li>
+<li>ParNew收集器：Serial收集器的多线程版本，也需要stoptheworld，复制算法。</li>
+<li>ParallelScavenge收集器：新生代收集器，复制算法的收集器，并发的多线程收集器，目标是达到一个可控的吞吐量。如果虚拟机总共运行100分钟，其中垃圾花掉1分钟，吞吐量就是99%。</li>
+<li>SerialOld收集器：是Serial收集器的老年代版本，单线程收集器，使用标记整理算法。</li>
+<li>ParallelOld收集器：是ParallelScavenge收集器的老年代版本，使用多线程，标记-整理算法。</li>
+<li>CMS(ConcurrentMarkSweep)收集器：是一种以获得最短回收停顿时间为目标的收集器，标记清除算法，运作过程：初始标记，并发标记，重<br>新标记，并发清除，收集结束会产生大量空间碎片。</li>
+<li>G1收集器：标记整理算法实现，运作流程主要包括以下：初始标记，并发标记，最终标记，筛选标记。不会产生空间碎片，可以精确地控制停顿。</li>
 </ul>
-<h2 id="Parallel-Scavenge-收集器"><a href="#Parallel-Scavenge-收集器" class="headerlink" title="Parallel Scavenge 收集器"></a>Parallel Scavenge 收集器</h2><p>Parallel Scavenge 收集器也是使用标记-复制算法的多线程收集器，它看上去几乎和 ParNew 都一样。 <strong>那么它有什么特别之处呢？</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">-XX:+UseParallelGC</span><br><span class="line"></span><br><span class="line">    使用 Parallel 收集器+ 老年代串行</span><br><span class="line"></span><br><span class="line">-XX:+UseParallelOldGC</span><br><span class="line"></span><br><span class="line">    使用 Parallel 收集器+ 老年代并行</span><br></pre></td></tr></table></figure>
-
-<p><strong>Parallel Scavenge 收集器关注点是吞吐量（高效率的利用 CPU）。CMS 等垃圾收集器的关注点更多的是用户线程的停顿时间（提高用户体验）。所谓吞吐量就是 CPU 中用于运行用户代码的时间与 CPU 总消耗时间的比值。</strong> Parallel Scavenge 收集器提供了很多参数供用户找到最合适的停顿时间或最大吞吐量，如果对于收集器运作不太了解，手工优化存在困难的时候，使用 Parallel Scavenge 收集器配合自适应调节策略，把内存管理优化交给虚拟机去完成也是一个不错的选择。</p>
-<p><strong>新生代采用标记-复制算法，老年代采用标记-整理算法。</strong></p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/parllel-scavenge%E6%94%B6%E9%9B%86%E5%99%A8.png?ynotemdtimestamp=1618390160630" alt="Parallel Scavenge 收集器 "></p>
-<p><strong>这是 JDK1.8 默认收集器</strong></p>
-<p>使用 java -XX:+PrintCommandLineFlags -version 命令查看</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-XX:InitialHeapSize&#x3D;262921408 -XX:MaxHeapSize&#x3D;4206742528 -XX:+PrintCommandLineFlags -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseParallelGC</span><br><span class="line">java version &quot;1.8.0_211&quot;</span><br><span class="line">Java(TM) SE Runtime Environment (build 1.8.0_211-b12)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.211-b12, mixed mode)</span><br></pre></td></tr></table></figure>
-
-<p>JDK1.8 默认使用的是 Parallel Scavenge + Parallel Old，如果指定了-XX:+UseParallelGC 参数，则默认指定了-XX:+UseParallelOldGC，可以使用-XX:-UseParallelOldGC 来禁用该功能</p>
-<h2 id="Serial-Old-收集器"><a href="#Serial-Old-收集器" class="headerlink" title="Serial Old 收集器"></a>Serial Old 收集器</h2><p><strong>Serial 收集器的老年代版本</strong>，它同样是一个单线程收集器。它主要有两大用途：一种用途是在 JDK1.5 以及以前的版本中与 Parallel Scavenge 收集器搭配使用，另一种用途是作为 CMS 收集器的后备方案。</p>
-<h2 id="Parallel-Old-收集器"><a href="#Parallel-Old-收集器" class="headerlink" title="Parallel Old 收集器"></a>Parallel Old 收集器</h2><p><strong>Parallel Scavenge 收集器的老年代版本</strong>。使用多线程和“标记-整理”算法。在注重吞吐量以及 CPU 资源的场合，都可以优先考虑 Parallel Scavenge 收集器和 Parallel Old 收集器。</p>
-<h2 id="CMS-收集器"><a href="#CMS-收集器" class="headerlink" title="CMS 收集器"></a>CMS 收集器</h2><p><strong>CMS（Concurrent Mark Sweep）收集器是一种以获取最短回收停顿时间为目标的收集器。它非常符合在注重用户体验的应用上使用。</strong></p>
-<p><strong>CMS（Concurrent Mark Sweep）收集器是 HotSpot 虚拟机第一款真正意义上的并发收集器，它第一次实现了让垃圾收集线程与用户线程（基本上）同时工作。</strong></p>
-<p>从名字中的<strong>Mark Sweep</strong>这两个词可以看出，CMS 收集器是一种 <strong>“标记-清除”算法</strong>实现的，它的运作过程相比于前面几种垃圾收集器来说更加复杂一些。整个过程分为四个步骤：</p>
-<ul>
-<li><strong>初始标记：</strong> 暂停所有的其他线程，并记录下直接与 root 相连的对象，速度很快 ；</li>
-<li><strong>并发标记：</strong> 同时开启 GC 和用户线程，用一个闭包结构去记录可达对象。但在这个阶段结束，这个闭包结构并不能保证包含当前所有的可达对象。因为用户线程可能会不断的更新引用域，所以 GC 线程无法保证可达性分析的实时性。所以这个算法里会跟踪记录这些发生引用更新的地方。</li>
-<li><strong>重新标记：</strong> 重新标记阶段就是为了修正并发标记期间因为用户程序继续运行而导致标记产生变动的那一部分对象的标记记录，这个阶段的停顿时间一般会比初始标记阶段的时间稍长，远远比并发标记阶段时间短</li>
-<li><strong>并发清除：</strong> 开启用户线程，同时 GC 线程开始对未标记的区域做清扫。</li>
-</ul>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/jvm%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/CMS%E6%94%B6%E9%9B%86%E5%99%A8.png?ynotemdtimestamp=1618390160630" alt="CMS 垃圾收集器 "></p>
-<p>从它的名字就可以看出它是一款优秀的垃圾收集器，主要优点：<strong>并发收集、低停顿</strong>。但是它有下面三个明显的缺点：</p>
-<ul>
-<li><strong>对 CPU 资源敏感；</strong></li>
-<li><strong>无法处理浮动垃圾；</strong></li>
-<li><strong>它使用的回收算法-“标记-清除”算法会导致收集结束时会有大量空间碎片产生。</strong></li>
-</ul>
-<h2 id="G1-收集器"><a href="#G1-收集器" class="headerlink" title="G1 收集器"></a>G1 收集器</h2><p><strong>G1 (Garbage-First) 是一款面向服务器的垃圾收集器,主要针对配备多颗处理器及大容量内存的机器. 以极高概率满足 GC 停顿时间要求的同时,还具备高吞吐量性能特征.</strong></p>
-<p>被视为 JDK1.7 中 HotSpot 虚拟机的一个重要进化特征。它具备一下特点：</p>
-<ul>
-<li><strong>并行与并发</strong>：G1 能充分利用 CPU、多核环境下的硬件优势，使用多个 CPU（CPU 或者 CPU 核心）来缩短 Stop-The-World 停顿时间。部分其他收集器原本需要停顿 Java 线程执行的 GC 动作，G1 收集器仍然可以通过并发的方式让 java 程序继续执行。</li>
-<li><strong>分代收集</strong>：虽然 G1 可以不需要其他收集器配合就能独立管理整个 GC 堆，但是还是保留了分代的概念。</li>
-<li><strong>空间整合</strong>：与 CMS 的“标记-清理”算法不同，G1 从整体来看是基于“标记-整理”算法实现的收集器；从局部上来看是基于“标记-复制”算法实现的。</li>
-<li><strong>可预测的停顿</strong>：这是 G1 相对于 CMS 的另一个大优势，降低停顿时间是 G1 和 CMS 共同的关注点，但 G1 除了追求低停顿外，还能建立可预测的停顿时间模型，能让使用者明确指定在一个长度为 M 毫秒的时间片段内。</li>
-</ul>
-<p>G1 收集器的运作大致分为以下几个步骤：</p>
-<ul>
-<li><strong>初始标记</strong></li>
-<li><strong>并发标记</strong></li>
-<li><strong>最终标记</strong></li>
-<li><strong>筛选回收</strong></li>
-</ul>
-<p><strong>G1 收集器在后台维护了一个优先列表，每次根据允许的收集时间，优先选择回收价值最大的 Region(这也就是它的名字 Garbage-First 的由来)</strong> 。这种使用 Region 划分内存空间以及有优先级的区域回收方式，保证了 G1 收集器在有限时间内可以尽可能高的收集效率（把内存化整为零）。</p>
-<h2 id="ZGC-收集器"><a href="#ZGC-收集器" class="headerlink" title="ZGC 收集器"></a>ZGC 收集器</h2><p>与 CMS 中的 ParNew 和 G1 类似，ZGC 也采用标记-复制算法，不过 ZGC 对该算法做了重大改进。</p>
-<p>在 ZGC 中出现 Stop The World 的情况会更少！</p>
+<p><strong>CMS收集器和G1收集器的区别：</strong> CMS收集器是老年代的收集器，可以配合新生代的Serial和ParNew收集器一起使用；G1收集器收集范围是老年代和新生代，不需要结合其他收集器使用； CMS收集器以最小的停顿时间为目标的收集器；G1收集器可预测垃圾回收的停顿时间 CMS收集器是使用“标记-清除”算法进行的垃圾回收，容易产生内存碎片G1收集器使用的是“标记-整理”算法，进行了空间整合，降低了内存空间碎片。</p>
 
       
     </div>
@@ -708,7 +665,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5"><span class="nav-number">1.</span> <span class="nav-text">内存分配策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%85%88%E5%9C%A8-eden-%E5%8C%BA%E5%88%86%E9%85%8D"><span class="nav-number">1.1.</span> <span class="nav-text">对象优先在 eden 区分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E5%AF%B9%E8%B1%A1%E7%9B%B4%E6%8E%A5%E8%BF%9B%E5%85%A5%E8%80%81%E5%B9%B4%E4%BB%A3"><span class="nav-number">1.2.</span> <span class="nav-text">大对象直接进入老年代</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%95%BF%E6%9C%9F%E5%AD%98%E6%B4%BB%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%B0%86%E8%BF%9B%E5%85%A5%E8%80%81%E5%B9%B4%E4%BB%A3"><span class="nav-number">1.3.</span> <span class="nav-text">长期存活的对象将进入老年代</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%AF%B9%E8%B1%A1%E5%B9%B4%E9%BE%84%E5%88%A4%E5%AE%9A"><span class="nav-number">1.4.</span> <span class="nav-text">动态对象年龄判定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E8%BF%9B%E8%A1%8C-gc-%E7%9A%84%E5%8C%BA%E5%9F%9F"><span class="nav-number">1.5.</span> <span class="nav-text">主要进行 gc 的区域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM-%E6%B0%B8%E4%B9%85%E4%BB%A3%E4%BC%9A%E5%8F%91%E7%94%9F%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%90%97%EF%BC%9F"><span class="nav-number">1.5.1.</span> <span class="nav-text">JVM 永久代会发生垃圾回收吗？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">Java垃圾回收机制原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%9A%84%E4%BC%98%E7%82%B9"><span class="nav-number">3.</span> <span class="nav-text">垃圾回收的优点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E5%B7%B2%E7%BB%8F%E6%AD%BB%E4%BA%A1%EF%BC%9F-%E5%93%AA%E4%BA%9B%E5%86%85%E5%AD%98%E9%9C%80%E8%A6%81%E5%9B%9E%E6%94%B6%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">对象已经死亡？(哪些内存需要回收？)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E6%B3%95"><span class="nav-number">4.1.</span> <span class="nav-text">引用计数法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%BE%BE%E6%80%A7%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95"><span class="nav-number">4.2.</span> <span class="nav-text">可达性分析算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%8F%AF%E8%BE%BE%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%B9%B6%E9%9D%9E%E2%80%9C%E9%9D%9E%E6%AD%BB%E4%B8%8D%E5%8F%AF%E2%80%9D"><span class="nav-number">4.2.1.</span> <span class="nav-text">不可达的对象并非“非死不可”</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E5%B8%B8%E9%87%8F%E6%98%AF%E5%BA%9F%E5%BC%83%E5%B8%B8%E9%87%8F%EF%BC%9F"><span class="nav-number">5.</span> <span class="nav-text">如何判断一个常量是废弃常量？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E7%B1%BB%E6%98%AF%E6%97%A0%E7%94%A8%E7%9A%84%E7%B1%BB"><span class="nav-number">6.</span> <span class="nav-text">如何判断一个类是无用的类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%AE%A3%E5%91%8A%E4%B8%80%E4%B8%AA%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%9C%9F%E6%AD%A3%E6%AD%BB%E4%BA%A1"><span class="nav-number">7.</span> <span class="nav-text">如何宣告一个对象的真正死亡</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E7%AE%97%E6%B3%95"><span class="nav-number">8.</span> <span class="nav-text">垃圾收集算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0-%E6%B8%85%E9%99%A4%E7%AE%97%E6%B3%95"><span class="nav-number">8.1.</span> <span class="nav-text">标记-清除算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0-%E5%A4%8D%E5%88%B6%E7%AE%97%E6%B3%95"><span class="nav-number">8.2.</span> <span class="nav-text">标记-复制算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0-%E6%95%B4%E7%90%86%E7%AE%97%E6%B3%95"><span class="nav-number">8.3.</span> <span class="nav-text">标记-整理算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E4%BB%A3%E6%94%B6%E9%9B%86%E7%AE%97%E6%B3%95"><span class="nav-number">8.4.</span> <span class="nav-text">分代收集算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8%EF%BC%88%E4%BA%86%E8%A7%A3%EF%BC%89"><span class="nav-number">9.</span> <span class="nav-text">垃圾收集器（了解）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">10.</span> <span class="nav-text">垃圾回收器的基本原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8%E5%8F%AF%E4%BB%A5%E9%A9%AC%E4%B8%8A%E5%9B%9E%E6%94%B6%E5%86%85%E5%AD%98%E5%90%97"><span class="nav-number">11.</span> <span class="nav-text">垃圾回收器可以马上回收内存吗</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%89%E4%BB%80%E4%B9%88%E5%8A%9E%E6%B3%95%E4%B8%BB%E5%8A%A8%E9%80%9A%E7%9F%A5%E8%99%9A%E6%8B%9F%E6%9C%BA%E8%BF%9B%E8%A1%8C%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6"><span class="nav-number">12.</span> <span class="nav-text">有什么办法主动通知虚拟机进行垃圾回收</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Serial-%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">12.1.</span> <span class="nav-text">Serial 收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ParNew-%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">12.2.</span> <span class="nav-text">ParNew 收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Parallel-Scavenge-%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">12.3.</span> <span class="nav-text">Parallel Scavenge 收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Serial-Old-%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">12.4.</span> <span class="nav-text">Serial Old 收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Parallel-Old-%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">12.5.</span> <span class="nav-text">Parallel Old 收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CMS-%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">12.6.</span> <span class="nav-text">CMS 收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#G1-%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">12.7.</span> <span class="nav-text">G1 收集器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ZGC-%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">12.8.</span> <span class="nav-text">ZGC 收集器</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%EF%BC%8C%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%EF%BC%8C%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">什么是内存溢出，内存泄漏，区别是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5"><span class="nav-number">2.</span> <span class="nav-text">内存分配策略</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Eden%E5%92%8CSurvivor%E6%AF%94%E4%BE%8B%E6%98%AF%E5%A4%9A%E5%B0%91%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">Eden和Survivor比例是多少？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%85%88%E5%9C%A8-eden-%E5%8C%BA%E5%88%86%E9%85%8D"><span class="nav-number">3.1.</span> <span class="nav-text">对象优先在 eden 区分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E5%AF%B9%E8%B1%A1%E7%9B%B4%E6%8E%A5%E8%BF%9B%E5%85%A5%E8%80%81%E5%B9%B4%E4%BB%A3"><span class="nav-number">3.2.</span> <span class="nav-text">大对象直接进入老年代</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%95%BF%E6%9C%9F%E5%AD%98%E6%B4%BB%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%B0%86%E8%BF%9B%E5%85%A5%E8%80%81%E5%B9%B4%E4%BB%A3"><span class="nav-number">3.3.</span> <span class="nav-text">长期存活的对象将进入老年代</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%AF%B9%E8%B1%A1%E5%B9%B4%E9%BE%84%E5%88%A4%E5%AE%9A"><span class="nav-number">3.4.</span> <span class="nav-text">动态对象年龄判定</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E8%BF%9B%E8%A1%8C-gc-%E7%9A%84%E5%8C%BA%E5%9F%9F"><span class="nav-number">3.5.</span> <span class="nav-text">主要进行 gc 的区域</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM-%E6%B0%B8%E4%B9%85%E4%BB%A3%E4%BC%9A%E5%8F%91%E7%94%9F%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%90%97%EF%BC%9F"><span class="nav-number">3.5.1.</span> <span class="nav-text">JVM 永久代会发生垃圾回收吗？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">Java垃圾回收机制原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E7%9A%84%E4%BC%98%E7%82%B9"><span class="nav-number">5.</span> <span class="nav-text">垃圾回收的优点</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E5%B7%B2%E7%BB%8F%E6%AD%BB%E4%BA%A1%EF%BC%9F-%E5%93%AA%E4%BA%9B%E5%86%85%E5%AD%98%E9%9C%80%E8%A6%81%E5%9B%9E%E6%94%B6%EF%BC%9F"><span class="nav-number">6.</span> <span class="nav-text">对象已经死亡？(哪些内存需要回收？)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E6%B3%95"><span class="nav-number">6.1.</span> <span class="nav-text">引用计数法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%BE%BE%E6%80%A7%E5%88%86%E6%9E%90%E7%AE%97%E6%B3%95"><span class="nav-number">6.2.</span> <span class="nav-text">可达性分析算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%8F%AF%E8%BE%BE%E7%9A%84%E5%AF%B9%E8%B1%A1%E5%B9%B6%E9%9D%9E%E2%80%9C%E9%9D%9E%E6%AD%BB%E4%B8%8D%E5%8F%AF%E2%80%9D"><span class="nav-number">6.2.1.</span> <span class="nav-text">不可达的对象并非“非死不可”</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E5%B8%B8%E9%87%8F%E6%98%AF%E5%BA%9F%E5%BC%83%E5%B8%B8%E9%87%8F%EF%BC%9F"><span class="nav-number">7.</span> <span class="nav-text">如何判断一个常量是废弃常量？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E7%B1%BB%E6%98%AF%E6%97%A0%E7%94%A8%E7%9A%84%E7%B1%BB"><span class="nav-number">8.</span> <span class="nav-text">如何判断一个类是无用的类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%AE%A3%E5%91%8A%E4%B8%80%E4%B8%AA%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%9C%9F%E6%AD%A3%E6%AD%BB%E4%BA%A1"><span class="nav-number">9.</span> <span class="nav-text">如何宣告一个对象的真正死亡</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8-Java-%E4%B8%AD%EF%BC%8C%E5%AF%B9%E8%B1%A1%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E5%8F%AF%E4%BB%A5%E8%A2%AB%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6"><span class="nav-number">9.1.</span> <span class="nav-text">在 Java 中，对象什么时候可以被垃圾回收</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E7%AE%97%E6%B3%95"><span class="nav-number">10.</span> <span class="nav-text">垃圾收集算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0-%E6%B8%85%E9%99%A4%E7%AE%97%E6%B3%95"><span class="nav-number">10.1.</span> <span class="nav-text">标记-清除算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0-%E5%A4%8D%E5%88%B6%E7%AE%97%E6%B3%95"><span class="nav-number">10.2.</span> <span class="nav-text">标记-复制算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%87%E8%AE%B0-%E6%95%B4%E7%90%86%E7%AE%97%E6%B3%95"><span class="nav-number">10.3.</span> <span class="nav-text">标记-整理算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E4%BB%A3%E6%94%B6%E9%9B%86%E7%AE%97%E6%B3%95"><span class="nav-number">10.4.</span> <span class="nav-text">分代收集算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E6%94%B6%E9%9B%86%E5%99%A8"><span class="nav-number">11.</span> <span class="nav-text">垃圾收集器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">12.</span> <span class="nav-text">垃圾回收器的基本原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E5%99%A8%E5%8F%AF%E4%BB%A5%E9%A9%AC%E4%B8%8A%E5%9B%9E%E6%94%B6%E5%86%85%E5%AD%98%E5%90%97"><span class="nav-number">13.</span> <span class="nav-text">垃圾回收器可以马上回收内存吗</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%89%E4%BB%80%E4%B9%88%E5%8A%9E%E6%B3%95%E4%B8%BB%E5%8A%A8%E9%80%9A%E7%9F%A5%E8%99%9A%E6%8B%9F%E6%9C%BA%E8%BF%9B%E8%A1%8C%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6"><span class="nav-number">14.</span> <span class="nav-text">有什么办法主动通知虚拟机进行垃圾回收</span></a></li></ol></div>
             
 
           </div>
