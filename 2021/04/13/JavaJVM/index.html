@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java,面试,JVM," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="JVM参数主要有几种分类 标准参数 标准参数中包括功能以及输出的结果都是很稳定的，基本上不会随着JVM版本的变化而变化  非标准参数 非标准参数以-X开头，是标准参数的扩展  不稳定参数 不稳定参数以-XX 开头，此类参数的设置很容易引起JVM 性能上的差异，使JVM存在极大的不稳定性   Java中会存在内存泄漏吗，简述一下。理论上Java因为有垃圾回收机制（GC）不会存在内存泄露问题；然而在实">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaJVM">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/13/JavaJVM/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="JVM参数主要有几种分类 标准参数 标准参数中包括功能以及输出的结果都是很稳定的，基本上不会随着JVM版本的变化而变化  非标准参数 非标准参数以-X开头，是标准参数的扩展  不稳定参数 不稳定参数以-XX 开头，此类参数的设置很容易引起JVM 性能上的差异，使JVM存在极大的不稳定性   Java中会存在内存泄漏吗，简述一下。理论上Java因为有垃圾回收机制（GC）不会存在内存泄露问题；然而在实">
+<meta property="og:locale">
+<meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/JVM%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA%E5%9F%9F.png?ynotemdtimestamp=1618323664761">
+<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/JDK8%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.png?ynotemdtimestamp=1618323664761">
+<meta property="og:image" content="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/c02ecba3c33f43429a765987b928e423-new-image93b46f3d-33f9-46f9-a825-ec7129b004f6.png?ynotemdtimestamp=1618390160630">
+<meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/Java%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%BF%87%E7%A8%8B.png?ynotemdtimestamp=1618390160630">
+<meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F.png?ynotemdtimestamp=1618390160630">
+<meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D-%E4%BD%BF%E7%94%A8%E5%8F%A5%E6%9F%84.png?ynotemdtimestamp=1618390160630">
+<meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D-%E7%9B%B4%E6%8E%A5%E6%8C%87%E9%92%88.png?ynotemdtimestamp=1618390160630">
+<meta property="og:image" content="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/classloader_WPS%E5%9B%BE%E7%89%87.png?ynotemdtimestamp=1618390160630">
+<meta property="article:published_time" content="2021-04-13T14:49:23.000Z">
+<meta property="article:modified_time" content="2021-04-14T13:30:48.047Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/JVM%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA%E5%9F%9F.png?ynotemdtimestamp=1618323664761">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/13/JavaJVM/"/>
+
+
+
+
+
+  <title>JavaJVM | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/JavaJVM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JavaJVM</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T22:49:23+08:00">
+                2021-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-JVM/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - JVM</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="JVM参数主要有几种分类"><a href="#JVM参数主要有几种分类" class="headerlink" title="JVM参数主要有几种分类"></a>JVM参数主要有几种分类</h1><ul>
+<li><p>标准参数</p>
+<p>标准参数中包括功能以及输出的结果都是很稳定的，基本上不会随着JVM版本的<br>变化而变化</p>
+</li>
+<li><p>非标准参数</p>
+<p>非标准参数以-X开头，是标准参数的扩展</p>
+</li>
+<li><p>不稳定参数</p>
+<p>不稳定参数以-XX 开头，此类参数的设置很容易引起JVM 性能上的差异，使JVM存在极大的不稳定性</p>
+</li>
+</ul>
+<h1 id="Java中会存在内存泄漏吗，简述一下。"><a href="#Java中会存在内存泄漏吗，简述一下。" class="headerlink" title="Java中会存在内存泄漏吗，简述一下。"></a>Java中会存在内存泄漏吗，简述一下。</h1><p>理论上Java因为有垃圾回收机制（GC）不会存在内存泄露问题；然而在实际开发中，可能会存在无用但可达的对象，这些对象不能被GC回收，因此也会导致内存泄露的发生。例如hibernate的Session（一级缓存）中的对象属于持久态，垃圾回收器是不会回收这些对象的，然而这些对象中可能存在无用的垃圾对象，如果不及时关闭（close）或清空（flush）一级缓存就可能导致内存泄露。</p>
+<h1 id="Java-中都有哪些引用类型"><a href="#Java-中都有哪些引用类型" class="headerlink" title="Java 中都有哪些引用类型"></a>Java 中都有哪些引用类型</h1><p>强引用：发生 gc 的时候不会被回收<br>软引用：有用但不是必须的对象，在发生内存溢出之前会被回收<br>弱引用：有用但不是必须的对象，在下一次GC时会被回收<br>虚引用：无法通过虚引用获得对象，用 PhantomReference 实现虚引用，虚引<br>用的用途是在 gc 时返回一个通知。</p>
+<h1 id="Java-内存结构（或者说-Java-内存分布）和-Java-内存模型（Java-Memory-Model）"><a href="#Java-内存结构（或者说-Java-内存分布）和-Java-内存模型（Java-Memory-Model）" class="headerlink" title="Java 内存结构（或者说 Java 内存分布）和 Java 内存模型（Java Memory Model）"></a>Java 内存结构（或者说 Java 内存分布）和 Java 内存模型（Java Memory Model）</h1><ul>
+<li>java 内存结构（或者说 java 内存分布）就是下文提到的五大区块的划分。</li>
+<li>java 内存模型是为了屏蔽各种硬件和操作系统差异，保证 Java 程序在各种平台下对内存的访问都能保证效果一致而提出的一套规范。其主要解决问题的手段是 限制处理器优化和使用内存屏障。</li>
+</ul>
+<h1 id="解释一下内存中的栈（stack）、堆（heap）和静态存储区的用法"><a href="#解释一下内存中的栈（stack）、堆（heap）和静态存储区的用法" class="headerlink" title="解释一下内存中的栈（stack）、堆（heap）和静态存储区的用法"></a>解释一下内存中的栈（stack）、堆（heap）和静态存储区的用法</h1><ul>
+<li><p>通常我们定义一个基本数据类型的变量，一个对象的引用，还有就是函数调用的现场保存都使用内存中的栈空间；</p>
+</li>
+<li><p>通过 new 关键字和构造器创建的对象放在堆空间</p>
+</li>
+<li><p>程序中直接书写的100、“hello”和常量都是放在静态存储区中。</p>
+</li>
+<li><p>栈空间操作最快但是也很小，通常大量的对象都是放在堆空间，整个内存包括硬盘上的虚拟内存都可以被当成堆空间来使用</p>
+<blockquote>
+<p>String str = new String(“hello”); 上面的语句中 str 放在栈上，用 new 创建出来的字符串对象放在堆上，而“hello”这个字面量放在静态存储区</p>
+</blockquote>
+</li>
+</ul>
+<h1 id="Java-内存区域"><a href="#Java-内存区域" class="headerlink" title="Java 内存区域"></a>Java 内存区域</h1><p><strong>JDK 1.8 之前：</strong></p>
+<img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/JVM%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA%E5%9F%9F.png?ynotemdtimestamp=1618323664761" alt="img" style="zoom: 67%;" />
+
+<p><strong>JDK 1.8：</strong></p>
+<img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/JDK8%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.png?ynotemdtimestamp=1618323664761" alt="image" style="zoom: 67%;" />
+
+<p><strong>线程私有的：</strong></p>
+<ul>
+<li>程序计数器</li>
+<li>虚拟机栈</li>
+<li>本地方法栈</li>
+</ul>
+<p><strong>线程共享的：</strong></p>
+<ul>
+<li>堆</li>
+<li>方法区</li>
+<li>直接内存 (非运行时数据区的一部分)</li>
+</ul>
+<h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>程序计数器其实就是一个<strong>指针</strong>，它指向了我们程序中<strong>下一句需要执行的指令</strong>,它也是内存区域中唯一一个不会出现OutOfMemoryError的区域，而且占用内存空间小到基本可以忽略不计。<strong>为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器</strong></p>
+<h2 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h2><p>虚拟机栈管运行，负责运行代码<strong>（也就是字节码’.class文件’）</strong></p>
+<p> <strong>Java 虚拟机栈会出现两种错误：<code>StackOverFlowError</code> 和 <code>OutOfMemoryError</code>。</strong></p>
+<ul>
+<li><p><strong><code>StackOverFlowError</code>：</strong> 若 Java 虚拟机栈的内存大小不允许动态扩展，那么当线程请求栈的深度超过当前 Java 虚拟机栈的最大深度的时候，就抛出 StackOverFlowError 错误。</p>
+<blockquote>
+<p>StackOverflow异常有没有遇到过？一般你猜测会在什么情况下被触发？</p>
+<p>答：栈内存溢出，一般由栈内存的局部变量过爆了，导致内存溢出。出现在递归方法，参数个数过多，<br>递归过深，递归没有出口。</p>
+</blockquote>
+</li>
+<li><p><strong><code>OutOfMemoryError</code>：</strong> 若 Java 虚拟机堆中没有空闲内存，并且垃圾回收器也无法提供更多内存的话。就会抛出 OutOfMemoryError 错误。</p>
+</li>
+</ul>
+<p><strong>虚拟机栈的生命周期</strong> 对于栈来说，不存在垃圾回收。只要程序运行结束，栈的空间自然就会释放了。栈的生命周期和所处的线程是一致的。</p>
+<p><strong>虚拟机栈的执行</strong> 我们经常说的栈帧数据，说白了在JVM中叫栈帧，放到Java中其实就是方法，它也是存放在栈中的。</p>
+<p><strong>局部变量的复用</strong> 局部变量表用于存放方法参数和方法内部所定义的局部变量。</p>
+<h3 id="栈帧"><a href="#栈帧" class="headerlink" title="栈帧"></a>栈帧</h3><p>栈帧(Stack Frame)是用于⽀持虚拟机进⾏⽅法调用和⽅法执⾏的数据结构。栈帧存<br>储了⽅法的局部变量表、操作数栈、动态连接和⽅法返回地址等信息。每⼀个⽅法从调用⾄执⾏完成的<br>过程，都对应着⼀个栈帧在虚拟机栈⾥从⼊栈到出栈的过程。</p>
+<h2 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h2><p><strong>为虚拟机使用到的 Native 方法服务</strong></p>
+<p>本地方法栈也会创建一个栈帧，用于存放该本地方法的局部变量表、操作数栈、动态链接、出口信息。</p>
+<p>方法执行完毕后相应的栈帧也会出栈并释放内存空间，也会出现 <code>StackOverFlowError</code> 和 <code>OutOfMemoryError</code> 两种错误。</p>
+<h2 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h2><ul>
+<li><p>Java 堆是所有线程共享的一块内存区域，在虚拟机启动时创建。</p>
+</li>
+<li><p><strong>此内存区域的唯一目的就是存放对象实例，几乎所有的对象实例以及数组都在这里分配内存。</strong>，属于 <strong>线程共享区域</strong> 。也就是说<strong>线程不安全</strong></p>
+<blockquote>
+<p>从jdk <strong>1.7开始已经默认开启逃逸分析</strong>，如果某些方法中的对象引用没有被返回或者未被外面使用<strong>（也就是未逃逸出去）</strong>，那么对象可以直接在<strong>栈上分配内存</strong>。</p>
+</blockquote>
+</li>
+<li><p>Java 堆是垃圾收集器管理的主要区域，因此也被称作<strong>GC 堆</strong></p>
+</li>
+<li><p>Java 堆可以细分为：新生代和老年代：再细致一点有：Eden 空间、From Survivor、To Survivor 空间等。<strong>进一步划分的目的是更好地回收内存，或者更快地分配内存。</strong></p>
+<p>  <img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/c02ecba3c33f43429a765987b928e423-new-image93b46f3d-33f9-46f9-a825-ec7129b004f6.png?ynotemdtimestamp=1618390160630" alt="img"></p>
+</li>
+<li><p>堆内存空间在物理上可以不连续，逻辑上连续即可。</p>
+</li>
+<li><p>堆的大小可通过参数 –Xms（堆的初始容量）、-Xmx（堆的最大容量） 来指定。</p>
+</li>
+</ul>
+<h2 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h2><p>用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据</p>
+<p>方法区也被称为永久代，<strong>方法区和永久代的关系很像 Java 中接口和类的关系，永久代就是方法区的一种实现方式</strong></p>
+<p>jkd1.8将永久代替换为元空间</p>
+<h2 id="为什么要将永久代-PermGen-替换为元空间-MetaSpace-呢"><a href="#为什么要将永久代-PermGen-替换为元空间-MetaSpace-呢" class="headerlink" title="为什么要将永久代 (PermGen) 替换为元空间 (MetaSpace) 呢?"></a>为什么要将永久代 (PermGen) 替换为元空间 (MetaSpace) 呢?</h2><ol>
+<li>整个永久代有一个 JVM 本身设置固定大小上限，无法进行调整，而元空间使用的是直接内存，受本机可用内存的限制，虽然元空间仍旧可能溢出，但是比原来出现的几率会更小。</li>
+<li>元空间里面存放的是类的元数据，这样加载多少类的元数据就不由 <code>MaxPermSize</code> 控制了, 而由系统的实际可用空间来控制，这样能加载的类就更多了。  </li>
+<li>在 JDK8，合并 HotSpot 和 JRockit 的代码时, JRockit 从来没有一个叫永久代的东西, 合并之后就没有必要额外的设置这么一个永久代的地方了。</li>
+</ol>
+<h1 id="Java堆的结构是什么样子的，什么是堆中的永久代"><a href="#Java堆的结构是什么样子的，什么是堆中的永久代" class="headerlink" title="Java堆的结构是什么样子的，什么是堆中的永久代"></a>Java堆的结构是什么样子的，什么是堆中的永久代</h1><p>堆内存是由存活的和死亡的对象组成，存活的对象是应用可以访问的，不会被垃圾回收。死亡的对象是应用不可访问并且还没有被垃圾收集器回收的对象，</p>
+<p>方法区(用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据)也被称为永久代，<strong>方法区和永久代的关系很像 Java 中接口和类的关系，永久代就是方法区的一种实现方式</strong></p>
+<p>jkd1.8将永久代替换为元空间</p>
+<h1 id="GC-是什么？为什么要有-GC？"><a href="#GC-是什么？为什么要有-GC？" class="headerlink" title="GC 是什么？为什么要有 GC？"></a>GC 是什么？为什么要有 GC？</h1><p>GC（garbage collection）是垃圾收集。</p>
+<p>Java 提供的 GC 功能可以自动监测对象是否超过作用域从而达到自动回收内存的目的（Java 语言没有提供释放已分配内存的显示操作方法）。垃圾回收可以有效的防止内存泄露，有效的使用可以使用的内存。</p>
+<h1 id="Java虚拟机堆和栈的区别"><a href="#Java虚拟机堆和栈的区别" class="headerlink" title="Java虚拟机堆和栈的区别"></a>Java虚拟机堆和栈的区别</h1><p>1.栈内存存储的是局部变量而堆内存存储的是实体；</p>
+<p>2.栈内存的更新速度要快于堆内存，因为局部变量的生命周期很短；</p>
+<p>3.栈内存存放的变量生命周期一旦结束就会被释放，而堆内存存放的实体会被垃圾回收机制不定时的回收。</p>
+<h1 id="Java类加载过程"><a href="#Java类加载过程" class="headerlink" title="Java类加载过程"></a>Java类加载过程</h1><ul>
+<li><strong>加载</strong></li>
+</ul>
+<ol>
+<li>将class文件加载到内存</li>
+<li>将静态数据结构转化成方法区中运行时的数据结构</li>
+<li>在堆中生成一个代表这个类的 java.lang.Class对象作为数据访问的入口</li>
+</ol>
+<ul>
+<li><strong>验证</strong></li>
+</ul>
+<p>确保加载的类符合 JVM 规范和安全，保证被校验类的方法在运行时不会做出危害虚拟机的事件，其实就是一个安全检查，包含了四个验证动作：文件格式验证，原数据验证，字节码验证，符号引用验证</p>
+<ul>
+<li><strong>准备</strong></li>
+</ul>
+<p>为static变量在方法区中分配内存空间，设置变量的初始值</p>
+<ul>
+<li><strong>解析</strong></li>
+</ul>
+<p>虚拟机将常量池内的符号引用替换为直接引用的过程</p>
+<ul>
+<li><strong>初始化</strong></li>
+</ul>
+<p>类变量进行初始化，真正开始执行类中的定义的java代码程序</p>
+<ul>
+<li><strong>使用</strong></li>
+<li><strong>卸载</strong></li>
+</ul>
+<h1 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h1><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/Java%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%BF%87%E7%A8%8B.png?ynotemdtimestamp=1618390160630" alt="Java创建对象的过程"></p>
+<ul>
+<li><p><strong>Step1:类加载检查</strong></p>
+<p>虚拟机遇到一条 new 指令时，首先将去检查这个指令的参数是否能在常量池中定位到这个类的符号引用，并且检查这个符号引用代表的类是否已被加载过、解析和初始化过。如果没有，那必须先执行相应的类加载过程。</p>
+</li>
+<li><p><strong>Step2:分配内存</strong></p>
+<p>在<strong>类加载检查</strong>通过后，接下来虚拟机将为新生对象<strong>分配内存</strong>。对象所需的内存大小在类加载完成后便可确定，为对象分配空间的任务等同于把一块确定大小的内存从 Java 堆中划分出来。<strong>分配方式</strong>有 <strong>“指针碰撞”</strong> 和 <strong>“空闲列表”</strong> 两种，<strong>选择哪种分配方式由 Java 堆是否规整决定，而 Java 堆是否规整又取决于 GC 收集器的算法是”标记-清除”，还是”标记-整理”（也称作”标记-压缩”）</strong>。</p>
+<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F.png?ynotemdtimestamp=1618390160630" alt="内存分配的两种方式"><br><strong>内存分配并发问题</strong></p>
+<p>在创建对象的时候有一个很重要的问题，就是线程安全，因为在实际开发过程中，创建对象是很频繁的事情，作为虚拟机来说，必须要保证线程是安全的，通常来讲，虚拟机采用两种方式来保证线程安全：</p>
+<ul>
+<li><strong>CAS+失败重试：</strong> CAS 是乐观锁的一种实现方式。所谓乐观锁就是，每次不加锁而是假设没有冲突而去完成某项操作，如果因为冲突失败就重试，直到成功为止。<strong>虚拟机采用 CAS 配上失败重试的方式保证更新操作的原子性。</strong></li>
+<li><strong>TLAB：</strong> 为每一个线程预先在 Eden 区分配一块儿内存，JVM 在给线程中的对象分配内存时，首先在 TLAB 分配，当对象大于 TLAB 中的剩余内存或 TLAB 的内存已用尽时，再采用上述的 CAS 进行内存分配</li>
+</ul>
+</li>
+<li><p><strong>Step3:初始化零值</strong></p>
+<p>内存分配完成后，虚拟机需要将分配到的内存空间都初始化为零值（不包括对象头），这一步操作保证了对象的实例字段在 Java 代码中可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。</p>
+</li>
+<li><p><strong>Step4:设置对象头</strong></p>
+<p>初始化零值完成之后，<strong>虚拟机要对对象进行必要的设置</strong>，例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的 GC 分代年龄等信息。 <strong>这些信息存放在对象头中。</strong> 另外，根据虚拟机当前运行状态的不同，如是否启用偏向锁等，对象头会有不同的设置方式。</p>
+</li>
+<li><p><strong>Step5:执行 init 方法</strong></p>
+<p>在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚开始，<code>&lt;init&gt;</code> 方法还没有执行，所有的字段都还为零。所以一般来说，执行 new 指令之后会接着执行 <code>&lt;init&gt;</code> 方法，把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。</p>
+</li>
+</ul>
+<h1 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h1><p>对象在内存中的布局可以分为 3 块区域：<strong>对象头</strong>、<strong>实例数据</strong>和<strong>对齐填充</strong>。</p>
+<h1 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h1><p>建立对象就是为了使用对象，我们的 Java 程序通过栈上的 reference 数据来操作堆上的具体对象</p>
+<p>访问方式有<strong>①使用句柄</strong>和<strong>②直接指针</strong>两种：</p>
+<ol>
+<li><p><strong>句柄：</strong> 如果使用句柄的话，那么 Java 堆中将会划分出一块内存来作为句柄池，reference 中存储的就是对象的句柄地址，而句柄中包含了对象实例数据与类型数据各自的具体地址信息；</p>
+<img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D-%E4%BD%BF%E7%94%A8%E5%8F%A5%E6%9F%84.png?ynotemdtimestamp=1618390160630" alt="对象的访问定位-使用句柄" style="zoom: 33%;" /></li>
+<li><p><strong>直接指针：</strong> 如果使用直接指针访问，那么 Java 堆对象的布局中就必须考虑如何放置访问类型数据的相关信息，而 reference 中存储的直接就是对象的地址。</p>
+</li>
+</ol>
+<img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D-%E7%9B%B4%E6%8E%A5%E6%8C%87%E9%92%88.png?ynotemdtimestamp=1618390160630" alt="对象的访问定位-直接指针" style="zoom:33%;" />
+
+<p><strong>这两种对象访问方式各有优势。使用句柄来访问的最大好处是 reference 中存储的是稳定的句柄地址，在对象被移动时只会改变句柄中的实例数据指针，而 reference 本身不需要修改。使用直接指针访问方式最大的好处就是速度快，它节省了一次指针定位的时间开销。</strong></p>
+<h1 id="64-位-JVM-中，int-的长度是多数？"><a href="#64-位-JVM-中，int-的长度是多数？" class="headerlink" title="64 位 JVM 中，int 的长度是多数？"></a>64 位 JVM 中，int 的长度是多数？</h1><p>Java 中，int 类型变量的长度是一个固定值，与平台无关，都是 32 位。意思就是说，在 32 位 和 64 位<br>的 Java 虚拟机中，int 类型的长度是相同的。</p>
+<h1 id="尝试回答下列问题"><a href="#尝试回答下列问题" class="headerlink" title="尝试回答下列问题"></a>尝试回答下列问题</h1><ol>
+<li>介绍下 Java 内存区域（运行时数据区）</li>
+<li>Java 对象的创建过程（五步，建议能默写出来并且要知道每一步虚拟机做了什么）</li>
+<li>对象的访问定位的两种方式（句柄和直接指针两种方式）</li>
+<li>Java 中会存在内存泄漏吗</li>
+</ol>
+<h1 id="类加载器总结"><a href="#类加载器总结" class="headerlink" title="类加载器总结"></a>类加载器总结</h1><p>VM 中内置了三个重要的 ClassLoader，除了 BootstrapClassLoader 其他类加载器均由 Java 实现且全部继承自java.lang.ClassLoader：</p>
+<ol>
+<li><strong>BootstrapClassLoader(启动类加载器)</strong> ：最顶层的加载类，由C++实现，负责加载 <code>%JAVA_HOME%/lib</code>目录下的jar包和类或者或被 <code>-Xbootclasspath</code>参数指定的路径中的所有类。</li>
+<li><strong>ExtensionClassLoader(扩展类加载器)</strong> ：主要负责加载目录 <code>%JRE_HOME%/lib/ext</code> 目录下的jar包和类，或被 <code>java.ext.dirs</code> 系统变量所指定的路径下的jar包。</li>
+<li><strong>AppClassLoader(应用程序类加载器)</strong> :面向我们用户的加载器，负责加载当前应用classpath下的所有jar包和类。</li>
+</ol>
+<h3 id="类加载器的加载顺序"><a href="#类加载器的加载顺序" class="headerlink" title="类加载器的加载顺序"></a>类加载器的加载顺序</h3><p>加载一个Class类的顺序也是有优先级的，类加载器从最底层开始往上的顺序是这样的</p>
+<ol>
+<li>BootStrap ClassLoader：rt.jar</li>
+<li>Extension ClassLoader: 加载扩展的jar包</li>
+<li>App ClassLoader：指定的classpath下面的jar包</li>
+<li>Custom ClassLoader：自定义的类加载器</li>
+</ol>
+<h1 id="双亲委派模型"><a href="#双亲委派模型" class="headerlink" title="双亲委派模型"></a>双亲委派模型</h1><h2 id="双亲委派模型介绍"><a href="#双亲委派模型介绍" class="headerlink" title="双亲委派模型介绍"></a>双亲委派模型介绍</h2><p>当一个类收到了加载请求时，它是不会先自己去尝试加载的，而是委派给父类去完成，比如我现在要new一个Person，这个Person是我们自定义的类，如果我们要加载它，就会先委派App ClassLoader，只有当父类加载器都反馈自己无法完成这个请求（也就是父类加载器都没有找到加载所需的Class）时，子类加载器才会自行尝试加载</p>
+<p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/classloader_WPS%E5%9B%BE%E7%89%87.png?ynotemdtimestamp=1618390160630" alt="ClassLoader"></p>
+<h2 id="双亲委派模型的好处"><a href="#双亲委派模型的好处" class="headerlink" title="双亲委派模型的好处"></a>双亲委派模型的好处</h2><p>双亲委派模型保证了Java程序的稳定运行，可以避免类的重复加载（JVM 区分不同类的方式不仅仅根据类名，相同的类文件被不同的类加载器加载产生的是两个不同的类），也保证了 Java 的核心 API 不被篡改。如果没有使用双亲委派模型，而是每个类加载器加载自己的话就会出现一些问题，比如我们编写一个称为 java.lang.Object 类的话，那么程序运行的时候，系统就会出现多个不同的 Object 类。</p>
+<h2 id="如果我们不想用双亲委派模型怎么办？"><a href="#如果我们不想用双亲委派模型怎么办？" class="headerlink" title="如果我们不想用双亲委派模型怎么办？"></a>如果我们不想用双亲委派模型怎么办？</h2><p>这样做的好处是，加载位于rt.jar包中的类时不管是哪个加载器加载，最终都会委托到BootStrap ClassLoader进行加载，这样保证了使用不同的类加载器得到的都是同一个结果。</p>
+<p>其实这个也是一个隔离的作用，避免了我们的代码影响了JDK的代码，比如我现在要来一个</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class String()&#123;</span><br><span class="line">    public static void main()&#123;sout;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种时候，我们的代码肯定会报错，因为在加载的时候其实是找到了rt.jar中的String.class，然后发现这也没有main方法</p>
+<h3 id="自定义类加载器"><a href="#自定义类加载器" class="headerlink" title="自定义类加载器"></a>自定义类加载器</h3><p>除了 BootstrapClassLoader 其他类加载器均由 Java 实现且全部继承自java.lang.ClassLoader。如果我们要自定义自己的类加载器，很明显需要继承 ClassLoader。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/JVM/" rel="tag"># JVM</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/13/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B/" rel="next" title="Java多线程">
+                <i class="fa fa-chevron-left"></i> Java多线程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/14/Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB/" rel="prev" title="Java虚拟机堆和栈的区别">
+                Java虚拟机堆和栈的区别 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JVM%E5%8F%82%E6%95%B0%E4%B8%BB%E8%A6%81%E6%9C%89%E5%87%A0%E7%A7%8D%E5%88%86%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">JVM参数主要有几种分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java%E4%B8%AD%E4%BC%9A%E5%AD%98%E5%9C%A8%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E5%90%97%EF%BC%8C%E7%AE%80%E8%BF%B0%E4%B8%80%E4%B8%8B%E3%80%82"><span class="nav-number">2.</span> <span class="nav-text">Java中会存在内存泄漏吗，简述一下。</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-%E4%B8%AD%E9%83%BD%E6%9C%89%E5%93%AA%E4%BA%9B%E5%BC%95%E7%94%A8%E7%B1%BB%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">Java 中都有哪些引用类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%EF%BC%88%E6%88%96%E8%80%85%E8%AF%B4-Java-%E5%86%85%E5%AD%98%E5%88%86%E5%B8%83%EF%BC%89%E5%92%8C-Java-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%EF%BC%88Java-Memory-Model%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">Java 内存结构（或者说 Java 内存分布）和 Java 内存模型（Java Memory Model）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E9%87%8A%E4%B8%80%E4%B8%8B%E5%86%85%E5%AD%98%E4%B8%AD%E7%9A%84%E6%A0%88%EF%BC%88stack%EF%BC%89%E3%80%81%E5%A0%86%EF%BC%88heap%EF%BC%89%E5%92%8C%E9%9D%99%E6%80%81%E5%AD%98%E5%82%A8%E5%8C%BA%E7%9A%84%E7%94%A8%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">解释一下内存中的栈（stack）、堆（heap）和静态存储区的用法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F"><span class="nav-number">6.</span> <span class="nav-text">Java 内存区域</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8"><span class="nav-number">6.1.</span> <span class="nav-text">程序计数器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88"><span class="nav-number">6.2.</span> <span class="nav-text">虚拟机栈</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%88%E5%B8%A7"><span class="nav-number">6.2.1.</span> <span class="nav-text">栈帧</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88"><span class="nav-number">6.3.</span> <span class="nav-text">本地方法栈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86"><span class="nav-number">6.4.</span> <span class="nav-text">堆</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E5%8C%BA"><span class="nav-number">6.5.</span> <span class="nav-text">方法区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E5%B0%86%E6%B0%B8%E4%B9%85%E4%BB%A3-PermGen-%E6%9B%BF%E6%8D%A2%E4%B8%BA%E5%85%83%E7%A9%BA%E9%97%B4-MetaSpace-%E5%91%A2"><span class="nav-number">6.6.</span> <span class="nav-text">为什么要将永久代 (PermGen) 替换为元空间 (MetaSpace) 呢?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java%E5%A0%86%E7%9A%84%E7%BB%93%E6%9E%84%E6%98%AF%E4%BB%80%E4%B9%88%E6%A0%B7%E5%AD%90%E7%9A%84%EF%BC%8C%E4%BB%80%E4%B9%88%E6%98%AF%E5%A0%86%E4%B8%AD%E7%9A%84%E6%B0%B8%E4%B9%85%E4%BB%A3"><span class="nav-number">7.</span> <span class="nav-text">Java堆的结构是什么样子的，什么是堆中的永久代</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GC-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%9C%89-GC%EF%BC%9F"><span class="nav-number">8.</span> <span class="nav-text">GC 是什么？为什么要有 GC？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">9.</span> <span class="nav-text">Java虚拟机堆和栈的区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B"><span class="nav-number">10.</span> <span class="nav-text">Java类加载过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="nav-number">11.</span> <span class="nav-text">对象的创建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80"><span class="nav-number">12.</span> <span class="nav-text">对象的内存布局</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D"><span class="nav-number">13.</span> <span class="nav-text">对象的访问定位</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#64-%E4%BD%8D-JVM-%E4%B8%AD%EF%BC%8Cint-%E7%9A%84%E9%95%BF%E5%BA%A6%E6%98%AF%E5%A4%9A%E6%95%B0%EF%BC%9F"><span class="nav-number">14.</span> <span class="nav-text">64 位 JVM 中，int 的长度是多数？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%9D%E8%AF%95%E5%9B%9E%E7%AD%94%E4%B8%8B%E5%88%97%E9%97%AE%E9%A2%98"><span class="nav-number">15.</span> <span class="nav-text">尝试回答下列问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E6%80%BB%E7%BB%93"><span class="nav-number">16.</span> <span class="nav-text">类加载器总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8%E7%9A%84%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F"><span class="nav-number">16.0.1.</span> <span class="nav-text">类加载器的加载顺序</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B"><span class="nav-number">17.</span> <span class="nav-text">双亲委派模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B%E4%BB%8B%E7%BB%8D"><span class="nav-number">17.1.</span> <span class="nav-text">双亲委派模型介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-number">17.2.</span> <span class="nav-text">双亲委派模型的好处</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E6%9E%9C%E6%88%91%E4%BB%AC%E4%B8%8D%E6%83%B3%E7%94%A8%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="nav-number">17.3.</span> <span class="nav-text">如果我们不想用双亲委派模型怎么办？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="nav-number">17.3.1.</span> <span class="nav-text">自定义类加载器</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
