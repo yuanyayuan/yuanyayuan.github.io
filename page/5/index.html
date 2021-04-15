@@ -261,6 +261,1310 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/23/nginx%E9%85%8D%E7%BD%AE3%E5%8F%B0tomcat%E9%9B%86%E7%BE%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/23/nginx%E9%85%8D%E7%BD%AE3%E5%8F%B0tomcat%E9%9B%86%E7%BE%A4/" itemprop="url">nginx配置3台tomcat集群</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-23T22:15:14+08:00">
+                2021-03-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/LVS-nginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4-nginx%E4%BD%BF%E7%94%A8%E9%85%8D%E7%BD%AE/" itemprop="url" rel="index">
+                    <span itemprop="name">LVS+nginx实现高可用集群 - nginx使用配置</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="nginx-配置3台tomcat集群"><a href="#nginx-配置3台tomcat集群" class="headerlink" title="nginx 配置3台tomcat集群"></a>nginx 配置3台tomcat集群</h1><h2 id="集群总览"><a href="#集群总览" class="headerlink" title="集群总览"></a>集群总览</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/Nginx%E6%9E%84%E5%BB%BA%E9%9B%86%E7%BE%A41.png"></p>
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><h3 id="1-配置本机host"><a href="#1-配置本机host" class="headerlink" title="1. 配置本机host"></a>1. 配置本机host</h3><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/Nginx%E6%9E%84%E5%BB%BA%E9%9B%86%E7%BE%A42.png"></p>
+<h3 id="2-修改Nginx配置"><a href="#2-修改Nginx配置" class="headerlink" title="2. 修改Nginx配置"></a>2. 修改Nginx配置</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 配置上游服务器</span></span><br><span class="line">upstream tomcats &#123;</span><br><span class="line">        server 192.168.159.129:8080;</span><br><span class="line">        server 192.168.159.130:8080;</span><br><span class="line">        server 192.168.159.131:8080;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">            listen     90;</span><br><span class="line">            server_name  tomcats.hikari.com;</span><br><span class="line"></span><br><span class="line">            location /&#123;</span><br><span class="line">                proxy_pass http://tomcats;</span><br><span class="line">            &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>proxy_pass <a target="_blank" rel="noopener" href="http://tomcats/">http://tomcats</a>;  —— 请求进来匹配到<code>location / </code>就会进入<code>proxy_pass</code>指令块，传递至upstream的 tomcats</p>
+</blockquote>
+<h3 id="3-重启Nginx"><a href="#3-重启Nginx" class="headerlink" title="3. 重启Nginx"></a>3. 重启Nginx</h3><h3 id="4-访问tomcats-hikari-com-90"><a href="#4-访问tomcats-hikari-com-90" class="headerlink" title="4. 访问tomcats.hikari.com:90"></a>4. 访问tomcats.hikari.com:90</h3><h1 id="Nginx集群策略，upstream参数"><a href="#Nginx集群策略，upstream参数" class="headerlink" title="Nginx集群策略，upstream参数"></a>Nginx集群策略，<code>upstream</code>参数</h1><p><a href="https://yuanyayuan.github.io/2021/03/22/nginx%E8%BF%9B%E9%98%B6/">Nginx集群策略</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/nginx%E9%AB%98%E5%8F%AF%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/22/nginx%E9%AB%98%E5%8F%AF%E7%94%A8/" itemprop="url">nginx高可用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T22:40:44+08:00">
+                2021-03-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/LVS-nginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4-nginx%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">LVS+nginx实现高可用集群 - nginx知识点</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Nginx高可用-HA"><a href="#Nginx高可用-HA" class="headerlink" title="Nginx高可用 HA"></a>Nginx高可用 HA</h1><h2 id="单机状态下Nginx"><a href="#单机状态下Nginx" class="headerlink" title="单机状态下Nginx"></a>单机状态下Nginx</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/Nginx%E9%AB%98%E5%8F%AF%E7%94%A8HA1.png"></p>
+<h2 id="主备关系的Nginx"><a href="#主备关系的Nginx" class="headerlink" title="主备关系的Nginx"></a>主备关系的Nginx</h2><blockquote>
+<p>只有一台处于可用状态</p>
+</blockquote>
+<p>主节点Ngin宕机，备用节点Nginx接替服务</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/Nginx%E9%AB%98%E5%8F%AF%E7%94%A8HA2.png"></p>
+<h1 id="实现Nginx高可用——keepalived"><a href="#实现Nginx高可用——keepalived" class="headerlink" title="实现Nginx高可用——keepalived"></a>实现Nginx高可用——keepalived</h1><h2 id="keepalived"><a href="#keepalived" class="headerlink" title="keepalived"></a>keepalived</h2><ul>
+<li>解决单点故障</li>
+<li>组件免费</li>
+<li>可以实现高可用HA机制</li>
+<li>基于VRRP协议</li>
+</ul>
+<h2 id="Keepalived-双机主备原理"><a href="#Keepalived-双机主备原理" class="headerlink" title="Keepalived 双机主备原理"></a>Keepalived 双机主备原理</h2><blockquote>
+<p>主备Nginx服务器的配置需相同，防止大量请求导致低配置的备用机宕机</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/Keepalived%20%E5%8F%8C%E6%9C%BA%E4%B8%BB%E5%A4%87%E5%8E%9F%E7%90%861.png"></p>
+<p>主节点Nginx发生宕机</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/Keepalived%20%E5%8F%8C%E6%9C%BA%E4%B8%BB%E5%A4%87%E5%8E%9F%E7%90%862.png"></p>
+<p>虚拟ip指向备用节点Nginx</p>
+<h1 id="高可用集群架构Keepalived双主热备"><a href="#高可用集群架构Keepalived双主热备" class="headerlink" title="高可用集群架构Keepalived双主热备"></a>高可用集群架构Keepalived双主热备</h1><p>使两个节点同时提供服务</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/Java8%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/22/Java8%E5%AE%89%E8%A3%85/" itemprop="url">Java8安装</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T22:40:31+08:00">
+                2021-03-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-Java%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
+                    <span itemprop="name">软件安装 - Java安装</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="检查是否安装Java"><a href="#检查是否安装Java" class="headerlink" title="检查是否安装Java"></a>检查是否安装Java</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -version</span><br></pre></td></tr></table></figure>
+
+<h1 id="解压文件"><a href="#解压文件" class="headerlink" title="解压文件"></a>解压文件</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf /usr/<span class="built_in">local</span>/jdk-8u181-linux-x64.tar.gz</span><br></pre></td></tr></table></figure>
+
+<h1 id="重命名"><a href="#重命名" class="headerlink" title="重命名"></a>重命名</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv /usr/<span class="built_in">local</span>/jdk1.8.0_181 /usr/<span class="built_in">local</span>/java</span><br></pre></td></tr></table></figure>
+
+<h1 id="修改配置文件，配置环境变量，在命令行输入："><a href="#修改配置文件，配置环境变量，在命令行输入：" class="headerlink" title="修改配置文件，配置环境变量，在命令行输入："></a>修改配置文件，配置环境变量，在命令行输入：</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/profile</span><br></pre></td></tr></table></figure>
+
+<h1 id="在最后添加"><a href="#在最后添加" class="headerlink" title="在最后添加"></a>在最后添加</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/<span class="built_in">local</span>/java</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin</span><br><span class="line"><span class="built_in">export</span> CLASSPATH=.:<span class="variable">$JAVA_HOME</span>/lib/dt.jar:<span class="variable">$JAVA_HOME</span>/lib/tools.jar</span><br><span class="line"><span class="built_in">export</span> JRE_HOME=<span class="variable">$JAVA_HOME</span>/jre</span><br></pre></td></tr></table></figure>
+
+<h1 id="使配置文件立即生效"><a href="#使配置文件立即生效" class="headerlink" title="使配置文件立即生效"></a>使配置文件立即生效</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /etc/profile</span><br></pre></td></tr></table></figure>
+
+<h1 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /usr/<span class="built_in">local</span>/java</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/Tomcat%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/22/Tomcat%E5%AE%89%E8%A3%85/" itemprop="url">Tomcat安装</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T22:40:13+08:00">
+                2021-03-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-tomcat%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
+                    <span itemprop="name">软件安装 - tomcat安装</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="解压下载的Tomcat"><a href="#解压下载的Tomcat" class="headerlink" title="解压下载的Tomcat"></a>解压下载的Tomcat</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf apache-tomcat-8.5.50.tar.gz </span><br></pre></td></tr></table></figure>
+
+<h1 id="安装Java"><a href="#安装Java" class="headerlink" title="安装Java"></a>安装Java</h1><h1 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./startup.sh</span><br></pre></td></tr></table></figure>
+
+<h1 id="检查防火墙"><a href="#检查防火墙" class="headerlink" title="检查防火墙"></a>检查防火墙</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status firewalld.service</span><br></pre></td></tr></table></figure>
+
+<h2 id="重启防火墙"><a href="#重启防火墙" class="headerlink" title="重启防火墙"></a>重启防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart firewalld.service</span><br></pre></td></tr></table></figure>
+
+<h2 id="停止防火墙"><a href="#停止防火墙" class="headerlink" title="停止防火墙"></a>停止防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld.service</span><br></pre></td></tr></table></figure>
+
+<h2 id="启动防火墙"><a href="#启动防火墙" class="headerlink" title="启动防火墙"></a>启动防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start firewalld.service</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="开放8080端口"><a href="#开放8080端口" class="headerlink" title="开放8080端口"></a>开放8080端口</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8080/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line">firewall-cmd --zone=public --query-port=8080/tcp</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/nginx%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/22/nginx%E5%AE%89%E8%A3%85/" itemprop="url">nginx安装</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T00:17:38+08:00">
+                2021-03-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-nginx%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">软件安装 - nginx安装教程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Nginx安装"><a href="#Nginx安装" class="headerlink" title="Nginx安装"></a>Nginx安装</h1><p>去官网<a target="_blank" rel="noopener" href="http://nginx.org/%E4%B8%8B%E8%BD%BD%E5%AF%B9%E5%BA%94%E7%9A%84nginx%E5%8C%85%EF%BC%8C%E6%8E%A8%E8%8D%90%E4%BD%BF%E7%94%A8%E7%A8%B3%E5%AE%9A%E7%89%88%E6%9C%AC">http://nginx.org/下载对应的nginx包，推荐使用稳定版本</a></p>
+<p>上传nginx到linux系统</p>
+<p>安装依赖环境</p>
+<ul>
+<li>安装gcc环境<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc-c++</span><br></pre></td></tr></table></figure></li>
+<li>安装PCRE库，用于解析正则表达式<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y pcre pcre-devel</span><br></pre></td></tr></table></figure></li>
+<li>zlib压缩和解压缩依赖，<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y zlib zlib-devel</span><br></pre></td></tr></table></figure></li>
+<li>SSL 安全的加密的套接字协议层，用于HTTP安全传输，也就是https<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y openssl openssl-devel</span><br></pre></td></tr></table></figure></li>
+<li>解压，需要注意，解压后得到的是源码，源码需要编译后才能安装<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf nginx-1.16.1.tar.gz</span><br></pre></td></tr></table></figure></li>
+<li>编译之前，先创建nginx临时目录，如果不创建，在启动nginx的过程中会报错<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir &#x2F;var&#x2F;temp&#x2F;nginx -p</span><br></pre></td></tr></table></figure></li>
+<li>在nginx的解压目录，输入如下命令进行配置，目的是为了创建makefile文件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure \</span><br><span class="line">--prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;nginx \</span><br><span class="line">--pid-path&#x3D;&#x2F;var&#x2F;run&#x2F;nginx&#x2F;nginx.pid \</span><br><span class="line">--lock-path&#x3D;&#x2F;var&#x2F;lock&#x2F;nginx.lock \</span><br><span class="line">--error-log-path&#x3D;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;error.log \</span><br><span class="line">--http-log-path&#x3D;&#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log \</span><br><span class="line">--with-http_gzip_static_module \</span><br><span class="line">--http-client-body-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;client \</span><br><span class="line">--http-proxy-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;proxy \</span><br><span class="line">--http-fastcgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;fastcgi \</span><br><span class="line">--http-uwsgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;uwsgi \</span><br><span class="line">--http-scgi-temp-path&#x3D;&#x2F;var&#x2F;temp&#x2F;nginx&#x2F;scgi</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>配置命令：</strong></p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>–prefix</td>
+<td>指定nginx安装目录</td>
+</tr>
+<tr>
+<td>–pid-path</td>
+<td>指向nginx的pid</td>
+</tr>
+<tr>
+<td>–lock-path</td>
+<td>锁定安装文件，防止被恶意篡改或误操作</td>
+</tr>
+<tr>
+<td>–error-log</td>
+<td>错误日志</td>
+</tr>
+<tr>
+<td>–http-log-path</td>
+<td>http日志</td>
+</tr>
+<tr>
+<td>–with-http_gzip_static_module</td>
+<td>启用gzip模块，在线实时压缩输出数据流</td>
+</tr>
+<tr>
+<td>–http-client-body-temp-path</td>
+<td>设定客户端请求的临时目录</td>
+</tr>
+<tr>
+<td>–http-proxy-temp-path</td>
+<td>设定http代理临时目录</td>
+</tr>
+<tr>
+<td>–http-fastcgi-temp-path</td>
+<td>设定fastcgi临时目录</td>
+</tr>
+<tr>
+<td>–http-uwsgi-temp-path</td>
+<td>设定uwsgi临时目录</td>
+</tr>
+<tr>
+<td>–http-scgi-temp-path</td>
+<td>设定scgi临时目录</td>
+</tr>
+</tbody></table>
+<ul>
+<li>make编译<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make</span><br></pre></td></tr></table></figure></li>
+<li>安装<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make install</span><br></pre></td></tr></table></figure></li>
+<li>进入sbin目录启动nginx<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;nginx</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">停止：.&#x2F;nginx -s stop</span><br><span class="line">重新加载：.&#x2F;nginx -s reload</span><br></pre></td></tr></table></figure>
+打开浏览器，访问虚拟机所处内网ip即可打开nginx默认页面，显示如下便表示安装成功：</li>
+</ul>
+<p><strong>注意事项:</strong></p>
+<p>如果在云服务器安装，需要开启默认的nginx端口：80</p>
+<p>如果在虚拟机安装，需要关闭防火墙</p>
+<p>本地win或mac需要关闭防火墙</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/LVS-DR%E6%A8%A1%E5%BC%8F%E6%90%AD%E5%BB%BA%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/22/LVS-DR%E6%A8%A1%E5%BC%8F%E6%90%AD%E5%BB%BA%E9%85%8D%E7%BD%AE/" itemprop="url">LVS-DR模式搭建配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T00:17:38+08:00">
+                2021-03-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/LVS-nginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4-LVS%E4%BD%BF%E7%94%A8%E9%85%8D%E7%BD%AE/" itemprop="url" rel="index">
+                    <span itemprop="name">LVS+nginx实现高可用集群 - LVS使用配置</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="服务器与IP约定"><a href="#服务器与IP约定" class="headerlink" title="服务器与IP约定"></a>服务器与IP约定</h1><ul>
+<li>LVS-1台<ul>
+<li>VIP（虚拟IP）：192.168.159.120</li>
+<li>DIP（转发者IP/内网IP）：192.168.159.128</li>
+</ul>
+</li>
+<li>Nginx-两台（RealServer）<ul>
+<li>RIP（真实IP/内网IP）：192.168.159.129</li>
+<li>RIP（真实IP/内网IP）：192.168.159.130</li>
+</ul>
+</li>
+</ul>
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><h2 id="关闭网络配置管理器"><a href="#关闭网络配置管理器" class="headerlink" title="关闭网络配置管理器"></a>关闭网络配置管理器</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# systemctl stop NetworkManager</span><br><span class="line">[root@localhost ~]# systemctl disable NetworkManager</span><br></pre></td></tr></table></figure>
+<h2 id="配置LVS节点"><a href="#配置LVS节点" class="headerlink" title="配置LVS节点"></a>配置LVS节点</h2><h3 id="复制-etc-sysconfig-network-scripts-下的ifcfg-ens33"><a href="#复制-etc-sysconfig-network-scripts-下的ifcfg-ens33" class="headerlink" title="复制/etc/sysconfig/network-scripts/下的ifcfg-ens33"></a>复制<code>/etc/sysconfig/network-scripts/</code>下的ifcfg-ens33</h3><blockquote>
+<p>ifcfg-ens33网卡名称可能不一样</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost network-scripts]# cp ifcfg-ens33 ifcfg-ens33:1</span><br><span class="line">[root@localhost network-scripts]# ls</span><br><span class="line">ifcfg-ens33      ifdown-bnep  ifdown-isdn    ifdown-Team      ifup-bnep  ifup-isdn   ifup-routes    ifup-wireless</span><br><span class="line">ifcfg-ens33:1    ifdown-eth   ifdown-post    ifdown-TeamPort  ifup-eth   ifup-plip   ifup-sit       init.ipv6-global</span><br><span class="line">ifcfg-ens33.bak  ifdown-ib    ifdown-ppp     ifdown-tunnel    ifup-ib    ifup-plusb  ifup-Team      network-functions</span><br><span class="line">ifcfg-lo         ifdown-ippp  ifdown-routes  ifup             ifup-ippp  ifup-post   ifup-TeamPort  network-functions-ipv6</span><br><span class="line">ifdown           ifdown-ipv6  ifdown-sit     ifup-aliases     ifup-ipv6  ifup-ppp    ifup-tunnel</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ul>
+<li>注：<code>数字1</code>为别名，可以任取其他数字都行</li>
+</ul>
+</blockquote>
+<h3 id="修改ifcfg-ens33-1"><a href="#修改ifcfg-ens33-1" class="headerlink" title="修改ifcfg-ens33:1"></a>修改ifcfg-ens33:1</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">BOOTPROTO=&quot;static&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 网卡名称</span></span><br><span class="line">DEVICE=&quot;ens33:1&quot;</span><br><span class="line">ONBOOT=&quot;yes&quot;</span><br><span class="line"><span class="meta">#</span><span class="bash"> 虚拟ip</span></span><br><span class="line">IPADDR=&quot;192.168.159.120&quot;</span><br><span class="line">NETMASK=&quot;255.255.255.0&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="重启网卡"><a href="#重启网卡" class="headerlink" title="重启网卡"></a>重启网卡</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service network restart</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost network-scripts]# ip addr</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 ::1/128 scope host </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">2: ens33: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000</span><br><span class="line">    link/ether 00:0c:29:a3:cd:89 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 192.168.159.128/24 brd 192.168.159.255 scope global dynamic ens33</span><br><span class="line">       valid_lft 1791sec preferred_lft 1791sec</span><br><span class="line">    inet 192.168.159.120/24 brd 192.168.159.255 scope global secondary ens33:1</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 fe80::20c:29ff:fea3:cd89/64 scope link </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">3: virbr0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default qlen 1000</span><br><span class="line">    link/ether 52:54:00:26:56:3b brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 192.168.122.1/24 brd 192.168.122.255 scope global virbr0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">4: virbr0-nic: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc pfifo_fast master virbr0 state DOWN group default qlen 1000</span><br><span class="line">    link/ether 52:54:00:26:56:3b brd ff:ff:ff:ff:ff:ff</span><br></pre></td></tr></table></figure>
+
+<p>ens33下多了一个虚拟ip<code>inet 192.168.159.120/24</code></p>
+<h3 id="安装ipvsadm"><a href="#安装ipvsadm" class="headerlink" title="安装ipvsadm"></a>安装ipvsadm</h3><blockquote>
+<p>centos都是集成LVS的，所以ipvs是自带的，只需要安装ipvsadm</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install ipvsadm</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">IP Virtual Server version 1.2.1 (size=4096)</span><br><span class="line">Prot LocalAddress:Port Scheduler Flags</span><br><span class="line"><span class="meta">  -&gt;</span><span class="bash"> RemoteAddress:Port           Forward Weight ActiveConn InActConn</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="配置2台Nginx"><a href="#配置2台Nginx" class="headerlink" title="配置2台Nginx"></a>配置2台Nginx</h2><h3 id="配置虚拟网络子接口（回环接口）"><a href="#配置虚拟网络子接口（回环接口）" class="headerlink" title="配置虚拟网络子接口（回环接口）"></a>配置虚拟网络子接口（回环接口）</h3><ol>
+<li>拷贝lo（本地回环接口，用户构建虚拟网络子接口）</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost ~]# cd /etc/sysconfig/network-scripts/</span><br><span class="line">[root@localhost network-scripts]# cp ifcfg-lo ifcfg-lo:1</span><br><span class="line">[root@localhost network-scripts]# ls</span><br><span class="line">ifcfg-ens33      ifdown-bnep  ifdown-isdn    ifdown-Team      ifup-bnep  ifup-isdn   ifup-routes    ifup-wireless</span><br><span class="line">ifcfg-ens33.bak  ifdown-eth   ifdown-post    ifdown-TeamPort  ifup-eth   ifup-plip   ifup-sit       init.ipv6-global</span><br><span class="line">ifcfg-lo         ifdown-ib    ifdown-ppp     ifdown-tunnel    ifup-ib    ifup-plusb  ifup-Team      network-functions</span><br><span class="line">ifcfg-lo:1       ifdown-ippp  ifdown-routes  ifup             ifup-ippp  ifup-post   ifup-TeamPort  network-functions-ipv6</span><br><span class="line">ifdown           ifdown-ipv6  ifdown-sit     ifup-aliases     ifup-ipv6  ifup-ppp    ifup-tunnel</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost network-scripts]# vim ifcfg-lo:1</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>修改内容<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">DEVICE=lo:1</span><br><span class="line">IPADDR=192.168.159.120</span><br><span class="line">NETMASK=255.255.255.255</span><br><span class="line">NETWORK=127.0.0.0</span><br><span class="line"><span class="meta">#</span><span class="bash"> If you<span class="string">&#x27;re having problems with gated making 127.0.0.0/8 a martian,</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> you can change this to something <span class="keyword">else</span> (255.255.255.255, <span class="keyword">for</span> example)</span></span><br><span class="line">BROADCAST=127.255.255.255</span><br><span class="line">ONBOOT=yes</span><br><span class="line">NAME=loopback</span><br></pre></td></tr></table></figure></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost network-scripts]# ifup lo</span><br><span class="line">[root@localhost network-scripts]# ip addr</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet 192.168.159.120/32 brd 192.168.159.120 scope global lo:1</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">    inet6 ::1/128 scope host </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">2: ens33: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000</span><br><span class="line">    link/ether 00:0c:29:b7:a5:86 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 192.168.159.129/24 brd 192.168.159.255 scope global dynamic ens33</span><br><span class="line">       valid_lft 1345sec preferred_lft 1345sec</span><br><span class="line">    inet6 fe80::20c:29ff:feb7:a586/64 scope link </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">3: virbr0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue state DOWN group default qlen 1000</span><br><span class="line">    link/ether 52:54:00:82:4f:65 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 192.168.122.1/24 brd 192.168.122.255 scope global virbr0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">4: virbr0-nic: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc pfifo_fast master virbr0 state DOWN group default qlen 1000</span><br><span class="line">    link/ether 52:54:00:82:4f:65 brd ff:ff:ff:ff:ff:ff</span><br></pre></td></tr></table></figure>
+
+<p><strong>第二台重复操作</strong></p>
+<h2 id="为两台RealServer配置arp"><a href="#为两台RealServer配置arp" class="headerlink" title="为两台RealServer配置arp"></a>为两台RealServer配置arp</h2><ol>
+<li><p>arp-ignore：ARP响应级别（处理请求）</p>
+<ul>
+<li>0：只要本机配置了ip，就能够响应请求</li>
+<li>1：请求的目标地址到达对应的网络接口，才算响应请求（采用）</li>
+</ul>
+</li>
+<li><p>arp-announce：ARP通告行为（返回响应）</p>
+<ul>
+<li>0：本机上任何网络接口都向外通告，所有的网卡都能接受到通告</li>
+<li>1：尽可能避免本网卡与不匹配的目标进行通告</li>
+<li>2：只在本网咖通告（采用）</li>
+</ul>
+</li>
+</ol>
+<h3 id="打开sysctl-conf"><a href="#打开sysctl-conf" class="headerlink" title="打开sysctl.conf"></a>打开<code>sysctl.conf</code></h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置所有网卡、默认网卡、虚拟网卡的arp响应级别和通告行为"><a href="#配置所有网卡、默认网卡、虚拟网卡的arp响应级别和通告行为" class="headerlink" title="配置所有网卡、默认网卡、虚拟网卡的arp响应级别和通告行为"></a>配置<code>所有网卡</code>、<code>默认网卡</code>、<code>虚拟网卡</code>的arp响应级别和通告行为</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> configration <span class="keyword">for</span> lvs</span></span><br><span class="line">net.ipv4.conf.all.arp_ignore = 1</span><br><span class="line">net.ipv4.conf.default.arp_ignore = 1</span><br><span class="line">net.ipv4.conf.lo.arp_ignore = 1</span><br><span class="line"></span><br><span class="line">net.ipv4.conf.all.arp_announce = 2</span><br><span class="line">net.ipv4.conf.default.arp_announce = 2</span><br><span class="line">net.ipv4.conf.lo.arp_announce = 2</span><br></pre></td></tr></table></figure>
+
+<h3 id="刷新配置"><a href="#刷新配置" class="headerlink" title="刷新配置"></a>刷新配置</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
+
+<h3 id="增加网关用于接受数据报文，当有请求到本机后，会交给lo去处理"><a href="#增加网关用于接受数据报文，当有请求到本机后，会交给lo去处理" class="headerlink" title="增加网关用于接受数据报文，当有请求到本机后，会交给lo去处理"></a>增加网关用于接受数据报文，当有请求到本机后，会交给lo去处理</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost network-scripts]# route add -host 192.168.159.120 dev lo:1</span><br><span class="line">[root@localhost network-scripts]# route -n</span><br><span class="line">Kernel IP routing table</span><br><span class="line">Destination     Gateway         Genmask         Flags Metric Ref    Use Iface</span><br><span class="line">0.0.0.0         192.168.159.2   0.0.0.0         UG    0      0        0 ens33</span><br><span class="line">169.254.0.0     0.0.0.0         255.255.0.0     U     1002   0        0 ens33</span><br><span class="line">192.168.122.0   0.0.0.0         255.255.255.0   U     0      0        0 virbr0</span><br><span class="line">192.168.159.0   0.0.0.0         255.255.255.0   U     0      0        0 ens33</span><br><span class="line">192.168.159.120 0.0.0.0         255.255.255.255 UH    0      0        0 lo</span><br></pre></td></tr></table></figure>
+
+<h3 id="防止重启后失效"><a href="#防止重启后失效" class="headerlink" title="防止重启后失效"></a>防止重启后失效</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &quot;route add -host 192.168.159.120 dev lo:1&quot; &gt;&gt; /etc/rc.local</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用ipvsadm配置集群规则"><a href="#使用ipvsadm配置集群规则" class="headerlink" title="使用ipvsadm配置集群规则"></a>使用ipvsadm配置集群规则</h2><h3 id="创建LVS节点，用户访问的集群调度者"><a href="#创建LVS节点，用户访问的集群调度者" class="headerlink" title="创建LVS节点，用户访问的集群调度者"></a>创建LVS节点，用户访问的集群调度者</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -A -t 192.168.159.120:80 -s rr -p 5</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-A: 添加集群</span><br><span class="line">-t: tcp协议</span><br><span class="line">ip：设定集群的访问IP，也就是LVS的虚拟ip</span><br><span class="line">-s：设置负载均衡的算法，rr表示轮询</span><br><span class="line">-p：设置连接持久化的时间</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建2台RS真实服务器"><a href="#创建2台RS真实服务器" class="headerlink" title="创建2台RS真实服务器"></a>创建2台RS真实服务器</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -a -t 192.168.159.129:80 -r 192.168.1.171:80 -g</span><br><span class="line">ipvsadm -a -t 192.168.159.130:80 -r 192.168.1.172:80 -g</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-a:添加真实服务器</span><br><span class="line">-t:tcp协议</span><br><span class="line">-r：真实服务器的IP地址</span><br><span class="line">-g：设定DR模式</span><br></pre></td></tr></table></figure>
+
+<h3 id="保存到规则库，否则重启失效"><a href="#保存到规则库，否则重启失效" class="headerlink" title="保存到规则库，否则重启失效"></a>保存到规则库，否则重启失效</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -S</span><br></pre></td></tr></table></figure>
+
+<h3 id="检查集群"><a href="#检查集群" class="headerlink" title="检查集群"></a>检查集群</h3><ul>
+<li><p>查看集群列表</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -Ln</span><br></pre></td></tr></table></figure></li>
+<li><p>查看集群状态</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -Ln --stats</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="其他指令"><a href="#其他指令" class="headerlink" title="其他指令"></a>其他指令</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 重启ipvsadm，重启后需要重新配置</span></span><br><span class="line">service ipvsadm restart</span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看持久化连接</span></span><br><span class="line">ipvsadm -Ln --persistent-conn</span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看连接请求过期时间以及请求源ip和目标ip</span></span><br><span class="line">ipvsadm -Lnc</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置tcp tcpfin udp 的过期时间（一般保持默认）</span></span><br><span class="line">ipvsadm --set 1 1 1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看过期时间</span></span><br><span class="line">ipvsadm -Ln --timeout</span><br></pre></td></tr></table></figure>
+
+<h2 id="帮助文档"><a href="#帮助文档" class="headerlink" title="帮助文档"></a>帮助文档</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ipvsadm -h</span><br><span class="line">man ipvsadm</span><br></pre></td></tr></table></figure>
+
+<h2 id="Keepalived-LVS高可用"><a href="#Keepalived-LVS高可用" class="headerlink" title="Keepalived+LVS高可用"></a>Keepalived+LVS高可用</h2><blockquote>
+<p>与之前keepalived配置Ngxin高可用差不多</p>
+</blockquote>
+<ol>
+<li><p>上传keepalived</p>
+</li>
+<li><p>./configure</p>
+</li>
+<li><p>make&amp;&amp;make install</p>
+</li>
+<li><p>/etc/keepalived</p>
+</li>
+<li><p>把keepalived注册到系统服务</p>
+</li>
+<li><p>配置keepalived核心配置文件</p>
+</li>
+</ol>
+<h3 id="配置节点"><a href="#配置节点" class="headerlink" title="配置节点"></a>配置节点</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 配置集群访问的IP+端口，端口和nginx保持一致，都是80</span></span><br><span class="line">virtual_server 192.168.159.120 80 &#123;</span><br><span class="line">    # 健康检查的时间，单位：秒</span><br><span class="line">    delay_loop 6</span><br><span class="line">    # 配置负载均衡的算法，默认是轮询</span><br><span class="line">    lb_algo rr</span><br><span class="line">    # 配置LVS的模式 NAT|TUN|DR</span><br><span class="line">    lb_kind NAT</span><br><span class="line">    # 配置会话持久化的事件</span><br><span class="line">    persistence_timeout 50</span><br><span class="line">    # 协议 -t</span><br><span class="line">    protocol TCP</span><br><span class="line"></span><br><span class="line">    # 负载均衡的真实服务器，也就是nginx节点的具体的真实ip地址</span><br><span class="line">    real_server 192.168.159.129 80 &#123;</span><br><span class="line">        # 轮询的默认权重配比 默认为1</span><br><span class="line">        weight 1</span><br><span class="line">        # 设置健康检查</span><br><span class="line">        TCP_CHECK &#123;</span><br><span class="line">            # 检查的80端口</span><br><span class="line">            connect_port 80</span><br><span class="line">            # 超时时间 2s</span><br><span class="line">            connent_timeout 2</span><br><span class="line">            # 重试次数 2次</span><br><span class="line">            nb_get_retry 2</span><br><span class="line">            # 间隔时间 3s</span><br><span class="line">            delay_before_retry 3</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    real_server 192.168.159.129 80 &#123;</span><br><span class="line">        weight 1</span><br><span class="line">        # 设置健康检查</span><br><span class="line">        TCP_CHECK &#123;</span><br><span class="line">            # 检查的80端口</span><br><span class="line">            connect_port 80</span><br><span class="line">            # 超时时间 2s</span><br><span class="line">            connent_timeout 2</span><br><span class="line">            # 重试次数 2次</span><br><span class="line">            nb_get_retry 2</span><br><span class="line">            # 间隔时间 3s</span><br><span class="line">            delay_before_retry 3</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>从节点和主节点LVS配置相同，state改为backup，权重调低</strong></p>
+<h3 id="健康检查"><a href="#健康检查" class="headerlink" title="健康检查"></a>健康检查</h3><p>会监控nginx是否正常运行，并进行剔除或加入集群。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/LVS%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/22/LVS%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/" itemprop="url">LVS理论知识</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T00:17:38+08:00">
+                2021-03-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/LVS-nginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4-LVS%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">LVS+nginx实现高可用集群 - LVS知识点</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="LVS负载均衡"><a href="#LVS负载均衡" class="headerlink" title="LVS负载均衡"></a>LVS负载均衡</h1><ul>
+<li>Linux Virtual Server</li>
+<li>章文嵩博士主导的开源的负载均衡项目</li>
+<li>LVS（ipvs）已被集成到linux内核中</li>
+<li>负载均衡调度器（4层）</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/lvs%E7%BD%91%E7%BB%9C%E6%8B%93%E6%89%91%E5%9B%BE2.png" alt="LVS网络拓扑" style="zoom: 50%;" />
+
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx%E7%BD%91%E7%BB%9C%E6%8B%93%E6%89%91%E5%9B%BE.png"></p>
+<h1 id="为什么要使用LVS-Nginx"><a href="#为什么要使用LVS-Nginx" class="headerlink" title="为什么要使用LVS+Nginx"></a>为什么要使用LVS+Nginx</h1><ul>
+<li>LVS基于四层，工作效率高</li>
+<li>单个Nginx承受不了压力，需要集群</li>
+<li>LVS充当Nginx集群的调度者</li>
+<li>Nginx接受请求来回，LVS可以只接受不响应</li>
+</ul>
+<h1 id="LVS工作模式"><a href="#LVS工作模式" class="headerlink" title="LVS工作模式"></a>LVS工作模式</h1><h2 id="NAT模式——基于网络地址"><a href="#NAT模式——基于网络地址" class="headerlink" title="NAT模式——基于网络地址"></a>NAT模式——基于网络地址</h2><blockquote>
+<p>NAT模式请求和响应都需要经过LVS本质上合Nginx没有区别，LVS处于公网，Real Server处于内网</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/NAT%E6%A8%A1%E5%BC%8F.png"></p>
+<h2 id="TUN模式——IP隧道"><a href="#TUN模式——IP隧道" class="headerlink" title="TUN模式——IP隧道"></a>TUN模式——IP隧道</h2><blockquote>
+<p>请求和响应都不经过LVS，大大提高并发量，但每个节点都要配备网卡，Real Server处于公网</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/TUN%E6%A8%A1%E5%BC%8F2.png"></p>
+<h2 id="DR模式——直接路由"><a href="#DR模式——直接路由" class="headerlink" title="DR模式——直接路由"></a>DR模式——直接路由</h2><blockquote>
+<p>构建虚拟IP接受响应，避免Real Server处于公网</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/DR%E6%A8%A1%E5%BC%8F.png"></p>
+<h1 id="Keepalived实现高可用"><a href="#Keepalived实现高可用" class="headerlink" title="Keepalived实现高可用"></a>Keepalived实现高可用</h1><blockquote>
+<p>避免单节点LVS宕机导致服务不可用</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/LVS%E9%AB%98%E5%8F%AF%E7%94%A8.png"></p>
+<h1 id="LVS负载均衡算法"><a href="#LVS负载均衡算法" class="headerlink" title="LVS负载均衡算法"></a>LVS负载均衡算法</h1><h2 id="静态算法"><a href="#静态算法" class="headerlink" title="静态算法"></a>静态算法</h2><blockquote>
+<p>根据LVS本身自有的固定算法分发用户请求</p>
+</blockquote>
+<ol>
+<li>轮询（rr）:平均分配给各个服务器（同nginx的轮询）</li>
+<li>加权轮询（wrr）：按照权重分配用户请求。权重越高被分配到的请求越多（同nginx的权重）</li>
+<li>原地址散列（sh）：同一个用户ip的请求，会有同一个RS来处理（同nginx的ip_hash）</li>
+<li>目标地址（dh）：根据url的不同，请求到不同的RS（同nginx的url_hash）</li>
+</ol>
+<h2 id="动态算法"><a href="#动态算法" class="headerlink" title="动态算法"></a>动态算法</h2><blockquote>
+<p>根据流量的不同，或者服务器的压力不同来分配用户请求，这是动态计算的<br>使用较多的是wlc或wrr</p>
+</blockquote>
+<ol>
+<li><p>最小连接数（lc）：把新的连接请求分配到当前连接数最小的服务器</p>
+</li>
+<li><p>加权最小连接数（wlc）：服务器的处理性能用数值来表示，权重越大处理的请求越多。Real Server 有可能会存在性能上的差异，wlc动态回去不同的服务器的负载状况，把请求分发到性能好并且比较空闲的服务器</p>
+</li>
+<li><p>最短期望延迟（sed）：特殊的wlc算法。</p>
+<ol>
+<li><p>例如：假设有ABC三台服务器，权重分别为1、2、3。</p>
+<ul>
+<li><p>如果使用wlc算法的话，当一个新情求进来，它可能会分给ABC中任意的一个。</p>
+</li>
+<li><p>如果使用sed算法的话，会进行如下运算</p>
+<ul>
+<li>A：（1+1）/1=2</li>
+<li>B：（1+2）/2=3/2</li>
+<li>C：（1+3）/3=4/2</li>
+</ul>
+<p>最终结果，会把这个请求交给得出运算结果最小的服务器</p>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>最少队列调度（nq）：永不使用队列。如果有Real Server的连接数等于0，则直接把这个请求分配过去，不需要再排队等待运算</p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/nginx%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%862/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1110,7 +2414,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">49</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1121,7 +2425,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1132,7 +2436,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

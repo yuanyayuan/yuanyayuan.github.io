@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="java,面试,容器," />
+  <meta name="keywords" content="java,面试,JUC," />
 
 
 
@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="ConcurrentHashMap 所有的操作都是线程安全的，我们在使用时，无需再加锁； 多个线程同时进行 put、remove 等操作时并不会阻塞，可以同时进行，和 HashTable 不同，HashTable 在操作时，会锁住整个 Map； 迭代过程中，即使 Map 结构被修改，也不会抛 ConcurrentModificationException 异常； 除了数组 + 链表 + 红黑树的基">
+<meta name="description" content="JDK 提供的并发容器总结JDK 提供的这些容器大部分在 java.util.concurrent 包中。  ConcurrentHashMap: 线程安全的 HashMap CopyOnWriteArrayList: 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector. ConcurrentLinkedQueue: 高效的并发队列，使用链表实现。可以看做一个线程安全的 Li">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java-ConcurrentHashMap学习">
-<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/13/Java-ConcurrentHashMap%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:title" content="Java-CopyOnWriteArrayList学习">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/13/Java-%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="ConcurrentHashMap 所有的操作都是线程安全的，我们在使用时，无需再加锁； 多个线程同时进行 put、remove 等操作时并不会阻塞，可以同时进行，和 HashTable 不同，HashTable 在操作时，会锁住整个 Map； 迭代过程中，即使 Map 结构被修改，也不会抛 ConcurrentModificationException 异常； 除了数组 + 链表 + 红黑树的基">
+<meta property="og:description" content="JDK 提供的并发容器总结JDK 提供的这些容器大部分在 java.util.concurrent 包中。  ConcurrentHashMap: 线程安全的 HashMap CopyOnWriteArrayList: 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector. ConcurrentLinkedQueue: 高效的并发队列，使用链表实现。可以看做一个线程安全的 Li">
 <meta property="og:locale">
-<meta property="article:published_time" content="2021-04-13T11:32:51.000Z">
-<meta property="article:modified_time" content="2021-04-13T14:40:53.521Z">
+<meta property="article:published_time" content="2021-04-13T14:36:51.000Z">
+<meta property="article:modified_time" content="2021-04-15T15:37:47.803Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="面试">
-<meta property="article:tag" content="容器">
+<meta property="article:tag" content="JUC">
 <meta name="twitter:card" content="summary">
 
 
@@ -122,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/13/Java-ConcurrentHashMap学习/"/>
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/13/Java-并发容器/"/>
 
 
 
 
 
-  <title>Java-ConcurrentHashMap学习 | Hikari的Java之路</title>
+  <title>Java-CopyOnWriteArrayList学习 | Hikari的Java之路</title>
   
 
 
@@ -265,7 +265,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/Java-ConcurrentHashMap%E5%AD%A6%E4%B9%A0/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/Java-%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -282,7 +282,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java-ConcurrentHashMap学习</h1>
+          <h1 class="post-title" itemprop="name headline">Java-CopyOnWriteArrayList学习</h1>
         
 
         <div class="post-meta">
@@ -294,7 +294,7 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T19:32:51+08:00">
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T22:36:51+08:00">
                 2021-04-13
               </time>
             
@@ -317,8 +317,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">Java基础 - Java容器</span>
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-JUC/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - JUC</span>
                   </a>
                 </span>
 
@@ -354,30 +354,74 @@
       
 
       
-        <h1 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h1><ol>
+        <h1 id="JDK-提供的并发容器总结"><a href="#JDK-提供的并发容器总结" class="headerlink" title="JDK 提供的并发容器总结"></a>JDK 提供的并发容器总结</h1><p>JDK 提供的这些容器大部分在 <code>java.util.concurrent</code> 包中。</p>
+<ul>
+<li><strong>ConcurrentHashMap:</strong> 线程安全的 HashMap</li>
+<li><strong>CopyOnWriteArrayList:</strong> 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector.</li>
+<li><strong>ConcurrentLinkedQueue:</strong> 高效的并发队列，使用链表实现。可以看做一个线程安全的 LinkedList，这是一个非阻塞队列。</li>
+<li><strong>BlockingQueue:</strong> 这是一个接口，JDK 内部通过链表、数组等方式实现了这个接口。表示阻塞队列，非常适合用于作为数据共享的通道。</li>
+<li><strong>ConcurrentSkipListMap:</strong> 跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。</li>
+</ul>
+<h1 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h1><h2 id="特征："><a href="#特征：" class="headerlink" title="特征："></a>特征：</h2><ol>
 <li>所有的操作都是线程安全的，我们在使用时，无需再加锁；</li>
 <li>多个线程同时进行 put、remove 等操作时并不会阻塞，可以同时进行，和 HashTable 不同，HashTable 在操作时，会锁住整个 Map；</li>
 <li>迭代过程中，即使 Map 结构被修改，也不会抛 ConcurrentModificationException 异常；</li>
 <li>除了数组 + 链表 + 红黑树的基本结构外，新增了转移节点，是为了保证扩容时的线程安全的节点；</li>
 <li>提供了很多 Stream 流式方法，比如说：forEach、search、reduce 等等。</li>
 </ol>
-<h1 id="Concurrenthashmap为什么键和值不能为null？"><a href="#Concurrenthashmap为什么键和值不能为null？" class="headerlink" title="Concurrenthashmap为什么键和值不能为null？"></a>Concurrenthashmap为什么键和值不能为null？</h1><p>因为concurrenthashmap它们是用于<strong>多线程</strong>的，<strong>并发的</strong> ，如果map.get(key)得到了null，不能判断到底是映射的value是null,还是因为没有找到对应的key而为空，而用于单线程状态的hashmap却可以用containKey（key） 去判断到底是否包含了这个null。</p>
+<h2 id="Concurrenthashmap为什么键和值不能为null？"><a href="#Concurrenthashmap为什么键和值不能为null？" class="headerlink" title="Concurrenthashmap为什么键和值不能为null？"></a>Concurrenthashmap为什么键和值不能为null？</h2><p>因为concurrenthashmap它们是用于<strong>多线程</strong>的，<strong>并发的</strong> ，如果map.get(key)得到了null，不能判断到底是映射的value是null,还是因为没有找到对应的key而为空，而用于单线程状态的hashmap却可以用containKey（key） 去判断到底是否包含了这个null。</p>
 <ul>
 <li>concurrenthashmap为什么就不能containKey(key) ？一个线程先get(key)再containKey(key)，这两个方法的中间时刻，其他线程怎么操作这个key都会可能发生，例如删掉这个key</li>
 </ul>
-<h1 id="实现线程安全的方式"><a href="#实现线程安全的方式" class="headerlink" title="实现线程安全的方式"></a>实现线程安全的方式</h1><h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>通过自旋 + CAS +  双重 check 等手段保证了数组初始化时的线程安全</p>
-<h2 id="新增槽点值时的线程安全"><a href="#新增槽点值时的线程安全" class="headerlink" title="新增槽点值时的线程安全"></a>新增槽点值时的线程安全</h2><ol>
+<h2 id="实现线程安全的方式"><a href="#实现线程安全的方式" class="headerlink" title="实现线程安全的方式"></a>实现线程安全的方式</h2><h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>通过自旋 + CAS +  双重 check 等手段保证了数组初始化时的线程安全</p>
+<h3 id="新增槽点值时的线程安全"><a href="#新增槽点值时的线程安全" class="headerlink" title="新增槽点值时的线程安全"></a>新增槽点值时的线程安全</h3><ol>
 <li>通过自旋死循环保证一定可以新增成功。</li>
 <li>当前槽点为空时，通过 CAS 新增。</li>
 <li>当前槽点有值，锁住当前槽点。</li>
 <li>红黑树旋转时，锁住红黑树的根节点，保证同一时刻，当前红黑树只能被一个线程旋转，</li>
 </ol>
-<h2 id="扩容时线程安全"><a href="#扩容时线程安全" class="headerlink" title="扩容时线程安全"></a>扩容时线程安全</h2><ol>
+<h3 id="扩容时线程安全"><a href="#扩容时线程安全" class="headerlink" title="扩容时线程安全"></a>扩容时线程安全</h3><ol>
 <li>拷贝槽点时，会把原数组的槽点锁住；</li>
 <li>拷贝成功之后，会把原数组的槽点设置成转移节点</li>
 <li>从尾到头进行拷贝，拷贝成功就把原数组的槽点设置成转移节点</li>
 <li>等扩容拷贝都完成之后，直接把新数组的值赋值给数组容器，之前等待 put 的数据才能继续 put。</li>
 </ol>
+<h1 id="CopyOnWriteArrayList"><a href="#CopyOnWriteArrayList" class="headerlink" title="CopyOnWriteArrayList"></a>CopyOnWriteArrayList</h1><h2 id="特征：-1"><a href="#特征：-1" class="headerlink" title="特征："></a>特征：</h2><ol>
+<li>线程安全的，多线程环境下可以直接使用，无需加锁；</li>
+<li>通过锁 + 数组拷贝 + volatile 关键字保证了线程安全；<ul>
+<li>加锁：保证同一时刻数组只能被一个线程操作；</li>
+<li>数组拷贝：保证数组的内存地址被修改，修改后触发 volatile 的可见性，其它线程可以立马知道数组已经被修改；</li>
+<li>volatile：值被修改后，其它线程能够立马感知最新值。</li>
+</ul>
+</li>
+<li>每次数组操作，都会把数组拷贝一份出来，在新数组上进行操作，操作成功之后再赋值回去。</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://www.imooc.com/read/47/article/857">源码学习</a></p>
+<h1 id="ConcurrentLinkedQueue（非阻塞队列）"><a href="#ConcurrentLinkedQueue（非阻塞队列）" class="headerlink" title="ConcurrentLinkedQueue（非阻塞队列）"></a>ConcurrentLinkedQueue（非阻塞队列）</h1><ol>
+<li>主要使用 CAS 非阻塞算法来实现线程安全</li>
+<li>使用链表作为其数据结构</li>
+<li> 适合在对性能要求相对较高，同时对队列的读写存在多个线程同时进行的场景即如果对队列加锁的成本较高则适合使用无锁的 ConcurrentLinkedQueue 来替代</li>
+</ol>
+<h1 id="BlockingQueue（阻塞队列）"><a href="#BlockingQueue（阻塞队列）" class="headerlink" title="BlockingQueue（阻塞队列）"></a>BlockingQueue（阻塞队列）</h1><p>被广泛使用在“生产者-消费者”问题中，其原因是 BlockingQueue 提供了可阻塞的插入和移除的方法。当队列容器已满，生产者线程会被阻塞，直到队列未满；当队列容器为空时，消费者线程会被阻塞，直至队列非空时为止。</p>
+<p>BlockingQueue 是一个接口，继承自 Queue，所以其实现类也可以作为 Queue 的实现来使用，而 Queue 又继承自 Collection 接口，<strong>ArrayBlockingQueue、LinkedBlockingQueue、PriorityBlockingQueue，这三个 BlockingQueue 的实现类。</strong></p>
+<h2 id="ArrayBlockingQueue（BlockingQueue-接口的有界队列实现类）"><a href="#ArrayBlockingQueue（BlockingQueue-接口的有界队列实现类）" class="headerlink" title="ArrayBlockingQueue（BlockingQueue 接口的有界队列实现类）"></a>ArrayBlockingQueue（BlockingQueue 接口的有界队列实现类）</h2><ol>
+<li>底层采用<strong>数组</strong>来实现。</li>
+<li> 一旦创建，容量不能改变</li>
+<li>并发控制采用可重入锁来控制，不管是插入操作还是读取操作，都需要获取到锁才能进行操作</li>
+<li>当队列容量满时，尝试将元素放入队列将导致操作阻塞;尝试从一个空队列中取一个元素也会同样阻塞</li>
+</ol>
+<h2 id="LinkedBlockingQueue（可以当做无界队列也可以当做有界队列来使用）"><a href="#LinkedBlockingQueue（可以当做无界队列也可以当做有界队列来使用）" class="headerlink" title="LinkedBlockingQueue（可以当做无界队列也可以当做有界队列来使用）"></a>LinkedBlockingQueue（可以当做无界队列也可以当做有界队列来使用）</h2><ol>
+<li>底层基于<strong>单向链表</strong>实现的阻塞队列</li>
+<li>可以当做无界队列也可以当做有界队列来使用，同样满足 FIFO 的特性</li>
+<li>与 ArrayBlockingQueue 相比起来具有更高的吞吐量，为了防止 LinkedBlockingQueue 容量迅速增，损耗大量内存。通常在创建 LinkedBlockingQueue 对象时，会指定其大小，如果未指定，容量等于 Integer.MAX_VALUE。</li>
+</ol>
+<h2 id="PriorityBlockingQueue（支持优先级的无界阻塞队列）"><a href="#PriorityBlockingQueue（支持优先级的无界阻塞队列）" class="headerlink" title="PriorityBlockingQueue（支持优先级的无界阻塞队列）"></a>PriorityBlockingQueue（支持优先级的无界阻塞队列）</h2><ol>
+<li>支持优先级的无界阻塞队列，默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 <code>compareTo()</code> 方法来指定元素排序规则，或者初始化时通过构造器参数 <code>Comparator</code>来指定排序规则。</li>
+<li>并发控制采用的是 <strong>ReentrantLock</strong>，队列为无界队列</li>
+<li>不可以插入 null 值，同时，插入队列的对象必须是可比较大小的（comparable），否则报 ClassCastException 异常。它的插入操作 put 方法不会 block，因为它是无界队列（take 方法在队列为空的时候会阻塞）。</li>
+</ol>
+<h1 id="ConcurrentSkipListMap（跳表的实现）"><a href="#ConcurrentSkipListMap（跳表的实现）" class="headerlink" title="ConcurrentSkipListMap（跳表的实现）"></a>ConcurrentSkipListMap（跳表的实现）</h1><p>跳表是一种利用空间换时间的算法</p>
+<h1 id="同步容器器"><a href="#同步容器器" class="headerlink" title="同步容器器"></a>同步容器器</h1><p>1、主要代表有Vector和Hashtable，以及Collections.synchronizedXxx等。<br>2、锁的粒度为当前对象整体。<br>3、迭代器器是及时失败的，即在迭代的过程中发现被修改，就会抛出ConcurrentModificationException。</p>
 
       
     </div>
@@ -399,7 +443,7 @@
           
             <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
           
-            <a href="/tags/%E5%AE%B9%E5%99%A8/" rel="tag"># 容器</a>
+            <a href="/tags/JUC/" rel="tag"># JUC</a>
           
         </div>
       
@@ -422,8 +466,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/04/13/Java-CopyOnWriteArrayList%E5%AD%A6%E4%B9%A0/" rel="prev" title="Java-CopyOnWriteArrayList学习">
-                Java-CopyOnWriteArrayList学习 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/04/13/Java-JVM/" rel="prev" title="Java-JVM">
+                Java-JVM <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -502,7 +546,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-count">49</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -513,7 +557,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -524,7 +568,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -573,7 +617,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ConcurrentHashMap"><span class="nav-number">1.</span> <span class="nav-text">ConcurrentHashMap</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Concurrenthashmap%E4%B8%BA%E4%BB%80%E4%B9%88%E9%94%AE%E5%92%8C%E5%80%BC%E4%B8%8D%E8%83%BD%E4%B8%BAnull%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">Concurrenthashmap为什么键和值不能为null？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">实现线程安全的方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">3.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E%E6%A7%BD%E7%82%B9%E5%80%BC%E6%97%B6%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">3.2.</span> <span class="nav-text">新增槽点值时的线程安全</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A9%E5%AE%B9%E6%97%B6%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">3.3.</span> <span class="nav-text">扩容时线程安全</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#JDK-%E6%8F%90%E4%BE%9B%E7%9A%84%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8%E6%80%BB%E7%BB%93"><span class="nav-number">1.</span> <span class="nav-text">JDK 提供的并发容器总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ConcurrentHashMap"><span class="nav-number">2.</span> <span class="nav-text">ConcurrentHashMap</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%EF%BC%9A"><span class="nav-number">2.1.</span> <span class="nav-text">特征：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Concurrenthashmap%E4%B8%BA%E4%BB%80%E4%B9%88%E9%94%AE%E5%92%8C%E5%80%BC%E4%B8%8D%E8%83%BD%E4%B8%BAnull%EF%BC%9F"><span class="nav-number">2.2.</span> <span class="nav-text">Concurrenthashmap为什么键和值不能为null？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8%E7%9A%84%E6%96%B9%E5%BC%8F"><span class="nav-number">2.3.</span> <span class="nav-text">实现线程安全的方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.3.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E%E6%A7%BD%E7%82%B9%E5%80%BC%E6%97%B6%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">2.3.2.</span> <span class="nav-text">新增槽点值时的线程安全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%AE%B9%E6%97%B6%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">2.3.3.</span> <span class="nav-text">扩容时线程安全</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CopyOnWriteArrayList"><span class="nav-number">3.</span> <span class="nav-text">CopyOnWriteArrayList</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%EF%BC%9A-1"><span class="nav-number">3.1.</span> <span class="nav-text">特征：</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ConcurrentLinkedQueue%EF%BC%88%E9%9D%9E%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">ConcurrentLinkedQueue（非阻塞队列）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#BlockingQueue%EF%BC%88%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">BlockingQueue（阻塞队列）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ArrayBlockingQueue%EF%BC%88BlockingQueue-%E6%8E%A5%E5%8F%A3%E7%9A%84%E6%9C%89%E7%95%8C%E9%98%9F%E5%88%97%E5%AE%9E%E7%8E%B0%E7%B1%BB%EF%BC%89"><span class="nav-number">5.1.</span> <span class="nav-text">ArrayBlockingQueue（BlockingQueue 接口的有界队列实现类）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LinkedBlockingQueue%EF%BC%88%E5%8F%AF%E4%BB%A5%E5%BD%93%E5%81%9A%E6%97%A0%E7%95%8C%E9%98%9F%E5%88%97%E4%B9%9F%E5%8F%AF%E4%BB%A5%E5%BD%93%E5%81%9A%E6%9C%89%E7%95%8C%E9%98%9F%E5%88%97%E6%9D%A5%E4%BD%BF%E7%94%A8%EF%BC%89"><span class="nav-number">5.2.</span> <span class="nav-text">LinkedBlockingQueue（可以当做无界队列也可以当做有界队列来使用）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PriorityBlockingQueue%EF%BC%88%E6%94%AF%E6%8C%81%E4%BC%98%E5%85%88%E7%BA%A7%E7%9A%84%E6%97%A0%E7%95%8C%E9%98%BB%E5%A1%9E%E9%98%9F%E5%88%97%EF%BC%89"><span class="nav-number">5.3.</span> <span class="nav-text">PriorityBlockingQueue（支持优先级的无界阻塞队列）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ConcurrentSkipListMap%EF%BC%88%E8%B7%B3%E8%A1%A8%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">ConcurrentSkipListMap（跳表的实现）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E5%AE%B9%E5%99%A8%EF%A8%B8"><span class="nav-number">7.</span> <span class="nav-text">同步容器器</span></a></li></ol></div>
             
 
           </div>
