@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="IO相关类 什么是比特(Bit),什么是字节(Byte),什么是字符(Char),它们长度是多少,各有什么区别 Bit最小的二进制单位 ，是计算机的操作部分 取值0或者1 Byte是计算机操作数据的最小单位由8位bit组成 取值（-128-127） Char是用户的可读写的最小单位，在java里面由16位bit组成 取值（0-65535）    Bit 是最小单位 计算机 只能认识 0或者1  8">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java-IO">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/16/Java-IO/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="IO相关类 什么是比特(Bit),什么是字节(Byte),什么是字符(Char),它们长度是多少,各有什么区别 Bit最小的二进制单位 ，是计算机的操作部分 取值0或者1 Byte是计算机操作数据的最小单位由8位bit组成 取值（-128-127） Char是用户的可读写的最小单位，在java里面由16位bit组成 取值（0-65535）    Bit 是最小单位 计算机 只能认识 0或者1  8">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/IO.png?ynotemdtimestamp=1618464916797">
+<meta property="og:image" content="file:///E:/YouDaoYun/m18739288920@163.com/f647b48c574b4092a51884e9e61bfa18/dibm72ln.bmp?ynotemdtimestamp=1618464916797">
+<meta property="og:image" content="file:///E:/YouDaoYun/m18739288920@163.com/e97853588c7049978dbbf1a33d587abc/4jeowode.bmp?ynotemdtimestamp=1618464916797">
+<meta property="og:image" content="file:///E:/YouDaoYun/m18739288920@163.com/09609ba89d384e3892d18788d53c7757/5f7xeyrx.bmp?ynotemdtimestamp=1618464916797">
+<meta property="og:image" content="file:///E:/YouDaoYun/m18739288920@163.com/e0c8d4aa2d1948f6b3f32303b1cd0d68/ocscdu88.bmp?ynotemdtimestamp=1618464916797">
+<meta property="og:image" content="file:///E:/YouDaoYun/m18739288920@163.com/79794084e8c54d47b023cfe063284857/bo4ecmnb.bmp?ynotemdtimestamp=1618464916797">
+<meta property="og:image" content="file:///E:/YouDaoYun/m18739288920@163.com/948c43bc8c8e4d74871a2798f0e4861d/vyjix1tx.bmp?ynotemdtimestamp=1618464916797">
+<meta property="article:published_time" content="2021-04-15T16:59:50.000Z">
+<meta property="article:modified_time" content="2021-04-15T17:13:19.860Z">
+<meta property="article:author" content="LiYuan">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/IO.png?ynotemdtimestamp=1618464916797">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/16/Java-IO/"/>
+
+
+
+
+
+  <title>Java-IO | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/16/Java-IO/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java-IO</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-16T00:59:50+08:00">
+                2021-04-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="IO相关类"><a href="#IO相关类" class="headerlink" title="IO相关类"></a>IO相关类</h1><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/IO.png?ynotemdtimestamp=1618464916797" alt="image"></p>
+<h1 id="什么是比特-Bit-什么是字节-Byte-什么是字符-Char-它们长度是多少-各有什么区别"><a href="#什么是比特-Bit-什么是字节-Byte-什么是字符-Char-它们长度是多少-各有什么区别" class="headerlink" title="什么是比特(Bit),什么是字节(Byte),什么是字符(Char),它们长度是多少,各有什么区别"></a>什么是比特(Bit),什么是字节(Byte),什么是字符(Char),它们长度是多少,各有什么区别</h1><ul>
+<li>Bit最小的二进制单位 ，是计算机的操作部分 取值0或者1</li>
+<li>Byte是计算机操作数据的最小单位由8位bit组成 取值（-128-127）</li>
+<li>Char是用户的可读写的最小单位，在java里面由16位bit组成 取值（0-65535）</li>
+</ul>
+<hr>
+<ul>
+<li>Bit 是最小单位 计算机 只能认识 0或者1 </li>
+<li>8个字节 是给计算机看的</li>
+<li>字符 是看到的东西  一个字符=二个字节</li>
+</ul>
+<h1 id="什么是流？作用是什么？"><a href="#什么是流？作用是什么？" class="headerlink" title="什么是流？作用是什么？"></a>什么是流？作用是什么？</h1><p>流是一种有顺序的，有起点和终点的字节集合，是对数据传输的总成或抽象。即数据在两设备之间的传输称之为流，流的本质是数据传输，根据数据传输的特性讲流抽象为各种类，方便更直观的进行数据操作。</p>
+<h1 id="什么是IO流？"><a href="#什么是IO流？" class="headerlink" title="什么是IO流？"></a>什么是IO流？</h1><p>它是一种数据的流从源头流到目的地。比如文件拷贝，输入流和输出流都包括了。输入流从文件中读取数据存储到进程(process)中，输出流从进程中读取数据然后写入到目标文件。</p>
+<h1 id="IO流的分类"><a href="#IO流的分类" class="headerlink" title="IO流的分类"></a>IO流的分类</h1><p>根据数据处理类的不同分为：字符流和字节流； 根据数据流向不同分为：输入流和输出流。</p>
+<h1 id="Java-中-BIO、NIO、AIO-的区别是什么？"><a href="#Java-中-BIO、NIO、AIO-的区别是什么？" class="headerlink" title="Java 中 BIO、NIO、AIO 的区别是什么？"></a>Java 中 BIO、NIO、AIO 的区别是什么？</h1><h2 id="同步，异步，阻塞，非阻塞"><a href="#同步，异步，阻塞，非阻塞" class="headerlink" title="同步，异步，阻塞，非阻塞"></a>同步，异步，阻塞，非阻塞</h2><p><strong>1. 同步阻塞：</strong> 客户端发送请求给服务端，此时服务端处理任务时间很久，则客户端则被服务端堵塞了，所以客户端会一直等待服务端的响应，此时客户端不能做其他任何事，服务端也不会接受其他客户端的请求。这种通信机制比较简单粗暴，但是效率不高。</p>
+<p><strong>2. 同步非阻塞：</strong> 客户端发送请求给服务端，此时服务端处理任务时间很久，这个时候虽然客户端会一直等待响应，但是服务端可以处理其他的请求，过一会回来处理原先的。这种方式很高效，一个服务端可以处理很多请求，不会在因为任务没有处理完而堵着，所以这是非阻塞的。</p>
+<p><strong>3. 异步阻塞：</strong> 客户端发送请求给服务端，此时服务端处理任务时间很久，但是客户端不会等待服务器响应，它可以做其他的任务，等服务器处理完毕后再把结果响应给客户端，客户端得到回调后再处理服务端的响应。这种方式可以避免客户端一直处于等待的状态，优化了用户体验，其实就是类似于网页里发起的ajax异步请求。</p>
+<p><strong>4. 异步非阻塞：</strong> 客户端发送请求给服务端，此时服务端处理任务时间很久，这个时候的任务虽然处理时间会很久，但是客户端可以做其他的任务，因为他是异步的，可以在回调函数里处理响应；同时服务端是非阻塞的，所以服务端可以去处理其他的任务，如此，这个模式就显得非常的高效了。</p>
+<h2 id="BIO-NIO-AIO"><a href="#BIO-NIO-AIO" class="headerlink" title="BIO/NIO/AIO"></a>BIO/NIO/AIO</h2><p>以上四点，除了第三点，其余的分别为BIO/NIO/AIO，面试官如果问你<code>“请简述一下BIO/NIO/AIO之间的概念与区别”</code>，那么你就可以组织一下语言来回答，或者通过如下生活实例来阐述也是可以的：<br><strong>1. BIO：</strong> 我去上厕所，这个时候坑位都满了，我必须等待坑位释放了，我才能上吧？！此时我啥都不干，站在厕所里盯着，过了一会有人出来了，我就赶紧蹲上去。<br><strong>2. NIO：</strong> 我去上厕所，这个时候坑位都满了，没关系，哥不急，我出去抽根烟，过会回来看看有没有空位，如果有我就蹲，如果没有我出去接着抽烟或者玩会手机。<br><strong>3. 异步阻塞：</strong> 我去上厕所，这个时候坑位都满了，没事我等着，等有了新的空位，让他通知我就行，通知了我，我就蹲上去。<br><strong>4. AIO：</strong> 我去上厕所，这个时候坑位都满了，没事，我一点也不急，我去厕所外面抽根烟再玩玩手机，等有新的坑位释放了，会有人通知我的，通知我了，我就可以进去蹲了。</p>
+<p>从这个生活实例中能可以看得出来：</p>
+<ul>
+<li><code>同步</code>就是我需要自己每隔一段时间，以轮训的方式去看看有没有空的坑位；</li>
+<li><code>异步</code>则是有人拉完茅坑会通知你，通知你后你再回去蹲；</li>
+<li><code>阻塞</code>就是在等待的过程中，你不去做其他任何事情，干等着；</li>
+<li><code>非阻塞</code>就是你再等待的过程中可以去做其他的事，比如抽烟、喝酒、烫头、玩手机。</li>
+</ul>
+<h1 id="字节流、字符流的区别及适用场景分别是什么？"><a href="#字节流、字符流的区别及适用场景分别是什么？" class="headerlink" title="字节流、字符流的区别及适用场景分别是什么？"></a>字节流、字符流的区别及适用场景分别是什么？</h1><p>字节流的类通常以stream结尾,字符流的类通常以reader和writer结尾</p>
+<ul>
+<li>区别：<ul>
+<li>读写单位不同：字节流一字节（8bit）为单位，字符流以字符为单位，根据码表映射字符，一次可能读多个字节。</li>
+<li>处理单元不同，字节流处理的最基本单位为 1 个字节，字符流处理的最基本的单元是 Unicode 代码单元（大小 2 字节）；</li>
+<li>字节流默认不使用缓冲区；字符流使用缓冲区；</li>
+</ul>
+</li>
+<li>适用场景<ul>
+<li>字节流实际上可以处理任何文件，因为字节是存储的基础单元；</li>
+<li>待处理的流如果是可打印的字符，那么用字符流更方便一些。</li>
+</ul>
+</li>
+</ul>
+<h1 id="字节流和字符流，你更喜欢使用哪一个？"><a href="#字节流和字符流，你更喜欢使用哪一个？" class="headerlink" title="字节流和字符流，你更喜欢使用哪一个？"></a>字节流和字符流，你更喜欢使用哪一个？</h1><p>许多在字符流中存在的特性，字节流中不存在。比如使用BufferedReader而不是BufferedInputStreams或DataInputStream时，可以使用newLine()方法来读取下一行，但是在字节流中我们需要做额外的操作。</p>
+<h1 id="FileInputStream和FileOutputStream是什么？"><a href="#FileInputStream和FileOutputStream是什么？" class="headerlink" title="FileInputStream和FileOutputStream是什么？"></a>FileInputStream和FileOutputStream是什么？</h1><p>这是在拷贝文件操作的时候，经常用到的两个类。在处理小文件的时候，它们性能表现还不错，在大文件的时候，最好使用BufferedInputStream (或 BufferedReader) 和 BufferedOutputStream (或 BufferedWriter)</p>
+<h1 id="什么是java序列化，如何实现java序列化？"><a href="#什么是java序列化，如何实现java序列化？" class="headerlink" title="什么是java序列化，如何实现java序列化？"></a>什么是java序列化，如何实现java序列化？</h1><p>Java对象的序列化指将一个java对象写入OI流中，与此对应的是，对象的反序列化则从IO流中恢复该java对象。 如果要让某个对象支持序列化机制，则必须让它的类是可序列化的，为了让某个类是可序列化的，该类必须实现Serializable接口或Externalizable接口</p>
+<h1 id="那么什么是缓冲区？又有什么作用呢？"><a href="#那么什么是缓冲区？又有什么作用呢？" class="headerlink" title="那么什么是缓冲区？又有什么作用呢？"></a>那么什么是缓冲区？又有什么作用呢？</h1><p>可以把缓冲区理解为一段特殊的内存，字符流操作时为了不那么频繁地读写 IO，会把一部分数据暂时读入到内存的某块区域，然后直接从该区域读取数据，以提升程序的性能</p>
+<h1 id="基于-BIO-实现的-Server-端，当建立了-100-个链接时，会有多少个子线程？如果基于-NIO，又会是多少个线程？为什么？"><a href="#基于-BIO-实现的-Server-端，当建立了-100-个链接时，会有多少个子线程？如果基于-NIO，又会是多少个线程？为什么？" class="headerlink" title="基于 BIO 实现的 Server 端，当建立了 100 个链接时，会有多少个子线程？如果基于 NIO，又会是多少个线程？为什么？"></a>基于 BIO 实现的 Server 端，当建立了 100 个链接时，会有多少个子线程？如果基于 NIO，又会是多少个线程？为什么？</h1><p>因为传统的 IO 也就是 BIO 是同步线程堵塞的，所以每个连接都要分配一个专用线程来处理请求，这样 10 个连接就会创建 10 个线程去处理。而 NIO 是一种同步非阻塞的 I/O 模型，它的核心技术是多路复用，可以使用一个链接上的不同通道来处理不同的请求，</p>
+<h1 id="System-out-println-是什么？"><a href="#System-out-println-是什么？" class="headerlink" title="System.out.println()是什么？"></a>System.out.println()是什么？</h1><p><code>println</code>是<code>PrintStream</code>的一个方法。<code>out</code>是一个<code>静态PrintStream类型</code>的成员变量，<code>System</code>是一个<code>java.lang</code>包中的类，用于和底层的操作系统进行交互。</p>
+<h1 id="什么是Filter流？"><a href="#什么是Filter流？" class="headerlink" title="什么是Filter流？"></a>什么是Filter流？</h1><p>Filter Stream是一种IO流主要作用是用来对存在的流增加一些额外的功能，像给目标文件增加源文件中不存在的行数，或者增加拷贝的性能。</p>
+<h1 id="有哪些可用的Filter流？"><a href="#有哪些可用的Filter流？" class="headerlink" title="有哪些可用的Filter流？"></a>有哪些可用的Filter流？</h1><p>在java.io包中主要由4个可用的filter Stream。两个字节filter stream，两个字符filter stream. 分别是FilterInputStream, FilterOutputStream, FilterReader and FilterWriter.这些类是抽象类，不能被实例化的。</p>
+<h1 id="有哪些Filter流的子类。"><a href="#有哪些Filter流的子类。" class="headerlink" title="有哪些Filter流的子类。"></a>有哪些Filter流的子类。</h1><ul>
+<li>LineNumberInputStream 给目标文件增加行号<ul>
+<li>DataInputStream 有些特殊的方法如readInt(), readDouble()和readLine() 等可以读取一个 int, double和一个string一次性的,</li>
+</ul>
+</li>
+<li>BufferedInputStream 增加性能</li>
+<li>PushbackInputStream 推送要求的字节到系统中</li>
+</ul>
+<h1 id="SequenceInputStream的作用？"><a href="#SequenceInputStream的作用？" class="headerlink" title="SequenceInputStream的作用？"></a>SequenceInputStream的作用？</h1><p>在拷贝多个文件到一个目标文件的时候是非常有用的。可以使用很少的代码实现</p>
+<h1 id="说说PrintStream和PrintWriter"><a href="#说说PrintStream和PrintWriter" class="headerlink" title="说说PrintStream和PrintWriter"></a>说说PrintStream和PrintWriter</h1><p>他们两个的功能相同，但是属于不同的分类。字节流和字符流。他们都有println()方法。</p>
+<h1 id="在文件拷贝的时候，那一种流可以提升更多的性能？"><a href="#在文件拷贝的时候，那一种流可以提升更多的性能？" class="headerlink" title="在文件拷贝的时候，那一种流可以提升更多的性能？"></a>在文件拷贝的时候，那一种流可以提升更多的性能？</h1><p>在字节流的时候，使用BufferedInputStream和BufferedOutputStream。 在字符流的时候，使用BufferedReader 和 BufferedWriter</p>
+<h1 id="说说管道流-Piped-Stream"><a href="#说说管道流-Piped-Stream" class="headerlink" title="说说管道流(Piped Stream)"></a>说说管道流(Piped Stream)</h1><p>有四种管道流， PipedInputStream, PipedOutputStream, PipedReader 和 PipedWriter.在多个线程或进程中传递数据的时候管道流非常有用。</p>
+<h1 id="说说File类"><a href="#说说File类" class="headerlink" title="说说File类"></a>说说File类</h1><p>它不属于 IO流，也不是用于文件操作的，它主要用于知道一个文件的属性，读写权限，大小等信息。</p>
+<h1 id="说说RandomAccessFile"><a href="#说说RandomAccessFile" class="headerlink" title="说说RandomAccessFile?"></a>说说RandomAccessFile?</h1><p>它在java.io包中是一个特殊的类，既不是输入流也不是输出流，它两者都可以做到。他是Object的直接子类。通常来说，一个流只有一个功能，要么读，要么写。但是RandomAccessFile既可以读文件，也可以写文件。 DataInputStream 和 DataOutStream有的方法，在RandomAccessFile中都存在。</p>
+<h1 id="Linux常见IO模型有哪些？（了解）"><a href="#Linux常见IO模型有哪些？（了解）" class="headerlink" title="Linux常见IO模型有哪些？（了解）"></a>Linux常见IO模型有哪些？（了解）</h1><p>1、阻塞 I/O（blocking IO）</p>
+<p>2、非阻塞 I/O（nonblocking IO）</p>
+<p>3、I/O 多路复用（ IO multiplexing）</p>
+<p>4、信号驱动 I/O（ signal driven IO）</p>
+<p>5、异步 I/O（asynchronous IO）</p>
+<p>只有5是异步模型，其余皆为同步模型。</p>
+<p><img src="file:///E:/YouDaoYun/m18739288920@163.com/f647b48c574b4092a51884e9e61bfa18/dibm72ln.bmp?ynotemdtimestamp=1618464916797" alt="image"></p>
+<h2 id="什么是阻塞IO模型？"><a href="#什么是阻塞IO模型？" class="headerlink" title="什么是阻塞IO模型？"></a>什么是阻塞IO模型？</h2><p>阻塞IO模型是最常见的IO模型了，对于所有的“慢速设备”（socket、pipe、fifo、terminal）的IO默认的方式都是阻塞的方式。阻塞就是进程放弃cpu，让给其他进程使用cpu。进程阻塞最显著的表现就是进程睡眠了。阻塞的时间通常取决于数据是否到来。 这种方式使用简单，但随之而来的问题就是会形成阻塞，需要独立线程配合，而这些线程在大多数时候都是没有进行运算的。Java的BIO使用这种方式，问题带来的问题很明显，一个Socket需要一个独立的线程，因此，会造成线程膨胀。</p>
+<p><img src="file:///E:/YouDaoYun/m18739288920@163.com/e97853588c7049978dbbf1a33d587abc/4jeowode.bmp?ynotemdtimestamp=1618464916797" alt="image"></p>
+<h2 id="什么是非阻塞IO模型？"><a href="#什么是非阻塞IO模型？" class="headerlink" title="什么是非阻塞IO模型？"></a>什么是非阻塞IO模型？</h2><p>非阻塞IO就是设置IO相关的系统调用为non-blocking，随后进行的IO操作无论有没有可用数据都会立即返回，并设置errno为EWOULDBLOCK或者EAGAIN。我们可以通过主动check的方式（polling，轮询）确保IO有效时，随之进行相关的IO操作。当然这种方式看起来就似乎不太靠谱，浪费了太多的CPU时间，用宝贵的CPU时间做轮询太不靠谱儿了。</p>
+<p><img src="file:///E:/YouDaoYun/m18739288920@163.com/09609ba89d384e3892d18788d53c7757/5f7xeyrx.bmp?ynotemdtimestamp=1618464916797" alt="image"></p>
+<h2 id="什么是多路复用IO模型？"><a href="#什么是多路复用IO模型？" class="headerlink" title="什么是多路复用IO模型？"></a>什么是多路复用IO模型？</h2><p>为了解决阻塞I/O的问题,就有了I/O多路复用模型,多路复用就是用单独的线程(是内核级的, 可以认为是高效的优化的) 来统一等待所有的socket上的数据, 一当某个socket上有数据后, 就启用用户线程(可能是从线程池中取出, 而不是重新生成), copy socket data, 并且处理message.因为网络延迟的原因, 同时在处理socket data的用户线程往往比实际的socket数量要少很多. 所以实际应用中, 大部分是用线程池, 池中thread数量可随socket的高峰和低谷 而动态调整.</p>
+<p>多路复用I/O中内核中统一的wait socket data那部分可以理解成是非阻塞, 也可以理解成阻塞. 可以理解成非阻塞 是因为它不是等到socket数据全部到达再处理, 而是有了一部分数据就会调用用户线程来处理, 理解成阻塞, 是因为它和用户空间(Appliction)层的非阻塞socket的不同是: socket中没有数据时, 内核还是wait(阻塞)的, 而用户空间的非阻塞socket没有数据也会返回, 会造成CPU的浪费.</p>
+<p>Linux下的select和poll 就是多路复用模式,poll相对select,没有了句柄数的限制,但他们都是在内核层通过轮询socket句柄的方式来实现的, 没有利用更底层的notify机制. 但就算是这样,相对阻塞socket也已经进步了很多很多了! 毕竟用一个内核线程就解决了,阻塞socket中N多线程都在无谓地wait的局面.</p>
+<p>多路复用I/O 还是让用户层来copy socket data. 这个过程是将内核中的socket buffer copy到用户空间的 buffer. 这有两个问题: 一是多了一次内核空间switch到用户空间的过程, 二是用户空间层不便暴露很低层但很高效的copy方式(比如DMA), 所以如果由内核层来做这个动作, 可以更好地提高效率! </p>
+<p><img src="file:///E:/YouDaoYun/m18739288920@163.com/e0c8d4aa2d1948f6b3f32303b1cd0d68/ocscdu88.bmp?ynotemdtimestamp=1618464916797" alt="image"></p>
+<h2 id="什么是信号驱动IO模型？"><a href="#什么是信号驱动IO模型？" class="headerlink" title="什么是信号驱动IO模型？"></a>什么是信号驱动IO模型？</h2><p>所谓信号驱动，就是利用信号机制，安装信号SIGIO的处理函数（进行IO相关操作），通过监控文件描述符，当其就绪时，通知目标进程进行IO操作（signal handler）。 <img src="file:///E:/YouDaoYun/m18739288920@163.com/79794084e8c54d47b023cfe063284857/bo4ecmnb.bmp?ynotemdtimestamp=1618464916797" alt="image"></p>
+<h2 id="什么是异步IO模型？"><a href="#什么是异步IO模型？" class="headerlink" title="什么是异步IO模型？"></a>什么是异步IO模型？</h2><p>由于异步IO请求只是写入了缓存，从缓存到硬盘是否成功不可知，因此异步IO相当于把一个IO拆成了两部分，一是发起请求，二是获取处理结果。因此，对应用来说增加了复杂性。但是异步IO的性能是所有很好的，而且异步的思想贯穿了IT系统方方面面。 <img src="file:///E:/YouDaoYun/m18739288920@163.com/948c43bc8c8e4d74871a2798f0e4861d/vyjix1tx.bmp?ynotemdtimestamp=1618464916797" alt="image"></p>
+<h2 id="select、poll、epoll的区别是什么？"><a href="#select、poll、epoll的区别是什么？" class="headerlink" title="select、poll、epoll的区别是什么？"></a>select、poll、epoll的区别是什么？</h2><p>1、支持一个进程所能打开的最大连接数</p>
+<ul>
+<li>select 是 32位机默认是1024个，64位机默认是2048。</li>
+<li>poll 本质上于select没有区别，但是它没有最大连接数的限制，原因是它是基于链表来存储的。</li>
+<li>epoll 虽然有连接数上限，但是很大，1G内存的机器上可以打开10万左右的连接，2G内存的可以打开20万左右的连接。</li>
+</ul>
+<p>2、fd剧增后带来的I/O效率问题</p>
+<ul>
+<li>select 每次调用事都会对连接进行线性遍历，所以随着fd的增加会造成遍历速度慢，呈线性下降性能问题。</li>
+<li>poll 同上</li>
+<li>epoll epoll内核中实现是根据每个fd的callback函数来实现的，只有活跃的socket才会主动调用callback，所以在活跃的socket较少的情况下，使用epoll没有前面两者的线性下降的性能问题，但是所有的socket都很活跃的情况下，可能会有性能问题。</li>
+</ul>
+<p>3、消息传递方式</p>
+<ul>
+<li>select 内核需要将消息传递到用户空间，都需要内核拷贝动作</li>
+<li>poll 同上</li>
+<li>epoll 通过内核和用户空间共享一块内存来实现的。</li>
+</ul>
+<h1 id="能够向文件输入逻辑型数据的类是："><a href="#能够向文件输入逻辑型数据的类是：" class="headerlink" title="能够向文件输入逻辑型数据的类是："></a>能够向文件输入逻辑型数据的类是：</h1><p>DataOutputStream‘</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/15/ThreadLocal%E5%85%B3%E9%94%AE%E5%AD%97%E5%AD%A6%E4%B9%A0/" rel="next" title="ThreadLocal关键字学习">
+                <i class="fa fa-chevron-left"></i> ThreadLocal关键字学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/16/Java-%E9%98%9F%E5%88%97/" rel="prev" title="Java-队列">
+                Java-队列 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#IO%E7%9B%B8%E5%85%B3%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">IO相关类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%AF%94%E7%89%B9-Bit-%E4%BB%80%E4%B9%88%E6%98%AF%E5%AD%97%E8%8A%82-Byte-%E4%BB%80%E4%B9%88%E6%98%AF%E5%AD%97%E7%AC%A6-Char-%E5%AE%83%E4%BB%AC%E9%95%BF%E5%BA%A6%E6%98%AF%E5%A4%9A%E5%B0%91-%E5%90%84%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-number">2.</span> <span class="nav-text">什么是比特(Bit),什么是字节(Byte),什么是字符(Char),它们长度是多少,各有什么区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%B5%81%EF%BC%9F%E4%BD%9C%E7%94%A8%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">什么是流？作用是什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFIO%E6%B5%81%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">什么是IO流？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IO%E6%B5%81%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-number">5.</span> <span class="nav-text">IO流的分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-%E4%B8%AD-BIO%E3%80%81NIO%E3%80%81AIO-%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">6.</span> <span class="nav-text">Java 中 BIO、NIO、AIO 的区别是什么？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%EF%BC%8C%E5%BC%82%E6%AD%A5%EF%BC%8C%E9%98%BB%E5%A1%9E%EF%BC%8C%E9%9D%9E%E9%98%BB%E5%A1%9E"><span class="nav-number">6.1.</span> <span class="nav-text">同步，异步，阻塞，非阻塞</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BIO-NIO-AIO"><span class="nav-number">6.2.</span> <span class="nav-text">BIO&#x2F;NIO&#x2F;AIO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%97%E8%8A%82%E6%B5%81%E3%80%81%E5%AD%97%E7%AC%A6%E6%B5%81%E7%9A%84%E5%8C%BA%E5%88%AB%E5%8F%8A%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF%E5%88%86%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">7.</span> <span class="nav-text">字节流、字符流的区别及适用场景分别是什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%97%E8%8A%82%E6%B5%81%E5%92%8C%E5%AD%97%E7%AC%A6%E6%B5%81%EF%BC%8C%E4%BD%A0%E6%9B%B4%E5%96%9C%E6%AC%A2%E4%BD%BF%E7%94%A8%E5%93%AA%E4%B8%80%E4%B8%AA%EF%BC%9F"><span class="nav-number">8.</span> <span class="nav-text">字节流和字符流，你更喜欢使用哪一个？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FileInputStream%E5%92%8CFileOutputStream%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">9.</span> <span class="nav-text">FileInputStream和FileOutputStream是什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFjava%E5%BA%8F%E5%88%97%E5%8C%96%EF%BC%8C%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0java%E5%BA%8F%E5%88%97%E5%8C%96%EF%BC%9F"><span class="nav-number">10.</span> <span class="nav-text">什么是java序列化，如何实现java序列化？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%82%A3%E4%B9%88%E4%BB%80%E4%B9%88%E6%98%AF%E7%BC%93%E5%86%B2%E5%8C%BA%EF%BC%9F%E5%8F%88%E6%9C%89%E4%BB%80%E4%B9%88%E4%BD%9C%E7%94%A8%E5%91%A2%EF%BC%9F"><span class="nav-number">11.</span> <span class="nav-text">那么什么是缓冲区？又有什么作用呢？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E-BIO-%E5%AE%9E%E7%8E%B0%E7%9A%84-Server-%E7%AB%AF%EF%BC%8C%E5%BD%93%E5%BB%BA%E7%AB%8B%E4%BA%86-100-%E4%B8%AA%E9%93%BE%E6%8E%A5%E6%97%B6%EF%BC%8C%E4%BC%9A%E6%9C%89%E5%A4%9A%E5%B0%91%E4%B8%AA%E5%AD%90%E7%BA%BF%E7%A8%8B%EF%BC%9F%E5%A6%82%E6%9E%9C%E5%9F%BA%E4%BA%8E-NIO%EF%BC%8C%E5%8F%88%E4%BC%9A%E6%98%AF%E5%A4%9A%E5%B0%91%E4%B8%AA%E7%BA%BF%E7%A8%8B%EF%BC%9F%E4%B8%BA%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">12.</span> <span class="nav-text">基于 BIO 实现的 Server 端，当建立了 100 个链接时，会有多少个子线程？如果基于 NIO，又会是多少个线程？为什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#System-out-println-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">13.</span> <span class="nav-text">System.out.println()是什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFFilter%E6%B5%81%EF%BC%9F"><span class="nav-number">14.</span> <span class="nav-text">什么是Filter流？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%89%E5%93%AA%E4%BA%9B%E5%8F%AF%E7%94%A8%E7%9A%84Filter%E6%B5%81%EF%BC%9F"><span class="nav-number">15.</span> <span class="nav-text">有哪些可用的Filter流？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%89%E5%93%AA%E4%BA%9BFilter%E6%B5%81%E7%9A%84%E5%AD%90%E7%B1%BB%E3%80%82"><span class="nav-number">16.</span> <span class="nav-text">有哪些Filter流的子类。</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SequenceInputStream%E7%9A%84%E4%BD%9C%E7%94%A8%EF%BC%9F"><span class="nav-number">17.</span> <span class="nav-text">SequenceInputStream的作用？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%B4%E8%AF%B4PrintStream%E5%92%8CPrintWriter"><span class="nav-number">18.</span> <span class="nav-text">说说PrintStream和PrintWriter</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%A8%E6%96%87%E4%BB%B6%E6%8B%B7%E8%B4%9D%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%8C%E9%82%A3%E4%B8%80%E7%A7%8D%E6%B5%81%E5%8F%AF%E4%BB%A5%E6%8F%90%E5%8D%87%E6%9B%B4%E5%A4%9A%E7%9A%84%E6%80%A7%E8%83%BD%EF%BC%9F"><span class="nav-number">19.</span> <span class="nav-text">在文件拷贝的时候，那一种流可以提升更多的性能？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%B4%E8%AF%B4%E7%AE%A1%E9%81%93%E6%B5%81-Piped-Stream"><span class="nav-number">20.</span> <span class="nav-text">说说管道流(Piped Stream)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%B4%E8%AF%B4File%E7%B1%BB"><span class="nav-number">21.</span> <span class="nav-text">说说File类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%B4%E8%AF%B4RandomAccessFile"><span class="nav-number">22.</span> <span class="nav-text">说说RandomAccessFile?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux%E5%B8%B8%E8%A7%81IO%E6%A8%A1%E5%9E%8B%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F%EF%BC%88%E4%BA%86%E8%A7%A3%EF%BC%89"><span class="nav-number">23.</span> <span class="nav-text">Linux常见IO模型有哪些？（了解）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%98%BB%E5%A1%9EIO%E6%A8%A1%E5%9E%8B%EF%BC%9F"><span class="nav-number">23.1.</span> <span class="nav-text">什么是阻塞IO模型？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%9D%9E%E9%98%BB%E5%A1%9EIO%E6%A8%A1%E5%9E%8B%EF%BC%9F"><span class="nav-number">23.2.</span> <span class="nav-text">什么是非阻塞IO模型？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8IO%E6%A8%A1%E5%9E%8B%EF%BC%9F"><span class="nav-number">23.3.</span> <span class="nav-text">什么是多路复用IO模型？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E4%BF%A1%E5%8F%B7%E9%A9%B1%E5%8A%A8IO%E6%A8%A1%E5%9E%8B%EF%BC%9F"><span class="nav-number">23.4.</span> <span class="nav-text">什么是信号驱动IO模型？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%BC%82%E6%AD%A5IO%E6%A8%A1%E5%9E%8B%EF%BC%9F"><span class="nav-number">23.5.</span> <span class="nav-text">什么是异步IO模型？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#select%E3%80%81poll%E3%80%81epoll%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">23.6.</span> <span class="nav-text">select、poll、epoll的区别是什么？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%83%BD%E5%A4%9F%E5%90%91%E6%96%87%E4%BB%B6%E8%BE%93%E5%85%A5%E9%80%BB%E8%BE%91%E5%9E%8B%E6%95%B0%E6%8D%AE%E7%9A%84%E7%B1%BB%E6%98%AF%EF%BC%9A"><span class="nav-number">24.</span> <span class="nav-text">能够向文件输入逻辑型数据的类是：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
