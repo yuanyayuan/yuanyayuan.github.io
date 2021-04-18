@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试,分步式,解决方案," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="什么是会话会话Session代表的是客户端与服务器的一次交互过程， 这个过程可以是连续也可以是时断时续的。曾经的Servlet时代（jsp），一旦用户与服务端交互，服务器tomcat就会为用户创建一个session，同时前端会有一个sessionid，每次交互都会携带。 如此一来，服务器只要在接到用户请求时候，就可以拿到jsessionid，并根据这个ID在内存中找到对应的会话session，当拿">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分步式-分步式会话">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/16/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="什么是会话会话Session代表的是客户端与服务器的一次交互过程， 这个过程可以是连续也可以是时断时续的。曾经的Servlet时代（jsp），一旦用户与服务端交互，服务器tomcat就会为用户创建一个session，同时前端会有一个sessionid，每次交互都会携带。 如此一来，服务器只要在接到用户请求时候，就可以拿到jsessionid，并根据这个ID在内存中找到对应的会话session，当拿">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/%E5%8D%95Tomcat%E4%BC%9A%E8%AF%9D.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB%E4%BC%9A%E8%AF%9D.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/CAS%E6%97%B6%E5%BA%8F%E5%9B%BE.png">
+<meta property="article:published_time" content="2021-04-16T08:03:07.000Z">
+<meta property="article:modified_time" content="2021-04-18T10:14:37.290Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="分步式">
+<meta property="article:tag" content="解决方案">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/%E5%8D%95Tomcat%E4%BC%9A%E8%AF%9D.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/16/分步式-分步式会话/"/>
+
+
+
+
+
+  <title>分步式-分步式会话 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/16/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">分步式-分步式会话</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-16T16:03:07+08:00">
+                2021-04-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/" itemprop="url" rel="index">
+                    <span itemprop="name">分步式 - 分步式会话</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="什么是会话"><a href="#什么是会话" class="headerlink" title="什么是会话"></a>什么是会话</h1><p>会话Session代表的是客户端与服务器的一次交互过程，</p>
+<p>这个过程可以是连续也可以是时断时续的。曾经的Servlet时代（jsp），一旦用户与服务端交互，服务器tomcat就会为用户创建一个session，同时前端会有一个sessionid，每次交互都会携带。</p>
+<p>如此一来，服务器只要在接到用户请求时候，就可以拿到jsessionid，并根据这个ID在内存中找到对应的会话session，当拿到session会话后，那么我们就可以操作会话了。会话存活期间，我们就能认为用户一直处于正在使用着网站的状态，一旦session超期过时，那么就可以认为用户已经离开网站，停止交互了。用户的身份信息，我们也是通过session来判断的，在session中可以保存不同用户的信息</p>
+<p>操作<code>session</code>的代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(&quot;/setSession&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">setSession</span><span class="params">(HttpServletRequest request)</span> </span>&#123;</span><br><span class="line">    HttpSession session = request.getSession();</span><br><span class="line">    session.setAttribute(<span class="string">&quot;userInfo&quot;</span>, <span class="string">&quot;new user&quot;</span>);</span><br><span class="line">    session.setMaxInactiveInterval(<span class="number">3600</span>);</span><br><span class="line">    session.getAttribute(<span class="string">&quot;userInfo&quot;</span>);</span><br><span class="line">    <span class="comment">// session.removeAttribute(&quot;userInfo&quot;);</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;ok&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="无状态会话"><a href="#无状态会话" class="headerlink" title="无状态会话"></a>无状态会话</h2><p>HTTP请求是无状态的，用户向服务端发起多个请求，服务端并不会知道这多次请求都是来自同一用户，这个就是无状态的。cookie的出现就是为了有状态的记录用户。</p>
+<p>常见的，ios与服务端交互，安卓与服务端交互，前后端分离，小程序与服务端交互，他们都是通过发起http来调用接口数据的，每次交互服务端都不会拿到客户端的状态，但是我们可以通过手段去处理，比如每次用户发起请求的时候携带一个userid或者user-token，如此一来，就能让服务端根据用户id或token来获得相应的数据。每个用户的下一次请求都能被服务端识别来自同一个用户。</p>
+<h2 id="有状态会话"><a href="#有状态会话" class="headerlink" title="有状态会话"></a>有状态会话</h2><p>Tomcat中的会话，就是有状态的，一旦用户和服务端交互，就有会话，会话保存了用户的信息，这样用户就“有状态”了，服务端会和每个客户端都保持着这样的一层关系，这个由容器来管理（也就是tomcat），这个session会话是保存到内存空间里的，如此一来，当不同的用户访问服务端，那么就能通过会话知道谁是谁了。tomcat会话的出现也是为了让http请求变的有状态。如果用户不再和服务端交互，那么会话超时则消失，结束了他的生命周期。如此一来，每个用户其实都会有一个会话被维护，这就是有状态会话。 场景：在传统项目或者jsp项目中是使用的最多的session都是有状态的，session的存在就是为了弥补http的无状态。</p>
+<p><strong>注：</strong>tomcat会话可以通过手段实现多系统之间的状态同步，但是会损耗一定的时间，一旦发生同步那么用户请求就会等待，这种做法不可取。</p>
+<h3 id="单Tomcat会话"><a href="#单Tomcat会话" class="headerlink" title="单Tomcat会话"></a>单Tomcat会话</h3><p>单个tomcat会话，这个就是有状态的，用户首次访问服务端，这个时候会话产生，并且会设置jsessionid放入cookie中，后续每次请求都会携带jsessionid以保持用户状态。</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/%E5%8D%95Tomcat%E4%BC%9A%E8%AF%9D.png" style="zoom:50%;" />
+
+<h3 id="动静分离会话"><a href="#动静分离会话" class="headerlink" title="动静分离会话"></a>动静分离会话</h3><p>用户请求服务端，由于动静分离，前端发起http请求，不会携带任何状态，当用户第一次请求以后，我们手动设置一个token，作为用户会话，放入redis中，如此作为redis-session，并且这个token设置后放入前端cookie中（app或小程序可以放入本地缓存），如此后续交互过程中，前端只需要传递token给后端，后端就能识别这个用户请求来自谁了。 </p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB%E4%BC%9A%E8%AF%9D.png" style="zoom: 50%;" />
+
+<h3 id="集群分布式系统会话"><a href="#集群分布式系统会话" class="headerlink" title="集群分布式系统会话"></a>集群分布式系统会话</h3><p>集群或分布式系统本质都是多个系统，假设这个里有两个服务器节点，分别是AB系统，他们可以是集群，也可以是分布式系统，一开始用户和A系统交互，那么这个时候的用户状态，我们可以保存到redis中，作为A系统的会话信息，随后用户的请求进入到了B系统，那么B系统中的会话我也同样和redis关联，如此AB系统的session就统一了。当然cookie是会随着用户的访问携带过来的。那么这个其实就是分布式会话，通过redis来保存用户的状态。 </p>
+<blockquote>
+<p>相同顶级域名的二级域名才可以共享cookie</p>
+</blockquote>
+<blockquote>
+<p>集群状态下还可以使用ip_hash的模式保证同一个ip访问同一个tomcat</p>
+</blockquote>
+<h1 id="相同顶级域名的单点登录"><a href="#相同顶级域名的单点登录" class="headerlink" title="相同顶级域名的单点登录"></a>相同顶级域名的单点登录</h1><h2 id="Cookie-Redis-实现-SSO"><a href="#Cookie-Redis-实现-SSO" class="headerlink" title="Cookie + Redis 实现 SSO"></a>Cookie + Redis 实现 SSO</h2><p>分布式会话后端是基于redis的，如此会话可以流窜在后端的任意系统，都能获取到缓存中的用户数据信息。前端通过使用cookie，可以保证在同域名的下的单点登录</p>
+<p><strong>原理</strong></p>
+<ul>
+<li><p>cookie和网站的依赖关系，顶级域名 <a target="_blank" rel="noopener" href="http://www.test.com和*.test.com的cookie值是可以共享的,可以被携带至后端的,比如设置为/">www.test.com和*.test.com的cookie值是可以共享的，可以被携带至后端的，比如设置为</a> 一级域名设置为<code>.imooc.com</code>或<code>.t.mukewang.com</code>。</p>
+</li>
+<li><p>二级域名自己的独立cookie是不能共享的，不能被其他二级域名获取，比如：music.test.com的cookie是不能被mtv.test.com共享，两者互不影响，要共享必须是解析于同一个顶级域名之下,cookieDomain设置为<code>.imooc.com</code>才行。</p>
+</li>
+</ul>
+<h1 id="不同顶级域名的单点登录"><a href="#不同顶级域名的单点登录" class="headerlink" title="不同顶级域名的单点登录"></a>不同顶级域名的单点登录</h1><blockquote>
+<p>谷歌禁用sso了，本身现在也不流行这种做法了，所以了解一下即可,通常也只做同级域名的单点登录，跨域名不做的。</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="http://www.test.com要和www.demo.com的会话实现共享,这个时候的cookie由于顶级域名不同,就不能实现cookie跨域了,每个站点各自请求到服务端,cookie无法同步.比如,www.test.com下的用户发起请求后会有cookie,但是他又访问了www.demo.com,由于cookie无法携带,所以会要你二次登录./">www.test.com要和www.demo.com的会话实现共享，这个时候的cookie由于顶级域名不同，就不能实现cookie跨域了，每个站点各自请求到服务端，cookie无法同步。比如，www.test.com下的用户发起请求后会有cookie，但是他又访问了www.demo.com，由于cookie无法携带，所以会要你二次登录。</a> </p>
+<h2 id="解决方法——CAS系统"><a href="#解决方法——CAS系统" class="headerlink" title="解决方法——CAS系统"></a>解决方法——CAS系统</h2><p>多个系统之间的登录会通过一个独立的登录系统去做验证，它就相当于是一个中介公司，整合了所有人，你要看房经过中介允许拿钥匙就行，实现了统一的登录。CAS全称为Central Authentication Service即中央认证服务，是一个单点登录的解决方案，可以用于不同顶级域名之间的单点登录</p>
+<p>用户在浏览需要登录的页面时，客户端将AuthToken提交给CAS服务校验登录状态/获取用户登录信息</p>
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AuthToken</td>
+<td>直接使用UUID/GUID即可，如果有验证AuthToken合法性需求，可以将userId+时间戳加密生成，服务端解密之后验证合法性</td>
+</tr>
+<tr>
+<td>登录信息</td>
+<td>通常是将UserId，UserName缓存起来</td>
+</tr>
+</tbody></table>
+<h2 id="CAS系统时序图"><a href="#CAS系统时序图" class="headerlink" title="CAS系统时序图"></a>CAS系统时序图</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/CAS%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt="image" style="zoom: 50%;" />
+
+
+
+<h3 id="第一部分（用户初次访问MTV系统）"><a href="#第一部分（用户初次访问MTV系统）" class="headerlink" title="第一部分（用户初次访问MTV系统）"></a>第一部分（用户初次访问MTV系统）</h3><ol>
+<li><p>用户初次访问<a target="_blank" rel="noopener" href="http://www.mtv.com:8080/sso-mtv/index.html">http://www.mtv.com:8080/sso-mtv/index.html</a></p>
+</li>
+<li><p>mtv系统在Cookie中未获取到用户信息</p>
+</li>
+<li><p>跳转至携带回跳URL访问CAS系统<a target="_blank" rel="noopener" href="http://www.sso.com:8090/login?returnUrl=http://www.mtv.com:8080/sso-mtv/index.html">http://www.sso.com:8090/login?returnUrl=http://www.mtv.com:8080/sso-mtv/index.html</a></p>
+</li>
+<li><p>CAS系统未能从cookie中能够获取到userTicket门票，证明用户从未登录过</p>
+<ul>
+<li><p>用户从未登录过则跳转到CAS的统一登录页面</p>
+</li>
+<li><p>验证登录信息</p>
+<ol>
+<li><p>创建用户的会话（登录信息，AuthToken统一存放的VO）存入redis</p>
+</li>
+<li><p>创建全局门票存入Cookie,全局门票和用户ID关联放入到redis中，代表这个用户有门票了，可以在访问各个站点了</p>
+</li>
+</ol>
+</li>
+<li><p>生成临时票据（存入redis中并对value加密，设置过期时间），回跳到调用端网站</p>
+</li>
+<li><p>mtv系统接收到临时票据会凭临时票据向CAS系统换取用户会话</p>
+</li>
+<li><p>CAS系统使用一次性临时票据来验证用户是否登录（redis中查找这个临时票据），之前的临时票据value加密是为了此时验证临时票据是否正确，如果登录过需要销毁临时票据，并从CAS系统的Cookie中取出全局门票，去redis中查到用户ID，后再用用户ID在redis中查到用户会话（登录信息，AuthToken统一存放的VO），把用户会话信息返回给站点</p>
+</li>
+<li><p>mtv系统使用Cookie保存用户会话</p>
+</li>
+<li><p>显示登陆成功</p>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="第二部分（用户在次访问MUSIC系统）"><a href="#第二部分（用户在次访问MUSIC系统）" class="headerlink" title="第二部分（用户在次访问MUSIC系统）"></a>第二部分（用户在次访问MUSIC系统）</h2><ol>
+<li><p>用户在次访问<a target="_blank" rel="noopener" href="http://www.music.com:8080/sso-music/index.html">http://www.music.com:8080/sso-music/index.html</a></p>
+</li>
+<li><p>music系统在Cookie中未获取到用户信息</p>
+</li>
+<li><p>跳转至携带回跳URL访问CAS系统<a target="_blank" rel="noopener" href="http://www.sso.com:8090/login?returnUrl=http://www.music.com:8080/sso-music/index.html">http://www.sso.com:8090/login?returnUrl=http://www.music.com:8080/sso-music/index.html</a></p>
+</li>
+<li><p>CAS系统从Cookie中能够获取到userTicket门票，证明用户登录过，此时签发一个一次性的临时票据（存入redis中并对value加密，设置过期时间）并且回跳</p>
+<ul>
+<li>music系统接收到临时票据会凭临时票据向CAS系统换取用户会话</li>
+<li>CAS系统使用一次性临时票据来验证用户是否登录（redis中查找这个临时票据），之前的临时票据value加密是为了此时验证临时票据是否正确，如果登录过需要销毁临时票据，并从CAS系统的Cookie中取出全局门票，去redis中查到用户ID，后再用用户ID在redis中查到用户会话（登录信息，AuthToken统一存放的VO），把用户会话信息返回给站点</li>
+<li>music系统使用Cookie保存用户会话</li>
+<li>显示登陆成功</li>
+</ul>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/%E5%88%86%E6%AD%A5%E5%BC%8F/" rel="tag"># 分步式</a>
+          
+            <a href="/tags/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" rel="tag"># 解决方案</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/16/Java-%E9%98%9F%E5%88%97/" rel="next" title="Java-队列">
+                <i class="fa fa-chevron-left"></i> Java-队列
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/16/elasticsearch%E5%AD%A6%E4%B9%A0/" rel="prev" title="elasticsearch学习">
+                elasticsearch学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E4%BC%9A%E8%AF%9D"><span class="nav-number">1.</span> <span class="nav-text">什么是会话</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A0%E7%8A%B6%E6%80%81%E4%BC%9A%E8%AF%9D"><span class="nav-number">1.1.</span> <span class="nav-text">无状态会话</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E7%8A%B6%E6%80%81%E4%BC%9A%E8%AF%9D"><span class="nav-number">1.2.</span> <span class="nav-text">有状态会话</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95Tomcat%E4%BC%9A%E8%AF%9D"><span class="nav-number">1.2.1.</span> <span class="nav-text">单Tomcat会话</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB%E4%BC%9A%E8%AF%9D"><span class="nav-number">1.2.2.</span> <span class="nav-text">动静分离会话</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E4%BC%9A%E8%AF%9D"><span class="nav-number">1.2.3.</span> <span class="nav-text">集群分布式系统会话</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B8%E5%90%8C%E9%A1%B6%E7%BA%A7%E5%9F%9F%E5%90%8D%E7%9A%84%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95"><span class="nav-number">2.</span> <span class="nav-text">相同顶级域名的单点登录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Cookie-Redis-%E5%AE%9E%E7%8E%B0-SSO"><span class="nav-number">2.1.</span> <span class="nav-text">Cookie + Redis 实现 SSO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%8D%E5%90%8C%E9%A1%B6%E7%BA%A7%E5%9F%9F%E5%90%8D%E7%9A%84%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95"><span class="nav-number">3.</span> <span class="nav-text">不同顶级域名的单点登录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95%E2%80%94%E2%80%94CAS%E7%B3%BB%E7%BB%9F"><span class="nav-number">3.1.</span> <span class="nav-text">解决方法——CAS系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAS%E7%B3%BB%E7%BB%9F%E6%97%B6%E5%BA%8F%E5%9B%BE"><span class="nav-number">3.2.</span> <span class="nav-text">CAS系统时序图</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E9%83%A8%E5%88%86%EF%BC%88%E7%94%A8%E6%88%B7%E5%88%9D%E6%AC%A1%E8%AE%BF%E9%97%AEMTV%E7%B3%BB%E7%BB%9F%EF%BC%89"><span class="nav-number">3.2.1.</span> <span class="nav-text">第一部分（用户初次访问MTV系统）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E9%83%A8%E5%88%86%EF%BC%88%E7%94%A8%E6%88%B7%E5%9C%A8%E6%AC%A1%E8%AE%BF%E9%97%AEMUSIC%E7%B3%BB%E7%BB%9F%EF%BC%89"><span class="nav-number">3.3.</span> <span class="nav-text">第二部分（用户在次访问MUSIC系统）</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

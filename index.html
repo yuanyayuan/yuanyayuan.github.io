@@ -261,7 +261,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/17/MyBatis/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/18/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E9%94%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -280,7 +280,278 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/04/17/MyBatis/" itemprop="url">MyBatis</a></h1>
+                <a class="post-title-link" href="/2021/04/18/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E9%94%81/" itemprop="url">分步式-分步式锁</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-18T18:18:15+08:00">
+                2021-04-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E9%94%81/" itemprop="url" rel="index">
+                    <span itemprop="name">分步式 - 分步式锁</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="高效分布式锁"><a href="#高效分布式锁" class="headerlink" title="高效分布式锁"></a>高效分布式锁</h1><ol>
+<li>互斥<br> 在分布式高并发的条件下，我们最需要保证，同一时刻只能有一个线程获得锁，这是最基本的一点。</li>
+<li>防止死锁<br>在分布式高并发的条件下，比如有个线程获得锁的同时，还没有来得及去释放锁，就因为系统故障或者其它原因使它无法执行释放锁的命令,导致其它线程都无法获得锁，造成死锁。<br>所以分布式非常有必要设置锁的有效时间，确保系统出现故障后，在一定时间内能够主动去释放锁，避免造成死锁的情况。</li>
+<li>性能<br>对于访问量大的共享资源，需要考虑减少锁等待的时间，避免导致大量线程阻塞。<br>所以在锁的设计时，需要考虑两点。<br>1、锁的颗粒度要尽量小。比如你要通过锁来减库存，那这个锁的名称你可以设置成是商品的ID,而不是任取名称。这样这个锁只对当前商品有效,锁的颗粒度小。<br>2、锁的范围尽量要小。比如只要锁2行代码就可以解决问题的，那就不要去锁10行代码了。</li>
+<li>重入<br>我们知道ReentrantLock是可重入锁，那它的特点就是：同一个线程可以重复拿到同一个资源的锁。重入锁非常有利于资源的高效利用。关于这点之后会做演示。</li>
+</ol>
+<h1 id="如何选择分布式锁"><a href="#如何选择分布式锁" class="headerlink" title="如何选择分布式锁"></a>如何选择分布式锁</h1><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E5%88%86%E6%AD%A5%E5%BC%8F%E9%94%81%E4%BC%98%E7%BC%BA%E7%82%B9.png" alt="image"></p>
+<h1 id="基于数据库的分布式锁"><a href="#基于数据库的分布式锁" class="headerlink" title="基于数据库的分布式锁"></a>基于数据库的分布式锁</h1><p>这种方式对于单主却无法自动切换主从的mysql来说，基本就无法现实P分区容错性，（Mysql自动主从切换在目前并没有十分完美的解决方案）。可以说这种方式强依赖于数据库的可用性，数据库写操作是一个单点，一旦数据库挂掉，就导致锁的不可用。这种方式基本不在CAP的一个讨论范围。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>通过<code>select......for opdate</code>访问同一条数据 for update锁定数据，其他线程只能等待</p>
+<blockquote>
+<p>一个线程执行select …… for opdate 只要不提交事务就一直占用，其他线程执行select …… 时就会等待</p>
+</blockquote>
+<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><ul>
+<li>简单方便、易于理解、易于操作</li>
+</ul>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ul>
+<li>并发量大时，对数据库压力大</li>
+</ul>
+<h2 id="建议"><a href="#建议" class="headerlink" title="建议"></a>建议</h2><p>作为锁的数据库与业务数据库分开</p>
+<h2 id="实现方法"><a href="#实现方法" class="headerlink" title="实现方法"></a>实现方法</h2><h3 id="基于独立的一张表记录"><a href="#基于独立的一张表记录" class="headerlink" title="基于独立的一张表记录"></a>基于独立的一张表记录</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `database_lock` (</span><br><span class="line">	`id` <span class="type">BIGINT</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> AUTO_INCREMENT,</span><br><span class="line">	`resource` <span class="type">int</span> <span class="keyword">NOT</span> <span class="keyword">NULL</span> COMMENT <span class="string">&#x27;锁定的资源&#x27;</span>,</span><br><span class="line">	`description` <span class="type">varchar</span>(<span class="number">1024</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span> <span class="keyword">DEFAULT</span> &quot;&quot; COMMENT <span class="string">&#x27;描述&#x27;</span>,</span><br><span class="line">	<span class="keyword">PRIMARY</span> KEY (`id`),</span><br><span class="line">	<span class="keyword">UNIQUE</span> KEY `uiq_idx_resource` (`resource`) </span><br><span class="line">) ENGINE<span class="operator">=</span>InnoDB <span class="keyword">DEFAULT</span> CHARSET<span class="operator">=</span>utf8mb4 COMMENT<span class="operator">=</span><span class="string">&#x27;数据库分布式锁表&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>当我们想要获得锁时，可以插入一条数据：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> database_lock(resource, description) <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;lock&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>在表database_lock中，resource字段做了唯一性约束，这样如果有多个请求同时提交到数据库的话，数据库可以保证只有一个操作可以成功（其它的会报错：ERROR 1062 (23000): Duplicate entry ‘1’ for key ‘uiq_idx_resource’），那么那么我们就可以认为操作成功的那个请求获得了锁。</p>
+</blockquote>
+<p>当需要释放锁的时，可以删除这条数据：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> database_lock <span class="keyword">WHERE</span> resource<span class="operator">=</span><span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="基于乐观锁"><a href="#基于乐观锁" class="headerlink" title="基于乐观锁"></a>基于乐观锁</h3><p>引入了version字段，在进行业务逻辑时：</p>
+<ul>
+<li>STEP1 - 获取资源： SELECT resource, version FROM optimistic_lock WHERE id = 1</li>
+<li>STEP2 - 执行业务逻辑</li>
+<li>STEP3 - 更新资源：UPDATE optimistic_lock SET resource = resource -1, version = version + 1 WHERE id = 1 AND version = oldVersion</li>
+</ul>
+<h3 id="基于悲观锁"><a href="#基于悲观锁" class="headerlink" title="基于悲观锁"></a>基于悲观锁</h3><p>通过select……for update访问同一条数据, for update锁定数据，其他线程只能等待</p>
+<p><strong>加锁信号量</strong>：select …… for update</p>
+<p><strong>解锁信号量</strong>：commit </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> IF <span class="keyword">EXISTS</span> `distribute_lock`;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> `distribute_lock`  (</span><br><span class="line">  `id` <span class="type">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `business_code` <span class="type">varchar</span>(<span class="number">255</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  `business_name` <span class="type">varchar</span>(<span class="number">255</span>) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (`id`) <span class="keyword">USING</span> BTREE</span><br><span class="line">) ENGINE <span class="operator">=</span> InnoDB <span class="type">CHARACTER</span> <span class="keyword">SET</span> <span class="operator">=</span> utf8 <span class="keyword">COLLATE</span> <span class="operator">=</span> utf8_general_ci ROW_FORMAT <span class="operator">=</span> Compact;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> `distribute_lock` <span class="keyword">VALUES</span> (<span class="number">1</span>, <span class="string">&#x27;demo&#x27;</span>, <span class="string">&#x27;demo演示&#x27;</span>);</span><br><span class="line"> </span><br><span class="line"><span class="keyword">SET</span> FOREIGN_KEY_CHECKS <span class="operator">=</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>dao</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">DistributeLock <span class="title">selectDistributeLock</span><span class="params">(<span class="meta">@Param(&quot;businessCode&quot;)</span> String businessCode)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>mapper：</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;selectDistributeLock&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;com.example.distributelock.DistributeLock&quot;</span>&gt;</span></span><br><span class="line">    select </span><br><span class="line">        * </span><br><span class="line">    from </span><br><span class="line">        distribute_lock</span><br><span class="line">    where </span><br><span class="line">        business_code = #&#123;businessCode,jdbcType=VARCHAR&#125;</span><br><span class="line">    for update</span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>controller</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> DistributeLockMapper distributeLockMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;singleLock&quot;)</span></span><br><span class="line">    <span class="meta">@Transactional(rollbackFor = Exception.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">singleLock</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;我进入了方法！&quot;</span>);</span><br><span class="line">        DistributeLock distributeLock = distributeLockMapper.selectDistributeLock(<span class="string">&quot;demo&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (distributeLock==<span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> Exception(<span class="string">&quot;分布式锁找不到&quot;</span>);</span><br><span class="line">        log.info(<span class="string">&quot;我进入了锁！&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">20000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;我已经执行完成！&quot;</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>唯一要注意的就是controller层需要打上事务注解，如果不加的话查询sql会自动提交事务导致分布式锁失效。</p>
+</blockquote>
+<h1 id="基于redis实现分布式锁"><a href="#基于redis实现分布式锁" class="headerlink" title="基于redis实现分布式锁"></a>基于redis实现分布式锁</h1><h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><p>SET resource_name my_random_value NX PX 30000</p>
+<ul>
+<li>NX: key不存在时设置成功，key存在则设置不成功（基于redis单线程特性）</li>
+</ul>
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><ul>
+<li>获取锁的Redis命令</li>
+<li>SET resource_name my_random_value NX PX 30000<ul>
+<li>set命令</li>
+<li>resource_name: 资源名称，可根据不同的业务区分不同的锁</li>
+<li>my_random_value: 随机值，<strong>每个线程</strong>的随机值都不同，用于释放锁时的校验</li>
+<li>NX: key不存在时设置成功，key存在则设置不成功（基于redis单线程特性）</li>
+<li>PX: 自动失效时间，出现异常情况，锁可以过期失效</li>
+</ul>
+</li>
+<li>利用NX的原子性，多个线程并发时，只有一个线程可以设置成功</li>
+<li>设置成功即获得锁，可以执行后续的业务处理</li>
+<li>如果出现异常，过了锁的有效期，锁自动释放</li>
+<li>释放锁采用Redis的delete命令</li>
+<li>释放锁是检验之前设置的随机数，相同才释放</li>
+<li>释放锁时用lua脚本</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if redis.call(&quot;get&quot;,KEYS[1]) &#x3D;&#x3D; ARGV[1] then </span><br><span class="line">    return redis.call(&quot;del&quot;,KEYS[1])</span><br><span class="line">else</span><br><span class="line">    return 0</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p>KEYS[1] – redis中的值</p>
+<p>ARGV[1] – 传入的值</p>
+<h2 id="简单例子代码"><a href="#简单例子代码" class="headerlink" title="简单例子代码"></a>简单例子代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisLockController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> RedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;redisLock&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">redisLock</span><span class="params">()</span></span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;我进入了方法&quot;</span>);</span><br><span class="line">        String key = <span class="string">&quot;redisKey&quot;</span>;</span><br><span class="line">        String value = UUID.randomUUID().toString();</span><br><span class="line">        RedisCallback&lt;Boolean&gt; redisCallback = connection -&gt; &#123;</span><br><span class="line">            <span class="comment">//设置NX</span></span><br><span class="line">            RedisStringCommands.SetOption setOption = RedisStringCommands.SetOption.SET_IF_ABSENT;</span><br><span class="line">            <span class="comment">//设置过期时间</span></span><br><span class="line">            Expiration expiration = Expiration.seconds(<span class="number">30</span>);</span><br><span class="line">            <span class="comment">//序列化key</span></span><br><span class="line">            <span class="keyword">byte</span>[] redisKey = redisTemplate.getKeySerializer().serialize(key);</span><br><span class="line">            <span class="comment">//序列化value</span></span><br><span class="line">            <span class="keyword">byte</span>[] redisValue = redisTemplate.getValueSerializer().serialize(value);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">assert</span> redisKey != <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">assert</span> redisValue != <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">return</span> connection.set(redisKey, redisValue, expiration, setOption);</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">//获取分布式锁</span></span><br><span class="line">        Boolean lock = (Boolean)redisTemplate.execute(redisCallback);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(lock!=<span class="keyword">null</span> &amp;&amp; lock)&#123;</span><br><span class="line">            log.info(<span class="string">&quot;我进入了锁&quot;</span>);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">15000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">                String script = <span class="string">&quot;if redis.call(\&quot;get\&quot;,KEYS[1]) == ARGV[1] then\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;    return redis.call(\&quot;del\&quot;,KEYS[1])\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;else\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;    return 0\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;end&quot;</span>;</span><br><span class="line">                List&lt;String&gt; keys = Collections.singletonList(key);</span><br><span class="line">                RedisScript&lt;Boolean&gt; redisScript = RedisScript.of(script,Boolean.class);</span><br><span class="line">                Boolean result = (Boolean)redisTemplate.execute(redisScript, keys, value);</span><br><span class="line">                log.info(<span class="string">&quot;释放锁的结果：&quot;</span> + result);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        log.info(<span class="string">&quot;方法执行完成&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;方法执行完成&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="基于Redisson实现分布式锁"><a href="#基于Redisson实现分布式锁" class="headerlink" title="基于Redisson实现分布式锁"></a>基于Redisson实现分布式锁</h1><h2 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Redisson%E5%8E%9F%E7%90%86.png"></p>
+<h3 id="加锁机制"><a href="#加锁机制" class="headerlink" title="加锁机制"></a>加锁机制</h3><p>线程去获取锁，获取成功: 根据hash节点选择一台机器执行lua脚本，保存数据到redis数据库。</p>
+<blockquote>
+<p>注意，仅仅只是选择一台机器！</p>
+</blockquote>
+<p>线程去获取锁，获取失败: 一直通过while循环尝试获取锁，获取成功后，执行lua脚本，保存数据到redis数据库。</p>
+<h3 id="为啥要用lua脚本"><a href="#为啥要用lua脚本" class="headerlink" title="为啥要用lua脚本"></a>为啥要用lua脚本</h3><p>一大坨复杂的业务逻辑，可以通过封装在lua脚本中发送给redis，保证这段复杂业务逻辑执行的原子性。</p>
+<h3 id="watch-dog自动延期机制"><a href="#watch-dog自动延期机制" class="headerlink" title="watch dog自动延期机制"></a>watch dog自动延期机制</h3><p>客户端加锁的key默认生存时间是30秒，如果超过了30秒，客户端还想一直持有这把锁，怎么办呢？</p>
+<p>只要客户端一旦加锁成功，就会启动一个watch dog看门狗，他是一个后台线程，每到过期时间1/3（默认生存时间是30s的话，就是10s）就去重新刷一次，如果客户端还持有锁key，那么就会不断的延长锁key的生存时间，如果key不存在则停止刷新。</p>
+<h3 id="可重入锁"><a href="#可重入锁" class="headerlink" title="可重入锁"></a>可重入锁</h3><p>1、Redis存储锁的数据类型是 Hash类型<br>2、Hash数据类型的key值包含了当前线程信息。</p>
+<h3 id="释放锁机制"><a href="#释放锁机制" class="headerlink" title="释放锁机制"></a>释放锁机制</h3><p>如果执行lock.unlock()，就可以释放分布式锁，此时的业务逻辑其实很简单。</p>
+<p>就是每次都对myLock数据结构中的那个加锁次数减1。</p>
+<p>如果发现加锁次数是0了，说明这个客户端已经不再持有锁了，此时就会用： “del myLock”命令，从redis里删除这个key。</p>
+<h3 id="简单的例子"><a href="#简单的例子" class="headerlink" title="简单的例子"></a>简单的例子</h3><ul>
+<li>引入redission依赖<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.redisson<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>redisson-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.13.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li>SpringBoot集成Redission<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">redis:</span></span><br><span class="line">    <span class="comment"># Redis数据库索引（默认为0）</span></span><br><span class="line">    <span class="attr">database:</span> <span class="number">0</span></span><br><span class="line">    <span class="comment"># Redis服务器地址</span></span><br><span class="line">    <span class="attr">host:</span> <span class="string">localhost</span></span><br><span class="line">    <span class="comment"># Redis服务器连接端口</span></span><br><span class="line">    <span class="attr">port:</span> <span class="number">6379</span></span><br><span class="line">    <span class="comment"># Redis服务器连接密码（默认为空）</span></span><br><span class="line">    <span class="attr">password:</span></span><br><span class="line">    <span class="attr">lettuce:</span></span><br><span class="line">      <span class="attr">pool:</span></span><br><span class="line">        <span class="comment"># 连接池最大连接数（使用负值表示没有限制） 默认 8</span></span><br><span class="line">        <span class="attr">max-active:</span> <span class="number">8</span></span><br><span class="line">        <span class="comment">#  连接池最大阻塞等待时间（使用负值表示没有限制） 默认 -1</span></span><br><span class="line">        <span class="attr">max-wait:</span> <span class="number">-1</span></span><br><span class="line">        <span class="comment"># 连接池中的最大空闲连接 默认 8</span></span><br><span class="line">        <span class="attr">max-idle:</span> <span class="number">8</span></span><br><span class="line">        <span class="comment"># 连接池中的最小空闲连接 默认 0</span></span><br><span class="line">        <span class="attr">min-idle:</span> <span class="number">0</span></span><br><span class="line">    <span class="comment"># 连接超时时间（毫秒）</span></span><br><span class="line">    <span class="attr">timeout:</span> <span class="number">1000</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedissionLockController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedissonClient redisson;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;redissonLock&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">redissonLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        RLock rLock = redisson.getLock(<span class="string">&quot;order&quot;</span>);</span><br><span class="line">        log.info(<span class="string">&quot;我进入了方法！！&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            rLock.lock(<span class="number">30</span>, TimeUnit.SECONDS);</span><br><span class="line">            log.info(<span class="string">&quot;我获得了锁！！！&quot;</span>);</span><br><span class="line">            Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">            log.info(<span class="string">&quot;我释放了锁！！&quot;</span>);</span><br><span class="line">            rLock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">        log.info(<span class="string">&quot;方法执行完成！！&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;方法执行完成！！&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h1 id="Redis分布式锁会有个缺陷，就是在Redis哨兵模式下"><a href="#Redis分布式锁会有个缺陷，就是在Redis哨兵模式下" class="headerlink" title="Redis分布式锁会有个缺陷，就是在Redis哨兵模式下:"></a>Redis分布式锁会有个缺陷，就是在Redis哨兵模式下:</h1><h2 id="问题出现"><a href="#问题出现" class="headerlink" title="问题出现"></a>问题出现</h2><p><code>客户端1</code> 对某个<code>master节点</code>写入了redisson锁，此时会异步复制给对应的 slave节点。但是这个过程中一旦发生 master节点宕机，主备切换，slave节点从变为了 master节点。</p>
+<p>这时<code>客户端2</code> 来尝试加锁的时候，在新的master节点上也能加锁，此时就会导致多个客户端对同一个分布式锁完成了加锁。</p>
+<p><code>缺陷</code>在哨兵模式或者主从模式下，如果 master实例宕机的时候，可能导致多个客户端同时完成加锁。</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%BC%BA%E9%99%B7.png" alt="image"></p>
+<p>详细步骤：</p>
+<ol>
+<li>业务线程-1 向主节点请求锁</li>
+<li>业务线程-1 获取锁</li>
+<li>业务线程-1 获取到锁并开始执行业务</li>
+<li>这个时候redis刚生成的锁在主从之间还未进行同步</li>
+<li>redis这时候主节点挂掉了</li>
+<li>redis的从节点升级为主节点</li>
+<li>业务线程-2 想新的主节点请求锁</li>
+<li>业务线程-2 获取到新的主节点返回的锁</li>
+<li>业务线程-2 获取到锁开始执行业务</li>
+<li>这个时候 业务线程-1 和 业务线程-2 同时在执行任务</li>
+</ol>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>redis采用了<code>A</code>（可用性）<code>P</code>（分区容错性）模型，它本身无法确保我们对一致性的要求</p>
+<h2 id="能否使用redis作为分布式锁"><a href="#能否使用redis作为分布式锁" class="headerlink" title="能否使用redis作为分布式锁"></a>能否使用redis作为分布式锁</h2><p>能不能使用redis作为分布式锁，这个本身就不是redis的问题，还是取决于业务场景，我们先要自己确认我们的场景是适合 AP 还是 CP ， 如果在社交发帖等场景下，我们并没有非常强的事务一致性问题，redis提供给我们高性能的AP模型是非常适合的，但如果是交易类型，对数据一致性非常敏感的场景，我们可能要寻在一种更加适合的 CP 模型</p>
+<h1 id="基于zookeeper实现分布式锁"><a href="#基于zookeeper实现分布式锁" class="headerlink" title="基于zookeeper实现分布式锁"></a>基于zookeeper实现分布式锁</h1><h1 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h1><ul>
+<li>利用Zookeeper的瞬时有序节点的特性</li>
+<li>多线程并发创建瞬时节点时，得到有序的序列</li>
+<li>序号最小的线程获得锁</li>
+<li>其他的线程则监听自己序号的前一个序号</li>
+<li>以此类推</li>
+<li>创建节点时，已经确定线程的执行顺序</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Zookeeper%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%8E%9F%E7%90%86.png" alt="image" style="zoom:67%;" />
+
+<h1 id="究竟该用CP还是AP的分布式锁"><a href="#究竟该用CP还是AP的分布式锁" class="headerlink" title="究竟该用CP还是AP的分布式锁"></a>究竟该用CP还是AP的分布式锁</h1><p>首先得了解清楚我们使用分布式锁的场景，为何使用分布式锁，用它来帮我们解决什么问题，先聊场景后聊分布式锁的技术选型。</p>
+<p>无论是redis，zk，例如redis的AP模型会限制很多使用场景，但它却拥有了几者中最高的性能，zookeeper的分布式锁要比redis可靠很多，但他繁琐的实现机制导致了它的性能不如redis，而且zk会随着集群的扩大而性能更加下降。</p>
+<p>简单来说，先了解业务场景，后进行技术选型。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/17/MySQL-MyBatis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/17/MySQL-MyBatis/" itemprop="url">MySQL-MyBatis</a></h1>
         
 
         <div class="post-meta">
@@ -370,6 +641,27 @@
 </ol>
 <h1 id="MyBatis框架的缺点："><a href="#MyBatis框架的缺点：" class="headerlink" title="MyBatis框架的缺点："></a>MyBatis框架的缺点：</h1><p>（1）SQL语句的编写工作量较大，尤其当字段多、关联表多时，对开发人员编写SQL语句的功底有一定要求。</p>
 <p>（2）SQL语句依赖于数据库，导致数据库移植性差，不能随意更换数据库。</p>
+<h1 id="parameterType，-resultmap与-resulttype"><a href="#parameterType，-resultmap与-resulttype" class="headerlink" title="@parameterType，@resultmap与@resulttype"></a>@parameterType，@resultmap与@resulttype</h1><h2 id="parameterType"><a href="#parameterType" class="headerlink" title="@parameterType"></a>@parameterType</h2><ol>
+<li><p>基本数据类型，如输入参数只有一个，其数据类型可以是基本的数据类型，也可以是自己定的类类型。包括int,String,Integer,Date,如下：</p>
+<p> （1）根据id进行相应的删除：<delete id="deleteById" parameterType="Integer"></p>
+<p>（2）添加员工：<insert id="addEmp" parameterType="com.pojo.Employee"></p>
+</li>
+<li><p>复杂数据类型：包含java实体类，map。</p>
+<p>配置如：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;selectTeacher&quot;</span> <span class="attr">parameterType</span>=<span class="string">&quot;Map&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;com.myapp.domain.Teacher&quot;</span>&gt;</span> </span><br><span class="line">	select * from Teacher where c_id=#&#123;id&#125; and sex=#&#123;sex&#125; </span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span> </span><br></pre></td></tr></table></figure>
+
+<p>java代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;String,String&gt; map=<span class="keyword">new</span> HasMap&lt;String,String&gt;(); </span><br><span class="line">map.put(<span class="string">&quot;id&quot;</span>,<span class="string">&quot;2&quot;</span>); </span><br><span class="line">map.put(<span class="string">&quot;sex&quot;</span>,<span class="string">&quot;男&quot;</span>); </span><br><span class="line">List&lt;Teacher&gt; tList = teacherMapper.selectTeacher(map);  </span><br><span class="line"><span class="keyword">for</span> (Teacher entityTemp : tList) &#123;  </span><br><span class="line">    System.out.println(entityTemp.toString()); </span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="Param"><a href="#Param" class="headerlink" title="@Param"></a>@Param</h3><p>   使用<code>@Param</code>添加<strong>多个参数</strong>，xml中不用写<code>@parameterType</code></p>
+<h2 id="resultmap与-resulttype"><a href="#resultmap与-resulttype" class="headerlink" title="@resultmap与@resulttype"></a>@resultmap与@resulttype</h2><p>1、resultmap：resultMap如果查询出来的列名和pojo的属性名不一致，通过在xml中定义一个resultMap对列名和pojo属性名之间作一个映射关系。</p>
+<p>2、resulttype：resultType使用resultType进行输出映射，只有查询出来的列名和pojo中的属性名一致，该列才可以映射成功</p>
+<h1 id="当实体类中的属性名和表中的字段名不一样-，怎么办"><a href="#当实体类中的属性名和表中的字段名不一样-，怎么办" class="headerlink" title="当实体类中的属性名和表中的字段名不一样 ，怎么办"></a>当实体类中的属性名和表中的字段名不一样 ，怎么办</h1><ol>
+<li><p>通过在查询的sql语句中定义字段名的别名，让字段名的别名和实体类的属性名一致</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">”selectorder”</span> <span class="attr">parametertype</span>=<span class="string">”int”</span></span></span><br><span class="line"><span class="tag"><span class="attr">resultetype</span>=<span class="string">”me.gacl.domain.order”</span>&gt;</span></span><br><span class="line">select order_id id, order_no orderno ,order_price price form orders where</span><br><span class="line">order_id=#&#123;id&#125;;</span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p>通过来映射字段名和实体类属性名的一一对应的关系</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;getOrder&quot;</span> <span class="attr">parameterType</span>=<span class="string">&quot;int&quot;</span> <span class="attr">resultMap</span>=<span class="string">&quot;orderresultmap&quot;</span>&gt;</span></span><br><span class="line">	select * from orders where order_id=#&#123;id&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">resultMap</span> <span class="attr">type</span>=<span class="string">”me.gacl.domain.order”</span> <span class="attr">id</span>=<span class="string">”orderresultmap”</span>&gt;</span></span><br><span class="line">    &lt;!–用id属性来映射主键字段–&gt;</span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span> <span class="attr">property</span>=<span class="string">”id”</span> <span class="attr">column</span>=<span class="string">”order_id”</span>&gt;</span></span><br><span class="line">    &lt;!–用result属性来映射非主键字段，property为实体类属性名，column为数据表中的属性–&gt;</span><br><span class="line">    <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span> = <span class="string">“orderno”</span> <span class="attr">column</span> =<span class="string">”order_no”/</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">result</span> <span class="attr">property</span>=<span class="string">”price”</span> <span class="attr">column</span>=<span class="string">”order_price”</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">reslutMap</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+</ol>
 <h1 id="和-的区别是什么？"><a href="#和-的区别是什么？" class="headerlink" title="#{}和${}的区别是什么？"></a>#{}和${}的区别是什么？</h1><ul>
 <li><code>$&#123;&#125;</code>是 Properties 文件中的变量占位符，它可以用于标签属性值和 sql 内部，属于静态文本替换，比如${driver}会被静态替换为<code>com.mysql.jdbc.Driver</code>。</li>
 <li><code>#&#123;&#125;</code>是 sql 的参数占位符，MyBatis 会将 sql 中的<code>#&#123;&#125;</code>替换为?号，在 sql 执行前会使用 PreparedStatement 的参数设置方法，按序给 sql 的?号占位符设置参数值，比如 ps.setInt(0, parameterValue)，<code>#&#123;item.name&#125;</code> 的取值方式为使用反射从参数对象中获取 item 对象的 name 属性值，相当于 <code>param.getItem().getName()</code>。</li>
@@ -419,6 +711,8 @@
 <p>3、通过sqlsession执行数据库操作</p>
 <p>4、调用session.commit()提交事务</p>
 <p>5、调用session.close()关闭会话</p>
+<h1 id="Mybatis是如何将sql执行结果封装为目标对象并返回的？都有哪些映射形式？"><a href="#Mybatis是如何将sql执行结果封装为目标对象并返回的？都有哪些映射形式？" class="headerlink" title="Mybatis是如何将sql执行结果封装为目标对象并返回的？都有哪些映射形式？"></a>Mybatis是如何将sql执行结果封装为目标对象并返回的？都有哪些映射形式？</h1><p>第一种是使用<resultMap>标签，逐一定义列名和对象属性名之间的映射关系。第二<br>种是使用sql 列的别名功能，将列别名书写为对象属性名，比如T_NAME AS NAME，<br>对象属性名一般是name，小写，但是列名不区分大小写，Mybatis 会忽略列名大小<br>写，智能找到与之对应对象属性名，你甚至可以写成T_NAME AS NaMe，Mybatis<br>一样可以正常工作。<br>有了列名与属性名的映射关系后，Mybatis 通过反射创建对象，同时使用反射给对象<br>的属性逐一赋值并返回，那些找不到映射关系的属性，是无法完成赋值的。</p>
+<h1 id="简述Mybatis的Xml映射文件和Mybatis内部数据结构之间的映射关系？"><a href="#简述Mybatis的Xml映射文件和Mybatis内部数据结构之间的映射关系？" class="headerlink" title="简述Mybatis的Xml映射文件和Mybatis内部数据结构之间的映射关系？"></a>简述Mybatis的Xml映射文件和Mybatis内部数据结构之间的映射关系？</h1><p>答：Mybatis将所有Xml配置信息都封装到All-In-One重量级对象Configuration内部。在Xml映射文件中，<parameterMap>标签会被解析为ParameterMap对象，其每个子元素会被解析为ParameterMapping对象。<resultMap>标签会被解析为ResultMap对象，其每个子元素会被解析为ResultMapping对象。每一个<select>、<insert>、<update>、<delete>标签均会被解析为MappedStatement对象，标签内的sql会被解析为BoundSql对象。</p>
 <h1 id="java使用jdbc连接数据库步骤"><a href="#java使用jdbc连接数据库步骤" class="headerlink" title="java使用jdbc连接数据库步骤"></a>java使用jdbc连接数据库步骤</h1><ol>
 <li>加载数据库驱动 Class.forName(“com.mysql.cj.jdbc.Driver”);</li>
 <li>连接数据库 String url=“jdbc:mysql://localhost/studentserverTimezone=GMT%2B8&amp;useSSL=false”; String databasename=“root”; String pass=“123456”;</li>
@@ -477,7 +771,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/17/MySQl%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2%E7%BB%83%E4%B9%A0/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/17/MySQL-MySQl%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2%E7%BB%83%E4%B9%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -496,7 +790,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/04/17/MySQl%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2%E7%BB%83%E4%B9%A0/" itemprop="url">MySQl联表查询练习</a></h1>
+                <a class="post-title-link" href="/2021/04/17/MySQL-MySQl%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2%E7%BB%83%E4%B9%A0/" itemprop="url">MySQL-MySQl联表查询练习</a></h1>
         
 
         <div class="post-meta">
@@ -602,7 +896,7 @@
 <p>角色表sys_role(表字段：roleId-角色id，roleName-角色名称)，</p>
 <p>用户角色表sys_userRole（表字段：userId-用户id，roleId-角色id），</p>
 <p>目前sys_user表和sys_role表中都有数据，sys_userRole表是空的。写个sql：把现有的sys_user和sys_role中的数据，插入到sys_userRole中，实现每个用户都有每个角色。（比如一个用户id=1，角色表sys_role中有10个角色，那么对应到sys_userRole表中就应该有10条记录，表示用户id=1，有10个角色）</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">into</span> sys_userrole (user_id,role_id) <span class="keyword">SELECT</span> user_id,role_id <span class="keyword">FROM</span> sys_user <span class="keyword">INNER</span> <span class="keyword">JOIN</span> sys_role</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">into</span> sys_userrole (user_id,role_id) <span class="keyword">SELECT</span> sys_user.user_id,sys_role.role_id <span class="keyword">FROM</span> sys_user,sys_role</span><br></pre></td></tr></table></figure>
 
 <h1 id="练习四"><a href="#练习四" class="headerlink" title="练习四"></a>练习四</h1><p>mysql中存在订单表order，字段如下：</p>
 <p> <img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/%E7%BB%83%E4%B9%A0.png">                              </p>
@@ -657,7 +951,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/17/MySQL%E4%BC%98%E5%8C%96/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/17/MySQL-MySQL%E4%BC%98%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -676,7 +970,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/04/17/MySQL%E4%BC%98%E5%8C%96/" itemprop="url">MySQL优化</a></h1>
+                <a class="post-title-link" href="/2021/04/17/MySQL-MySQL%E4%BC%98%E5%8C%96/" itemprop="url">MySQL-MySQL优化</a></h1>
         
 
         <div class="post-meta">
@@ -1195,7 +1489,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/17/MySQL%E5%AD%A6%E4%B9%A0/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/17/MySQL-MySQL%E5%AD%A6%E4%B9%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -1214,7 +1508,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/04/17/MySQL%E5%AD%A6%E4%B9%A0/" itemprop="url">MySQL学习</a></h1>
+                <a class="post-title-link" href="/2021/04/17/MySQL-MySQL%E5%AD%A6%E4%B9%A0/" itemprop="url">MySQL-MySQL学习</a></h1>
         
 
         <div class="post-meta">
@@ -1317,6 +1611,10 @@
 <p>2、这条 SQL 语句一直执行的很慢，则有如下原因。</p>
 <p>(1)、没有用上索引：例如该字段没有索引；由于对字段进行运算、函数操作导致无法用索引。</p>
 <p>(2)、数据库选错了索引。系统是通过索引的区分度来判断的,区分度称之为基数。系统采样的方式，来预测索引的基数的，由于统计的失误会预测错索引的基数，导致系统没有走索引，而是走了全表扫描</p>
+<h2 id="什么是内联接、左外联接、右外联接？"><a href="#什么是内联接、左外联接、右外联接？" class="headerlink" title="什么是内联接、左外联接、右外联接？"></a>什么是内联接、左外联接、右外联接？</h2><p>内联接（Inner Join）：匹配2张表中相关联的记录。<br>左外联接（Left Outer Join）：除了匹配2张表中相关联的记录外，还会匹配左表中剩余的记录，右表<br>中未匹配到的字段用NULL表示。<br>右外联接（Right Outer Join）：除了匹配2张表中相关联的记录外，还会匹配右表中剩余的记录，左表<br>中未匹配到的字段用NULL表示。</p>
+<h2 id="什么是通用-SQL-函数？"><a href="#什么是通用-SQL-函数？" class="headerlink" title="什么是通用 SQL 函数？"></a>什么是通用 SQL 函数？</h2><p>1、CONCAT(A, B) – 连接两个字符串值以创建单个字符串输出。通常用于将两个或多个字段合并为一个<br>字段。<br>2、FORMAT(X, D)- 格式化数字 X 到 D 有效数字。<br>3、CURRDATE(), CURRTIME()- 返回当前日期或时间。<br>4、NOW（） – 将当前日期和时间作为一个值返回。<br>5、MONTH（），DAY（），YEAR（），WEEK（），WEEKDAY（） – 从日期值中提取给定数据。<br>6、HOUR（），MINUTE（），SECOND（） – 从时间值中提取给定数据。<br>7、DATEDIFF（A，B） – 确定两个日期之间的差异，通常用于计算年龄<br>8、SUBTIMES（A，B） – 确定两次之间的差异。<br>9、FROMDAYS（INT） – 将整数天数转换为日期值</p>
+<h2 id="SQL-注入漏洞产生的原因？如何防止？"><a href="#SQL-注入漏洞产生的原因？如何防止？" class="headerlink" title="SQL 注入漏洞产生的原因？如何防止？"></a>SQL 注入漏洞产生的原因？如何防止？</h2><p>SQL 注入产生的原因：程序开发过程中不注意规范书写 sql 语句和对特殊字符进行过滤，导致客户端可<br>以通过全局变量 POST 和 GET 提交一些 sql 语句正常执行。<br>防止 SQL 注入的方式：<br>开启配置文件中的 magic_quotes_gpc 和 magic_quotes_runtime 设置 执行 sql 语句时使用<br>addslashes 进行 sql 语句转换<br>Sql 语句书写尽量不要省略双引号和单引号。<br>过滤掉 sql 语句中的一些关键词：update、insert、delete、select、 * 。<br>提高数据库表和字段的命名技巧，对一些重要的字段根据程序的特点命名，取不易被猜到的。</p>
+<h2 id="MySQL当记录不存在时insert-当记录存在时update，语句怎么写？"><a href="#MySQL当记录不存在时insert-当记录存在时update，语句怎么写？" class="headerlink" title="MySQL当记录不存在时insert,当记录存在时update，语句怎么写？"></a>MySQL当记录不存在时insert,当记录存在时update，语句怎么写？</h2><p>INSERT INTO table (a,b,c) VALUES (1,2,3) ON DUPLICATE KEY UPDATE c=c+1;</p>
 <h1 id="字段"><a href="#字段" class="headerlink" title="字段"></a>字段</h1><h2 id="varchar与char的区别以及varchar-50-中的50代表的含义"><a href="#varchar与char的区别以及varchar-50-中的50代表的含义" class="headerlink" title="varchar与char的区别以及varchar(50)中的50代表的含义"></a>varchar与char的区别以及varchar(50)中的50代表的含义</h2><p>（1） varchar与char的区别</p>
 <p> 变长和固定长度</p>
 <p>（2）varchar(50)中50的涵义</p>
@@ -1338,7 +1636,7 @@
 <p>LONGTEXT。它们对应于四种BLOB类型，并具有相同的最大长度和存储要求。</p>
 <p>BLOB和TEXT类型之间的唯一区别在于对BLOB值进行排序和比较时区分大小写，对TEXT值不区分大小写。</p>
 <h2 id="MySQL-中-Float、Decimal-类型存储金额的区别？"><a href="#MySQL-中-Float、Decimal-类型存储金额的区别？" class="headerlink" title="MySQL 中 Float、Decimal 类型存储金额的区别？"></a>MySQL 中 Float、Decimal 类型存储金额的区别？</h2><p>Float 是非标准数据类型，存储金额时存储的是近似值，存在精度问题；Decimal 是标准数据类型，存储金额时存储的是精确值（以字符串的形式保存数值）。</p>
-<h1 id="MySQL-中-TIMESTAMP和DATETIME的区别以及选择"><a href="#MySQL-中-TIMESTAMP和DATETIME的区别以及选择" class="headerlink" title="MySQL 中 TIMESTAMP和DATETIME的区别以及选择"></a>MySQL 中 TIMESTAMP和DATETIME的区别以及选择</h1><table>
+<h2 id="MySQL-中-TIMESTAMP和DATETIME的区别以及选择"><a href="#MySQL-中-TIMESTAMP和DATETIME的区别以及选择" class="headerlink" title="MySQL 中 TIMESTAMP和DATETIME的区别以及选择"></a>MySQL 中 TIMESTAMP和DATETIME的区别以及选择</h2><table>
 <thead>
 <tr>
 <th>类型</th>
@@ -1363,6 +1661,14 @@
 </tr>
 </tbody></table>
 <h3 id="对于MySQL中timestamp数据类型的特点，为什么选择timestamp类型"><a href="#对于MySQL中timestamp数据类型的特点，为什么选择timestamp类型" class="headerlink" title="对于MySQL中timestamp数据类型的特点，为什么选择timestamp类型"></a>对于MySQL中timestamp数据类型的特点，为什么选择timestamp类型</h3><p>1.存储占用 4个字节，以年月日小时分秒的日期型式显示 2.存储范围’1970-01-01 00:00:01’ to ‘2038-01-19 03:14:07’. 3.以UTC时区进行存储，但是以系统当前时间进行显示 4.可以在insert和update时把值自动更新为当前时间</p>
+<h2 id="NULL-是什么意思"><a href="#NULL-是什么意思" class="headerlink" title="NULL 是什么意思"></a>NULL 是什么意思</h2><p>NULL 这个值表示 UNKNOWN(未知):它不表示“”(空字符串)。对 NULL 这个值的任何比较都会生产一个<br>NULL 值。您不能把任何值与一个 NULL 值进行比较，并在逻辑上希望获得一个答案。使用 IS NULL 来<br>进行 NULL 判断</p>
+<h2 id="自增ID问题"><a href="#自增ID问题" class="headerlink" title="自增ID问题"></a>自增ID问题</h2><p>一张表，里面有ID自增主键，当insert了17条记录之后，删除了第15,16,17条记录，再把Mysql重启，再insert一条记录，这条记录的ID是18还是15 ？</p>
+<ol>
+<li><p>如果表的类型是MyISAM，那么是18<br>因为MyISAM表会把自增主键的最大ID记录到数据文件里，重启MySQL自增主键的最大ID也不会丢失</p>
+</li>
+<li><p>如果表的类型是InnoDB，那么是15<br>InnoDB表只是把自增主键的最大ID记录到内存中，所以重启数据库或者是对表进行OPTIMIZE操作，都会导致最大ID丢失</p>
+</li>
+</ol>
 <h1 id="引擎"><a href="#引擎" class="headerlink" title="引擎"></a>引擎</h1><h1 id="MySQL-支持哪些存储引擎"><a href="#MySQL-支持哪些存储引擎" class="headerlink" title="MySQL 支持哪些存储引擎"></a>MySQL 支持哪些存储引擎</h1><p>MySQL 支持的存储引擎主要有四种：</p>
 <ol>
 <li><strong>InnoDB</strong> 支持<strong>事务</strong>，<strong>行级锁定</strong>和<strong>外键</strong>，是<strong>事务型</strong>数据库的首选引擎；MySQL5.5.5 之后的默认存储引擎；</li>
@@ -1403,9 +1709,14 @@
 </tr>
 </tbody></table>
 <h2 id="介绍一下mysql的MVCC机："><a href="#介绍一下mysql的MVCC机：" class="headerlink" title="介绍一下mysql的MVCC机："></a>介绍一下mysql的MVCC机：</h2><p>MVCC是一种多版本并发控制机制，是MySQL的InnoDB存储引擎实现隔离级别的一种具体方式，用于实现提交读和可重复读这两种隔离级别。MVCC是通过保存数据在某个时间点的快照来实现该机制，其在每行记录后面保存两个隐藏的列，分别保存这个行的创建版本号和删除版本号，然后Innodb的MVCC使用到的快照存储在Undo日志中，该日志通过回滚指针把一个数据行所有快照连接起来。</p>
-<h1 id="范式"><a href="#范式" class="headerlink" title="范式"></a>范式</h1><p>第一范式（1NF）：确保每列保持原子性即列不可分，即<strong>数据库表中的字段都是单一属性的</strong>。这个单一属性由基本类型构成，包括整型、实数、字符型、逻辑型、日期型等。</p>
-<p>第二范式（2NF）：<strong>属性完全依赖于主键</strong>，也就是说在一个数据库表中，一个表中只能保存一种数据，不可以把多种数据保存在同一张数据库表中。</p>
-<p>第三范式（3NF）：在第二范式的基础上，<strong>属性和主键不能间接相关</strong>（减少数据冗余，这样就可以通过主外键进行表之间连接）。</p>
+<h2 id="InnoDB与MyISAM的区别"><a href="#InnoDB与MyISAM的区别" class="headerlink" title="InnoDB与MyISAM的区别"></a>InnoDB与MyISAM的区别</h2><ol>
+<li>事务</li>
+<li>外键</li>
+<li>MyISAM-非聚集索引；InnoDB-聚集索引</li>
+<li>InnoDB不保存表的具体行数，执行select count(*) from table时需要全表扫描。而MyISAM用一<br>个变量保存了整个表的行数，执行上述语句时只需要读出该变量即可，速度很快；</li>
+<li>Innodb不支持全文索引，而MyISAM支持全文索引，查询效率上MyISAM要高</li>
+</ol>
+<h1 id="范式"><a href="#范式" class="headerlink" title="范式"></a>范式</h1><p>第一范式：列不可再分<br>第二范式：行可以唯一区分，主键约束<br>第三范式：表的非主属性不能依赖与其他表的非主属性 外键约束<br>且三大范式是一级一级依赖的，第二范式建立在第一范式上，第三范式建立第一第二范式上 。</p>
 <h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><p>索引（Index）是帮助MySQL高效获取数据的数据结构。提取句子主干，就可以得到索引的本质：索引是数据结构，可以帮助我们快速的进行数据的查找</p>
 <p>MySQL索引使用的数据结构主要有BTree索引 和 哈希索引 。对于哈希索引来说，底层的数据结构就是哈希表，因此在绝大多数需求为单条记录查询的时候，可以选择哈希索引，查询性能最快；其余大部分场景，建议选择BTree索引。</p>
 <p>MySQL的BTree索引使用的是B树中的B+Tree，但对于主要的两种存储引擎的实现方式是不同的。</p>
@@ -1415,13 +1726,15 @@
 <p>非聚集索引 (secondary index)，又称为辅助索引、普通索引，该索引的逻辑顺序与磁盘上行的物理存储顺序不同，一个表可以包含多个非聚集索引。</p>
 </blockquote>
 </li>
-<li><p>InnoDB: 其数据文件本身就是索引文件。相比MyISAM，索引文件和数据文件是分离的，其表数据文件本身就是按B+Tree组织的一个索引结构，树的叶节点data域保存了完整的数据记录。这个索引的key是数据表的主键，因此InnoDB表数据文件本身就是主索引。这被称为“聚簇索引（或聚集索引）”。而其余的索引都作为辅助索引，辅助索引的data域存储相应记录主键的值而不是地址，这也是和MyISAM不同的地方。在根据主索引搜索时，直接找到key所在的节点即可取出数据；在根据辅助索引查找时，则需要先取出主键的值，再走一遍主索引。 因此，在设计表的时候，不建议使用过长的字段作为主键，也不建议使用非单调的字段作为主键，这样会造成主索引频繁分裂。</p>
+<li><p>InnoDB: 其表数据文件本身就是按B+Tree组织的一个索引结构，树的叶节点data域保存了完整的数据记录。这个索引的key是数据表的主键，因此InnoDB表数据文件本身就是主索引。这被称为“聚簇索引（或聚集索引）”。</p>
 <blockquote>
 <p>聚集索引 (clustered index)，又称为主索引，该索引中键值的逻辑顺序决定了表中相应行的物理顺序。因为数据真正的数据只能有一种排序方式，所以一个表上只能有一个聚簇索引。</p>
 </blockquote>
 </li>
 </ul>
-<p>聚集索引 / 非聚集索引不是一种索引类型，而是一种存储数据的方式。在 InnoDB 中它们还有一个非常重要的区别：聚集索引的叶子节点的的 data 域包含了完整的数据记录，而非聚集索引的叶子节点的 data 域记录着主键的值，因此在使用非聚集索引进行查找时，需要先查找到主键值，然后再到聚集索引中进行查找，这称之为回表查询。<br>非聚簇索引不一定会回表查询</p>
+<p>聚集索引 / 非聚集索引不是一种索引类型，而是一种存储数据的方式。在 InnoDB 中它们还有一个非常重要的区别：<strong>聚集索引的叶子节点的的 data 域包含了完整的数据记录，而非聚集索引的叶子节点的 data 域记录着主键的值</strong>。</p>
+<p>在根据主索引搜索时，直接找到key所在的节点即可取出数据；在根据辅助索引查找时，则需要先取出主键的值，再走一遍主索引。 因此，在设计表的时候，不建议使用过长的字段作为主键，也不建议使用非单调的字段作为主键，这样会造成主索引频繁分裂。</p>
+<p>在使用非聚集索引进行查找时，需要先查找到主键值，然后再到聚集索引中进行查找，这称之为回表查询。非聚簇索引不一定会回表查询</p>
 <h2 id="MySQL-索引底层是什么结构？为什么采用此结构？"><a href="#MySQL-索引底层是什么结构？为什么采用此结构？" class="headerlink" title="MySQL 索引底层是什么结构？为什么采用此结构？"></a>MySQL 索引底层是什么结构？为什么采用此结构？</h2><p>mysql 底层采用 B + 树的存储结构。采用 B + 树的原因：</p>
 <p>（1）索引文件很大，不能全部存储在内存中，只能存储到磁盘上，因此索引的数据结构要尽量减少查找过程中磁盘 I/O 的存取次数；</p>
 <p>（2）数据库系统利用了磁盘预读原理和磁盘预读，将一个节点的大小设为等于一个页，这样每个节点只需要一次 I/O 就可以完全载入。而 B + 树的高度是 2~4，检索一次最多只需要访问 4 个节点（4 次，即树的高度）。</p>
@@ -1506,6 +1819,12 @@
 <p>MySQL中InnoDB引擎的行锁是通过加在什么上完成(或称实现)的？为什么是这样子的？</p>
 <p>InnoDB是基于索引来完成行锁。</p>
 <p>例如在<code>select * from tab_with_index where id = 1 for update</code>中。for update 可以根据条件来完成行锁锁定,并且 id 是有索引键的列，如果 id 不是索引键那么InnoDB将完成表锁，并发将无从谈起。</p>
+<h2 id="并发事务带来哪些问题"><a href="#并发事务带来哪些问题" class="headerlink" title="并发事务带来哪些问题?"></a>并发事务带来哪些问题?</h2><p>在典型的应用程序中，多个事务并发运行，经常会操作相同的数据来完成各自的任务（多个用户对同一<br>数据进行操作）。并发虽然是必须的，但可能会导致以下的问题。</p>
+<p><strong>脏读（Dirty read）</strong>: 当一个事务正在访问数据并且对数据进行了修改，而这种修改还没有提交到数据<br>库中，这时另外一个事务也访问了这个数据，然后使用了这个数据。因为这个数据是还没有提交的数<br>据，那么另外一个事务读到的这个数据是“脏数据”，依据“脏数据”所做的操作可能是不正确的。</p>
+<p><strong>丢失修改（Lost to modify）</strong>: 指在一个事务读取一个数据时，另外一个事务也访问了该数据，那么在<br>第一个事务中修改了这个数据后，第二个事务也修改了这个数据。这样第一个事务内的修改结果就被丢<br>失，因此称为丢失修。 例如：事务1读取某表中的数据A=20，事务2也读取A=20，事务1修改A=A-1，<br>事务2也修改A=A-1，最终结果A=19，事务1的修改被丢失。</p>
+<p><strong>不可重复读（Unrepeatableread）</strong>: 指在一个事务内多次读同一数据。在这个事务还没有结束时，另<br>一个事务也访问该数据。那么，在第一个事务中的两次读数据之间，由于第二个事务的修改导致第一个<br>事务两次读取的数据可能不太一样。这就发生了在一个事务内两次读到的数据是不一样的情况，因此称<br>为不可重复读。</p>
+<p><strong>幻读（Phantom read）</strong>: 幻读与不可重复读类似。它发生在一个事务（T1）读取了几行数据，接着另<br>一个并发事务（T2）插入了一些数据时。在随后的查询中，第一个事务（T1）就会发现多了一些原本不<br>存在的记录，就好像发生了幻觉一样，所以称为幻读。</p>
+<p><strong>不可重复读和幻读区别</strong>：<br>不可重复读的重点是修改比如多次读取一条记录发现其中某些列的值被修改，幻读的重点在于新增或者<br>删除比如多次读取一条记录发现记录增多或减少了</p>
 <h2 id="详述一下数据库事务隔离的四个级别"><a href="#详述一下数据库事务隔离的四个级别" class="headerlink" title="详述一下数据库事务隔离的四个级别"></a>详述一下数据库事务隔离的四个级别</h2><blockquote>
 <p>MySQL 的默认事务处理级别是可重复读，Oracle 的默认事务处理级别是读提交。</p>
 </blockquote>
@@ -1583,6 +1902,13 @@
 <li>Slave将master的binary log复制到其中继日志。首先slave开始一个工作线程（I/O），I/O线程在master上打开一个普通的连接，然后开始binlog dump process。binlog dump process从master的二进制日志中读取事件，如果已经跟上master，它会睡眠并等待master产生新的事件，I/O线程将这些事件写入中继日志。</li>
 <li>Sql slave thread（sql从线程）处理该过程的最后一步，sql线程从中继日志读取事件，并重放其中的事件而更新slave数据，使其与master中的数据一致，只要该线程与I/O线程保持一致，中继日志通常会位于os缓存中，所以中继日志的开销很小。</li>
 </ol>
+<h2 id="分库分表之后-id-主键如何处理"><a href="#分库分表之后-id-主键如何处理" class="headerlink" title="分库分表之后,id 主键如何处理"></a>分库分表之后,id 主键如何处理</h2><p>因为要是分成多个表之后，每个表都是从 1 开始累加，这样是不对的，我们需要一个全局唯一的 id 来<br>支持。<br>生成全局 id 有下面这几种方式：<br><strong>UUID</strong>：不适合作为主键，因为太长了，并且无序不可读，查询效率低。比较适合用于生成唯一的名字<br>的标示比如文件的名字。<br><strong>数据库自增 id</strong> : 两台数据库分别设置不同步长，生成不重复ID的策略来实现高可用。这种方式生成的 id<br>有序，但是需要独立部署数据库实例，成本高，还会有性能瓶颈。<br><strong>利用 redis 生成 id</strong> : 性能比较好，灵活方便，不依赖于数据库。但是，引入了新的组件造成系统更加复<br>杂，可用性降低，编码更加复杂，增加了系统成本。<br><strong>Twitter的snowflake算法</strong> ：Github 地址：<a target="_blank" rel="noopener" href="https://github.com/twitter-archive/snowflake%E3%80%82">https://github.com/twitter-archive/snowflake。</a><br>**美团的Leaf分布式ID生成系统 **：Leaf 是美团开源的分布式ID生成器，能保证全局唯一性、趋势递增、<br>单调递增、信息安全，里面也提到了几种分布式方案的对比，但也需要依赖关系数据库、Zookeeper等<br>中间件。感觉还不错。美团技术团队的一篇文章：<a target="_blank" rel="noopener" href="https://tech.meituan.com/2017/04/21/mt-leaf.ht">https://tech.meituan.com/2017/04/21/mt-leaf.ht</a><br>ml</p>
+<h1 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h1><h2 id="MySQL-中有哪几种锁？"><a href="#MySQL-中有哪几种锁？" class="headerlink" title="MySQL 中有哪几种锁？"></a>MySQL 中有哪几种锁？</h2><p>1、表级锁：开销小，加锁快；不会出现死锁；锁定粒度大，发生锁冲突的概率最高，并发度最低。<br>2、行级锁：开销大，加锁慢；会出现死锁；锁定粒度最小，发生锁冲突的概率最低，并发度也最高。<br>3、页面锁：开销和加锁时间界于表锁和行锁之间；会出现死锁；锁定粒度界于表锁和行锁之间，并发<br>度一般</p>
+<h2 id="锁的优化策略"><a href="#锁的优化策略" class="headerlink" title="锁的优化策略"></a>锁的优化策略</h2><p>1、读写分离<br>2、分段加锁<br>3、减少锁持有的时间<br>4.多个线程尽量以相同的顺序去获取资源不能将锁的粒度过于细化，不然可能会出现线程的加锁和释放<br>次数过多，反而效率不如一次加一把大锁。</p>
+<h1 id="优化数据库"><a href="#优化数据库" class="headerlink" title="优化数据库"></a>优化数据库</h1><p>最好是按照以下顺序优化：<br>1、SQL 语句及索引的优化<br>2、数据库表结构的优化<br>3、系统配置的优化<br>4、硬件的优化</p>
+<hr>
+<p>1、选取最适用的字段属性，尽可能减少定义字段宽度，尽量把字段设置 NOTNULL，例如’省份’、’性<br>别’最好适用 ENUM<br>2、使用连接(JOIN)来代替子查询<br>3、适用联合(UNION)来代替手动创建的临时表<br>4、事务处理<br>5、锁定表、优化事务处理<br>6、适用外键，优化锁定表<br>7、建立索引<br>8、优化查询语句</p>
+<h1 id="SQL优化"><a href="#SQL优化" class="headerlink" title="SQL优化"></a>SQL优化</h1><p>1、查询语句中不要使用select *<br>2、尽量减少子查询，使用关联查询（left join,right join,inner join）替代<br>3、减少使用IN或者NOT IN ,使用exists，not exists或者关联查询语句替代<br>4、or 的查询尽量用 union或者union all 代替(在确认没有重复数据或者不用剔除重复数据时，union<br>all会更好)<br>5、应尽量避免在 where 子句中使用!=或&lt;&gt;操作符，否则将引擎放弃使用索引而进行全表扫描。<br>6、应尽量避免在 where 子句中对字段进行 null 值判断，否则将导致引擎放弃使用索引而进行全表扫<br>描，如： select id from t where num is null 可以在num上设置默认值0，确保表中num列没有null<br>值，然后这样查询： select id from t where num=0</p>
 
           
         
@@ -1750,7 +2076,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/16/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/16/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -1769,7 +2095,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/04/16/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/" itemprop="url">分步式会话</a></h1>
+                <a class="post-title-link" href="/2021/04/16/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/" itemprop="url">分步式-分步式会话</a></h1>
         
 
         <div class="post-meta">
@@ -2349,400 +2675,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/15/ThreadLocal%E5%85%B3%E9%94%AE%E5%AD%97%E5%AD%A6%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/15/ThreadLocal%E5%85%B3%E9%94%AE%E5%AD%97%E5%AD%A6%E4%B9%A0/" itemprop="url">ThreadLocal关键字学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-15T22:39:27+08:00">
-                2021-04-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
-                    <span itemprop="name">Java基础 - Java多线程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>摘抄<a target="_blank" rel="noopener" href="https://snailclimb.gitee.io/javaguide/#/?id=%e5%b9%b6%e5%8f%91">javaguide</a></p>
-<blockquote>
-<p>自己在工作中只使用过TheadLocal存放Request信息，在文章末尾附使用源码</p>
-</blockquote>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/1.png" alt="img"></p>
-<p>对于<code>ThreadLocal</code>，大家的第一反应可能是很简单呀，线程的变量副本，每个线程隔离。那这里有几个问题大家可以思考一下：</p>
-<ul>
-<li><code>ThreadLocal</code>的key是<strong>弱引用</strong>，那么在 <code>ThreadLocal</code>.get()的时候,发生<strong>GC</strong>之后，key是否为<strong>null</strong>？</li>
-<li><code>ThreadLocal</code>中<code>ThreadLocalMap</code>的<strong>数据结构</strong>？</li>
-<li><code>ThreadLocalMap</code>的<strong>Hash算法</strong>？</li>
-<li><code>ThreadLocalMap</code>中<strong>Hash冲突</strong>如何解决？</li>
-<li><code>ThreadLocalMap</code>的<strong>扩容机制</strong>？</li>
-<li><code>ThreadLocalMap</code>中<strong>过期key的清理机制</strong>？<strong>探测式清理</strong>和<strong>启发式清理</strong>流程？</li>
-<li><code>ThreadLocalMap.set()</code>方法实现原理？</li>
-<li><code>ThreadLocalMap.get()</code>方法实现原理？</li>
-<li>项目中<code>ThreadLocal</code>使用情况？遇到的坑？</li>
-</ul>
-<h1 id="ThreadLocal代码演示"><a href="#ThreadLocal代码演示" class="headerlink" title="ThreadLocal代码演示"></a><code>ThreadLocal</code>代码演示</h1><p>我们先看下<code>ThreadLocal</code>使用示例：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadLocalTest</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> List&lt;String&gt; messages = Lists.newArrayList();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;ThreadLocalTest&gt; holder = ThreadLocal.withInitial(ThreadLocalTest::<span class="keyword">new</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(String message)</span> </span>&#123;</span><br><span class="line">        holder.get().messages.add(message);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;String&gt; <span class="title">clear</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;String&gt; messages = holder.get().messages;</span><br><span class="line">        holder.remove();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;size: &quot;</span> + holder.get().messages.size());</span><br><span class="line">        <span class="keyword">return</span> messages;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ThreadLocalTest.add(<span class="string">&quot;一枝花算不算浪漫&quot;</span>);</span><br><span class="line">        System.out.println(holder.get().messages);</span><br><span class="line">        ThreadLocalTest.clear();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>打印结果：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[一枝花算不算浪漫]</span><br><span class="line">size: <span class="number">0</span></span><br></pre></td></tr></table></figure>
-
-<p><code>ThreadLocal</code>对象可以提供线程局部变量，每个线程<code>Thread</code>拥有一份自己的<strong>副本变量</strong>，多个线程互不干扰。</p>
-<h1 id="ThreadLocal的数据结构"><a href="#ThreadLocal的数据结构" class="headerlink" title="ThreadLocal的数据结构"></a><code>ThreadLocal</code>的数据结构</h1><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/2.png" alt="img"></p>
-<p><code>Thread</code>类有一个类型为<code>ThreadLocal.ThreadLocalMap</code>的实例变量<code>threadLocals</code>，也就是说每个线程有一个自己的<code>ThreadLocalMap</code>。</p>
-<p><code>ThreadLocalMap</code>有自己的独立实现，可以简单地将它的<code>key</code>视作<code>ThreadLocal</code>，<code>value</code>为代码中放入的值（实际上<code>key</code>并不是<code>ThreadLocal</code>本身，而是它的一个<strong>弱引用</strong>）。</p>
-<p>每个线程在往<code>ThreadLocal</code>里放值的时候，都会往自己的<code>ThreadLocalMap</code>里存，读也是以<code>ThreadLocal</code>作为引用，在自己的<code>map</code>里找对应的<code>key</code>，从而实现了<strong>线程隔离</strong>。</p>
-<p><code>ThreadLocalMap</code>有点类似<code>HashMap</code>的结构，只是<code>HashMap</code>是由<strong>数组+链表</strong>实现的，而<code>ThreadLocalMap</code>中并没有<strong>链表</strong>结构。</p>
-<p>我们还要注意<code>Entry</code>， 它的<code>key</code>是<code>ThreadLocal&lt;?&gt; k</code> ，继承自<code>WeakReference</code>， 也就是我们常说的弱引用类型。</p>
-<h1 id="GC-之后key是否为null？"><a href="#GC-之后key是否为null？" class="headerlink" title="GC 之后key是否为null？"></a>GC 之后key是否为null？</h1><p>回应开头的那个问题， <code>ThreadLocal</code> 的<code>key</code>是弱引用，那么在<code>ThreadLocal.get()</code>的时候,发生<code>GC</code>之后，<code>key</code>是否是<code>null</code>？</p>
-<p>为了搞清楚这个问题，我们需要搞清楚<code>Java</code>的<strong>四种引用类型</strong>：</p>
-<ul>
-<li><strong>强引用</strong>：我们常常new出来的对象就是强引用类型，只要强引用存在，垃圾回收器将永远不会回收被引用的对象，哪怕内存不足的时候</li>
-<li><strong>软引用</strong>：使用SoftReference修饰的对象被称为软引用，软引用指向的对象在内存要溢出的时候被回收</li>
-<li><strong>弱引用</strong>：使用WeakReference修饰的对象被称为弱引用，只要发生垃圾回收，若这个对象只被弱引用指向，那么就会被回收</li>
-<li><strong>虚引用</strong>：虚引用是最弱的引用，在 Java 中使用 PhantomReference 进行定义。虚引用中唯一的作用就是用队列接收对象即将死亡的通知</li>
-</ul>
-<p>接着再来看下代码，我们使用反射的方式来看看<code>GC</code>后<code>ThreadLocal</code>中的数据情况：(下面代码来源自：<a target="_blank" rel="noopener" href="https://blog.csdn.net/thewindkee/article/details/103726942%EF%BC%8C%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C%E6%BC%94%E7%A4%BAGC%E5%9B%9E%E6%94%B6%E5%9C%BA%E6%99%AF">https://blog.csdn.net/thewindkee/article/details/103726942，本地运行演示GC回收场景</a>)</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadLocalDemo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> NoSuchFieldException, IllegalAccessException, InterruptedException </span>&#123;</span><br><span class="line">        Thread t = <span class="keyword">new</span> Thread(()-&gt;test(<span class="string">&quot;abc&quot;</span>,<span class="keyword">false</span>));</span><br><span class="line">        t.start();</span><br><span class="line">        t.join();</span><br><span class="line">        System.out.println(<span class="string">&quot;--gc后--&quot;</span>);</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(() -&gt; test(<span class="string">&quot;def&quot;</span>, <span class="keyword">true</span>));</span><br><span class="line">        t2.start();</span><br><span class="line">        t2.join();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(String s,<span class="keyword">boolean</span> isGC)</span>  </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">new</span> ThreadLocal&lt;&gt;().set(s);</span><br><span class="line">            <span class="keyword">if</span> (isGC) &#123;</span><br><span class="line">                System.gc();</span><br><span class="line">            &#125;</span><br><span class="line">            Thread t = Thread.currentThread();</span><br><span class="line">            Class&lt;? extends Thread&gt; clz = t.getClass();</span><br><span class="line">            Field field = clz.getDeclaredField(<span class="string">&quot;threadLocals&quot;</span>);</span><br><span class="line">            field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            Object ThreadLocalMap = field.get(t);</span><br><span class="line">            Class&lt;?&gt; tlmClass = ThreadLocalMap.getClass();</span><br><span class="line">            Field tableField = tlmClass.getDeclaredField(<span class="string">&quot;table&quot;</span>);</span><br><span class="line">            tableField.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            Object[] arr = (Object[]) tableField.get(ThreadLocalMap);</span><br><span class="line">            <span class="keyword">for</span> (Object o : arr) &#123;</span><br><span class="line">                <span class="keyword">if</span> (o != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    Class&lt;?&gt; entryClass = o.getClass();</span><br><span class="line">                    Field valueField = entryClass.getDeclaredField(<span class="string">&quot;value&quot;</span>);</span><br><span class="line">                    Field referenceField = entryClass.getSuperclass().getSuperclass().getDeclaredField(<span class="string">&quot;referent&quot;</span>);</span><br><span class="line">                    valueField.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">                    referenceField.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">                    System.out.println(String.format(<span class="string">&quot;弱引用key:%s,值:%s&quot;</span>, referenceField.get(o), valueField.get(o)));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>结果如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">弱引用key:java.lang.ThreadLocal@433619b6,值:abc</span><br><span class="line">弱引用key:java.lang.ThreadLocal@418a15e3,值:java.lang.ref.SoftReference<span class="meta">@bf97a12</span></span><br><span class="line">--gc后--</span><br><span class="line">弱引用key:<span class="keyword">null</span>,值:def</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/3.png" alt="img"></p>
-<p>如图所示，因为这里创建的<code>ThreadLocal</code>并没有指向任何值，也就是没有任何引用：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> ThreadLocal&lt;&gt;().set(s);</span><br></pre></td></tr></table></figure>
-
-<p>所以这里在<code>GC</code>之后，<code>key</code>就会被回收，我们看到上面<code>debug</code>中的<code>referent=null</code>, 如果<strong>改动一下代码：</strong></p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/4.png" alt="img"></p>
-<p>这个问题刚开始看，如果没有过多思考，<strong>弱引用</strong>，还有<strong>垃圾回收</strong>，那么肯定会觉得是<code>null</code>。</p>
-<p>其实是不对的，因为题目说的是在做 <code>ThreadLocal.get()</code> 操作，证明其实还是有<strong>强引用</strong>存在的，所以 <code>key</code> 并不为 <code>null</code>，如下图所示，<code>ThreadLocal</code>的<strong>强引用</strong>仍然是存在的。</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/5.png" alt="image.png"></p>
-<p>如果我们的<strong>强引用</strong>不存在的话，那么 <code>key</code> 就会被回收，也就是会出现我们 <code>value</code> 没被回收，<code>key</code> 被回收，导致 <code>value</code> 永远存在，出现内存泄漏。</p>
-<h1 id="ThreadLocal-set-方法源码详解"><a href="#ThreadLocal-set-方法源码详解" class="headerlink" title="ThreadLocal.set()方法源码详解"></a><code>ThreadLocal.set()</code>方法源码详解</h1><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/6.png" alt="img"></p>
-<p><code>ThreadLocal</code>中的<code>set</code>方法原理如上图所示，很简单，主要是判断<code>ThreadLocalMap</code>是否存在，然后使用<code>ThreadLocal</code>中的<code>set</code>方法进行数据处理。</p>
-<p>代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    Thread t = Thread.currentThread();</span><br><span class="line">    ThreadLocalMap map = getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="keyword">null</span>)</span><br><span class="line">        map.set(<span class="keyword">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createMap</span><span class="params">(Thread t, T firstValue)</span> </span>&#123;</span><br><span class="line">    t.threadLocals = <span class="keyword">new</span> `ThreadLocalMap`(<span class="keyword">this</span>, firstValue);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>主要的核心逻辑还是在<code>ThreadLocalMap</code>中的，一步步往下看，后面还有更详细的剖析。</p>
-<h1 id="ThreadLocalMap-Hash算法"><a href="#ThreadLocalMap-Hash算法" class="headerlink" title="ThreadLocalMap Hash算法"></a><code>ThreadLocalMap</code> Hash算法</h1><p>既然是<code>Map</code>结构，那么<code>ThreadLocalMap</code>当然也要实现自己的<code>hash</code>算法来解决散列表数组冲突问题。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = key.threadLocalHashCode &amp; (len-<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
-
-<p><code>ThreadLocalMap</code>中<code>hash</code>算法很简单，这里<code>i</code>就是当前key在散列表中对应的数组下标位置。</p>
-<p>这里最关键的就是<code>threadLocalHashCode</code>值的计算，<code>ThreadLocal</code>中有一个属性为<code>HASH_INCREMENT = 0x61c88647</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadLocal</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> threadLocalHashCode = nextHashCode();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> AtomicInteger nextHashCode = <span class="keyword">new</span> AtomicInteger();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> HASH_INCREMENT = <span class="number">0x61c88647</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">nextHashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> nextHashCode.getAndAdd(HASH_INCREMENT);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadLocalMap</span> </span>&#123;</span><br><span class="line">        ThreadLocalMap(ThreadLocal&lt;?&gt; firstKey, Object firstValue) &#123;</span><br><span class="line">            table = <span class="keyword">new</span> Entry[INITIAL_CAPACITY];</span><br><span class="line">            <span class="keyword">int</span> i = firstKey.threadLocalHashCode &amp; (INITIAL_CAPACITY - <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">            table[i] = <span class="keyword">new</span> Entry(firstKey, firstValue);</span><br><span class="line">            size = <span class="number">1</span>;</span><br><span class="line">            setThreshold(INITIAL_CAPACITY);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>每当创建一个<code>ThreadLocal</code>对象，这个<code>ThreadLocal.nextHashCode</code> 这个值就会增长 <code>0x61c88647</code> 。</p>
-<p>这个值很特殊，它是<strong>斐波那契数</strong>  也叫 <strong>黄金分割数</strong>。<code>hash</code>增量为 这个数字，带来的好处就是 <code>hash</code> <strong>分布非常均匀</strong>。</p>
-<p>我们自己可以尝试下：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/8.png" alt="img"></p>
-<p>可以看到产生的哈希码分布很均匀，这里不去细纠<strong>斐波那契</strong>具体算法，感兴趣的可以自行查阅相关资料。</p>
-<h1 id="ThreadLocalMap-Hash冲突"><a href="#ThreadLocalMap-Hash冲突" class="headerlink" title="ThreadLocalMap Hash冲突"></a><code>ThreadLocalMap</code> Hash冲突</h1><blockquote>
-<p><strong>注明：</strong> 下面所有示例图中，<strong>绿色块</strong><code>Entry</code>代表<strong>正常数据</strong>，<strong>灰色块</strong>代表<code>Entry</code>的<code>key</code>值为<code>null</code>，<strong>已被垃圾回收</strong>。<strong>白色块</strong>表示<code>Entry</code>为<code>null</code>。</p>
-</blockquote>
-<p>虽然<code>ThreadLocalMap</code>中使用了<strong>黄金分割数来</strong>作为<code>hash</code>计算因子，大大减少了<code>Hash</code>冲突的概率，但是仍然会存在冲突。</p>
-<p><code>HashMap</code>中解决冲突的方法是在数组上构造一个<strong>链表</strong>结构，冲突的数据挂载到链表上，如果链表长度超过一定数量则会转化成<strong>红黑树</strong>。</p>
-<p>而<code>ThreadLocalMap</code>中并没有链表结构，所以这里不能适用<code>HashMap</code>解决冲突的方式了。</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/7.png" alt="img"></p>
-<p>如上图所示，如果我们插入一个<code>value=27</code>的数据，通过<code>hash</code>计算后应该落入第4个槽位中，而槽位4已经有了<code>Entry</code>数据。</p>
-<p>此时就会线性向后查找，一直找到<code>Entry</code>为<code>null</code>的槽位才会停止查找，将当前元素放入此槽位中。当然迭代过程中还有其他的情况，比如遇到了<code>Entry</code>不为<code>null</code>且<code>key</code>值相等的情况，还有<code>Entry</code>中的<code>key</code>值为<code>null</code>的情况等等都会有不同的处理，后面会一一详细讲解。</p>
-<p>这里还画了一个<code>Entry</code>中的<code>key</code>为<code>null</code>的数据（<strong>Entry=2的灰色块数据</strong>），因为<code>key</code>值是<strong>弱引用</strong>类型，所以会有这种数据存在。在<code>set</code>过程中，如果遇到了<code>key</code>过期的<code>Entry</code>数据，实际上是会进行一轮<strong>探测式清理</strong>操作的，具体操作方式后面会讲到。</p>
-<h1 id="ThreadLocalMap-set-详解"><a href="#ThreadLocalMap-set-详解" class="headerlink" title="ThreadLocalMap.set()详解"></a><code>ThreadLocalMap.set()</code>详解</h1><h2 id="ThreadLocalMap-set-原理图解"><a href="#ThreadLocalMap-set-原理图解" class="headerlink" title="ThreadLocalMap.set()原理图解"></a><code>ThreadLocalMap.set()</code>原理图解</h2><p>看完了<code>ThreadLocal</code> <strong>hash算法</strong>后，我们再来看<code>set</code>是如何实现的。</p>
-<p>往<code>ThreadLocalMap</code>中<code>set</code>数据（<strong>新增</strong>或者<strong>更新</strong>数据）分为好几种情况，针对不同的情况我们画图来说说明。</p>
-<p><strong>第一种情况：</strong> 通过<code>hash</code>计算后的槽位对应的<code>Entry</code>数据为空：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/9.png" alt="img"></p>
-<p>这里直接将数据放到该槽位即可。</p>
-<p><strong>第二种情况：</strong> 槽位数据不为空，<code>key</code>值与当前<code>ThreadLocal</code>通过<code>hash</code>计算获取的<code>key</code>值一致：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/10.png" alt="img"></p>
-<p>这里直接更新该槽位的数据。</p>
-<p><strong>第三种情况：</strong> 槽位数据不为空，往后遍历过程中，在找到<code>Entry</code>为<code>null</code>的槽位之前，没有遇到<code>key</code>过期的<code>Entry</code>：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/11.png" alt="img"></p>
-<p>遍历散列数组，线性往后查找，如果找到<code>Entry</code>为<code>null</code>的槽位，则将数据放入该槽位中，或者往后遍历过程中，遇到了<strong>key值相等</strong>的数据，直接更新即可。</p>
-<p><strong>第四种情况：</strong> 槽位数据不为空，往后遍历过程中，在找到<code>Entry</code>为<code>null</code>的槽位之前，遇到<code>key</code>过期的<code>Entry</code>，如下图，往后遍历过程中，一到了<code>index=7</code>的槽位数据<code>Entry</code>的<code>key=null</code>：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/12.png" alt="img"></p>
-<p>散列数组下标为7位置对应的<code>Entry</code>数据<code>key</code>为<code>null</code>，表明此数据<code>key</code>值已经被垃圾回收掉了，此时就会执行<code>replaceStaleEntry()</code>方法，该方法含义是<strong>替换过期数据的逻辑</strong>，以<strong>index=7</strong>位起点开始遍历，进行探测式数据清理工作。</p>
-<p>初始化探测式清理过期数据扫描的开始位置：<code>slotToExpunge = staleSlot = 7</code></p>
-<p>以当前<code>staleSlot</code>开始 向前迭代查找，找其他过期的数据，然后更新过期数据起始扫描下标<code>slotToExpunge</code>。<code>for</code>循环迭代，直到碰到<code>Entry</code>为<code>null</code>结束。</p>
-<p>如果找到了过期的数据，继续向前迭代，直到遇到<code>Entry=null</code>的槽位才停止迭代，如下图所示，<strong>slotToExpunge被更新为0</strong>：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/13.png" alt="img"></p>
-<p>以当前节点(<code>index=7</code>)向前迭代，检测是否有过期的<code>Entry</code>数据，如果有则更新<code>slotToExpunge</code>值。碰到<code>null</code>则结束探测。以上图为例<code>slotToExpunge</code>被更新为0。</p>
-<p>上面向前迭代的操作是为了更新探测清理过期数据的起始下标<code>slotToExpunge</code>的值，这个值在后面会讲解，它是用来判断当前过期槽位<code>staleSlot</code>之前是否还有过期元素。</p>
-<p>接着开始以<code>staleSlot</code>位置(index=7)向后迭代，<strong>如果找到了相同key值的Entry数据：</strong></p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/14.png" alt="img"></p>
-<p>从当前节点<code>staleSlot</code>向后查找<code>key</code>值相等的<code>Entry</code>元素，找到后更新<code>Entry</code>的值并交换<code>staleSlot</code>元素的位置(<code>staleSlot</code>位置为过期元素)，更新<code>Entry</code>数据，然后开始进行过期<code>Entry</code>的清理工作，如下图所示：</p>
-<p><img src="https://user-gold-cdn.xitu.io/2020/5/8/171f3ba9af057e1e?w=1336&h=361&f=png&s=63049" alt="Yu4oWT.png"></p>
-<p><strong>向后遍历过程中，如果没有找到相同key值的Entry数据：</strong></p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/15.png" alt="img"></p>
-<p>从当前节点<code>staleSlot</code>向后查找<code>key</code>值相等的<code>Entry</code>元素，直到<code>Entry</code>为<code>null</code>则停止寻找。通过上图可知，此时<code>table</code>中没有<code>key</code>值相同的<code>Entry</code>。</p>
-<p>创建新的<code>Entry</code>，替换<code>table[stableSlot]</code>位置：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/16.png" alt="img"></p>
-<p>替换完成后也是进行过期元素清理工作，清理工作主要是有两个方法：<code>expungeStaleEntry()</code>和<code>cleanSomeSlots()</code>，具体细节后面会讲到，请继续往后看。</p>
-<h2 id="ThreadLocalMap-set-源码详解"><a href="#ThreadLocalMap-set-源码详解" class="headerlink" title="ThreadLocalMap.set()源码详解"></a><code>ThreadLocalMap.set()</code>源码详解</h2><p>上面已经用图的方式解析了<code>set()</code>实现的原理，其实已经很清晰了，我们接着再看下源码：</p>
-<p><code>java.lang.ThreadLocal</code>.<code>ThreadLocalMap.set()</code>:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(ThreadLocal&lt;?&gt; key, Object value)</span> </span>&#123;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line">    <span class="keyword">int</span> i = key.threadLocalHashCode &amp; (len-<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (Entry e = tab[i];</span><br><span class="line">         e != <span class="keyword">null</span>;</span><br><span class="line">         e = tab[i = nextIndex(i, len)]) &#123;</span><br><span class="line">        `ThreadLocal`&lt;?&gt; k = e.get();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (k == key) &#123;</span><br><span class="line">            e.value = value;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (k == <span class="keyword">null</span>) &#123;</span><br><span class="line">            replaceStaleEntry(key, value, i);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    tab[i] = <span class="keyword">new</span> Entry(key, value);</span><br><span class="line">    <span class="keyword">int</span> sz = ++size;</span><br><span class="line">    <span class="keyword">if</span> (!cleanSomeSlots(i, sz) &amp;&amp; sz &gt;= threshold)</span><br><span class="line">        rehash();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里会通过<code>key</code>来计算在散列表中的对应位置，然后以当前<code>key</code>对应的桶的位置向后查找，找到可以使用的桶。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Entry[] tab = table;</span><br><span class="line"><span class="keyword">int</span> len = tab.length;</span><br><span class="line"><span class="keyword">int</span> i = key.threadLocalHashCode &amp; (len-<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
-
-<p>什么情况下桶才是可以使用的呢？</p>
-<ol>
-<li><code>k = key</code> 说明是替换操作，可以使用</li>
-<li>碰到一个过期的桶，执行替换逻辑，占用过期桶</li>
-<li>查找过程中，碰到桶中<code>Entry=null</code>的情况，直接使用</li>
-</ol>
-<p>接着就是执行<code>for</code>循环遍历，向后查找，我们先看下<code>nextIndex()</code>、<code>prevIndex()</code>方法实现：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/17.png" alt="img"></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">nextIndex</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> len)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> ((i + <span class="number">1</span> &lt; len) ? i + <span class="number">1</span> : <span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">prevIndex</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> len)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> ((i - <span class="number">1</span> &gt;= <span class="number">0</span>) ? i - <span class="number">1</span> : len - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>接着看剩下<code>for</code>循环中的逻辑：</p>
-<ol>
-<li>遍历当前<code>key</code>值对应的桶中<code>Entry</code>数据为空，这说明散列数组这里没有数据冲突，跳出<code>for</code>循环，直接<code>set</code>数据到对应的桶中</li>
-<li>如果<code>key</code>值对应的桶中<code>Entry</code>数据不为空</li>
-<li>1 如果<code>k = key</code>，说明当前<code>set</code>操作是一个替换操作，做替换逻辑，直接返回</li>
-<li>2 如果<code>key = null</code>，说明当前桶位置的<code>Entry</code>是过期数据，执行<code>replaceStaleEntry()</code>方法(核心方法)，然后返回</li>
-<li><code>for</code>循环执行完毕，继续往下执行说明向后迭代的过程中遇到了<code>entry</code>为<code>null</code>的情况</li>
-<li>1 在<code>Entry</code>为<code>null</code>的桶中创建一个新的<code>Entry</code>对象</li>
-<li>2 执行<code>++size</code>操作</li>
-<li>调用<code>cleanSomeSlots()</code>做一次启发式清理工作，清理散列数组中<code>Entry</code>的<code>key</code>过期的数据</li>
-<li>1 如果清理工作完成后，未清理到任何数据，且<code>size</code>超过了阈值(数组长度的2/3)，进行<code>rehash()</code>操作</li>
-<li>2 <code>rehash()</code>中会先进行一轮探测式清理，清理过期<code>key</code>，清理完成后如果<strong>size &gt;= threshold - threshold / 4</strong>，就会执行真正的扩容逻辑(扩容逻辑往后看)</li>
-</ol>
-<p>接着重点看下<code>replaceStaleEntry()</code>方法，<code>replaceStaleEntry()</code>方法提供替换过期数据的功能，我们可以对应上面<strong>第四种情况</strong>的原理图来再回顾下，具体代码如下：</p>
-<p><code>java.lang.ThreadLocal.ThreadLocalMap.replaceStaleEntry()</code>:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">replaceStaleEntry</span><span class="params">(ThreadLocal&lt;?&gt; key, Object value,</span></span></span><br><span class="line"><span class="function"><span class="params">                                       <span class="keyword">int</span> staleSlot)</span> </span>&#123;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line">    Entry e;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> slotToExpunge = staleSlot;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = prevIndex(staleSlot, len);</span><br><span class="line">         (e = tab[i]) != <span class="keyword">null</span>;</span><br><span class="line">         i = prevIndex(i, len))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (e.get() == <span class="keyword">null</span>)</span><br><span class="line">            slotToExpunge = i;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = nextIndex(staleSlot, len);</span><br><span class="line">         (e = tab[i]) != <span class="keyword">null</span>;</span><br><span class="line">         i = nextIndex(i, len)) &#123;</span><br><span class="line"></span><br><span class="line">        `ThreadLocal`&lt;?&gt; k = e.get();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (k == key) &#123;</span><br><span class="line">            e.value = value;</span><br><span class="line"></span><br><span class="line">            tab[i] = tab[staleSlot];</span><br><span class="line">            tab[staleSlot] = e;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (slotToExpunge == staleSlot)</span><br><span class="line">                slotToExpunge = i;</span><br><span class="line">            cleanSomeSlots(expungeStaleEntry(slotToExpunge), len);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (k == <span class="keyword">null</span> &amp;&amp; slotToExpunge == staleSlot)</span><br><span class="line">            slotToExpunge = i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    tab[staleSlot].value = <span class="keyword">null</span>;</span><br><span class="line">    tab[staleSlot] = <span class="keyword">new</span> Entry(key, value);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (slotToExpunge != staleSlot)</span><br><span class="line">        cleanSomeSlots(expungeStaleEntry(slotToExpunge), len);</span><br><span class="line">&#125;</span><br><span class="line">slotToExpunge`表示开始探测式清理过期数据的开始下标，默认从当前的`staleSlot`开始。以当前的`staleSlot`开始，向前迭代查找，找到没有过期的数据，`<span class="keyword">for</span>`循环一直碰到`Entry`为`<span class="keyword">null</span>`才会结束。如果向前找到了过期数据，更新探测清理过期数据的开始下标为i，即`slotToExpunge=i</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = prevIndex(staleSlot, len);</span><br><span class="line">     (e = tab[i]) != <span class="keyword">null</span>;</span><br><span class="line">     i = prevIndex(i, len))&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (e.get() == <span class="keyword">null</span>)&#123;</span><br><span class="line">        slotToExpunge = i;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>接着开始从<code>staleSlot</code>向后查找，也是碰到<code>Entry</code>为<code>null</code>的桶结束。 如果迭代过程中，<strong>碰到k == key</strong>，这说明这里是替换逻辑，替换新数据并且交换当前<code>staleSlot</code>位置。如果<code>slotToExpunge == staleSlot</code>，这说明<code>replaceStaleEntry()</code>一开始向前查找过期数据时并未找到过期的<code>Entry</code>数据，接着向后查找过程中也未发现过期数据，修改开始探测式清理过期数据的下标为当前循环的index，即<code>slotToExpunge = i</code>。最后调用<code>cleanSomeSlots(expungeStaleEntry(slotToExpunge), len);</code>进行启发式过期数据清理。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (k == key) &#123;</span><br><span class="line">    e.value = value;</span><br><span class="line"></span><br><span class="line">    tab[i] = tab[staleSlot];</span><br><span class="line">    tab[staleSlot] = e;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (slotToExpunge == staleSlot)</span><br><span class="line">        slotToExpunge = i;</span><br><span class="line"></span><br><span class="line">    cleanSomeSlots(expungeStaleEntry(slotToExpunge), len);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>cleanSomeSlots()</code>和<code>expungeStaleEntry()</code>方法后面都会细讲，这两个是和清理相关的方法，一个是过期<code>key</code>相关<code>Entry</code>的启发式清理(<code>Heuristically scan</code>)，另一个是过期<code>key</code>相关<code>Entry</code>的探测式清理。</p>
-<p><strong>如果k != key</strong>则会接着往下走，<code>k == null</code>说明当前遍历的<code>Entry</code>是一个过期数据，<code>slotToExpunge == staleSlot</code>说明，一开始的向前查找数据并未找到过期的<code>Entry</code>。如果条件成立，则更新<code>slotToExpunge</code> 为当前位置，这个前提是前驱节点扫描时未发现过期数据。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (k == <span class="keyword">null</span> &amp;&amp; slotToExpunge == staleSlot)</span><br><span class="line">    slotToExpunge = i;</span><br></pre></td></tr></table></figure>
-
-<p>往后迭代的过程中如果没有找到<code>k == key</code>的数据，且碰到<code>Entry</code>为<code>null</code>的数据，则结束当前的迭代操作。此时说明这里是一个添加的逻辑，将新的数据添加到<code>table[staleSlot]</code> 对应的<code>slot</code>中。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tab[staleSlot].value = <span class="keyword">null</span>;</span><br><span class="line">tab[staleSlot] = <span class="keyword">new</span> Entry(key, value);</span><br></pre></td></tr></table></figure>
-
-<p>最后判断除了<code>staleSlot</code>以外，还发现了其他过期的<code>slot</code>数据，就要开启清理数据的逻辑：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (slotToExpunge != staleSlot)</span><br><span class="line">    cleanSomeSlots(expungeStaleEntry(slotToExpunge), len);</span><br></pre></td></tr></table></figure>
-
-<h1 id="ThreadLocalMap过期key的探测式清理流程"><a href="#ThreadLocalMap过期key的探测式清理流程" class="headerlink" title="ThreadLocalMap过期key的探测式清理流程"></a><code>ThreadLocalMap</code>过期key的探测式清理流程</h1><p>上面我们有提及<code>ThreadLocalMap</code>的两种过期<code>key</code>数据清理方式：<strong>探测式清理</strong>和<strong>启发式清理</strong>。</p>
-<p>我们先讲下探测式清理，也就是<code>expungeStaleEntry</code>方法，遍历散列数组，从开始位置向后探测清理过期数据，将过期数据的<code>Entry</code>设置为<code>null</code>，沿途中碰到未过期的数据则将此数据<code>rehash</code>后重新在<code>table</code>数组中定位，如果定位的位置已经有了数据，则会将未过期的数据放到最靠近此位置的<code>Entry=null</code>的桶中，使<code>rehash</code>后的<code>Entry</code>数据距离正确的桶的位置更近一些。操作逻辑如下：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/18.png" alt="img"></p>
-<p>如上图，<code>set(27)</code> 经过hash计算后应该落到<code>index=4</code>的桶中，由于<code>index=4</code>桶已经有了数据，所以往后迭代最终数据放入到<code>index=7</code>的桶中，放入后一段时间后<code>index=5</code>中的<code>Entry</code>数据<code>key</code>变为了<code>null</code></p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/19.png" alt="img"></p>
-<p>如果再有其他数据<code>set</code>到<code>map</code>中，就会触发<strong>探测式清理</strong>操作。</p>
-<p>如上图，执行<strong>探测式清理</strong>后，<code>index=5</code>的数据被清理掉，继续往后迭代，到<code>index=7</code>的元素时，经过<code>rehash</code>后发现该元素正确的<code>index=4</code>，而此位置已经已经有了数据，往后查找离<code>index=4</code>最近的<code>Entry=null</code>的节点(刚被探测式清理掉的数据：index=5)，找到后移动<code>index= 7</code>的数据到<code>index=5</code>中，此时桶的位置离正确的位置<code>index=4</code>更近了。</p>
-<p>经过一轮探测式清理后，<code>key</code>过期的数据会被清理掉，没过期的数据经过<code>rehash</code>重定位后所处的桶位置理论上更接近<code>i= key.hashCode &amp; (tab.len - 1)</code>的位置。这种优化会提高整个散列表查询性能。</p>
-<p>接着看下<code>expungeStaleEntry()</code>具体流程，我们还是以先原理图后源码讲解的方式来一步步梳理：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/20.png" alt="img"></p>
-<p>我们假设<code>expungeStaleEntry(3)</code> 来调用此方法，如上图所示，我们可以看到<code>ThreadLocalMap</code>中<code>table</code>的数据情况，接着执行清理操作：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/21.png" alt="img"></p>
-<p>第一步是清空当前<code>staleSlot</code>位置的数据，<code>index=3</code>位置的<code>Entry</code>变成了<code>null</code>。然后接着往后探测：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/22.png" alt="img"></p>
-<p>执行完第二步后，index=4的元素挪到index=3的槽位中。</p>
-<p>继续往后迭代检查，碰到正常数据，计算该数据位置是否偏移，如果被偏移，则重新计算<code>slot</code>位置，目的是让正常数据尽可能存放在正确位置或离正确位置更近的位置</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/23.png" alt="img"></p>
-<p>在往后迭代的过程中碰到空的槽位，终止探测，这样一轮探测式清理工作就完成了，接着我们继续看看具体<strong>实现源代码</strong>：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">expungeStaleEntry</span><span class="params">(<span class="keyword">int</span> staleSlot)</span> </span>&#123;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line"></span><br><span class="line">    tab[staleSlot].value = <span class="keyword">null</span>;</span><br><span class="line">    tab[staleSlot] = <span class="keyword">null</span>;</span><br><span class="line">    size--;</span><br><span class="line"></span><br><span class="line">    Entry e;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = nextIndex(staleSlot, len);</span><br><span class="line">         (e = tab[i]) != <span class="keyword">null</span>;</span><br><span class="line">         i = nextIndex(i, len)) &#123;</span><br><span class="line">        `ThreadLocal`&lt;?&gt; k = e.get();</span><br><span class="line">        <span class="keyword">if</span> (k == <span class="keyword">null</span>) &#123;</span><br><span class="line">            e.value = <span class="keyword">null</span>;</span><br><span class="line">            tab[i] = <span class="keyword">null</span>;</span><br><span class="line">            size--;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">int</span> h = k.threadLocalHashCode &amp; (len - <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> (h != i) &#123;</span><br><span class="line">                tab[i] = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">while</span> (tab[h] != <span class="keyword">null</span>)</span><br><span class="line">                    h = nextIndex(h, len);</span><br><span class="line">                tab[h] = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里我们还是以<code>staleSlot=3</code> 来做示例说明，首先是将<code>tab[staleSlot]</code>槽位的数据清空，然后设置<code>size--</code> 接着以<code>staleSlot</code>位置往后迭代，如果遇到<code>k==null</code>的过期数据，也是清空该槽位数据，然后<code>size--</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ThreadLocal&lt;?&gt; k = e.get();</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (k == <span class="keyword">null</span>) &#123;</span><br><span class="line">    e.value = <span class="keyword">null</span>;</span><br><span class="line">    tab[i] = <span class="keyword">null</span>;</span><br><span class="line">    size--;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
-
-<p>如果<code>key</code>没有过期，重新计算当前<code>key</code>的下标位置是不是当前槽位下标位置，如果不是，那么说明产生了<code>hash</code>冲突，此时以新计算出来正确的槽位位置往后迭代，找到最近一个可以存放<code>entry</code>的位置。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> h = k.threadLocalHashCode &amp; (len - <span class="number">1</span>);</span><br><span class="line"><span class="keyword">if</span> (h != i) &#123;</span><br><span class="line">    tab[i] = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (tab[h] != <span class="keyword">null</span>)</span><br><span class="line">        h = nextIndex(h, len);</span><br><span class="line"></span><br><span class="line">    tab[h] = e;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里是处理正常的产生<code>Hash</code>冲突的数据，经过迭代后，有过<code>Hash</code>冲突数据的<code>Entry</code>位置会更靠近正确位置，这样的话，查询的时候 效率才会更高。</p>
-<h1 id="ThreadLocalMap扩容机制"><a href="#ThreadLocalMap扩容机制" class="headerlink" title="ThreadLocalMap扩容机制"></a><code>ThreadLocalMap</code>扩容机制</h1><p>在``ThreadLocalMap.set()<code>方法的最后，如果执行完启发式清理工作后，未清理到任何数据，且当前散列数组中</code>Entry<code>的数量已经达到了列表的扩容阈值</code>(len*2/3)<code>，就开始执行</code>rehash()`逻辑：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (!cleanSomeSlots(i, sz) &amp;&amp; sz &gt;= threshold)</span><br><span class="line">    rehash();</span><br></pre></td></tr></table></figure>
-
-<p>接着看下<code>rehash()</code>具体实现：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">rehash</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    expungeStaleEntries();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (size &gt;= threshold - threshold / <span class="number">4</span>)</span><br><span class="line">        resize();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">expungeStaleEntries</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; len; j++) &#123;</span><br><span class="line">        Entry e = tab[j];</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span> &amp;&amp; e.get() == <span class="keyword">null</span>)</span><br><span class="line">            expungeStaleEntry(j);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这里首先是会进行探测式清理工作，从<code>table</code>的起始位置往后清理，上面有分析清理的详细流程。清理完成之后，<code>table</code>中可能有一些<code>key</code>为<code>null</code>的<code>Entry</code>数据被清理掉，所以此时通过判断<code>size &gt;= threshold - threshold / 4</code> 也就是<code>size &gt;= threshold* 3/4</code> 来决定是否扩容。</p>
-<p>我们还记得上面进行<code>rehash()</code>的阈值是<code>size &gt;= threshold</code>，所以当面试官套路我们<code>ThreadLocalMap</code>扩容机制的时候 我们一定要说清楚这两个步骤：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/24.png" alt="img"></p>
-<p>接着看看具体的<code>resize()</code>方法，为了方便演示，我们以<code>oldTab.len=8</code>来举例：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/25.png" alt="img"></p>
-<p>扩容后的<code>tab</code>的大小为<code>oldLen * 2</code>，然后遍历老的散列表，重新计算<code>hash</code>位置，然后放到新的<code>tab</code>数组中，如果出现<code>hash</code>冲突则往后寻找最近的<code>entry</code>为<code>null</code>的槽位，遍历完成之后，<code>oldTab</code>中所有的<code>entry</code>数据都已经放入到新的<code>tab</code>中了。重新计算<code>tab</code>下次扩容的<strong>阈值</strong>，具体代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">resize</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Entry[] oldTab = table;</span><br><span class="line">    <span class="keyword">int</span> oldLen = oldTab.length;</span><br><span class="line">    <span class="keyword">int</span> newLen = oldLen * <span class="number">2</span>;</span><br><span class="line">    Entry[] newTab = <span class="keyword">new</span> Entry[newLen];</span><br><span class="line">    <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; oldLen; ++j) &#123;</span><br><span class="line">        Entry e = oldTab[j];</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">            `ThreadLocal`&lt;?&gt; k = e.get();</span><br><span class="line">            <span class="keyword">if</span> (k == <span class="keyword">null</span>) &#123;</span><br><span class="line">                e.value = <span class="keyword">null</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">int</span> h = k.threadLocalHashCode &amp; (newLen - <span class="number">1</span>);</span><br><span class="line">                <span class="keyword">while</span> (newTab[h] != <span class="keyword">null</span>)</span><br><span class="line">                    h = nextIndex(h, newLen);</span><br><span class="line">                newTab[h] = e;</span><br><span class="line">                count++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    setThreshold(newLen);</span><br><span class="line">    size = count;</span><br><span class="line">    table = newTab;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="ThreadLocalMap-get-详解"><a href="#ThreadLocalMap-get-详解" class="headerlink" title="ThreadLocalMap.get()详解"></a><code>ThreadLocalMap.get()</code>详解</h1><p>上面已经看完了<code>set()</code>方法的源码，其中包括<code>set</code>数据、清理数据、优化数据桶的位置等操作，接着看看<code>get()</code>操作的原理。</p>
-<h2 id="ThreadLocalMap-get-图解"><a href="#ThreadLocalMap-get-图解" class="headerlink" title="ThreadLocalMap.get()图解"></a><code>ThreadLocalMap.get()</code>图解</h2><p><strong>第一种情况：</strong> 通过查找<code>key</code>值计算出散列表中<code>slot</code>位置，然后该<code>slot</code>位置中的<code>Entry.key</code>和查找的<code>key</code>一致，则直接返回：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/26.png" alt="img"></p>
-<p><strong>第二种情况：</strong> <code>slot</code>位置中的<code>Entry.key</code>和要查找的<code>key</code>不一致：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/27.png" alt="img"></p>
-<p>我们以<code>get(ThreadLocal1)</code>为例，通过<code>hash</code>计算后，正确的<code>slot</code>位置应该是4，而<code>index=4</code>的槽位已经有了数据，且<code>key</code>值不等于<code>ThreadLocal1</code>，所以需要继续往后迭代查找。</p>
-<p>迭代到<code>index=5</code>的数据时，此时<code>Entry.key=null</code>，触发一次探测式数据回收操作，执行<code>expungeStaleEntry()</code>方法，执行完后，<code>index 5,8</code>的数据都会被回收，而<code>index 6,7</code>的数据都会前移，此时继续往后迭代，到<code>index = 6</code>的时候即找到了<code>key</code>值相等的<code>Entry</code>数据，如下图所示：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/28.png" alt="img"></p>
-<h2 id="ThreadLocalMap-get-源码详解"><a href="#ThreadLocalMap-get-源码详解" class="headerlink" title="ThreadLocalMap.get()源码详解"></a><code>ThreadLocalMap.get()</code>源码详解</h2><p><code>java.lang.ThreadLocal.ThreadLocalMap.getEntry()</code>:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Entry <span class="title">getEntry</span><span class="params">(ThreadLocal&lt;?&gt; key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = key.threadLocalHashCode &amp; (table.length - <span class="number">1</span>);</span><br><span class="line">    Entry e = table[i];</span><br><span class="line">    <span class="keyword">if</span> (e != <span class="keyword">null</span> &amp;&amp; e.get() == key)</span><br><span class="line">        <span class="keyword">return</span> e;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> getEntryAfterMiss(key, i, e);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> Entry <span class="title">getEntryAfterMiss</span><span class="params">(ThreadLocal&lt;?&gt; key, <span class="keyword">int</span> i, Entry e)</span> </span>&#123;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (e != <span class="keyword">null</span>) &#123;</span><br><span class="line">        `ThreadLocal`&lt;?&gt; k = e.get();</span><br><span class="line">        <span class="keyword">if</span> (k == key)</span><br><span class="line">            <span class="keyword">return</span> e;</span><br><span class="line">        <span class="keyword">if</span> (k == <span class="keyword">null</span>)</span><br><span class="line">            expungeStaleEntry(i);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            i = nextIndex(i, len);</span><br><span class="line">        e = tab[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="ThreadLocalMap过期key的启发式清理流程"><a href="#ThreadLocalMap过期key的启发式清理流程" class="headerlink" title="ThreadLocalMap过期key的启发式清理流程"></a><code>ThreadLocalMap</code>过期key的启发式清理流程</h1><p>上面多次提及到<code>ThreadLocalMap</code>过期可以的两种清理方式：<em>*探测式清理(expungeStaleEntry())**、**启发式清理(cleanSomeSlots())</em>*</p>
-<p>探测式清理是以当前<code>Entry</code> 往后清理，遇到值为<code>null</code>则结束清理，属于<strong>线性探测清理</strong>。</p>
-<p>而启发式清理被作者定义为：<strong>Heuristically scan some cells looking for stale entries</strong>.</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/29.png" alt="img"></p>
-<p>具体代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">cleanSomeSlots</span><span class="params">(<span class="keyword">int</span> i, <span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> removed = <span class="keyword">false</span>;</span><br><span class="line">    Entry[] tab = table;</span><br><span class="line">    <span class="keyword">int</span> len = tab.length;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        i = nextIndex(i, len);</span><br><span class="line">        Entry e = tab[i];</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span> &amp;&amp; e.get() == <span class="keyword">null</span>) &#123;</span><br><span class="line">            n = len;</span><br><span class="line">            removed = <span class="keyword">true</span>;</span><br><span class="line">            i = expungeStaleEntry(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">while</span> ( (n &gt;&gt;&gt;= <span class="number">1</span>) != <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span> removed;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="InheritableThreadLocal"><a href="#InheritableThreadLocal" class="headerlink" title="InheritableThreadLocal"></a><code>InheritableThreadLocal</code></h1><p>我们使用<code>ThreadLocal</code>的时候，在异步场景下是无法给子线程共享父线程中创建的线程副本数据的。</p>
-<p>为了解决这个问题，JDK中还有一个<code>InheritableThreadLocal</code>类，我们来看一个例子：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InheritableThreadLocalDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        ThreadLocal&lt;String&gt; ThreadLocal = <span class="keyword">new</span> ThreadLocal&lt;&gt;();</span><br><span class="line">        ThreadLocal&lt;String&gt; inheritableThreadLocal = <span class="keyword">new</span> InheritableThreadLocal&lt;&gt;();</span><br><span class="line">        ThreadLocal.set(<span class="string">&quot;父类数据:threadLocal&quot;</span>);</span><br><span class="line">        inheritableThreadLocal.set(<span class="string">&quot;父类数据:inheritableThreadLocal&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;子线程获取父类`ThreadLocal`数据：&quot;</span> + `ThreadLocal`.get());</span><br><span class="line">                System.out.println(<span class="string">&quot;子线程获取父类inheritableThreadLocal数据：&quot;</span> + inheritableThreadLocal.get());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>打印结果：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">子线程获取父类`ThreadLocal`数据：<span class="keyword">null</span></span><br><span class="line">子线程获取父类inheritableThreadLocal数据：父类数据:inheritableThreadLocal</span><br></pre></td></tr></table></figure>
-
-<p>实现原理是子线程是通过在父线程中通过调用<code>new Thread()</code>方法来创建子线程，<code>Thread#init</code>方法在<code>Thread</code>的构造方法中被调用。在<code>init</code>方法中拷贝父线程数据到子线程中：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(ThreadGroup g, Runnable target, String name,</span></span></span><br><span class="line"><span class="function"><span class="params">                      <span class="keyword">long</span> stackSize, AccessControlContext acc,</span></span></span><br><span class="line"><span class="function"><span class="params">                      <span class="keyword">boolean</span> inheritThreadLocals)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (name == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">&quot;name cannot be null&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (inheritThreadLocals &amp;&amp; parent.inheritableThreadLocals != <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">this</span>.inheritableThreadLocals =</span><br><span class="line">            ThreadLocal.createInheritedMap(parent.inheritableThreadLocals);</span><br><span class="line">    <span class="keyword">this</span>.stackSize = stackSize;</span><br><span class="line">    tid = nextThreadID();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>但<code>InheritableThreadLocal</code>仍然有缺陷，一般我们做异步化处理都是使用的线程池，而<code>InheritableThreadLocal</code>是在<code>new Thread</code>中的<code>init()</code>方法给赋值的，而线程池是线程复用的逻辑，所以这里会存在问题。</p>
-<p>当然，有问题出现就会有解决问题的方案，阿里巴巴开源了一个<code>TransmittableThreadLocal</code>组件就可以解决这个问题，这里就不再延伸，感兴趣的可自行查阅资料。</p>
-<h1 id="ThreadLocal项目中使用实战"><a href="#ThreadLocal项目中使用实战" class="headerlink" title="ThreadLocal项目中使用实战"></a><code>ThreadLocal</code>项目中使用实战</h1><h2 id="ThreadLocal使用场景"><a href="#ThreadLocal使用场景" class="headerlink" title="ThreadLocal使用场景"></a><code>ThreadLocal</code>使用场景</h2><p>我们现在项目中日志记录用的是<code>ELK+Logstash</code>，最后在<code>Kibana</code>中进行展示和检索。</p>
-<p>现在都是分布式系统统一对外提供服务，项目间调用的关系可以通过traceId来关联，但是不同项目之间如何传递<code>traceId</code>呢？</p>
-<p>这里我们使用<code>org.slf4j.MDC</code>来实现此功能，内部就是通过<code>ThreadLocal</code>来实现的，具体实现如下：</p>
-<p>当前端发送请求到<strong>服务A</strong>时，<strong>服务A</strong>会生成一个类似<code>UUID</code>的<code>traceId</code>字符串，将此字符串放入当前线程的<code>ThreadLocal</code>中，在调用<strong>服务B</strong>的时候，将<code>traceId</code>写入到请求的<code>Header</code>中，<strong>服务B</strong>在接收请求时会先判断请求的<code>Header</code>中是否有<code>traceId</code>，如果存在则写入自己线程的<code>ThreadLocal</code>中。</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/30.png" alt="img"></p>
-<p>图中的<code>requestId</code>即为我们各个系统链路关联的<code>traceId</code>，系统间互相调用，通过这个<code>requestId</code>即可找到对应链路，这里还有会有一些其他场景：</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/multi-thread/images/thread-local/31.png" alt="img"></p>
-<p>针对于这些场景，我们都可以有相应的解决方案，如下所示</p>
-<h2 id="Feign远程调用解决方案"><a href="#Feign远程调用解决方案" class="headerlink" title="Feign远程调用解决方案"></a>Feign远程调用解决方案</h2><p><strong>服务发送请求：</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FeignInvokeInterceptor</span> <span class="keyword">implements</span> <span class="title">RequestInterceptor</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">apply</span><span class="params">(RequestTemplate template)</span> </span>&#123;</span><br><span class="line">        String requestId = MDC.get(<span class="string">&quot;requestId&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (StringUtils.isNotBlank(requestId)) &#123;</span><br><span class="line">            template.header(<span class="string">&quot;requestId&quot;</span>, requestId);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>服务接收请求：</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LogInterceptor</span> <span class="keyword">extends</span> <span class="title">HandlerInterceptorAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterCompletion</span><span class="params">(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, Exception arg3)</span> </span>&#123;</span><br><span class="line">        MDC.remove(<span class="string">&quot;requestId&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postHandle</span><span class="params">(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, ModelAndView arg3)</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        String requestId = request.getHeader(BaseConstant.REQUEST_ID_KEY);</span><br><span class="line">        <span class="keyword">if</span> (StringUtils.isBlank(requestId)) &#123;</span><br><span class="line">            requestId = UUID.randomUUID().toString().replace(<span class="string">&quot;-&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        MDC.put(<span class="string">&quot;requestId&quot;</span>, requestId);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="线程池异步调用，requestId传递"><a href="#线程池异步调用，requestId传递" class="headerlink" title="线程池异步调用，requestId传递"></a>线程池异步调用，requestId传递</h2><p>因为<code>MDC</code>是基于<code>ThreadLocal</code>去实现的，异步过程中，子线程并没有办法获取到父线程<code>ThreadLocal</code>存储的数据，所以这里可以自定义线程池执行器，修改其中的<code>run()</code>方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyThreadPoolTaskExecutor</span> <span class="keyword">extends</span> <span class="title">ThreadPoolTaskExecutor</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable runnable)</span> </span>&#123;</span><br><span class="line">        Map&lt;String, String&gt; context = MDC.getCopyOfContextMap();</span><br><span class="line">        <span class="keyword">super</span>.execute(() -&gt; run(runnable, context));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">(Runnable runnable, Map&lt;String, String&gt; context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (context != <span class="keyword">null</span>) &#123;</span><br><span class="line">            MDC.setContextMap(context);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            runnable.run();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            MDC.remove();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="使用MQ发送消息给第三方系统"><a href="#使用MQ发送消息给第三方系统" class="headerlink" title="使用MQ发送消息给第三方系统"></a>使用MQ发送消息给第三方系统</h2><p>在MQ发送的消息体中自定义属性<code>requestId</code>，接收方消费消息后，自己解析<code>requestId</code>使用即可。</p>
-<h2 id="自己使用过的ThreadLocal（后面使用redis重构了）"><a href="#自己使用过的ThreadLocal（后面使用redis重构了）" class="headerlink" title="自己使用过的ThreadLocal（后面使用redis重构了）"></a>自己使用过的ThreadLocal（后面使用redis重构了）</h2><ul>
-<li>定义<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@Description</span>:    获取当前用户信息</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@Author</span>:         Nexus</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@CreateDate</span>:     2020/2/23 14:40</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@UpdateUser</span>:     Nexus</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@UpdateDate</span>:     2020/2/23 14:40</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@UpdateRemark</span>:   修改内容</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@Version</span>:        1.0</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RequestHolder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;SysUser&gt; userHolder = <span class="keyword">new</span> ThreadLocal&lt;SysUser&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ThreadLocal&lt;HttpServletRequest&gt; requestHolder = <span class="keyword">new</span> ThreadLocal&lt;HttpServletRequest&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(SysUser sysUser)</span></span>&#123;</span><br><span class="line">        userHolder.set(sysUser);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(HttpServletRequest request)</span></span>&#123;</span><br><span class="line">        requestHolder.set(request);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SysUser <span class="title">getCurrentUser</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> userHolder.get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> HttpServletRequest <span class="title">getCurrentRequest</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> requestHolder.get();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span></span>&#123;</span><br><span class="line">        userHolder.remove();</span><br><span class="line">        requestHolder.remove();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
-<li>使用1：每次HTTP请求后删除<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@Description</span>:    HTTP请求拦截器</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@Author</span>:         Nexus</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@CreateDate</span>:     2020/2/12 22:58</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@UpdateUser</span>:     Nexus </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@UpdateDate</span>:     2020/2/12 22:58</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@UpdateRemark</span>:   修改内容</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@Version</span>:        1.0</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HttpInterceptor</span> <span class="keyword">extends</span> <span class="title">HandlerInterceptorAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String START_TIME = <span class="string">&quot;requestStartTime&quot;</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * This implementation always returns &#123;<span class="doctag">@code</span> true&#125;.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> request</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> handler</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        String url = request.getRequestURL().toString();</span><br><span class="line">        Map parameterMap = request.getParameterMap();</span><br><span class="line">        <span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">        request.setAttribute(START_TIME, start);</span><br><span class="line">        log.info(<span class="string">&quot;request start----url:&#123;&#125;,params:&#123;&#125;&quot;</span>,url, JsonMapper.obj2String(parameterMap));</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * This implementation is empty.</span></span><br><span class="line"><span class="comment">     *正常结束执行</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> request</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> handler</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> modelAndView</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">/*String url = request.getRequestURL().toString();</span></span><br><span class="line"><span class="comment">        long start = (long)request.getAttribute(START_TIME);</span></span><br><span class="line"><span class="comment">        long end = System.currentTimeMillis();</span></span><br><span class="line"><span class="comment">        log.info(&quot;request finish----url:&#123;&#125;,cost:&#123;&#125;&quot;,url, end - start);*/</span></span><br><span class="line"></span><br><span class="line">        removeThreadLocalInfo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * This implementation is empty.</span></span><br><span class="line"><span class="comment">     *任何结束执行</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> request</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> response</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> handler</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> ex</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterCompletion</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        String url = request.getRequestURL().toString();</span><br><span class="line">        <span class="keyword">long</span> start = (<span class="keyword">long</span>)request.getAttribute(START_TIME);</span><br><span class="line">        <span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">        log.info(<span class="string">&quot;request complete----url:&#123;&#125;,cost:&#123;&#125;&quot;</span>,url, end - start);</span><br><span class="line"></span><br><span class="line">        removeThreadLocalInfo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">removeThreadLocalInfo</span><span class="params">()</span></span>&#123;</span><br><span class="line">        RequestHolder.remove();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>用户登录后存储用户信息</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@Description</span>:    用户登录过滤器</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@Author</span>:         Nexus</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@CreateDate</span>:     2020/2/23 14:50</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@UpdateUser</span>:     Nexus </span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@UpdateDate</span>:     2020/2/23 14:50</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@UpdateRemark</span>:   修改内容</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">* <span class="doctag">@Version</span>:        1.0</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LoginFilter</span> <span class="keyword">implements</span> <span class="title">Filter</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(FilterConfig filterConfig)</span> <span class="keyword">throws</span> ServletException </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Author</span> Noctis</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Description</span> //验证逻辑</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Date</span> 2020/2/23 16:33</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Param</span> [servletRequest, servletResponse, filterChain]</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> void</span></span><br><span class="line"><span class="comment">     **/</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doFilter</span><span class="params">(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)</span> <span class="keyword">throws</span> IOException, ServletException </span>&#123;</span><br><span class="line">        HttpServletRequest req = (HttpServletRequest) servletRequest;</span><br><span class="line">        HttpServletResponse resp = (HttpServletResponse) servletResponse;</span><br><span class="line">        String servletPath = req.getServletPath();</span><br><span class="line"></span><br><span class="line">        SysUser sysUser = (SysUser) req.getSession().getAttribute(<span class="string">&quot;user&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span>(sysUser == <span class="keyword">null</span>)&#123;</span><br><span class="line">            String path = <span class="string">&quot;/signin.jsp&quot;</span>;</span><br><span class="line">            resp.sendRedirect(path);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        RequestHolder.add(sysUser);</span><br><span class="line">        RequestHolder.add(req);</span><br><span class="line">        filterChain.doFilter(servletRequest, servletResponse);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2794,7 +2726,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2805,7 +2737,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-count">32</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

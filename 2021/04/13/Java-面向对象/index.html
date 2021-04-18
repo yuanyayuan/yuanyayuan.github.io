@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java,面试,Java基础知识," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="重载和重写的区别 重写就是当子类继承自父类的相同方法，输入数据一样，但要做出有别于父类的响应时，你就要覆盖父类方法 重载就是同样的一个方法能够根据输入数据的不同，做出不同的处理  重写重写是子类对父类的允许访问的方法的实现过程进行重新编写, 返回值和形参都不能改变。即外壳不变，核心重写！  参数列表与被重写方法的参数列表必须完全相同。 返回类型与被重写方法的返回类型可以不相同，但是必须是父类返回值">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java-面向对象">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/13/Java-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="重载和重写的区别 重写就是当子类继承自父类的相同方法，输入数据一样，但要做出有别于父类的响应时，你就要覆盖父类方法 重载就是同样的一个方法能够根据输入数据的不同，做出不同的处理  重写重写是子类对父类的允许访问的方法的实现过程进行重新编写, 返回值和形参都不能改变。即外壳不变，核心重写！  参数列表与被重写方法的参数列表必须完全相同。 返回类型与被重写方法的返回类型可以不相同，但是必须是父类返回值">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-04-12T17:14:36.000Z">
+<meta property="article:modified_time" content="2021-04-18T10:15:29.806Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="Java基础知识">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/13/Java-面向对象/"/>
+
+
+
+
+
+  <title>Java-面向对象 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/Java-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java-面向对象</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T01:14:36+08:00">
+                2021-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java知识点</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="重载和重写的区别"><a href="#重载和重写的区别" class="headerlink" title="重载和重写的区别"></a>重载和重写的区别</h1><blockquote>
+<p>重写就是当子类继承自父类的相同方法，输入数据一样，但要做出有别于父类的响应时，你就要覆盖父类方法</p>
+<p>重载就是同样的一个方法能够根据输入数据的不同，做出不同的处理</p>
+</blockquote>
+<h2 id="重写"><a href="#重写" class="headerlink" title="重写"></a>重写</h2><p>重写是子类对父类的允许访问的方法的实现过程进行重新编写, 返回值和形参都不能改变。<strong>即外壳不变，核心重写！</strong></p>
+<ul>
+<li><strong>参数列表</strong>与<strong>被重写方法的参数列表</strong>必须完全相同。</li>
+<li><strong>返回类型</strong>与<strong>被重写方法的返回类型</strong>可以<strong>不相同</strong>，但是必须是<strong>父类返回值的派生类</strong>（java5 及更早版本返回类型要一样，java7 及更高版本可以不同）。</li>
+<li><strong>访问权限</strong>不能比<strong>父类中被重写的方法的访问权限更低</strong>。例如：如果父类的一个方法被声明为 public，那么在子类中重写该方法就不能声明为 protected。</li>
+<li><strong>父类的成员方法</strong>只能被它的<strong>子类重写</strong>。</li>
+<li>声明为<strong>final</strong>的方法不能被<strong>重写</strong>。</li>
+<li>声明为<strong>static</strong>的方法不能被<strong>重写</strong>，但是能够被再次声明。</li>
+<li>子类和父类在<strong>同一个包中</strong>，那么<strong>子类可以重写父类所有方法</strong>，除了声明为 private 和 final 的方法。</li>
+<li>子类和父类<strong>不在同一个包中</strong>，那么<strong>子类只能够重写父类的声明为 public 和 protected 的非 final 方法</strong>。</li>
+<li>重写的方法能够抛出任何非强制异常，无论被重写的方法是否抛出异常。但是，重写的方法不能抛出新的强制性异常，或者比被重写方法声明的更广泛的强制性异常。</li>
+<li><strong>构造方法不能被重写</strong>。</li>
+<li>如果<strong>不能继承一个方法，则不能重写这个方法</strong>。</li>
+</ul>
+<h2 id="重载"><a href="#重载" class="headerlink" title="重载"></a>重载</h2><p>重载(overloading) 是在一个类里面，方法名字相同，而参数不同。返回类型可以相同也可以不同。</p>
+<p>每个重载的方法（或者构造函数）都必须有一个独一无二的参数类型列表。</p>
+<p>最常用的地方就是构造器的重载。</p>
+<ul>
+<li>被重载的方法**必须改变参数列表(参数个数或类型不一样)**；</li>
+<li>被重载的方法<strong>可以改变返回类型</strong>；</li>
+<li>被重载的方法<strong>可以改变访问修饰符</strong>；</li>
+<li>被重载的方法<strong>可以声明新的或更广的检查异常</strong>；</li>
+<li><strong>方法</strong>能够在<strong>同一个类中或者在一个子类中被重载</strong>。</li>
+<li><strong>无法以返回值类型作为重载函数的区分标准</strong>。</li>
+</ul>
+<h2 id="为什么不能根据返回类型来区分重载"><a href="#为什么不能根据返回类型来区分重载" class="headerlink" title="为什么不能根据返回类型来区分重载"></a>为什么不能根据返回类型来区分重载</h2><p>函数的返回值只是作为函数运行之后的一个“状态” ，并不能作为某个方法的“标识” 。</p>
+<h2 id="构造器（constructor）是否可被重写（override）"><a href="#构造器（constructor）是否可被重写（override）" class="headerlink" title="构造器（constructor）是否可被重写（override）"></a>构造器（constructor）是否可被重写（override）</h2><p>构造器不能被继承，因此不能被重写，但可以被重载</p>
+<h2 id="父类的静态方法能否被子类重写"><a href="#父类的静态方法能否被子类重写" class="headerlink" title="父类的静态方法能否被子类重写"></a>父类的静态方法能否被子类重写</h2><p>不能。重写只适用于实例方法，不能用于静态方法，而子类当中含有和父类相同签名的静态方法，我们一般称之为隐藏，调用的方法为定义的类所有的静态方法。</p>
+<h1 id="创建类的方法"><a href="#创建类的方法" class="headerlink" title="创建类的方法"></a>创建类的方法</h1><ol>
+<li>使用new关键字；</li>
+<li>反射，<ul>
+<li>使用<code>java.lang.Class</code>类的<code>newInstance</code>方法。</li>
+<li>使用 java.lang.reflect.Constructor类的newInstance方法。</li>
+</ul>
+</li>
+<li>使用clone方法。<ul>
+<li>实现 Cloneable 接口并重写 Object 类中的 clone()方法</li>
+<li>实现 Serializable 接口，通过对象的序列化和反序列化实现克隆，可以实现真正的深度克隆</li>
+</ul>
+</li>
+<li>使用反序列化。</li>
+</ol>
+<blockquote>
+<p>为了序列化/反序列化一个对象，需要该类实现空接口Serializable。序列化是深拷贝。</p>
+</blockquote>
+<p><strong>点评：</strong><br>前面2种创建方式比较常见，其中第反射经常见于框架代码，用于bean注入等。clone本质是复制，是不需要调用构造器的（见下表），反序列化在rpc调用中使用比较多，clone使用比较少一些。</p>
+<table>
+<thead>
+<tr>
+<th>创建对象方式</th>
+<th>是否调用了构造器</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>new关键字</td>
+<td>是</td>
+</tr>
+<tr>
+<td>Class.newInstance</td>
+<td>是</td>
+</tr>
+<tr>
+<td>Constructor.newInstance</td>
+<td>是</td>
+</tr>
+<tr>
+<td>Clone</td>
+<td>否</td>
+</tr>
+<tr>
+<td>反序列化</td>
+<td>否</td>
+</tr>
+</tbody></table>
+<h2 id="创建对象时的步骤"><a href="#创建对象时的步骤" class="headerlink" title="创建对象时的步骤"></a>创建对象时的步骤</h2><p>先声明对象，为对象分配内存空间，对对象初始化，然后才能使用对象</p>
+<h2 id="java-lang-Class类的newInstance方法和-java-lang-reflect-Constructor类的newInstance方法有什么区别？"><a href="#java-lang-Class类的newInstance方法和-java-lang-reflect-Constructor类的newInstance方法有什么区别？" class="headerlink" title="java.lang.Class类的newInstance方法和 java.lang.reflect.Constructor类的newInstance方法有什么区别？"></a>java.lang.Class类的newInstance方法和 java.lang.reflect.Constructor类的newInstance方法有什么区别？</h2><ul>
+<li>Class类的newInstance只能触发无参数的构造方法创建对象，而构造器类的newInstance能触发有参数或者任意参数的构造方法来创建对象。</li>
+<li>Class类的newInstance需要其构造方法是public的或者对调用方法可见的，而构造器类的newInstance可以在特定环境下调用私有构造方法来创建对象。</li>
+<li>Class类的newInstance抛出类构造函数的异常，而构造器类的newInstance包装了一个InvocationTargetException异常</li>
+</ul>
+<h1 id="java修饰符"><a href="#java修饰符" class="headerlink" title="java修饰符"></a>java修饰符</h1><h2 id="public-private-protected-default"><a href="#public-private-protected-default" class="headerlink" title="public,private,protected,default"></a>public,private,protected,default</h2><p>访问修饰符public,private,protected,以及不写（默认）时的区别？ 答：</p>
+<table>
+<thead>
+<tr>
+<th>修饰符</th>
+<th>当前类</th>
+<th>同包</th>
+<th>子类</th>
+<th>其他包</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>public</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>protected</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+<td>×</td>
+</tr>
+<tr>
+<td>default</td>
+<td>√</td>
+<td>√</td>
+<td>×</td>
+<td>×</td>
+</tr>
+<tr>
+<td>private</td>
+<td>√</td>
+<td>×</td>
+<td>×</td>
+<td>×</td>
+</tr>
+</tbody></table>
+<h1 id="抽象类和接口"><a href="#抽象类和接口" class="headerlink" title="抽象类和接口"></a>抽象类和接口</h1><h2 id="抽象类（abstract-class）和接口（interface）有什么异同？"><a href="#抽象类（abstract-class）和接口（interface）有什么异同？" class="headerlink" title="抽象类（abstract class）和接口（interface）有什么异同？"></a>抽象类（abstract class）和接口（interface）有什么异同？</h2><table>
+<thead>
+<tr>
+<th align="left">比较</th>
+<th align="left">抽象类</th>
+<th align="left">接口</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">默认方法</td>
+<td align="left">抽象类可以有默认的方法实现</td>
+<td align="left">java 8之前,接口中不存在方法的实现.</td>
+</tr>
+<tr>
+<td align="left">实现方式</td>
+<td align="left">子类使用extends关键字来继承抽象类.如果子类不是抽象类,子类需要提供抽象类中所声明方法的实现.</td>
+<td align="left">子类使用implements来实现接口,需要提供接口中所有声明的实现.</td>
+</tr>
+<tr>
+<td align="left">构造器</td>
+<td align="left">抽象类中可以有构造器,</td>
+<td align="left">接口中不能</td>
+</tr>
+<tr>
+<td align="left">和正常类区别</td>
+<td align="left">抽象类不能被实例化</td>
+<td align="left">接口则是完全不同的类型</td>
+</tr>
+<tr>
+<td align="left">访问修饰符</td>
+<td align="left">抽象方法可以有public,protected和default等修饰</td>
+<td align="left">接口默认是public,不能使用其他修饰符</td>
+</tr>
+<tr>
+<td align="left">多继承</td>
+<td align="left">一个子类只能存在一个父类</td>
+<td align="left">一个子类可以存在多个接口</td>
+</tr>
+<tr>
+<td align="left">添加新方法</td>
+<td align="left">想抽象类中添加新方法,可以提供默认的实现,因此可以不修改子类现有的代码</td>
+<td align="left">如果往接口中添加新方法,则子类中需要实现该方法.</td>
+</tr>
+</tbody></table>
+<h2 id="抽象的（abstract）方法是否可同时是静态的（static）-是否可同时是本地方法（native），是否可同时被synchronized修饰？为什么？"><a href="#抽象的（abstract）方法是否可同时是静态的（static）-是否可同时是本地方法（native），是否可同时被synchronized修饰？为什么？" class="headerlink" title="抽象的（abstract）方法是否可同时是静态的（static）,是否可同时是本地方法（native），是否可同时被synchronized修饰？为什么？"></a>抽象的（abstract）方法是否可同时是静态的（static）,是否可同时是本地方法（native），是否可同时被synchronized修饰？为什么？</h2><p>都不能。 抽象方法需要子类重写，而静态的方法是无法被重写的，因此二者是矛盾的； 本地方法是由本地代码（如C代码）实现的方法，而抽象方法是没有实现的，也是矛盾的； synchronized和方法的实现细节有关，抽象方法不涉及实现细节，因此也是相互矛盾的；</p>
+<h2 id="普通类和抽象类有哪些区别"><a href="#普通类和抽象类有哪些区别" class="headerlink" title="普通类和抽象类有哪些区别"></a>普通类和抽象类有哪些区别</h2><ol>
+<li>抽象类不能被实例</li>
+<li>抽象类不能有构造函数，抽象方法也不能被声明为静态</li>
+<li>抽象类可以有抽象方法</li>
+<li>抽象类的抽象方法必须被非抽象子类继承</li>
+</ol>
+<h2 id="抽象类能使用-final-修饰吗？"><a href="#抽象类能使用-final-修饰吗？" class="headerlink" title="抽象类能使用 final 修饰吗？"></a>抽象类能使用 final 修饰吗？</h2><p>不能，抽象类中的抽象方法是未来继承之后重写方法，而用final修饰的类，无法被继承。</p>
+<h2 id="接口是否可继承（extends）接口-抽象类是否可实现（implements）接口-抽象类是否可继承具体类（concrete-class）"><a href="#接口是否可继承（extends）接口-抽象类是否可实现（implements）接口-抽象类是否可继承具体类（concrete-class）" class="headerlink" title="接口是否可继承（extends）接口? 抽象类是否可实现（implements）接口?抽象类是否可继承具体类（concrete class）"></a>接口是否可继承（extends）接口? 抽象类是否可实现（implements）接口?抽象类是否可继承具体类（concrete class）</h2><p>接口可以继承接口。抽象类可以实现(implements)接口，抽象类可继承具 体类，但前提是具体类必须有明确的构造函数。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/Java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" rel="tag"># Java基础知识</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/13/Java-%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" rel="next" title="Java-基础知识">
+                <i class="fa fa-chevron-left"></i> Java-基础知识
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/13/Java-%E5%8F%8D%E5%B0%84%E5%92%8C%E5%BC%82%E5%B8%B8/" rel="prev" title="Java-反射和异常">
+                Java-反射和异常 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%87%8D%E8%BD%BD%E5%92%8C%E9%87%8D%E5%86%99%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.</span> <span class="nav-text">重载和重写的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E5%86%99"><span class="nav-number">1.1.</span> <span class="nav-text">重写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E8%BD%BD"><span class="nav-number">1.2.</span> <span class="nav-text">重载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%83%BD%E6%A0%B9%E6%8D%AE%E8%BF%94%E5%9B%9E%E7%B1%BB%E5%9E%8B%E6%9D%A5%E5%8C%BA%E5%88%86%E9%87%8D%E8%BD%BD"><span class="nav-number">1.3.</span> <span class="nav-text">为什么不能根据返回类型来区分重载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%99%A8%EF%BC%88constructor%EF%BC%89%E6%98%AF%E5%90%A6%E5%8F%AF%E8%A2%AB%E9%87%8D%E5%86%99%EF%BC%88override%EF%BC%89"><span class="nav-number">1.4.</span> <span class="nav-text">构造器（constructor）是否可被重写（override）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%88%B6%E7%B1%BB%E7%9A%84%E9%9D%99%E6%80%81%E6%96%B9%E6%B3%95%E8%83%BD%E5%90%A6%E8%A2%AB%E5%AD%90%E7%B1%BB%E9%87%8D%E5%86%99"><span class="nav-number">1.5.</span> <span class="nav-text">父类的静态方法能否被子类重写</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%B1%BB%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">创建类的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E6%97%B6%E7%9A%84%E6%AD%A5%E9%AA%A4"><span class="nav-number">2.1.</span> <span class="nav-text">创建对象时的步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#java-lang-Class%E7%B1%BB%E7%9A%84newInstance%E6%96%B9%E6%B3%95%E5%92%8C-java-lang-reflect-Constructor%E7%B1%BB%E7%9A%84newInstance%E6%96%B9%E6%B3%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-number">2.2.</span> <span class="nav-text">java.lang.Class类的newInstance方法和 java.lang.reflect.Constructor类的newInstance方法有什么区别？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#java%E4%BF%AE%E9%A5%B0%E7%AC%A6"><span class="nav-number">3.</span> <span class="nav-text">java修饰符</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#public-private-protected-default"><span class="nav-number">3.1.</span> <span class="nav-text">public,private,protected,default</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E7%B1%BB%E5%92%8C%E6%8E%A5%E5%8F%A3"><span class="nav-number">4.</span> <span class="nav-text">抽象类和接口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E7%B1%BB%EF%BC%88abstract-class%EF%BC%89%E5%92%8C%E6%8E%A5%E5%8F%A3%EF%BC%88interface%EF%BC%89%E6%9C%89%E4%BB%80%E4%B9%88%E5%BC%82%E5%90%8C%EF%BC%9F"><span class="nav-number">4.1.</span> <span class="nav-text">抽象类（abstract class）和接口（interface）有什么异同？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E7%9A%84%EF%BC%88abstract%EF%BC%89%E6%96%B9%E6%B3%95%E6%98%AF%E5%90%A6%E5%8F%AF%E5%90%8C%E6%97%B6%E6%98%AF%E9%9D%99%E6%80%81%E7%9A%84%EF%BC%88static%EF%BC%89-%E6%98%AF%E5%90%A6%E5%8F%AF%E5%90%8C%E6%97%B6%E6%98%AF%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%EF%BC%88native%EF%BC%89%EF%BC%8C%E6%98%AF%E5%90%A6%E5%8F%AF%E5%90%8C%E6%97%B6%E8%A2%ABsynchronized%E4%BF%AE%E9%A5%B0%EF%BC%9F%E4%B8%BA%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">4.2.</span> <span class="nav-text">抽象的（abstract）方法是否可同时是静态的（static）,是否可同时是本地方法（native），是否可同时被synchronized修饰？为什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%AE%E9%80%9A%E7%B1%BB%E5%92%8C%E6%8A%BD%E8%B1%A1%E7%B1%BB%E6%9C%89%E5%93%AA%E4%BA%9B%E5%8C%BA%E5%88%AB"><span class="nav-number">4.3.</span> <span class="nav-text">普通类和抽象类有哪些区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%BD%E8%B1%A1%E7%B1%BB%E8%83%BD%E4%BD%BF%E7%94%A8-final-%E4%BF%AE%E9%A5%B0%E5%90%97%EF%BC%9F"><span class="nav-number">4.4.</span> <span class="nav-text">抽象类能使用 final 修饰吗？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E6%98%AF%E5%90%A6%E5%8F%AF%E7%BB%A7%E6%89%BF%EF%BC%88extends%EF%BC%89%E6%8E%A5%E5%8F%A3-%E6%8A%BD%E8%B1%A1%E7%B1%BB%E6%98%AF%E5%90%A6%E5%8F%AF%E5%AE%9E%E7%8E%B0%EF%BC%88implements%EF%BC%89%E6%8E%A5%E5%8F%A3-%E6%8A%BD%E8%B1%A1%E7%B1%BB%E6%98%AF%E5%90%A6%E5%8F%AF%E7%BB%A7%E6%89%BF%E5%85%B7%E4%BD%93%E7%B1%BB%EF%BC%88concrete-class%EF%BC%89"><span class="nav-number">4.5.</span> <span class="nav-text">接口是否可继承（extends）接口? 抽象类是否可实现（implements）接口?抽象类是否可继承具体类（concrete class）</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
