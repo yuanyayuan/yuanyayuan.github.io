@@ -679,9 +679,9 @@
 <h1 id="MyBatis-的-Xml-映射文件中，不同的-Xml-映射文件，id-是否可以重复？"><a href="#MyBatis-的-Xml-映射文件中，不同的-Xml-映射文件，id-是否可以重复？" class="headerlink" title="MyBatis 的 Xml 映射文件中，不同的 Xml 映射文件，id 是否可以重复？"></a>MyBatis 的 Xml 映射文件中，不同的 Xml 映射文件，id 是否可以重复？</h1><p>不同的 Xml 映射文件，如果配置了 namespace，那么 id 可以重复；如果没有配置 namespace，那么 id 不能重复；毕竟 namespace 不是必须的，只是最佳实践而已。</p>
 <p>原因就是 namespace+id 是作为 <code>Map&lt;String, MappedStatement&gt;</code>的 key 使用的，如果没有 namespace，就剩下 id，那么，id 重复会导致数据互相覆盖。有了 namespace，自然 id 就可以重复，namespace 不同，namespace+id 自然也就不同。</p>
 <h1 id="MyBatis-都有哪些-Executor-执行器？它们之间的区别是什么？"><a href="#MyBatis-都有哪些-Executor-执行器？它们之间的区别是什么？" class="headerlink" title="MyBatis 都有哪些 Executor 执行器？它们之间的区别是什么？"></a>MyBatis 都有哪些 Executor 执行器？它们之间的区别是什么？</h1><p>MyBatis 有三种基本的 Executor 执行器，**<code>SimpleExecutor</code>、<code>ReuseExecutor</code>、<code>BatchExecutor</code>。**</p>
-<p>**<code>SimpleExecutor</code>**：每执行一次 update 或 select，就开启一个 Statement 对象，用完立刻关闭 Statement 对象。</p>
-<p>**<code>ReuseExecutor</code>**：执行 update 或 select，以 sql 作为 key 查找 Statement 对象，存在就使用，不存在就创建，用完后，不关闭 Statement 对象，而是放置于 Map&lt;String, Statement&gt;内，供下一次使用。简言之，就是重复使用 Statement 对象。</p>
-<p>**<code>BatchExecutor</code>**：执行 update（没有 select，JDBC 批处理不支持 select），将所有 sql 都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个 Statement 对象，每个 Statement 对象都是 addBatch()完毕后，等待逐一执行 executeBatch()批处理。与 JDBC 批处理相同。</p>
+<p><strong>SimpleExecutor</strong>：每执行一次 update 或 select，就开启一个 Statement 对象，用完立刻关闭 Statement 对象。</p>
+<p><strong>ReuseExecutor</strong>：执行 update 或 select，以 sql 作为 key 查找 Statement 对象，存在就使用，不存在就创建，用完后，不关闭 Statement 对象，而是放置于 Map&lt;String, Statement&gt;内，供下一次使用。简言之，就是重复使用 Statement 对象。</p>
+<p><strong>BatchExecutor</strong>：执行 update（没有 select，JDBC 批处理不支持 select），将所有 sql 都添加到批处理中（addBatch()），等待统一执行（executeBatch()），它缓存了多个 Statement 对象，每个 Statement 对象都是 addBatch()完毕后，等待逐一执行 executeBatch()批处理。与 JDBC 批处理相同。</p>
 <p>作用范围：Executor 的这些特点，都严格限制在 SqlSession 生命周期范围内。</p>
 <h1 id="MyBatis-中如何指定使用哪一种-Executor-执行器？"><a href="#MyBatis-中如何指定使用哪一种-Executor-执行器？" class="headerlink" title="MyBatis 中如何指定使用哪一种 Executor 执行器？"></a>MyBatis 中如何指定使用哪一种 Executor 执行器？</h1><p>在 MyBatis 配置文件中，可以指定默认的 ExecutorType 执行器类型，也可以手动给 <code>DefaultSqlSessionFactory</code> 的创建 SqlSession 的方法传递 ExecutorType 类型参数。</p>
 <h1 id="为什么说-MyBatis-是半自动-ORM-映射工具？它与全自动的区别在哪里？"><a href="#为什么说-MyBatis-是半自动-ORM-映射工具？它与全自动的区别在哪里？" class="headerlink" title="为什么说 MyBatis 是半自动 ORM 映射工具？它与全自动的区别在哪里？"></a>为什么说 MyBatis 是半自动 ORM 映射工具？它与全自动的区别在哪里？</h1><p>Hibernate 属于全自动 ORM 映射工具，使用 Hibernate 查询关联对象或者关联集合对象时，可以根据对象关系模型直接获取，所以它是全自动的。而 MyBatis 在查询关联对象或关联集合对象时，需要手动编写 sql 来完成，所以，称之为半自动 ORM 映射工具。</p>
@@ -901,8 +901,8 @@
 <h1 id="练习四"><a href="#练习四" class="headerlink" title="练习四"></a>练习四</h1><p>mysql中存在订单表order，字段如下：</p>
 <p> <img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/%E7%BB%83%E4%B9%A0.png">                              </p>
 <p>写个sql，求取每个用户中，订单总金额最大的那笔订单（要求查询结果里面包含订单表order里面的所有字段：如图上面的六个字段）</p>
-<p>SELECT a.* from sys_order2 a inner join (select user_id,max(order_pay) as ma from sys_order2 GROUP BY user_id) b</p>
-<p>on a.user_id = b.user_id and a.order_pay = b.ma</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> a.<span class="operator">*</span> <span class="keyword">from</span> sys_order2 a <span class="keyword">inner</span> <span class="keyword">join</span> (<span class="keyword">select</span> user_id,<span class="built_in">max</span>(order_pay) <span class="keyword">as</span> ma <span class="keyword">from</span> sys_order2 <span class="keyword">GROUP</span> <span class="keyword">BY</span> user_id) b</span><br><span class="line"></span><br><span class="line"><span class="keyword">on</span> a.user_id <span class="operator">=</span> b.user_id <span class="keyword">and</span> a.order_pay <span class="operator">=</span> b.ma</span><br></pre></td></tr></table></figure>
+
 
           
         
