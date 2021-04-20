@@ -91,7 +91,7 @@
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%BC%BA%E9%99%B7.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Zookeeper%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%8E%9F%E7%90%86.png">
 <meta property="article:published_time" content="2021-04-18T10:18:15.000Z">
-<meta property="article:modified_time" content="2021-04-18T15:40:17.161Z">
+<meta property="article:modified_time" content="2021-04-18T16:57:43.124Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="面试">
 <meta property="article:tag" content="分步式">
@@ -412,7 +412,7 @@
 <blockquote>
 <p>唯一要注意的就是controller层需要打上事务注解，如果不加的话查询sql会自动提交事务导致分布式锁失效。</p>
 </blockquote>
-<h1 id="基于redis实现分布式锁"><a href="#基于redis实现分布式锁" class="headerlink" title="基于redis实现分布式锁"></a>基于redis实现分布式锁</h1><h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><p>SET resource_name my_random_value NX PX 30000</p>
+<h1 id="基于redis实现分布式锁（基于AP的分布式锁）"><a href="#基于redis实现分布式锁（基于AP的分布式锁）" class="headerlink" title="基于redis实现分布式锁（基于AP的分布式锁）"></a>基于redis实现分布式锁（基于AP的分布式锁）</h1><h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><p>SET resource_name my_random_value NX PX 30000</p>
 <ul>
 <li>NX: key不存在时设置成功，key存在则设置不成功（基于redis单线程特性）</li>
 </ul>
@@ -476,7 +476,7 @@
 </ol>
 <h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>redis采用了<code>A</code>（可用性）<code>P</code>（分区容错性）模型，它本身无法确保我们对一致性的要求</p>
 <h2 id="能否使用redis作为分布式锁"><a href="#能否使用redis作为分布式锁" class="headerlink" title="能否使用redis作为分布式锁"></a>能否使用redis作为分布式锁</h2><p>能不能使用redis作为分布式锁，这个本身就不是redis的问题，还是取决于业务场景，我们先要自己确认我们的场景是适合 AP 还是 CP ， 如果在社交发帖等场景下，我们并没有非常强的事务一致性问题，redis提供给我们高性能的AP模型是非常适合的，但如果是交易类型，对数据一致性非常敏感的场景，我们可能要寻在一种更加适合的 CP 模型</p>
-<h1 id="基于zookeeper实现分布式锁"><a href="#基于zookeeper实现分布式锁" class="headerlink" title="基于zookeeper实现分布式锁"></a>基于zookeeper实现分布式锁</h1><h1 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h1><ul>
+<h1 id="基于zookeeper实现分布式锁（基于CP的分布式锁）"><a href="#基于zookeeper实现分布式锁（基于CP的分布式锁）" class="headerlink" title="基于zookeeper实现分布式锁（基于CP的分布式锁）"></a>基于zookeeper实现分布式锁（基于CP的分布式锁）</h1><h1 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h1><ul>
 <li>利用Zookeeper的瞬时有序节点的特性</li>
 <li>多线程并发创建瞬时节点时，得到有序的序列</li>
 <li>序号最小的线程获得锁</li>
@@ -486,6 +486,14 @@
 </ul>
 <img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Zookeeper%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E5%8E%9F%E7%90%86.png" alt="image" style="zoom:67%;" />
 
+<p><strong>zk组合分布式锁:</strong></p>
+<ol>
+<li>业务线程-1 业务线程-2 分别向zk的/lock目录下，申请创建有序的临时节点</li>
+<li>业务线程-1 抢到/lock0001 的文件，也就是在整个目录下最小序的节点，也就是线程-1获取到了锁</li>
+<li>业务线程-2 只能抢到/lock0002的文件，并不是最小序的节点，线程2未能获取锁</li>
+<li>业务线程-1 与 lock0001 建立了连接，并维持了心跳，维持的心跳也就是这把锁的租期</li>
+<li>当业务线程-1 完成了业务，将释放掉与zk的连接，也就是释放了这把锁</li>
+</ol>
 <h1 id="究竟该用CP还是AP的分布式锁"><a href="#究竟该用CP还是AP的分布式锁" class="headerlink" title="究竟该用CP还是AP的分布式锁"></a>究竟该用CP还是AP的分布式锁</h1><p>首先得了解清楚我们使用分布式锁的场景，为何使用分布式锁，用它来帮我们解决什么问题，先聊场景后聊分布式锁的技术选型。</p>
 <p>无论是redis，zk，例如redis的AP模型会限制很多使用场景，但它却拥有了几者中最高的性能，zookeeper的分布式锁要比redis可靠很多，但他繁琐的实现机制导致了它的性能不如redis，而且zk会随着集群的扩大而性能更加下降。</p>
 <p>简单来说，先了解业务场景，后进行技术选型。</p>
@@ -532,6 +540,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/19/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA/" rel="prev" title="分步式-分布式理论">
+                分步式-分布式理论 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -609,7 +621,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-count">66</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -620,7 +632,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -631,7 +643,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">37</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -680,7 +692,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AB%98%E6%95%88%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">高效分布式锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">2.</span> <span class="nav-text">如何选择分布式锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">3.</span> <span class="nav-text">基于数据库的分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">3.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E7%82%B9"><span class="nav-number">3.2.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9"><span class="nav-number">3.3.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%BA%E8%AE%AE"><span class="nav-number">3.4.</span> <span class="nav-text">建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95"><span class="nav-number">3.5.</span> <span class="nav-text">实现方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E7%8B%AC%E7%AB%8B%E7%9A%84%E4%B8%80%E5%BC%A0%E8%A1%A8%E8%AE%B0%E5%BD%95"><span class="nav-number">3.5.1.</span> <span class="nav-text">基于独立的一张表记录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E4%B9%90%E8%A7%82%E9%94%81"><span class="nav-number">3.5.2.</span> <span class="nav-text">基于乐观锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%82%B2%E8%A7%82%E9%94%81"><span class="nav-number">3.5.3.</span> <span class="nav-text">基于悲观锁</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Eredis%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">4.</span> <span class="nav-text">基于redis实现分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-1"><span class="nav-number">4.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4"><span class="nav-number">4.2.</span> <span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E4%BE%8B%E5%AD%90%E4%BB%A3%E7%A0%81"><span class="nav-number">4.3.</span> <span class="nav-text">简单例子代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8ERedisson%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">5.</span> <span class="nav-text">基于Redisson实现分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-2"><span class="nav-number">5.1.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E9%94%81%E6%9C%BA%E5%88%B6"><span class="nav-number">5.1.1.</span> <span class="nav-text">加锁机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E5%95%A5%E8%A6%81%E7%94%A8lua%E8%84%9A%E6%9C%AC"><span class="nav-number">5.1.2.</span> <span class="nav-text">为啥要用lua脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#watch-dog%E8%87%AA%E5%8A%A8%E5%BB%B6%E6%9C%9F%E6%9C%BA%E5%88%B6"><span class="nav-number">5.1.3.</span> <span class="nav-text">watch dog自动延期机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81"><span class="nav-number">5.1.4.</span> <span class="nav-text">可重入锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8A%E6%94%BE%E9%94%81%E6%9C%BA%E5%88%B6"><span class="nav-number">5.1.5.</span> <span class="nav-text">释放锁机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="nav-number">5.1.6.</span> <span class="nav-text">简单的例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%BC%9A%E6%9C%89%E4%B8%AA%E7%BC%BA%E9%99%B7%EF%BC%8C%E5%B0%B1%E6%98%AF%E5%9C%A8Redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E4%B8%8B"><span class="nav-number">6.</span> <span class="nav-text">Redis分布式锁会有个缺陷，就是在Redis哨兵模式下:</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E5%87%BA%E7%8E%B0"><span class="nav-number">6.1.</span> <span class="nav-text">问题出现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%9B%A0"><span class="nav-number">6.2.</span> <span class="nav-text">原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%BD%E5%90%A6%E4%BD%BF%E7%94%A8redis%E4%BD%9C%E4%B8%BA%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">6.3.</span> <span class="nav-text">能否使用redis作为分布式锁</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Ezookeeper%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">7.</span> <span class="nav-text">基于zookeeper实现分布式锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">8.</span> <span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A9%B6%E7%AB%9F%E8%AF%A5%E7%94%A8CP%E8%BF%98%E6%98%AFAP%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">9.</span> <span class="nav-text">究竟该用CP还是AP的分布式锁</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AB%98%E6%95%88%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">1.</span> <span class="nav-text">高效分布式锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">2.</span> <span class="nav-text">如何选择分布式锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">3.</span> <span class="nav-text">基于数据库的分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">3.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E7%82%B9"><span class="nav-number">3.2.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9"><span class="nav-number">3.3.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%BA%E8%AE%AE"><span class="nav-number">3.4.</span> <span class="nav-text">建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%B3%95"><span class="nav-number">3.5.</span> <span class="nav-text">实现方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E7%8B%AC%E7%AB%8B%E7%9A%84%E4%B8%80%E5%BC%A0%E8%A1%A8%E8%AE%B0%E5%BD%95"><span class="nav-number">3.5.1.</span> <span class="nav-text">基于独立的一张表记录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E4%B9%90%E8%A7%82%E9%94%81"><span class="nav-number">3.5.2.</span> <span class="nav-text">基于乐观锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%82%B2%E8%A7%82%E9%94%81"><span class="nav-number">3.5.3.</span> <span class="nav-text">基于悲观锁</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Eredis%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%EF%BC%88%E5%9F%BA%E4%BA%8EAP%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">基于redis实现分布式锁（基于AP的分布式锁）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-1"><span class="nav-number">4.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A4"><span class="nav-number">4.2.</span> <span class="nav-text">步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E4%BE%8B%E5%AD%90%E4%BB%A3%E7%A0%81"><span class="nav-number">4.3.</span> <span class="nav-text">简单例子代码</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8ERedisson%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">5.</span> <span class="nav-text">基于Redisson实现分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-2"><span class="nav-number">5.1.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E9%94%81%E6%9C%BA%E5%88%B6"><span class="nav-number">5.1.1.</span> <span class="nav-text">加锁机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E5%95%A5%E8%A6%81%E7%94%A8lua%E8%84%9A%E6%9C%AC"><span class="nav-number">5.1.2.</span> <span class="nav-text">为啥要用lua脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#watch-dog%E8%87%AA%E5%8A%A8%E5%BB%B6%E6%9C%9F%E6%9C%BA%E5%88%B6"><span class="nav-number">5.1.3.</span> <span class="nav-text">watch dog自动延期机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E9%87%8D%E5%85%A5%E9%94%81"><span class="nav-number">5.1.4.</span> <span class="nav-text">可重入锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8A%E6%94%BE%E9%94%81%E6%9C%BA%E5%88%B6"><span class="nav-number">5.1.5.</span> <span class="nav-text">释放锁机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E7%9A%84%E4%BE%8B%E5%AD%90"><span class="nav-number">5.1.6.</span> <span class="nav-text">简单的例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E4%BC%9A%E6%9C%89%E4%B8%AA%E7%BC%BA%E9%99%B7%EF%BC%8C%E5%B0%B1%E6%98%AF%E5%9C%A8Redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E4%B8%8B"><span class="nav-number">6.</span> <span class="nav-text">Redis分布式锁会有个缺陷，就是在Redis哨兵模式下:</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E5%87%BA%E7%8E%B0"><span class="nav-number">6.1.</span> <span class="nav-text">问题出现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%9B%A0"><span class="nav-number">6.2.</span> <span class="nav-text">原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%BD%E5%90%A6%E4%BD%BF%E7%94%A8redis%E4%BD%9C%E4%B8%BA%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">6.3.</span> <span class="nav-text">能否使用redis作为分布式锁</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8Ezookeeper%E5%AE%9E%E7%8E%B0%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%EF%BC%88%E5%9F%BA%E4%BA%8ECP%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">基于zookeeper实现分布式锁（基于CP的分布式锁）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">8.</span> <span class="nav-text">实现原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A9%B6%E7%AB%9F%E8%AF%A5%E7%94%A8CP%E8%BF%98%E6%98%AFAP%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81"><span class="nav-number">9.</span> <span class="nav-text">究竟该用CP还是AP的分布式锁</span></a></li></ol></div>
             
 
           </div>

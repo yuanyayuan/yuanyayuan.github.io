@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="软件安装,rabbitmq,消息队列," />
+  <meta name="keywords" content="运维,软件安装,keepalived," />
 
 
 
@@ -79,20 +79,22 @@
 
 
 
-<meta name="description" content="需要软件erlang， rabbitmq 注意版本rabbitmq 和 erlang 是有版本依赖的，不能两个版本相差太多  rabbitmq和erlang版本依赖说明 安装上传到 Linux在 &#x2F;usr&#x2F;local 下创建一个 rabbitmq 文件夹 1[root@localhost local]# mkdir rabbitmq  安装Erlang 环境 12[root@localhost r">
+<meta name="description" content="下载KeepalivedKeepalived下载地址 上传至服务器解压1tar -zxvf keepalived-2.2.2.tar.gz  解压目录keepalived解压后目录   使用configure配置安装目录与核心配置文件所在位置1.&#x2F;configure --prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;keepalived --sysconf&#x3D;&#x2F;etc   prefix：keepalived安">
 <meta property="og:type" content="article">
-<meta property="og:title" content="rabbitmq安装">
-<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/17/rabbitmq%E5%AE%89%E8%A3%85/index.html">
+<meta property="og:title" content="软件安装-Keepalived安装">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/03/23/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-Keepalived%E5%AE%89%E8%A3%85/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="需要软件erlang， rabbitmq 注意版本rabbitmq 和 erlang 是有版本依赖的，不能两个版本相差太多  rabbitmq和erlang版本依赖说明 安装上传到 Linux在 &#x2F;usr&#x2F;local 下创建一个 rabbitmq 文件夹 1[root@localhost local]# mkdir rabbitmq  安装Erlang 环境 12[root@localhost r">
+<meta property="og:description" content="下载KeepalivedKeepalived下载地址 上传至服务器解压1tar -zxvf keepalived-2.2.2.tar.gz  解压目录keepalived解压后目录   使用configure配置安装目录与核心配置文件所在位置1.&#x2F;configure --prefix&#x3D;&#x2F;usr&#x2F;local&#x2F;keepalived --sysconf&#x3D;&#x2F;etc   prefix：keepalived安">
 <meta property="og:locale">
-<meta property="article:published_time" content="2021-04-17T12:13:21.000Z">
-<meta property="article:modified_time" content="2021-04-17T12:29:19.721Z">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E7%9B%AE%E5%BD%95.png">
+<meta property="article:published_time" content="2021-03-23T14:37:38.000Z">
+<meta property="article:modified_time" content="2021-04-19T08:33:58.716Z">
 <meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="运维">
 <meta property="article:tag" content="软件安装">
-<meta property="article:tag" content="rabbitmq">
-<meta property="article:tag" content="消息队列">
+<meta property="article:tag" content="keepalived">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E7%9B%AE%E5%BD%95.png">
 
 
 
@@ -122,13 +124,13 @@
 
 
 
-  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/17/rabbitmq安装/"/>
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/03/23/软件安装-Keepalived安装/"/>
 
 
 
 
 
-  <title>rabbitmq安装 | Hikari的Java之路</title>
+  <title>软件安装-Keepalived安装 | Hikari的Java之路</title>
   
 
 
@@ -265,7 +267,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/17/rabbitmq%E5%AE%89%E8%A3%85/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/23/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-Keepalived%E5%AE%89%E8%A3%85/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -282,7 +284,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">rabbitmq安装</h1>
+          <h1 class="post-title" itemprop="name headline">软件安装-Keepalived安装</h1>
         
 
         <div class="post-meta">
@@ -294,8 +296,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-17T20:13:21+08:00">
-                2021-04-17
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-23T22:37:38+08:00">
+                2021-03-23
               </time>
             
 
@@ -317,8 +319,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-rabbitmq%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
-                    <span itemprop="name">软件安装 - rabbitmq安装</span>
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-keepalived%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
+                    <span itemprop="name">软件安装 - keepalived安装</span>
                   </a>
                 </span>
 
@@ -354,67 +356,27 @@
       
 
       
-        <h1 id="需要软件"><a href="#需要软件" class="headerlink" title="需要软件"></a>需要软件</h1><p>erlang， rabbitmq</p>
-<h2 id="注意版本"><a href="#注意版本" class="headerlink" title="注意版本"></a>注意版本</h2><p>rabbitmq 和 erlang 是有版本依赖的，不能两个版本相差太多</p>
-<p> <a target="_blank" rel="noopener" href="https://www.rabbitmq.com/which-erlang.html">rabbitmq和erlang版本依赖说明</a></p>
-<h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><h2 id="上传到-Linux"><a href="#上传到-Linux" class="headerlink" title="上传到 Linux"></a>上传到 Linux</h2><p>在 /usr/local 下创建一个 rabbitmq 文件夹</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost local]# mkdir rabbitmq</span><br></pre></td></tr></table></figure>
+        <h1 id="下载Keepalived"><a href="#下载Keepalived" class="headerlink" title="下载Keepalived"></a>下载Keepalived</h1><p><a target="_blank" rel="noopener" href="https://www.keepalived.org/download.html">Keepalived下载地址</a></p>
+<h1 id="上传至服务器"><a href="#上传至服务器" class="headerlink" title="上传至服务器"></a>上传至服务器</h1><h1 id="解压"><a href="#解压" class="headerlink" title="解压"></a>解压</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf keepalived-2.2.2.tar.gz</span><br></pre></td></tr></table></figure>
 
-<h2 id="安装Erlang"><a href="#安装Erlang" class="headerlink" title="安装Erlang"></a>安装Erlang</h2><ol>
-<li><p><strong>环境</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost rabbitmq]# yum -y install ncurses-devel</span><br><span class="line">[root@localhost rabbitmq]# yum -y install make gcc gcc-c++ kernel-devel m4 ncurses-devel openssl-devel</span><br></pre></td></tr></table></figure></li>
-<li><p><strong>解压</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost rabbitmq]# tar -xvf otp_src_21.1.tar.gz</span><br></pre></td></tr></table></figure></li>
-<li><p><strong>安装</strong></p>
-<p>进入解压后的 otp_src_21.1 目录，执行以下命令生成 erlang 目录</p>
- <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost rabbitmq]# cd otp_src_21.1</span><br><span class="line">[root@localhost otp_src_21.1]# ./configure --prefix=/usr/local/rabbitmq/erlang --without-javac</span><br></pre></td></tr></table></figure></li>
-<li><p><strong>编译、安装</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost otp_src_21.1]# make</span><br><span class="line">[root@localhost otp_src_21.1]# make install</span><br></pre></td></tr></table></figure></li>
-<li><p><strong>测试</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost otp_src_21.1]# cd ..</span><br><span class="line">[root@localhost rabbitmq]# cd erlang/</span><br><span class="line">[root@localhost erlang]# ./bin/erl</span><br></pre></td></tr></table></figure></li>
-</ol>
-<h2 id="安装RabbitMQ"><a href="#安装RabbitMQ" class="headerlink" title="安装RabbitMQ"></a>安装RabbitMQ</h2><ol>
-<li><strong>环境</strong></li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost rabbitmq]# yum install python -y</span><br><span class="line">[root@localhost rabbitmq]# yum install xmlto -y</span><br></pre></td></tr></table></figure>
+<h1 id="解压目录"><a href="#解压目录" class="headerlink" title="解压目录"></a>解压目录</h1><p>keepalived解压后目录</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E7%9B%AE%E5%BD%95.png" style="zoom:50%;" />
 
-<ol start="2">
-<li><strong>解压（先得到tar格式文件，接着再解压）</strong></li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost rabbitmq]# xz -d rabbitmq-server-generic-unix-3.7.17.tar.xz </span><br><span class="line">[root@localhost rabbitmq]# tar -xvf rabbitmq-server-generic-unix-3.7.17.tar</span><br></pre></td></tr></table></figure>
+<h1 id="使用configure配置安装目录与核心配置文件所在位置"><a href="#使用configure配置安装目录与核心配置文件所在位置" class="headerlink" title="使用configure配置安装目录与核心配置文件所在位置"></a>使用<code>configure</code>配置安装目录与核心配置文件所在位置</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure --prefix=/usr/<span class="built_in">local</span>/keepalived --sysconf=/etc</span><br></pre></td></tr></table></figure>
 
-<ol start="3">
-<li><strong>改名（原名过长就改为rabbitmq）</strong></li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost rabbitmq]# mv rabbitmq_server-3.7.17/ rabbitmq</span><br></pre></td></tr></table></figure>
+<ul>
+<li>prefix：keepalived安装的位置</li>
+<li>sysconf：keepalived核心配置文件所在位置，固定位置，改成其他位置则keepalived启动不了，**/var/log/message中会报错** </li>
+</ul>
+<h2 id="配置过程中出现警告"><a href="#配置过程中出现警告" class="headerlink" title="配置过程中出现警告"></a>配置过程中出现警告</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*** WARNING - this build will not support IPVS with IPv6. Please install libnl/libnl-3 dev libraries to support IPv6 with IPVS.</span><br></pre></td></tr></table></figure>
 
-<h2 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost rabbitmq]# vi /etc/profile</span><br></pre></td></tr></table></figure>
+<h2 id="安装libnl-libnl-3依赖"><a href="#安装libnl-libnl-3依赖" class="headerlink" title="安装libnl/libnl-3依赖"></a>安装<code>libnl/libnl-3</code>依赖</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install libnl libnl-devel  </span><br></pre></td></tr></table></figure>
 
-<p>在 profile 文件末尾加上下面这句话（同时包含了erlang的环境变量配置），要注意路径要正确，最后wq保存退出</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export PATH=$PATH:/usr/local/rabbitmq/erlang/bin:/usr/local/rabbitmq/rabbitmq/sbin</span><br></pre></td></tr></table></figure>
+<h3 id="CentOS8"><a href="#CentOS8" class="headerlink" title="CentOS8"></a>CentOS8</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y libnl3.x86_64 libnl3-devel.x86_64</span><br></pre></td></tr></table></figure>
 
-<p>使配置立即生效</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost rabbitmq]# source /etc/profile</span><br></pre></td></tr></table></figure>
+<h2 id="重新configure"><a href="#重新configure" class="headerlink" title="重新configure"></a>重新<code>configure</code></h2><h1 id="安装keepalived"><a href="#安装keepalived" class="headerlink" title="安装keepalived"></a>安装keepalived</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
 
-<h1 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h1><p>由于上面已经配置环境变量，所以可不必进入到 rabbitmq 的 sbin 命令目录，直接 rabbitmq-server 即可启动。<br>当然也可以进入到 sbin 目录，使用 ./rabbitmq-server 进行启动（目前不是后台启动，可以清楚看到启动情况）</p>
-<h1 id="关闭"><a href="#关闭" class="headerlink" title="关闭"></a>关闭</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost sbin]# .&#x2F;rabbitmqctl stop</span><br></pre></td></tr></table></figure>
-
-<h1 id="RabbitMQ账号设置"><a href="#RabbitMQ账号设置" class="headerlink" title="RabbitMQ账号设置"></a>RabbitMQ账号设置</h1><ol>
-<li><strong>启动插件功能</strong></li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost sbin]# ./rabbitmq-plugins enable rabbitmq_management</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li><strong>创建一个账号</strong></li>
-</ol>
-<p>（1）创建之前，可以先查看一下当前有哪些用户和权限</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost sbin]# ./rabbitmqctl list_users</span><br><span class="line">[root@localhost sbin]# ./rabbitmqctl list_user_permissions guest</span><br></pre></td></tr></table></figure>
-
-<p>（2）添加用户（我这里账号就设为 admin，密码也是 admin，随意）</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost sbin]# ./rabbitmqctl add_user admin admin</span><br></pre></td></tr></table></figure>
-
-<p>（3）设置其权限</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost sbin]# ./rabbitmqctl set_permissions -p &quot;/&quot; admin &quot;.*&quot; &quot;.*&quot; &quot;.*&quot;</span><br></pre></td></tr></table></figure>
+<h1 id="查找keepalived"><a href="#查找keepalived" class="headerlink" title="查找keepalived"></a>查找keepalived</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">whereis keepalived</span><br></pre></td></tr></table></figure>
 
 
       
@@ -433,11 +395,11 @@
       
         <div class="post-tags">
           
+            <a href="/tags/%E8%BF%90%E7%BB%B4/" rel="tag"># 运维</a>
+          
             <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85/" rel="tag"># 软件安装</a>
           
-            <a href="/tags/rabbitmq/" rel="tag"># rabbitmq</a>
-          
-            <a href="/tags/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" rel="tag"># 消息队列</a>
+            <a href="/tags/keepalived/" rel="tag"># keepalived</a>
           
         </div>
       
@@ -450,8 +412,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/04/17/MySQL-MySQL%E5%AD%A6%E4%B9%A0/" rel="next" title="MySQL-MySQL学习">
-                <i class="fa fa-chevron-left"></i> MySQL-MySQL学习
+              <a href="/2021/03/23/nginx%E9%85%8D%E7%BD%AE3%E5%8F%B0tomcat%E9%9B%86%E7%BE%A4/" rel="next" title="nginx配置3台tomcat集群">
+                <i class="fa fa-chevron-left"></i> nginx配置3台tomcat集群
               </a>
             
           </div>
@@ -460,8 +422,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/04/17/MySQL-MySQL%E4%BC%98%E5%8C%96/" rel="prev" title="MySQL-MySQL优化">
-                MySQL-MySQL优化 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/03/24/Keepalived%E9%85%8D%E7%BD%AE%E5%AE%9E%E7%8E%B0nginx%E9%AB%98%E5%8F%AF%E7%94%A8/" rel="prev" title="Keepalived配置实现nginx高可用">
+                Keepalived配置实现nginx高可用 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -540,7 +502,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">59</span>
+                  <span class="site-state-item-count">66</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -551,7 +513,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">43</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -562,7 +524,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">33</span>
+                  <span class="site-state-item-count">37</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -611,7 +573,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9C%80%E8%A6%81%E8%BD%AF%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">需要软件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E7%89%88%E6%9C%AC"><span class="nav-number">1.1.</span> <span class="nav-text">注意版本</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-number">2.</span> <span class="nav-text">安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0%E5%88%B0-Linux"><span class="nav-number">2.1.</span> <span class="nav-text">上传到 Linux</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85Erlang"><span class="nav-number">2.2.</span> <span class="nav-text">安装Erlang</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85RabbitMQ"><span class="nav-number">2.3.</span> <span class="nav-text">安装RabbitMQ</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83%E5%8F%98%E9%87%8F"><span class="nav-number">2.4.</span> <span class="nav-text">配置环境变量</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8"><span class="nav-number">3.</span> <span class="nav-text">启动</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E9%97%AD"><span class="nav-number">4.</span> <span class="nav-text">关闭</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RabbitMQ%E8%B4%A6%E5%8F%B7%E8%AE%BE%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">RabbitMQ账号设置</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BDKeepalived"><span class="nav-number">1.</span> <span class="nav-text">下载Keepalived</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">上传至服务器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%8E%8B"><span class="nav-number">3.</span> <span class="nav-text">解压</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E5%8E%8B%E7%9B%AE%E5%BD%95"><span class="nav-number">4.</span> <span class="nav-text">解压目录</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8configure%E9%85%8D%E7%BD%AE%E5%AE%89%E8%A3%85%E7%9B%AE%E5%BD%95%E4%B8%8E%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%89%80%E5%9C%A8%E4%BD%8D%E7%BD%AE"><span class="nav-number">5.</span> <span class="nav-text">使用configure配置安装目录与核心配置文件所在位置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E8%BF%87%E7%A8%8B%E4%B8%AD%E5%87%BA%E7%8E%B0%E8%AD%A6%E5%91%8A"><span class="nav-number">5.1.</span> <span class="nav-text">配置过程中出现警告</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85libnl-libnl-3%E4%BE%9D%E8%B5%96"><span class="nav-number">5.2.</span> <span class="nav-text">安装libnl&#x2F;libnl-3依赖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CentOS8"><span class="nav-number">5.2.1.</span> <span class="nav-text">CentOS8</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E6%96%B0configure"><span class="nav-number">5.3.</span> <span class="nav-text">重新configure</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E8%A3%85keepalived"><span class="nav-number">6.</span> <span class="nav-text">安装keepalived</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E6%89%BEkeepalived"><span class="nav-number">7.</span> <span class="nav-text">查找keepalived</span></a></li></ol></div>
             
 
           </div>

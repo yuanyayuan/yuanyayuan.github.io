@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Mycat,分布式,分库分表," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="server.xml 配置MyCat的用户名，密码，权限，Schema等 如同给MySQL新建用户 客户端连接MyCat与连接MySQL相同  schema server.xml  1234567&lt;user name&#x3D;&quot;root&quot; defaultAccount&#x3D;&quot;true&quot;&gt;    &lt;property name&#x3D;&quot;password">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MyCat-MyCat学习">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/19/MyCat-MyCat%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="server.xml 配置MyCat的用户名，密码，权限，Schema等 如同给MySQL新建用户 客户端连接MyCat与连接MySQL相同  schema server.xml  1234567&lt;user name&#x3D;&quot;root&quot; defaultAccount&#x3D;&quot;true&quot;&gt;    &lt;property name&#x3D;&quot;password">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/129.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/130.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/131.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D0.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D1.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D2%281%29.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D2.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D1.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/mycat%E9%AB%98%E5%8F%AF%E7%94%A8.png">
+<meta property="article:published_time" content="2021-04-19T08:52:33.000Z">
+<meta property="article:modified_time" content="2021-04-19T18:51:44.411Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="Mycat">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="分库分表">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/129.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/19/MyCat-MyCat学习/"/>
+
+
+
+
+
+  <title>MyCat-MyCat学习 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/19/MyCat-MyCat%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MyCat-MyCat学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-19T16:52:33+08:00">
+                2021-04-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mycat-Mycat%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%EF%BC%8C%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">Mycat - Mycat读写分离，分库分表</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="server-xml"><a href="#server-xml" class="headerlink" title="server.xml"></a>server.xml</h1><ul>
+<li>配置MyCat的用户名，密码，权限，Schema等</li>
+<li>如同给MySQL新建用户</li>
+<li>客户端连接MyCat与连接MySQL相同</li>
+</ul>
+<h2 id="schema"><a href="#schema" class="headerlink" title="schema"></a>schema</h2><ul>
+<li>server.xml</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">user</span> <span class="attr">name</span>=<span class="string">&quot;root&quot;</span> <span class="attr">defaultAccount</span>=<span class="string">&quot;true&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;password&quot;</span>&gt;</span>123456<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--如有多个schema用“，”号隔开--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;schemas&quot;</span>&gt;</span>user,schema1,schema2<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">user</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>schema.xml</li>
+</ul>
+<p><code>schema</code>的<code>name</code>字段与<code>&lt;property name=&quot;schemas&quot;&gt;user,schema1,schema2&lt;/property&gt;</code>对应</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">schema</span> <span class="attr">name</span>=<span class="string">&quot;user&quot;</span> <span class="attr">checkSQLschema</span>=<span class="string">&quot;true&quot;</span> <span class="attr">sqlMaxLimit</span>=<span class="string">&quot;100&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">table</span> <span class="attr">name</span>=<span class="string">&quot;user&quot;</span> <span class="attr">dataNode</span>=<span class="string">&quot;dn129,dn130&quot;</span> <span class="attr">rule</span>=<span class="string">&quot;auto-sharding-long&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">schema</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="schema-xml"><a href="#schema-xml" class="headerlink" title="schema.xml"></a>schema.xml</h1><ul>
+<li>配置dataHost（节点主机），包括读host，写host</li>
+<li>配置dataNode（数据节点），指定到具体的数据库</li>
+<li>配置schema，表名，数据节点，分片规则等</li>
+</ul>
+<h2 id="dataHost"><a href="#dataHost" class="headerlink" title="dataHost"></a>dataHost</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dataHost</span> <span class="attr">name</span>=<span class="string">&quot;db129&quot;</span> <span class="attr">maxCon</span>=<span class="string">&quot;1000&quot;</span> <span class="attr">minCon</span>=<span class="string">&quot;10&quot;</span> <span class="attr">balance</span>=<span class="string">&quot;0&quot;</span></span></span><br><span class="line"><span class="tag">          <span class="attr">writeType</span>=<span class="string">&quot;0&quot;</span> <span class="attr">dbType</span>=<span class="string">&quot;mysql&quot;</span> <span class="attr">dbDriver</span>=<span class="string">&quot;jdbc&quot;</span> <span class="attr">switchType</span>=<span class="string">&quot;1&quot;</span>  <span class="attr">slaveThreshold</span>=<span class="string">&quot;100&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">heartbeat</span>&gt;</span>select user()<span class="tag">&lt;/<span class="name">heartbeat</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">writeHost</span> <span class="attr">host</span>=<span class="string">&quot;M1&quot;</span> <span class="attr">url</span>=<span class="string">&quot;jdbc:mysql://192.168.159.129:3306?useSSL=false<span class="symbol">&amp;amp;</span>serverTimezone=UTC&quot;</span> <span class="attr">user</span>=<span class="string">&quot;root&quot;</span></span></span><br><span class="line"><span class="tag">               <span class="attr">password</span>=<span class="string">&quot;12345&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">writeHost</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dataHost</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>writeHost</strong></p>
+<p>写库，**user=”root”，password=”12345”**一定要使用<code>mysql_native_password</code>加密方式</p>
+</li>
+<li><p><strong>readHost</strong></p>
+</li>
+<li><p><strong>balance</strong>：</p>
+<ul>
+<li> balance=”0”, 不开启读写分离机制，所有读操作都发送到当前可用的writeHost上。</li>
+<li>balance=”1”，全部的readHost与stand by writeHost参与select语句的负载均衡，简单的说，当双主双从模式(M1-&gt;S1，M2-&gt;S2，并且M1与 M2互为主备)，正常情况下，M2,S1,S2都参与select语句的负载均衡。</li>
+<li>balance=”2”，所有读操作都随机的在writeHost、readhost上分发。</li>
+<li>balance=”3”，所有读请求随机的分发到wiriterHost对应的readhost执行，writerHost不负担读压力，注意balance=3只在1.4及其以后版本有，1.3没有。</li>
+</ul>
+</li>
+<li><p><strong>writeType</strong>：</p>
+<ol>
+<li><p>writeType=”0”, 所有写操作发送到配置的第一个writeHost，第一个挂了切到还生存的第二个writeHost，重新启动后已切换后的为准，切换记录在配置文件中:dnindex.properties .</p>
+<blockquote>
+<p>如果第一个writeHost挂掉后又重启，还是会操作第二个writeHost，即挂掉后又重启后，第一个writeHost会排到第二个writeHost后</p>
+</blockquote>
+</li>
+<li><p>writeType=”1”，所有写操作都随机的发送到配置的writeHost，1.5以后废弃不推荐。</p>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="balance修改"><a href="#balance修改" class="headerlink" title="balance修改"></a>balance修改</h3><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/129.png"></p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/130.png"></p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/131.png"></p>
+<ol>
+<li><p><strong>balance=”0”</strong>:不开启读写分离机制，所有读操作都发送到当前可用的writeHost上</p>
+<ul>
+<li><p>dataHost：129</p>
+<ul>
+<li>writeHost：129<ul>
+<li>readHost ：131</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>dataHost：130</p>
+<ul>
+<li>writeHost：130</li>
+</ul>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D0.png" style="zoom:50%;" /></li>
+</ol>
+<ol start="2">
+<li><p>**balance=”1”**，全部的readHost与stand by writeHost参与select语句的负载均衡，简单的说，当双主双从模式(M1-&gt;S1，M2-&gt;S2，并且M1与 M2互为主备)，正常情况下，M2,S1,S2都参与select语句的负载均衡。</p>
+<ul>
+<li><p>dataHost：129</p>
+<ul>
+<li>writeHost：129<ul>
+<li>readHost ：131</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>dataHost：130</p>
+<ul>
+<li>writeHost：130</li>
+</ul>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D1.png" style="zoom:50%;" /></li>
+<li><p>**balance=”2”**，所有读操作都随机的在writeHost、readhost上分发。</p>
+<ul>
+<li><p>dataHost：129</p>
+<ul>
+<li>writeHost：129<ul>
+<li>readHost ：131</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>dataHost：130</p>
+<ul>
+<li>writeHost：130</li>
+</ul>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D2%281%29.png" style="zoom:50%;" />
+
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D2.png" style="zoom:50%;" /></li>
+<li><p>**balance=”3”**，所有读请求随机的分发到wiriterHost对应的readhost执行，writerHost不负担读压力，</p>
+<ul>
+<li><p>dataHost：129</p>
+<ul>
+<li>writeHost：129<ul>
+<li>readHost ：131</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>dataHost：130</p>
+<ul>
+<li>writeHost：130</li>
+</ul>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D1.png" style="zoom:50%;" /></li>
+</ol>
+<h2 id="dataNode"><a href="#dataNode" class="headerlink" title="dataNode"></a>dataNode</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--dataNode自定义; dataHost下方dataHost的name; database为指定的数据库 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dataNode</span> <span class="attr">name</span>=<span class="string">&quot;dn129&quot;</span> <span class="attr">dataHost</span>=<span class="string">&quot;db129&quot;</span> <span class="attr">database</span>=<span class="string">&quot;user_129&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dataNode</span> <span class="attr">name</span>=<span class="string">&quot;dn130&quot;</span> <span class="attr">dataHost</span>=<span class="string">&quot;db130&quot;</span> <span class="attr">database</span>=<span class="string">&quot;user_130&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="schema-1"><a href="#schema-1" class="headerlink" title="schema"></a>schema</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">schema</span> <span class="attr">name</span>=<span class="string">&quot;user&quot;</span> <span class="attr">checkSQLschema</span>=<span class="string">&quot;true&quot;</span> <span class="attr">sqlMaxLimit</span>=<span class="string">&quot;100&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">table</span> <span class="attr">name</span>=<span class="string">&quot;user&quot;</span> <span class="attr">dataNode</span>=<span class="string">&quot;dn129,dn130&quot;</span> <span class="attr">rule</span>=<span class="string">&quot;auto-sharding-long&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">schema</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>checkSQLschema</strong>：checkSQLschema是否去掉SQL中的Schema</li>
+<li><strong>sqlMaxLimit</strong>：检索时加上limit，防止运算压力过大，<strong>sql语句中有limit时默认不生效</strong></li>
+<li>table：定义表</li>
+<li>name：定义逻辑表的表名</li>
+<li>dataNode：定义逻辑表的数据节点</li>
+<li><strong>rule</strong>：定义分片表的分片规则，必须与rule.xml中的tableRule对应</li>
+<li><strong>ruleRequired</strong>：是否绑定分片规则，为true却没有绑定分片规则，程序报错</li>
+</ul>
+<h3 id="rule属性"><a href="#rule属性" class="headerlink" title="rule属性"></a>rule属性</h3><p><code>schema.xml</code>中<code>&quot;auto-sharding-long&quot; </code>对应<code>rule.xml</code>中的</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tableRule</span> <span class="attr">name</span>=<span class="string">&quot;auto-sharding-long&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rule</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--按照那一列分片--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">columns</span>&gt;</span>id<span class="tag">&lt;/<span class="name">columns</span>&gt;</span> </span><br><span class="line">        <span class="tag">&lt;<span class="name">algorithm</span>&gt;</span>rang-long<span class="tag">&lt;/<span class="name">algorithm</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">rule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tableRule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">function</span> <span class="attr">name</span>=<span class="string">&quot;rang-long&quot;</span></span></span><br><span class="line"><span class="tag">          <span class="attr">class</span>=<span class="string">&quot;io.mycat.route.function.AutoPartitionByLong&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;mapFile&quot;</span>&gt;</span>autopartition-long.txt<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">function</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>分片规则在<code>autopartition-long.txt</code></p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># range start-end ,data node index</span><br><span class="line"># K=1000,M=10000.</span><br><span class="line">0-500M=0</span><br><span class="line">500M-1000M=1</span><br><span class="line"># 只配置了两个数据节点所以注释掉了</span><br><span class="line"># 1000M-1500M=2 </span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="分片规则"><a href="#分片规则" class="headerlink" title="分片规则"></a>分片规则</h3><ol>
+<li><p>sharding-by-intfile（<strong>分片枚举</strong>）</p>
+<p>分片的列是固定的值（比如有些业务需要按照省份或区县来做保存，而全国省份区县固定的）</p>
+<ul>
+<li>rule.xml<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tableRule</span> <span class="attr">name</span>=<span class="string">&quot;sharding-by-intfile&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rule</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">columns</span>&gt;</span>sharding_id<span class="tag">&lt;/<span class="name">columns</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">algorithm</span>&gt;</span>hash-int<span class="tag">&lt;/<span class="name">algorithm</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">rule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tableRule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">function</span> <span class="attr">name</span>=<span class="string">&quot;hash-int&quot;</span></span></span><br><span class="line"><span class="tag">          <span class="attr">class</span>=<span class="string">&quot;io.mycat.route.function.PartitionByFileMap&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;mapFile&quot;</span>&gt;</span>partition-hash-int.txt<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;type&quot;</span>&gt;</span>0<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">function</span>&gt;</span></span><br></pre></td></tr></table></figure>
+其中分片函数配置中，mapFile标识配置文件名称，type默认值为0，0表示Integer，非零表示String，<br>所有的节点配置都是从0开始，及0代表节点1</li>
+</ul>
+<blockquote>
+<p>defaultNode 默认节点:小于0表示不设置默认节点，大于等于0表示设置默认节点    </p>
+<ul>
+<li>默认节点的作用：枚举分片时，如果碰到不识别的枚举值，就让它路由到默认节点   </li>
+<li>如果不配置默认节点（defaultNode值小于0表示不配置默认节点），碰到不识别的枚举值就会报错,like this：can’t find datanode for sharding column:column_name val:ffffffff</li>
+</ul>
+</blockquote>
+<ul>
+<li>partition-hash-int.txt<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">10000=0</span><br><span class="line">10010=1</span><br><span class="line">DEFAULT_NODE=1</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>id为1000则放入第一个节点。id为10010则放入第二个节点。其他id放入第二个节点</p>
+</li>
+<li><p>mod-long（<strong>取模</strong>）</p>
+<p>此规则为对分片字段求摸运算。</p>
+</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tableRule</span> <span class="attr">name</span>=<span class="string">&quot;mod-long&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rule</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">columns</span>&gt;</span>user_id<span class="tag">&lt;/<span class="name">columns</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">algorithm</span>&gt;</span>mod-long<span class="tag">&lt;/<span class="name">algorithm</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">rule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tableRule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">function</span> <span class="attr">name</span>=<span class="string">&quot;mod-long&quot;</span> <span class="attr">class</span>=<span class="string">&quot;org.opencloudb.route.function.PartitionByMod&quot;</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- how many data nodes  --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;count&quot;</span>&gt;</span>3<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">function</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>配置说明：<br>上面columns 标识将要分片的表字段，algorithm 分片函数，<br>此种配置非常明确即根据id进行十进制求模预算，相比固定分片hash，此种在批量插入时可能存在批量插入单事务插入多数据分片，增大事务一致性难度。</p>
+<p>count对应分片节点数</p>
+</blockquote>
+<blockquote>
+<p>取模扩容最好以2的多少次方 2,4,8</p>
+</blockquote>
+<ol start="3">
+<li>一致性hash（murmur）</li>
+</ol>
+<blockquote>
+<p>将要分片的表字段是String类型的</p>
+</blockquote>
+<h1 id="全局表"><a href="#全局表" class="headerlink" title="全局表"></a>全局表</h1><p>字典表，数据量不大，不用分片，比如用户表和省市表，如果省市表分片了，那与用户表关联查询将很麻烦，省市表可作为全局表在各个分片中都存在一份</p>
+<ul>
+<li>type属性：<strong>global为全局表</strong>，不指定则为分片表</li>
+</ul>
+<h1 id="子表"><a href="#子表" class="headerlink" title="子表"></a>子表</h1><blockquote>
+<p>可以理解为Order_Item,存放商品id，商品名称，商品数量，商品金额</p>
+<p>订单表是按照订单的id进行切分，订单id取模为0的分配到第一个数据库，订单id取模为1的分配到第二个数据库，Order_Item表想跟随Order表落入相同的数据库，Order_Item表作为Order表的字表落入相同的数据库</p>
+</blockquote>
+<ul>
+<li><p>childTable标签，定义分片字表</p>
+</li>
+<li><p>name属性，字表名称</p>
+</li>
+<li><p>joinKey属性，标志子表中的列，用于与父表做关联</p>
+</li>
+<li><p>parnetKey，标志父表中的列，与joinKey对应</p>
+</li>
+<li><p>primaryKey，子表主键，同table标签</p>
+</li>
+<li><p>needAddLimit属性，同table标签</p>
+</li>
+</ul>
+<h1 id="mycatk控制台"><a href="#mycatk控制台" class="headerlink" title="mycatk控制台"></a>mycatk控制台</h1><p>端口号：9066</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reload @@config_all;</span><br></pre></td></tr></table></figure>
+
+<h1 id="mycat高可用"><a href="#mycat高可用" class="headerlink" title="mycat高可用"></a>mycat高可用</h1><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/mycat%E9%AB%98%E5%8F%AF%E7%94%A8.png"></p>
+<p><strong>haproxy:</strong></p>
+<p>mycat不是HTTP请求，mysql是TCP协议</p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><h3 id="配置Haproxy"><a href="#配置Haproxy" class="headerlink" title="配置Haproxy"></a>配置Haproxy</h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">...</span></span><br><span class="line"><span class="attr">defaults</span></span><br><span class="line"><span class="comment">   # mode                    http</span></span><br><span class="line">    <span class="attr">mode</span>                    <span class="string">tcp</span></span><br><span class="line">    <span class="attr">log</span>                     <span class="string">global</span></span><br><span class="line">    <span class="attr">option</span>                  <span class="string">httplog</span></span><br><span class="line">    <span class="attr">option</span>                  <span class="string">dontlognull</span></span><br><span class="line">    <span class="attr">option</span> <span class="string">http-server-close</span></span><br><span class="line">    <span class="attr">option</span> <span class="string">forwardfor       except 127.0.0.0/8</span></span><br><span class="line">    <span class="attr">option</span>                  <span class="string">redispatch</span></span><br><span class="line">    <span class="attr">retries</span>                 <span class="string">3</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">http-request    10s</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">queue           1m</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">connect         10s</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">client          1m</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">server          1m</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">http-keep-alive 10s</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">check           10s</span></span><br><span class="line">    <span class="attr">maxconn</span>                 <span class="string">3000</span></span><br><span class="line"><span class="attr">...</span></span><br><span class="line"><span class="comment"># haproxy的端口5000</span></span><br><span class="line"><span class="attr">frontend</span>  <span class="string">main *:5000</span></span><br><span class="line">    <span class="attr">acl</span> <span class="string">url_static       path_beg       -i /static /images /javascript /stylesheets</span></span><br><span class="line">    <span class="attr">acl</span> <span class="string">url_static       path_end       -i .jpg .gif .png .css .js</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">use_backend</span> <span class="string">static          if url_static</span></span><br><span class="line">    <span class="attr">default_backend</span>             <span class="string">app</span></span><br><span class="line"></span><br><span class="line"><span class="attr">...</span></span><br><span class="line"><span class="attr">backend</span> <span class="string">app</span></span><br><span class="line">    <span class="attr">balance</span>     <span class="string">roundrobin</span></span><br><span class="line">    <span class="attr">server</span>  <span class="string">app1 192.168.159.128:8066 check</span></span><br><span class="line">    <span class="attr">server</span>  <span class="string">app2 192.168.159.129:8066 check</span></span><br><span class="line"><span class="comment">    #server  app3 127.0.0.1:5003 check</span></span><br><span class="line"><span class="comment">    #server  app4 127.0.0.1:5004 check</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="启动Haproxy"><a href="#启动Haproxy" class="headerlink" title="启动Haproxy"></a>启动Haproxy</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">haproxy -f /etc/haproxy/haproxy.cfg </span><br></pre></td></tr></table></figure>
+
+<h3 id="Navicat连接Haproxy"><a href="#Navicat连接Haproxy" class="headerlink" title="Navicat连接Haproxy"></a>Navicat连接Haproxy</h3><ul>
+<li>连接名：192.168.159.130-haproxy</li>
+<li>主机：192.168.159.130</li>
+<li>端口：5000</li>
+<li>用户名：root（mycat用户名）</li>
+<li>密码：12345（mycat密码）</li>
+</ul>
+<h3 id="测试其中一个MyCat宕机"><a href="#测试其中一个MyCat宕机" class="headerlink" title="测试其中一个MyCat宕机"></a>测试其中一个MyCat宕机</h3><h3 id="keepalived避免Haproxy单点故障"><a href="#keepalived避免Haproxy单点故障" class="headerlink" title="keepalived避免Haproxy单点故障"></a>keepalived避免Haproxy单点故障</h3><p><a href="https://yuanyayuan.github.io/2021/03/24/Keepalived%E9%85%8D%E7%BD%AE%E5%AE%9E%E7%8E%B0nginx%E9%AB%98%E5%8F%AF%E7%94%A8/">参考keepalived避免Nginx单点故障</a>和<a href="https://yuanyayuan.github.io/2021/03/22/LVS-DR%E6%A8%A1%E5%BC%8F%E6%90%AD%E5%BB%BA%E9%85%8D%E7%BD%AE/">keepalived避免LVS单点故障</a></p>
+<h1 id="MyCat使用过程出现的错误"><a href="#MyCat使用过程出现的错误" class="headerlink" title="MyCat使用过程出现的错误"></a>MyCat使用过程出现的错误</h1><ol>
+<li><p>分片规则要仔细思考</p>
+<p>例如：</p>
+<p>order表被垂直切分出，user表所在数据库与order表所在数据库分离order表与user表是根据user_id关联</p>
+<p>如果order表选择以自己的id为分片列，那会导致同一个用户的订单落于不同的数据库。MyCat根据用户id检索用户所有订单时，MyCat会在所有节点上都执行sql语句，汇总结果集反馈至服务端，性能根据节点的增对会加大资源消耗。</p>
+<p>如果order表选择以用户的id为分片列，同一个用户的订单一定会落入同一个数据库。</p>
+</li>
+<li><p><code>cant find (root) parnet sharding node for sql :...</code></p>
+<p>原因：字表先于父表的数据库插入，Order_item先于Order在数据库中新增，Order_item插入数据时找不到Order</p>
+<p>修改方法，代码逻辑更改，父表记录先于字表记录录入数据库</p>
+</li>
+<li><p><code>Sharding column cant be updated ...</code></p>
+<p>原因：分片列是不能更新的，因为MyCat对数据进行水平切分是根据分片列进行切分得，分片列的值决定该条记录被分配到那个节点数据库，值一旦确定是不能跟新的，只改变是要重新计算分片的</p>
+<p>修改方法，更新时将分片列值为空在使用<code>mapper.updateByPrimaryKeySelective(...)</code></p>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Mycat/" rel="tag"># Mycat</a>
+          
+            <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag"># 分布式</a>
+          
+            <a href="/tags/%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" rel="tag"># 分库分表</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/19/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" rel="next" title="分步式-分库分表">
+                <i class="fa fa-chevron-left"></i> 分步式-分库分表
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/19/MyCat-MyCat%E9%85%8D%E7%BD%AE/" rel="prev" title="MyCat-MyCat配置">
+                MyCat-MyCat配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">43</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#server-xml"><span class="nav-number">1.</span> <span class="nav-text">server.xml</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#schema"><span class="nav-number">1.1.</span> <span class="nav-text">schema</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#schema-xml"><span class="nav-number">2.</span> <span class="nav-text">schema.xml</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#dataHost"><span class="nav-number">2.1.</span> <span class="nav-text">dataHost</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#balance%E4%BF%AE%E6%94%B9"><span class="nav-number">2.1.1.</span> <span class="nav-text">balance修改</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dataNode"><span class="nav-number">2.2.</span> <span class="nav-text">dataNode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#schema-1"><span class="nav-number">2.3.</span> <span class="nav-text">schema</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#rule%E5%B1%9E%E6%80%A7"><span class="nav-number">2.3.1.</span> <span class="nav-text">rule属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E7%89%87%E8%A7%84%E5%88%99"><span class="nav-number">2.3.2.</span> <span class="nav-text">分片规则</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E8%A1%A8"><span class="nav-number">3.</span> <span class="nav-text">全局表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AD%90%E8%A1%A8"><span class="nav-number">4.</span> <span class="nav-text">子表</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mycatk%E6%8E%A7%E5%88%B6%E5%8F%B0"><span class="nav-number">5.</span> <span class="nav-text">mycatk控制台</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mycat%E9%AB%98%E5%8F%AF%E7%94%A8"><span class="nav-number">6.</span> <span class="nav-text">mycat高可用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">6.1.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEHaproxy"><span class="nav-number">6.1.1.</span> <span class="nav-text">配置Haproxy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8Haproxy"><span class="nav-number">6.1.2.</span> <span class="nav-text">启动Haproxy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Navicat%E8%BF%9E%E6%8E%A5Haproxy"><span class="nav-number">6.1.3.</span> <span class="nav-text">Navicat连接Haproxy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E5%85%B6%E4%B8%AD%E4%B8%80%E4%B8%AAMyCat%E5%AE%95%E6%9C%BA"><span class="nav-number">6.1.4.</span> <span class="nav-text">测试其中一个MyCat宕机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#keepalived%E9%81%BF%E5%85%8DHaproxy%E5%8D%95%E7%82%B9%E6%95%85%E9%9A%9C"><span class="nav-number">6.1.5.</span> <span class="nav-text">keepalived避免Haproxy单点故障</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MyCat%E4%BD%BF%E7%94%A8%E8%BF%87%E7%A8%8B%E5%87%BA%E7%8E%B0%E7%9A%84%E9%94%99%E8%AF%AF"><span class="nav-number">7.</span> <span class="nav-text">MyCat使用过程出现的错误</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
