@@ -88,7 +88,7 @@
 <meta property="og:locale">
 <meta property="og:image" content="https://climg.mukewang.com/5df7334308055a7a14420130.jpg">
 <meta property="article:published_time" content="2021-03-28T08:11:08.000Z">
-<meta property="article:modified_time" content="2021-04-19T08:32:50.272Z">
+<meta property="article:modified_time" content="2021-04-24T16:29:58.225Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="软件安装">
 <meta property="article:tag" content="elastic">
@@ -407,16 +407,19 @@
 <p>忘截图了，找了慕课网上的图片</p>
 </blockquote>
 <p><img src="https://climg.mukewang.com/5df7334308055a7a14420130.jpg" alt="图片描述"></p>
-<ul>
-<li><p>切换root</p>
-</li>
-<li><p>```shell<br>vim /etc/security/limits.conf</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">添加</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;shell</span><br><span class="line">* soft nofile 65536</span><br><span class="line">* hard nofile 131072</span><br><span class="line">* soft nproc 2048</span><br><span class="line">* hard nproc 4096</span><br></pre></td></tr></table></figure></li>
-<li><p>```shell<br>vim /etc/sysctl.conf</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">添加</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;shell</span><br><span class="line">vm.max_map_count&#x3D;262145</span><br></pre></td></tr></table></figure>
+<p>切换root</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/security/limits.conf</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl -p</span><br></pre></td></tr></table></figure></li>
-</ul>
+<p>添加</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">* soft nofile 65536</span><br><span class="line">* hard nofile 131072</span><br><span class="line">* soft nproc 2048</span><br><span class="line">* hard nproc 4096</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/sysctl.conf</span><br></pre></td></tr></table></figure>
+
+<p>添加</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vm.max_map_count=262145</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
+
 <h1 id="后台启动Elasticsearch"><a href="#后台启动Elasticsearch" class="headerlink" title="后台启动Elasticsearch"></a>后台启动Elasticsearch</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./elasticsearch -d</span><br></pre></td></tr></table></figure>
 
 <h2 id="查看是否启动成功"><a href="#查看是否启动成功" class="headerlink" title="查看是否启动成功"></a>查看是否启动成功</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps</span><br></pre></td></tr></table></figure>
