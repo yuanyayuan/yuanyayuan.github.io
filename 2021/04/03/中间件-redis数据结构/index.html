@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="redis,面试,缓存," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Redis 的数据类型？String结构键(key)——值(value) (字符串格式) 动态字符串（Redis字符串的实现方式） 1234567891011&#x2F;*   * 保存字符串对象的结构   *&#x2F;  struct sdshdr &amp;#123;      &#x2F;&#x2F; buf 中已占用空间的长度      int len;    &#x2F;&#x2F; buf 中剩余可用空间的长度      int free;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="中间件-redis数据结构">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="Redis 的数据类型？String结构键(key)——值(value) (字符串格式) 动态字符串（Redis字符串的实现方式） 1234567891011&#x2F;*   * 保存字符串对象的结构   *&#x2F;  struct sdshdr &amp;#123;      &#x2F;&#x2F; buf 中已占用空间的长度      int len;    &#x2F;&#x2F; buf 中剩余可用空间的长度      int free;">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E5%8A%A8%E6%80%81%E5%AD%97%E7%AC%A6%E4%B8%B2.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/QQ%E9%9F%B3%E4%B9%90%E6%8E%92%E8%A1%8C%E6%A6%9C.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E8%B4%AD%E7%89%A9%E8%BD%A6.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%BC%98%E6%83%A0%E5%8D%B7.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E6%89%93%E6%93%82.png">
+<meta property="article:published_time" content="2021-04-02T17:18:46.000Z">
+<meta property="article:modified_time" content="2021-04-23T15:17:25.372Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="redis">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="缓存">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E5%8A%A8%E6%80%81%E5%AD%97%E7%AC%A6%E4%B8%B2.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/03/中间件-redis数据结构/"/>
+
+
+
+
+
+  <title>中间件-redis数据结构 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">中间件-redis数据结构</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-03T01:18:46+08:00">
+                2021-04-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis数据结构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Redis-的数据类型？"><a href="#Redis-的数据类型？" class="headerlink" title="Redis 的数据类型？"></a>Redis 的数据类型？</h1><h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2><h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p>键(key)——值(value) (字符串格式)</p>
+<h4 id="动态字符串（Redis字符串的实现方式）"><a href="#动态字符串（Redis字符串的实现方式）" class="headerlink" title="动态字符串（Redis字符串的实现方式）"></a>动态字符串（Redis字符串的实现方式）</h4><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E5%8A%A8%E6%80%81%E5%AD%97%E7%AC%A6%E4%B8%B2.png"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*  </span></span><br><span class="line"><span class="comment"> * 保存字符串对象的结构  </span></span><br><span class="line"><span class="comment"> */</span>  </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sdshdr</span> &#123;</span>  </span><br><span class="line">    <span class="comment">// buf 中已占用空间的长度  </span></span><br><span class="line">    <span class="keyword">int</span> len;</span><br><span class="line">    <span class="comment">// buf 中剩余可用空间的长度  </span></span><br><span class="line">    <span class="keyword">int</span> <span class="built_in">free</span>;  </span><br><span class="line">    <span class="comment">// 数据空间  </span></span><br><span class="line">    <span class="keyword">char</span> buf[];  </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>len 变量，用于记录buf 中已经使用的空间长度。</li>
+<li>free 变量，用于记录buf 中还空余的空间，初次分配空间，一般没有空余，在对字符串修改的时候，会有剩余空间出现，这样做是为了杜绝C语言中缓冲区溢出的可能性，当我们需要对一个SDS进行修改的时候，Redis 会在执行拼接操作之前，预先检查给定SDS空间是否足够，如果不够，会先拓展SDS的空间，然后再执行拼接操作。</li>
+<li>buf 字符数组，用于记录我们的字符串（记录Redis）。</li>
+</ol>
+<h3 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h3><p>字符串拥有一些操作命令，如：</p>
+<ul>
+<li>get 获取值</li>
+<li>set key value设置值</li>
+<li>del 删除</li>
+<li>incr key 加一</li>
+<li>decr key 减一</li>
+</ul>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><ol>
+<li><p>计数器 string类型的<code>incr</code>和<code>decr</code>命令的作用是将key中储存的数字值<strong>加一/减一</strong>，这两个操作具有原子性，总能安全地进行加减操作</p>
+<p> 因此可以用string类型进行计数，如微博的评论数、点赞数、分享数，抖音作品的收藏数，京东商品的销售量、评价数等。</p>
+</li>
+<li><p>分布式锁 String类型的<code>setnx</code>的作用是<strong>当key不存在时，设值并返回1，当key已经存在时，不设值并返回0</strong>，<strong>判断key是否存在</strong>和<strong>设值</strong>两个操作是原子性地执行的，因此可以用string类型作为分布式锁，返回1表示获得锁，返回0表示没有获得锁。</p>
+<p> 例如，为了保证定时任务的高可用，往往会同时部署多个具备相同定时任务的服务，但是业务上只希望其中的某一台服务执行定时任务，当定时任务的时间点触发时，多个服务同时竞争一个分布式锁，获取到锁的执行定时任务，没获取到的放弃执行定时任务。</p>
+<p> 定时任务执行完时通过del命令删除key即释放锁，如果担心del命令操作失败而导致锁一直未释放，可以通过expire命令给锁设置一个合理的自动过期时间，确保即使del命令失败，锁也能被释放。不过expire命令同样存在失败的可能性，如果你用的是Java语言，建议使用JedisCommands接口提供的<code>String set(String key, String value, String nxxx, String expx, long time)</code>方法，这个方法可以将setnx和expire原子性地执行，具体使用方式如下（相信其它语言的Redis客户端也应当提供了类似的方法）。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jedisCommands.set(<span class="string">&quot;IAmAKey&quot;</span>, <span class="string">&quot;1&quot;</span>, <span class="string">&quot;NX&quot;</span>, <span class="string">&quot;EX&quot;</span>, <span class="number">60</span>);<span class="comment">//如果&quot;IAmAKey&quot;不存	 在，则将其设值为1，同时设置60秒的自动过期时间</span></span><br></pre></td></tr></table></figure></li>
+<li><p>限流</p>
+</li>
+<li><p>分布式Session</p>
+</li>
+<li><p>存储对象 利用JSON强大的兼容性、可读性和易用性，将对象转换为JSON字符串，再存储在string类型中，是个不错的选择，如用户信息、商品信息等。</p>
+</li>
+</ol>
+<h2 id="列表-List"><a href="#列表-List" class="headerlink" title="列表(List)"></a>列表(List)</h2><h3 id="结构-1"><a href="#结构-1" class="headerlink" title="结构"></a>结构</h3><p>一个列表结构可以有序地存储多个字符串</p>
+<h4 id="链表数据结构，List-底层结构"><a href="#链表数据结构，List-底层结构" class="headerlink" title="链表数据结构，List 底层结构"></a>链表数据结构，List 底层结构</h4><p>链表还是常规的普通双端链表，可以支持反向查找和遍历，更方便操作，通过增删节点来灵活地调整链表的长度，双端链表在Redis内部也是被多次使用：</p>
+<ol>
+<li>事务模块使用双端链表依序保存输入的命令。</li>
+<li>服务器模块使用双端链表来保存多个客户端。</li>
+<li>订阅/发送模块使用双端链表来保存订阅模式的多个客户端。</li>
+<li>事件模块使用双端链表来保存时间事件（time event）。</li>
+</ol>
+<h3 id="命令-1"><a href="#命令-1" class="headerlink" title="命令"></a>命令</h3><ul>
+<li>lpush list a b c d (从左添加元素)</li>
+<li>rpush list 1 2 3 4 (从右边添加元素)</li>
+<li>lrange list 0 -1 (从0 到 -1 元素查看：也就表示查看所有)</li>
+<li>lpop list （从左边取，删除）</li>
+<li>rpop list (从右边取，删除)</li>
+</ul>
+<h3 id="使用场景-1"><a href="#使用场景-1" class="headerlink" title="使用场景"></a>使用场景</h3><ol>
+<li><p>消息队列 list类型的lpop和rpush（或者反过来，lpush和rpop）能实现队列的功能，故而可以用Redis的list类型实现简单的点对点的消息队列，但有更好的rabbitmq和kafka</p>
+</li>
+<li><p>排行榜 list类型的lrange命令可以分页查看队列中的数据。可将每隔一段时间计算一次的排行榜存储在list类型中，如京东每日的手机销量排行、学校每次月考学生的成绩排名、斗鱼年终盛典主播排名等。</p>
+</li>
+</ol>
+<blockquote>
+<p>排行榜，每日计算一次，存储在list类型中，接口访问时，通过page和size分页获取 </p>
+</blockquote>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/QQ%E9%9F%B3%E4%B9%90%E6%8E%92%E8%A1%8C%E6%A6%9C.png" style="zoom:50%;" />
+
+<blockquote>
+<p>但是，并不是所有的排行榜都能用list类型实现，只有定时计算的排行榜才适合使用list类型存储，与定时计算的排行榜相对应的是实时计算的排行榜，list类型不能支持实时计算的排行榜，实时计算的排行榜使用有序集合sorted set实现。</p>
+</blockquote>
+<ol start="3">
+<li>最新列表 list类型的lpush命令和lrange命令能实现最新列表的功能，每次通过lpush命令往列表里插入新的元素，然后通过lrange命令读取最新的元素列表，如朋友圈的点赞列表、评论列表。</li>
+</ol>
+<blockquote>
+<p>但是，并不是所有的最新列表都能用list类型实现， 因为对于频繁更新的列表，list类型的分页可能导致列表元素重复或漏掉 ，举个例子，当前列表里由表头到表尾依次有（E，D，C，B，A）五个元素， 每页获取3个元素，用户第一次获取到（E，D，C）三个元素，然后表头新增了一个元素F， 列表变成了（F，E，D，C，B，A），此时用户取第二页拿到（C，B，A）， 元素C重复了。</p>
+</blockquote>
+<h4 id="list和sorted-set"><a href="#list和sorted-set" class="headerlink" title="list和sorted set"></a>list和sorted set</h4><ul>
+<li><p>只有不需要分页（比如每次都只取列表的前5个元素）或者更新频率低（比如每天凌晨更新一次）的列表才适合用list类型实现。</p>
+</li>
+<li><p>对于需要分页并且会频繁更新的列表，需用使用有序集合sorted set类型实现。</p>
+</li>
+<li><p>需要通过时间范围查找的最新列表，list类型也实现不了，也需要通过有序集合sorted set类型实现，如以成交时间范围作为条件来查询的订单列表。</p>
+</li>
+</ul>
+<h5 id="如何选用"><a href="#如何选用" class="headerlink" title="如何选用"></a>如何选用</h5><blockquote>
+<p>对于排行榜和最新列表两种应用场景，那为什么还要使用list类型去实现排行榜或最新列表呢，直接用sorted set类型不是更好吗？</p>
+</blockquote>
+<p>原因是sorted <strong>set类型占用的内存容量是list类型的数倍之多</strong>，对于<strong>列表数量不多</strong>的情况，可以用sorted set类型来实现，比如上文中举例的打擂金曲排行榜，每天全国只有一份，两种数据类型的内存容量差距可以忽略不计，但是如果要实现某首歌曲的翻唱作品地区排行榜，数百万的歌曲，300多个地区，会产生数量庞大的榜单，或者数量更加庞大的朋友圈点赞列表，就需要慎重地考虑容量的问题了</p>
+<h2 id="hash类型"><a href="#hash类型" class="headerlink" title="hash类型"></a>hash类型</h2><h3 id="结构-2"><a href="#结构-2" class="headerlink" title="结构"></a>结构</h3><p>hash类型是一个string类型的field和value的映射表</p>
+<h3 id="命令-2"><a href="#命令-2" class="headerlink" title="命令"></a>命令</h3><ul>
+<li>hdel (HDEL key field1 [field2]) 删除一个或多个哈希表字段</li>
+<li>hlen</li>
+<li>hgetall</li>
+<li><a target="_blank" rel="noopener" href="https://www.runoob.com/redis/redis-hashes.html">更多方法</a></li>
+</ul>
+<h3 id="使用场景-2"><a href="#使用场景-2" class="headerlink" title="使用场景"></a>使用场景</h3><h4 id="购物车"><a href="#购物车" class="headerlink" title="购物车"></a>购物车</h4><p>以用户id为key，商品id为field，商品数量为value，恰好构成了购物车的3个要素，如下图所示。</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E8%B4%AD%E7%89%A9%E8%BD%A6.png" style="zoom:50%;" />
+
+<h4 id="存储对象"><a href="#存储对象" class="headerlink" title="存储对象"></a>存储对象</h4><p>存储对象 hash类型的(key, field, value)的结构与对象的(对象id, 属性, 值)的结构相似，也可以用来存储对象。</p>
+<h5 id="存储对象时，到底用string-json还是用hash"><a href="#存储对象时，到底用string-json还是用hash" class="headerlink" title="存储对象时，到底用string + json还是用hash"></a>存储对象时，到底用string + json还是用hash</h5><p>两种存储方式的对比如下表所示。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>string + json</th>
+<th>hash</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>效率</td>
+<td>很高</td>
+<td>高</td>
+</tr>
+<tr>
+<td>容量</td>
+<td>低</td>
+<td>低</td>
+</tr>
+<tr>
+<td>灵活性</td>
+<td>低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>序列化</td>
+<td>简单</td>
+<td>复杂</td>
+</tr>
+</tbody></table>
+<ul>
+<li>当对象的某个属性需要频繁修改时，不适合用string+json，因为它不够灵活，每次修改都需要重新将整个对象序列化并赋值</li>
+<li>如果使用hash类型，则可以针对某个属性单独修改，没有序列化，也不需要修改整个对象。比如，商品的价格、销量、关注数、评价数等可能经常发生变化的属性，就适合存储在hash类型里。</li>
+</ul>
+<p>当然，不常变化的属性存储在hash类型里也没有问题，比如商品名称、商品描述、上市日期等。但是，当对象的某个属性<strong>不是基本类型或字符串时</strong>，使用hash类型就必须手动进行复杂序列化</p>
+<p>比如，商品的标签是一个标签对象的列表，商品可领取的优惠券是一个优惠券对象的列表（如下图所示）等，即使以coupons（优惠券）作为field，value想存储优惠券对象列表也还是要使用json来序列化，这样的话序列化工作就太繁琐了，不如直接用string + json的方式存储商品信息来的简单。 </p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%BC%98%E6%83%A0%E5%8D%B7.png" style="zoom:33%;" />
+
+<p><strong>综上，一般对象用string+json存储，对象中某些频繁变化的基本类型或字符串的属性抽出来用hash存储。</strong></p>
+<h2 id="set"><a href="#set" class="headerlink" title="set"></a>set</h2><h3 id="结构-3"><a href="#结构-3" class="headerlink" title="结构"></a>结构</h3><p>set类型是string类型的集合，其特点是集合元素无序且不重复</p>
+<h3 id="命令-3"><a href="#命令-3" class="headerlink" title="命令"></a>命令</h3><ul>
+<li>SINTER KEY KEY1..KEYN 回给定所有给定集合的交集</li>
+<li>SISMEMBER KEY VALUE 判断成员元素是否是集合的成员</li>
+<li>SCARD KEY_NAME 返回集合中元素的数量</li>
+<li>SMOVE SOURCE DESTINATION MEMBER 命令将指定成员 member 元素从 source 集合移动到 destination 集合。</li>
+<li>SRANDMEMBER KEY [count] 用于返回集合中的一个随机元素。</li>
+</ul>
+<h3 id="使用场景-3"><a href="#使用场景-3" class="headerlink" title="使用场景"></a>使用场景</h3><ol>
+<li><p>好友/关注/粉丝/感兴趣的人集合</p>
+<p>set类型唯一的特点使得其适合用于存储好友/关注/粉丝/感兴趣的人集合，集合中的元素数量可能很多，每次全部取出来成本不小，set类型提供了一些很实用的命令用于直接操作这些集合</p>
+<p>如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. sinter命令可以获得A和B两个用户的共同好友</span><br><span class="line">2. sismember命令可以判断A是否是B的好友</span><br><span class="line">3. scard命令可以获取好友数量</span><br><span class="line">4. 关注时，smove命令可以将B从A的粉丝集合转移到A的好友集合</span><br></pre></td></tr></table></figure>
+<p><strong>需要注意</strong>:</p>
+<p>如果你用的是<strong>Redis Cluster集群</strong>，对于<strong>sinter、smove这种操作     多个key的命令</strong>，要求这两个key必须存储在<strong>同一个slot（槽位）中</strong>，否则会报出<code>(error) CROSSSLOT Keys in request don&#39;t hash to the same slot </code>错误。</p>
+<p>Redis Cluster一共有<strong>16384</strong>个slot，每个key都是通过哈希算法CRC16(key)获取数值哈希，再模16384来定位slot的。要使得两个key处于同一slot，除了两个key一模一样，还有没有别的方法呢？</p>
+<p>Redis提供了一种<strong>Hash Tag</strong>的功能，在key中使用<code>&#123;&#125;</code>括起key中的一部分，在进行<code>CRC16(key) mod 16384</code>的过程中，只会对<code>&#123;&#125;</code>内的字符串计算，例如<strong>friend_set:{123456}<strong>和</strong>fans_set:{123456}<strong>，分别表示</strong>用户123456</strong>的<strong>好友集合</strong>和<strong>粉丝集合</strong>，在定位slot时，只对<code>&#123;&#125;</code>内的<code>123456</code>进行计算，所以这两个集合肯定是在同一个slot内的，当用户123456关注某个粉丝时，就可以通过smove命令将这个粉丝从用户123456的粉丝集合移动到好友集合。</p>
+<p>相比于通过srem命令先将这个粉丝从粉丝集合中删除，再通过sadd命令将这个粉丝加到好友集合，smove命令的优势是它是<strong>原子性</strong>的，不会出现这个粉丝从粉丝集合中被删除，却没有加到好友集合的情况。</p>
+<p>然而，对于通过sinter获取共同好友而言，Hash Tag则无能为力，例如，要用sinter去获取<strong>用户123456</strong>和<strong>用户456789</strong>两个用户的共同好友，除非我们将key定义为**{friend_set}:123456<strong>和</strong>{friend_set}:456789**，否则不能保证两个key会处于同一个slot，但是如果真这样做的话，所有用户的好友集合都会堆积在同一个slot中，数据分布会严重不均匀，不可取，</p>
+<p><strong>所以，在实战中使用Redis Cluster时，sinter这个命令其实是不适合作用于两个不同用户对应的集合的（同理其它操作多个key的命令）。</strong></p>
+</li>
+<li><p>随机展示 通常，app首页的展示区域有限，但是又不能总是展示固定的内容，一种做法是先确定一批需要展示的内容，再从中随机获取。如下图所示，酷狗音乐K歌擂台赛当日的打擂歌曲共29首，首页随机展示5首；昨日打擂金曲共200首，首页随机展示30首。</p>
+</li>
+</ol>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E6%89%93%E6%93%82.png" style="zoom:33%;" />
+
+<p>set类型适合存放所有需要展示的内容，而<code>srandmember</code>命令则可以从中随机获取几个。</p>
+<h2 id="sorted-set"><a href="#sorted-set" class="headerlink" title="sorted set"></a>sorted set</h2><h3 id="结构-4"><a href="#结构-4" class="headerlink" title="结构"></a>结构</h3><p>Redis 有序集合和集合一样也是string类型元素的集合,且不允许重复的成员</p>
+<p>不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。</p>
+<p><strong>有序集合的成员是唯一的</strong>,但分数(score)却可以重复。</p>
+<p>集合是通过哈希表实现的，所以添加，删除，查找的复杂度都是O(1)。 集合中最大的成员数为 232 - 1(4294967295, 每个集合可存储40多亿个成员)。</p>
+<h4 id="跳跃表，sorted-set底层结构"><a href="#跳跃表，sorted-set底层结构" class="headerlink" title="跳跃表，sorted set底层结构"></a>跳跃表，sorted set底层结构</h4><p>Redis sorted set的内部使用HashMap和跳跃表(SkipList)来保证数据的存储和有序，（如果你还不了解红黑树，需要先额外补补功课），HashMap里放的是成员到score的映射，而跳跃表里存放的是所有的成员，排序依据是HashMap里存的score，使用跳跃表的结构可以获得比较高的查找效率，并且在实现上比较简单。</p>
+<p>那为什么Redis的作者使用 SkipList 结构而不是红黑树？</p>
+<ul>
+<li>红黑树：红黑树的查找效率很高，但是在进行重新平衡时，会涉及到大量节点的变化，因此实现和操作起来都比较复杂。</li>
+<li>跳跃表：通过简单的多层索引结构，实现简单，且能达到近似于红黑树的查找效率，插入节点（多层插入）不需要像红黑树那样有额外操作。而且跳跃表还能实现范围查找及输出，而红黑树只支持单个元素查找，对于范围查找效率低。</li>
+</ul>
+<h3 id="命令-4"><a href="#命令-4" class="headerlink" title="命令"></a>命令</h3><ol>
+<li>Zadd</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZADD KEY_NAME SCORE1 VALUE1.. SCOREN VALUEN</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>Zincrby 对有序集合中指定成员的分数加上增量 increment</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZINCRBY key increment member</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>Zrange 返回有序集中，指定区间内的成员</li>
+</ol>
+<p>其中成员的位置按分数值递增(从小到大)来排序。 具有相同分数值的成员按字典序(lexicographical order )来排列。</p>
+<p><strong>下标参数</strong> start 和 stop 都以 0 为底，也就是说，以 0 表示有序集第一个成员，以 1 表示有序集第二个成员，以此类推。</p>
+<p>你也可以使用负数下标，以 -1 表示最后一个成员， -2 表示倒数第二个成员，以此类推。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZRANGE key start stop [WITHSCORES]</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>Zrevrange 命令返回有序集中，指定区间内的成员。</li>
+</ol>
+<p><strong>下标参数</strong> start 和 stop 其中成员的位置按分数值递减(从大到小)来排列。 具有相同分数值的成员按字典序的逆序(reverse lexicographical order)排列。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZREVRANGE key start stop [WITHSCORES]</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>Zrem 命令用于移除有序集中的一个或多个成员，不存在的成员将被忽略。 当 key 存在但不是有序集类型时，返回一个错误。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZREM key member [member ...]</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>Zcard 命令用于计算集合中元素的数量。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZCARD KEY_NAME</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li></li>
+</ol>
+<p>Zrangebyscore 返回有序集合中指定分数区间的成员列表。有序集成员按分数值递增(从小到大)次序排列。</p>
+<p>具有相同分数值的成员按字典序来排列(该属性是有序集提供的，不需要额外的计算)。</p>
+<p>默认情况下，<strong>区间的取值使用闭区间 (小于等于或大于等于)，你也可以通过给参数前增加 ( 符号来使用可选的开区间 (小于或大于)。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>ZRANGEBYSCORE zset (1 5 == 1 &lt; score &lt;= 5</li>
+<li>ZRANGEBYSCORE zset (5 (10 == 5 &lt; score &lt; 10</li>
+<li>ZRANGEBYSCORE salary -inf +inf # 显示整个有序集</li>
+<li>ZRANGEBYSCORE salary -inf +inf WITHSCORES #显示整个有序集及成员的 score 值</li>
+<li>ZRANGEBYSCORE salary -inf 5000 WITHSCORES # 显示工资 &lt;=5000 的所有成员</li>
+<li>ZRANGEBYSCORE salary (5000 400000 # 显示工资大于 5000 小于等于 400000 的成员</li>
+</ul>
+<ol>
+<li>Zrevrangebyscore 返回有序集中指定分数区间内的所有的成员。有序集成员按分数值递减(从大到小)的次序排列。 具有相同分数值的成员按字典序的逆序(reverse lexicographical order )排列。</li>
+<li>Zcount 命令用于计算有序集合中指定分数区间的成员数量。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZCOUNT key min max</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用场景-4"><a href="#使用场景-4" class="headerlink" title="使用场景"></a>使用场景</h3><ol>
+<li>游戏排名</li>
+<li>微博热点话题</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/redis/" rel="tag"># redis</a>
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/%E7%BC%93%E5%AD%98/" rel="tag"># 缓存</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/03/31/Java-hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="next" title="Java-hashmap源码学习">
+                <i class="fa fa-chevron-left"></i> Java-hashmap源码学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/" rel="prev" title="中间件-redis线程模型">
+                中间件-redis线程模型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">Redis 的数据类型？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#String"><span class="nav-number">1.1.</span> <span class="nav-text">String</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.1.</span> <span class="nav-text">结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%AD%97%E7%AC%A6%E4%B8%B2%EF%BC%88Redis%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F%EF%BC%89"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">动态字符串（Redis字符串的实现方式）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4"><span class="nav-number">1.1.2.</span> <span class="nav-text">命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.1.3.</span> <span class="nav-text">使用场景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%97%E8%A1%A8-List"><span class="nav-number">1.2.</span> <span class="nav-text">列表(List)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%93%BE%E8%A1%A8%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%EF%BC%8CList-%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">链表数据结构，List 底层结构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4-1"><span class="nav-number">1.2.2.</span> <span class="nav-text">命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF-1"><span class="nav-number">1.2.3.</span> <span class="nav-text">使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#list%E5%92%8Csorted-set"><span class="nav-number">1.2.3.1.</span> <span class="nav-text">list和sorted set</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E7%94%A8"><span class="nav-number">1.2.3.1.1.</span> <span class="nav-text">如何选用</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hash%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.3.</span> <span class="nav-text">hash类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84-2"><span class="nav-number">1.3.1.</span> <span class="nav-text">结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4-2"><span class="nav-number">1.3.2.</span> <span class="nav-text">命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF-2"><span class="nav-number">1.3.3.</span> <span class="nav-text">使用场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B4%AD%E7%89%A9%E8%BD%A6"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">购物车</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">存储对象</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%AF%B9%E8%B1%A1%E6%97%B6%EF%BC%8C%E5%88%B0%E5%BA%95%E7%94%A8string-json%E8%BF%98%E6%98%AF%E7%94%A8hash"><span class="nav-number">1.3.3.2.1.</span> <span class="nav-text">存储对象时，到底用string + json还是用hash</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#set"><span class="nav-number">1.4.</span> <span class="nav-text">set</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84-3"><span class="nav-number">1.4.1.</span> <span class="nav-text">结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4-3"><span class="nav-number">1.4.2.</span> <span class="nav-text">命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF-3"><span class="nav-number">1.4.3.</span> <span class="nav-text">使用场景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sorted-set"><span class="nav-number">1.5.</span> <span class="nav-text">sorted set</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84-4"><span class="nav-number">1.5.1.</span> <span class="nav-text">结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B7%B3%E8%B7%83%E8%A1%A8%EF%BC%8Csorted-set%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">跳跃表，sorted set底层结构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4-4"><span class="nav-number">1.5.2.</span> <span class="nav-text">命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF-4"><span class="nav-number">1.5.3.</span> <span class="nav-text">使用场景</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

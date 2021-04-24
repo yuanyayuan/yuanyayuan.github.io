@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试,SpringBoot," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="创建自定义注解1234567891011121314151617181920&#x2F;*** @Description:    java类作用描述* @Author:         Nexus* @CreateDate:     2021&#x2F;4&#x2F;24 2:06* @UpdateUser:     Nexus* @UpdateDate:     2021&#x2F;4&#x2F;24 2:06* @UpdateRemark:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring-SpringBoot自定义注解">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/23/Spring-SpringBoot%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="创建自定义注解1234567891011121314151617181920&#x2F;*** @Description:    java类作用描述* @Author:         Nexus* @CreateDate:     2021&#x2F;4&#x2F;24 2:06* @UpdateUser:     Nexus* @UpdateDate:     2021&#x2F;4&#x2F;24 2:06* @UpdateRemark:">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-04-23T15:24:19.000Z">
+<meta property="article:modified_time" content="2021-04-24T15:13:29.372Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="SpringBoot">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/23/Spring-SpringBoot自定义注解/"/>
+
+
+
+
+
+  <title>Spring-SpringBoot自定义注解 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/23/Spring-SpringBoot%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring-SpringBoot自定义注解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-23T23:24:19+08:00">
+                2021-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringBoot%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - SpringBoot自定义注解</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="创建自定义注解"><a href="#创建自定义注解" class="headerlink" title="创建自定义注解"></a>创建自定义注解</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* <span class="doctag">@Description</span>:    java类作用描述</span></span><br><span class="line"><span class="comment">* <span class="doctag">@Author</span>:         Nexus</span></span><br><span class="line"><span class="comment">* <span class="doctag">@CreateDate</span>:     2021/4/24 2:06</span></span><br><span class="line"><span class="comment">* <span class="doctag">@UpdateUser</span>:     Nexus</span></span><br><span class="line"><span class="comment">* <span class="doctag">@UpdateDate</span>:     2021/4/24 2:06</span></span><br><span class="line"><span class="comment">* <span class="doctag">@UpdateRemark</span>:   修改内容</span></span><br><span class="line"><span class="comment">* <span class="doctag">@Version</span>:        1.0</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">@Target(&#123;ElementType.METHOD&#125;)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> demoanno &#123;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">count</span><span class="params">()</span> <span class="keyword">default</span> 0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">flag</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">true</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">str</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Target-注解的作用目标"><a href="#Target-注解的作用目标" class="headerlink" title="@Target:注解的作用目标"></a><code>@Target</code>:注解的作用目标</h2><ul>
+<li><code>@Target(ElementType.TYPE)</code>——接口、类、枚举、注解</li>
+<li><code>@Target(ElementType.FIELD)</code>——字段、枚举的常量</li>
+<li><code>@Target(ElementType.PARAMETER)</code>——方法参数</li>
+<li><code>@Target(ElementType.CONSTRUCTOR)</code> ——构造函数</li>
+<li><code>@Target(ElementType.LOCAL_VARIABLE)</code>——局部变量</li>
+<li><code>@Target(ElementType.ANNOTATION_TYPE)</code>——注解</li>
+<li><code>@Target(ElementType.PACKAGE)</code>——包</li>
+</ul>
+<h2 id="Retention：注解的保留位置"><a href="#Retention：注解的保留位置" class="headerlink" title="@Retention：注解的保留位置"></a><code>@Retention</code>：注解的保留位置</h2><p><code>RetentionPolicy.SOURCE</code>:这种类型的Annotations只在源代码级别保留,编译时就会被忽略,在class字节码文件中不包含。<br><code>RetentionPolicy.CLASS</code>:这种类型的Annotations编译时被保留,默认的保留策略,在class文件中存在,但JVM将会忽略,运行时无法获得。<br><code>RetentionPolicy.RUNTIME</code>:这种类型的Annotations将被JVM保留,所以他们能在运行时被JVM或其他使用反射机制的代码所读取和使用。</p>
+<h2 id="Document-Inherited"><a href="#Document-Inherited" class="headerlink" title="@Document,@Inherited"></a><code>@Document</code>,<code>@Inherited</code></h2><p>@Document：说明该注解将被包含在javadoc中<br>@Inherited：说明子类可以继承父类中的该注解</p>
+<h1 id="创建切面"><a href="#创建切面" class="headerlink" title="创建切面"></a>创建切面</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">joinPoint.getSignature().getName(); <span class="comment">// 获取目标方法名</span></span><br><span class="line">joinPoint.getSignature().getDeclaringType().getSimpleName(); <span class="comment">// 获取目标方法所属类的简单类名</span></span><br><span class="line">joinPoint.getSignature().getDeclaringTypeName(); <span class="comment">// 获取目标方法所属类的类名</span></span><br><span class="line">joinPoint.getSignature().getModifiers(); <span class="comment">// 获取目标方法声明类型(public、private、protected)</span></span><br><span class="line"></span><br><span class="line">Object[] args = joinPoint.getArgs(); <span class="comment">// 获取传入目标方法的参数，返回一个数组</span></span><br><span class="line">joinPoint.getTarget(); <span class="comment">// 获取被代理的对象</span></span><br><span class="line">joinPoint.getThis(); <span class="comment">// 获取代理对象自己</span></span><br><span class="line">	</span><br><span class="line"><span class="comment">// 获取目标方法上的注解</span></span><br><span class="line">MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();</span><br><span class="line">Method method = methodSignature.getMethod();</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>简单例子</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoAspect</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 将自己自定义注解作为切点的根据</span></span><br><span class="line"><span class="comment">     **/</span></span><br><span class="line">    <span class="meta">@Pointcut(&quot;@annotation(org.example.annotation.DemoAnno)&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cut</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;into cut()&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 在目标方法的执行之前执行，即在连接点之前进行执行。 </span></span><br><span class="line"><span class="comment">     **/</span></span><br><span class="line">    <span class="meta">@Before(&quot;cut()&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before</span><span class="params">(JoinPoint joinPoint)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;=================before start=====================&quot;</span>);</span><br><span class="line">        MethodSignature signature = (MethodSignature) joinPoint.getSignature();</span><br><span class="line">        Object[] args = joinPoint.getArgs();</span><br><span class="line">        Object target = joinPoint.getTarget();</span><br><span class="line">        Method method = signature.getMethod();</span><br><span class="line">        String name = signature.getName();</span><br><span class="line">        String[] parameterNames = signature.getParameterNames();</span><br><span class="line"></span><br><span class="line">        Class[] parameterTypes = signature.getParameterTypes();</span><br><span class="line">        Class returnType = signature.getReturnType();</span><br><span class="line"></span><br><span class="line">        DemoAnno annotation = method.getAnnotation(DemoAnno.class);</span><br><span class="line">        <span class="keyword">int</span> count = annotation.count();</span><br><span class="line">        <span class="keyword">boolean</span> flag = annotation.flag();</span><br><span class="line">        log.info(<span class="string">&quot;=================before end=====================&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 后置方法在连接点方法完成之后执行，无论连接点方法执行成功还是出现异常，都将执行后置方法</span></span><br><span class="line"><span class="comment">     **/</span></span><br><span class="line">    <span class="meta">@After(&quot;cut()&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">after</span><span class="params">(JoinPoint joinPoint)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;=================after start=====================&quot;</span>);</span><br><span class="line">        log.info(<span class="string">&quot;=================after end=====================&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 异常通知方法只在连接点方法出现异常后才会执行，否则不执行</span></span><br><span class="line"><span class="comment">     **/</span></span><br><span class="line">    <span class="meta">@AfterThrowing(value = &quot;cut()&quot;,throwing = &quot;e&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterThrowing</span><span class="params">(JoinPoint joinPoint,Exception e)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;=================after start=====================&quot;</span>);</span><br><span class="line">        log.info(<span class="string">&quot;=================after end=====================&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 环绕通知方法可以包含上面四种通知方法，环绕通知的功能最全面。</span></span><br><span class="line"><span class="comment">     * 环绕通知需要携带 ProceedingJoinPoint 类型的参数，且环绕通知必须有返回值,</span></span><br><span class="line"><span class="comment">     * 返回值即为目标方法的返回值</span></span><br><span class="line"><span class="comment">     **/</span></span><br><span class="line">    <span class="meta">@Around(&quot;cut()&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">around</span><span class="params">(ProceedingJoinPoint joinPoint)</span> </span>&#123;</span><br><span class="line">        <span class="comment">/*result为连接点的放回结果*/</span></span><br><span class="line">        Object result = <span class="keyword">null</span>;</span><br><span class="line">        String methodName = joinPoint.getSignature().getName();</span><br><span class="line">        <span class="comment">/*前置通知方法*/</span></span><br><span class="line">        log.info(<span class="string">&quot;前置通知方法&gt;目标方法名：&#123;&#125;,参数为：&#123;&#125;&quot;</span>,methodName, Arrays.asList(joinPoint.getArgs()));</span><br><span class="line">        <span class="comment">/*执行目标方法*/</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            result = joinPoint.proceed();</span><br><span class="line"></span><br><span class="line">            <span class="comment">/*返回通知方法*/</span></span><br><span class="line">            log.info(<span class="string">&quot;返回通知方法&gt;目标方法名：&#123;&#125;,返回结果为：&#123;&#125;&quot;</span> , methodName,result);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable e) &#123;</span><br><span class="line">            <span class="comment">/*异常通知方法*/</span></span><br><span class="line">            log.info(<span class="string">&quot;异常通知方法&gt;目标方法名：&#123;&#125;,异常为：&#123;&#125;&quot;</span> , methodName,e);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/*后置通知*/</span></span><br><span class="line">        log.info(<span class="string">&quot;后置通知方法&gt;目标方法名：&#123;&#125;&quot;</span>, methodName);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/SpringBoot/" rel="tag"># SpringBoot</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/23/Spring-Spring%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="next" title="Spring-Spring设计模式">
+                <i class="fa fa-chevron-left"></i> Spring-Spring设计模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/23/Spring-SpringBoot%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C/" rel="prev" title="Spring-SpringBoot参数校验">
+                Spring-SpringBoot参数校验 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B3%A8%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text">创建自定义注解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Target-%E6%B3%A8%E8%A7%A3%E7%9A%84%E4%BD%9C%E7%94%A8%E7%9B%AE%E6%A0%87"><span class="nav-number">1.1.</span> <span class="nav-text">@Target:注解的作用目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Retention%EF%BC%9A%E6%B3%A8%E8%A7%A3%E7%9A%84%E4%BF%9D%E7%95%99%E4%BD%8D%E7%BD%AE"><span class="nav-number">1.2.</span> <span class="nav-text">@Retention：注解的保留位置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Document-Inherited"><span class="nav-number">1.3.</span> <span class="nav-text">@Document,@Inherited</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%88%87%E9%9D%A2"><span class="nav-number">2.</span> <span class="nav-text">创建切面</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

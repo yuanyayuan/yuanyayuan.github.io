@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试,分步式," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="摘抄《CAP理论解读》 摘抄《神一样的CAP理论被应用在何方》 分布式事务，是怎么从ACID解脱，投身CAP&#x2F;BASE如果说到事务，ACID(原子)是传统数据库常用的设计理念，追求强一致性模型，关系数据库的ACID模型拥有高一致性+可用性，所以很难进行分区，所以在微服务中ACID已经是无法支持。 我们还是回到CAP去寻求解决方案，不过根据上面的讨论，CAP定理中，要么只能CP，要么只能AP。 如果">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分步式-分布式事务">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/21/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="摘抄《CAP理论解读》 摘抄《神一样的CAP理论被应用在何方》 分布式事务，是怎么从ACID解脱，投身CAP&#x2F;BASE如果说到事务，ACID(原子)是传统数据库常用的设计理念，追求强一致性模型，关系数据库的ACID模型拥有高一致性+可用性，所以很难进行分区，所以在微服务中ACID已经是无法支持。 我们还是回到CAP去寻求解决方案，不过根据上面的讨论，CAP定理中，要么只能CP，要么只能AP。 如果">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1-%E4%BA%8C%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/3PC.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/TCC.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/%E5%9F%BA%E4%BA%8E%E6%9C%AC%E5%9C%B0%E6%B6%88%E6%81%AF%E8%A1%A8.png">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/9/6/16d0588ae2844970?imageView2/0/w/1280/h/960/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/9/6/16d0588aeba679cf?imageView2/0/w/1280/h/960/ignore-error/1&ynotemdtimestamp=1619092644755">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/22e8d512d954676bdf0cc92d200af8ef.png?ynotemdtimestamp=1618749953489">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/b82536f956f70a584c6a20c10113f225.png?ynotemdtimestamp=1618749953489">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/743889b97485fdfe2094e5ef0af6b141.png?ynotemdtimestamp=1618749953489">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/RocketMQ.png?ynotemdtimestamp=1618994173556">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/RocketMQ1.png?ynotemdtimestamp=1618994173556">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/RocketMQ2.png?ynotemdtimestamp=1618994173556">
+<meta property="article:published_time" content="2021-04-21T10:42:15.000Z">
+<meta property="article:modified_time" content="2021-04-22T12:08:59.976Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="分步式">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1-%E4%BA%8C%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/21/分步式-分布式事务/"/>
+
+
+
+
+
+  <title>分步式-分布式事务 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/21/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">分步式-分布式事务</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-21T18:42:15+08:00">
+                2021-04-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/" itemprop="url" rel="index">
+                    <span itemprop="name">分步式 - 分布式事务</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>摘抄<a target="_blank" rel="noopener" href="https://snailclimb.gitee.io/javaguide/#/docs/system-design/distributed-system/CAP%E7%90%86%E8%AE%BA">《CAP理论解读》</a></p>
+<p>摘抄<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903936718012430">《神一样的CAP理论被应用在何方》</a></p>
+<h1 id="分布式事务，是怎么从ACID解脱，投身CAP-BASE"><a href="#分布式事务，是怎么从ACID解脱，投身CAP-BASE" class="headerlink" title="分布式事务，是怎么从ACID解脱，投身CAP/BASE"></a>分布式事务，是怎么从ACID解脱，投身CAP/BASE</h1><p>如果说到事务，ACID(原子)是传统数据库常用的设计理念，追求强一致性模型，关系数据库的ACID模型拥有高一致性+可用性，所以很难进行分区，所以在微服务中ACID已经是无法支持。</p>
+<p>我们还是回到CAP去寻求解决方案，不过根据上面的讨论，CAP定理中，要么只能CP，要么只能AP。</p>
+<p>如果我们追求数据的一致性而忽略可用性这个在微服务中肯定是行不通的。</p>
+<p>如果我们追求可用性而忽略一致性，那么在一些重要的数据（例如支付，金额）肯定出现漏洞百出，这个也是无法接受。</p>
+<p>所以我们既要一致性，也要可用性。都要是无法实现的，但我们能不能在一致性上作出一些妥协，不追求强一致性，转而追求最终一致性，所以引入BASE理论，在分布式事务中，BASE最重要是为CAP提出了最终一致性的解决方案，BASE强调牺牲高一致性，从而获取肯用性，数据允许在一段时间内不一致，只要保证最终一致性就可以了。</p>
+<h1 id="分布式一致性问题"><a href="#分布式一致性问题" class="headerlink" title="分布式一致性问题"></a>分布式一致性问题</h1><p>设计一个分布式系统必定会遇到一个问题—— <strong>因为分区容忍性（partition tolerance）的存在，就必定要求我们需要在系统可用性（availability）和数据一致性（consistency）中做出权衡</strong> 。这就是著名的 <code>CAP</code> 定理。</p>
+<blockquote>
+<p>理解起来其实很简单，比如说把一个班级作为整个系统，而学生是系统中的一个个独立的子系统。这个时候班里的小红小明偷偷谈恋爱被班里的大嘴巴小花发现了，小花欣喜若狂告诉了周围的人，然后小红小明谈恋爱的消息在班级里传播起来了。当在消息的传播（散布）过程中，你抓到一个同学问他们的情况，如果回答你不知道，那么说明整个班级系统出现了数据不一致的问题（因为小花已经知道这个消息了）。而如果他直接不回答你，因为整个班级有消息在进行传播（为了保证一致性，需要所有人都知道才可提供服务），这个时候就出现了系统的可用性问题。</p>
+</blockquote>
+<h1 id="一致性协议和算法"><a href="#一致性协议和算法" class="headerlink" title="一致性协议和算法"></a>一致性协议和算法</h1><p>而为了解决数据一致性问题，在科学家和程序员的不断探索中，就出现了很多的一致性协议和算法。比如 2PC（两阶段提交），3PC（三阶段提交），Paxos算法等等。</p>
+<p>这时候请你思考一个问题，同学之间如果采用传纸条的方式去传播消息，那么就会出现一个问题——我咋知道我的小纸条有没有传到我想要传递的那个人手中呢？万一被哪个小家伙给劫持篡改了呢，对吧？</p>
+<p>这个时候就引申出一个概念—— <strong>拜占庭将军问题</strong> 。它意指 <strong>在不可靠信道上试图通过消息传递的方式达到一致性是不可能的</strong>， 所以所有的一致性算法的 <strong>必要前提</strong> 就是<strong>安全可靠的消息通道。</strong></p>
+<p>而为什么要去解决数据一致性的问题？你想想，如果一个秒杀系统将服务拆分成了下订单和加积分服务，这两个服务部署在不同的机器上了，万一在消息的传播过程中积分系统宕机了，总不能你这边下了订单却没加积分吧？你总得保证两边的数据需要一致吧？</p>
+<h1 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h1><blockquote>
+<p>拿秒杀系统的下订单和加积分两个系统来举例，下完订单会发个消息给积分系统告诉它下面该增加积分了。如果我们仅仅是发送一个消息也不收回复，那么我们的订单系统怎么能知道积分系统的收到消息的情况呢？如果我们增加一个收回复的过程，那么当积分系统收到消息后返回给订单系统一个 <code>Response</code> ，但在中间出现了网络波动，那个回复消息没有发送成功，订单系统是不是以为积分系统消息接收失败了？它是不是会回滚事务？但此时积分系统是成功收到消息的，它就会去处理消息然后给用户增加积分，这个时候就会出现积分加了但是订单没下成功。</p>
+</blockquote>
+<p>在分布式系统中，要实现分布式事务，无外乎几种解决方案。方案各有不同，不过其实都是遵循BASE理论，是最终一致性模型。</p>
+<ul>
+<li>两阶段提交（2PC）</li>
+<li></li>
+<li>补偿事务（TCC）</li>
+<li>本地消息表</li>
+<li>MQ事务消息</li>
+</ul>
+<h2 id="2PC（两阶段提交）-强一致"><a href="#2PC（两阶段提交）-强一致" class="headerlink" title="2PC（两阶段提交）[强一致]"></a>2PC（两阶段提交）[强一致]</h2><blockquote>
+<p>PC:phase-commit 的缩写，即阶段提交。</p>
+</blockquote>
+<p><strong>二阶段提交是一种强一致性设计</strong></p>
+<p>在两阶段提交中，主要涉及到两个角色，分别是协调者（事务管理器TM）和参与者（资源管理器Rm）。</p>
+<p>**准备阶段(第一阶段)**协调者会给各参与者发送准备命令，</p>
+<p>同步等待所有资源的响应之后就进入第二阶段即提交阶段（注意提交阶段不一定是提交事务，也可能是回滚事务）。假如在第一阶段所有参与者都返回准备成功，那么协调者则向所有参与者发送提交事务命令，然后等待所有事务都提交成功之后，返回事务执行成功。假如在第一阶段有一个参与者返回失败，那么协调者就会向所有参与者发送回滚事务的请求，即分布式事务执行失败。</p>
+<p>2PC 是一个<strong>同步阻塞协议</strong>，像第一阶段协调者会等待所有参与者响应才会进行下一步操作，当然第一阶段的<strong>协调者有超时机制</strong>，假设因为网络原因没有收到某参与者的响应或某参与者挂了，那么超时后就会判断事务失败，向所有参与者发送回滚命令。</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1-%E4%BA%8C%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4.png" alt="image"></p>
+<p>**提交阶段(第二阶段)**提交失败的话有两种情况</p>
+<ul>
+<li><p>第一种是<strong>第二阶段执行的是回滚事务操作</strong>，那么答案是不断重试，直到所有参与者都回滚了，不然那些在第一阶段准备成功的参与者会一直阻塞着。</p>
+</li>
+<li><p>第二种是<strong>第二阶段执行的是提交事务操作</strong>，那么答案也是不断重试，因为有可能一些参与者的事务已经提交成功了，这个时候只有一条路，就是头铁往前冲，不断的重试，直到提交成功，到最后真的不行只能人工介入处理。</p>
+</li>
+</ul>
+<p>第二阶段协调者的没法超时，所以只能不断重试！</p>
+<p><strong>事实上2PC（两阶段提交）只解决了各个事务的原子性问题，随之也带来了很多的问题。</strong></p>
+<ul>
+<li><p><strong>单点故障问题</strong></p>
+<ul>
+<li>假设协调者在<strong>发送准备命令之前</strong>挂了，还行等于事务还没开始。</li>
+<li>假设协调者在<strong>发送准备命令之后</strong>挂了，这就不太行了，有些参与者等于都执行了处于事务资源锁定的状态。不仅事务执行不下去，还会因为锁定了一些公共资源而阻塞系统其它操作。</li>
+<li>假设协调者在<strong>发送回滚事务命令之前</strong>挂了，那么事务也是执行不下去，且在第一阶段那些准备成功参与者都阻塞着。</li>
+<li>假设协调者在<strong>发送回滚事务命令之后</strong>挂了，这个还行，至少命令发出去了，很大的概率都会回滚成功，资源都会释放。但是如果出现网络分区问题，某些参与者将因为收不到命令而阻塞着。</li>
+<li>假设协调者在<strong>发送提交事务命令之前</strong>挂了，这个不行，傻了！这下是所有资源都阻塞着。</li>
+<li>假设协调者在<strong>发送提交事务命令之后</strong>挂了，这个还行，也是至少命令发出去了，很大概率都会提交成功，然后释放资源，但是如果出现网络分区问题某些参与者将因为收不到命令而阻塞着。</li>
+</ul>
+</li>
+<li><p>协调者故障，通过选举得到新协调者</p>
+<blockquote>
+<p>因为协调者单点问题，因此我们可以通过选举等操作选出一个新协调者来顶替。</p>
+</blockquote>
+<p>如果处于第一阶段，其实影响不大都回滚好了，在第一阶段事务肯定还没提交。</p>
+<p>如果处于第二阶段:</p>
+<p>假设参与者都没挂，此时新协调者可以向所有参与者确认它们自身情况来推断下一步的操作。</p>
+<p>假设有个别参与者挂了 ,比如协调者发送了回滚命令，此时第一个参与者收到了并执行，然后协调者和第一个参与者都挂了。此时其他参与者都没收到请求，然后新协调者来了，它询问其他参与者都说OK，但它不知道挂了的那个参与者的执行情况。问题其实就出在<strong>每个参与者自身的状态只有自己和协调者知道</strong>，因此新协调者无法通过在场的参与者的状态推断出挂了的参与者是什么情况。</p>
+<p>不过在实现的时候我们可以灵活的让协调者将自己发过的请求在哪个地方记一下，也就是日志记录，这样新协调者来的时候不就知道此时该不该发了?(就算协调者知道自己该发提交请求，那么在参与者也一起挂了的情况下没用，因为你不知道参与者在挂之前有没有提交事务)</p>
+<p>如果参与者在挂之前事务提交成功，新协调者确定存活着的参与者都没问题，那肯定得向其他参与者发送提交事务命令才能<strong>保证数据一致</strong>。</p>
+<p>如果参与者在挂之前事务还未提交成功，参与者恢复了之后数据是回滚的，此时协调者必须是向其他参与者发送回滚事务命令才能保持<strong>事务的一致</strong>。</p>
+</li>
+</ul>
+<h3 id="具体实现方式"><a href="#具体实现方式" class="headerlink" title="具体实现方式"></a>具体实现方式</h3><p> Java 中的 JTA：它是基于XA规范实现的事务接口，基于数据库的 XA 规范来实现的 2PC（Atomikos）</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>2PC 是一种<strong>尽量保证强一致性</strong>的分布式事务，因此它是<strong>同步阻塞</strong>的，而同步阻塞就导致长久的资源锁定问题，<strong>总体而言效率低</strong>，并且存在<strong>单点故障</strong>问题，在极端条件下存在<strong>数据不一致</strong>的风险。</p>
+<p>2PC 适用于<strong>数据库层面的分布式事务场景</strong>，而我们业务需求有时候不仅仅关乎数据库，也有可能是上传一张图片或者发送一条短信。</p>
+<h2 id="3PC（三阶段提交）-强一致"><a href="#3PC（三阶段提交）-强一致" class="headerlink" title="3PC（三阶段提交）[强一致]"></a>3PC（三阶段提交）[强一致]</h2><p>3PC 包含了三个阶段，分别是<strong>准备阶段、预提交阶段和提交阶段</strong>，对应的英文就是：<code>CanCommit、PreCommit 和 DoCommit</code>。</p>
+<p>3PC 的准备阶段协调者只是询问参与者的自身状况，比如你现在还好吗？负载重不重？这类的。而预提交阶段就是和 2PC 的准备阶段一样，除了事务的提交该做的都做了。</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/3PC.png"></p>
+<p>不管哪一个阶段有参与者返回失败都会宣布事务失败，这和 2PC 是一样的（当然到最后的提交阶段和 2PC 一样只要是提交请求就只能不断重试）。</p>
+<p><strong>准备阶段的变更成不会直接执行事务</strong>，而是会先去询问此时的参与者是否有条件接这个事务，因此<strong>不会一来就干活直接锁资源</strong>，使得在某些资源不可用的情况下所有参与者都阻塞着。</p>
+<p><strong>预提交阶段的引入起到了一个统一状态的作用</strong>，它像一道栅栏，表明在预提交阶段前所有参与者其实还未都回应，在预处理阶段表明所有参与者都已经回应了。</p>
+<h3 id="相比2PC，3PC引入超时机制"><a href="#相比2PC，3PC引入超时机制" class="headerlink" title="相比2PC，3PC引入超时机制"></a>相比2PC，3PC引入超时机制</h3><blockquote>
+<p>2PC 是同步阻塞的，协调者挂在提交请求还未发出去的时候是最伤的，所有参与者都已经锁定资源并且阻塞等待着。</p>
+</blockquote>
+<p><strong>如果是等待提交命令超时，那么参与者就会提交事务了</strong>，因为都到了这一阶段了大概率是提交的，</p>
+<p><strong>如果是等待预提交命令超时，那该干啥就干啥了，反正本来啥也没干</strong>。</p>
+<p>然而超时机制也会带来数据不一致的问题，比如在等待提交命令时候超时了，参与者默认执行的是提交事务操作，但是<strong>有可能执行的是回滚操作，这样一来数据就不一致了</strong>。当然 3PC 协调者超时还是在的。</p>
+<h3 id="3PC-的引入目的"><a href="#3PC-的引入目的" class="headerlink" title="3PC 的引入目的"></a>3PC 的引入目的</h3><blockquote>
+<p> 为了解决提交阶段 2PC 协调者和某参与者都挂了之后新选举的协调者不知道当前应该提交还是回滚的问题</p>
+</blockquote>
+<p>新协调者来的时候发现有一个参与者处于预提交或者提交阶段，那么表明已经经过了所有参与者的确认了，所以此时执行的就是提交命令。</p>
+<p>所以说 3PC 就是通过引入预提交阶段来使得参与者之间的状态得到统一，也就是留了一个阶段让大家同步一下。</p>
+<p>但是这也只能让协调者知道该如果做，但不能保证这样做一定对，这其实和上面 2PC 分析一致，因为挂了的参与者到底有没有执行事务无法断定。</p>
+<p>所以说 3PC 通过预提交阶段可以减少故障恢复时候的复杂性，但是不能保证数据一致，除非挂了的那个参与者恢复。</p>
+<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p>3PC 相对于 2PC 做了一定的改进：引入了参与者超时机制，并且增加了预提交阶段使得故障恢复之后协调者的决策复杂度降低，但整体的交互过程更长了，性能有所下降，并且还是会存在数据不一致问题。所以 2PC 和 3PC 都不能保证数据100%一致，因此一般都需要有定时扫描补偿机制。 3PC 没有找到具体的实现，所以认为 3PC 只是纯的理论上的东西，而且可以看到相比于 2PC 它是做了一些努力但是效果甚微，所以只做了解即可。</p>
+<h2 id="补偿事务（TCC）-补偿性事务思想"><a href="#补偿事务（TCC）-补偿性事务思想" class="headerlink" title="补偿事务（TCC）[补偿性事务思想]"></a>补偿事务（TCC）[补偿性事务思想]</h2><blockquote>
+<p>适用的范围更广，在业务层面实现，因此对业务的侵入性较大，每一个操作都需要实现对应的三个方法。</p>
+</blockquote>
+<p><strong>2PC 和 3PC 都是数据库层面的，而 TCC 是业务层面的分布式事务</strong>，就像前面说的分布式事务不仅仅包括数据库的操作，还包括发送短信等，这时候 TCC 就派上用场了！</p>
+<p>TCC 指的是<code>Try - Confirm - Cancel</code>。</p>
+<ul>
+<li>Try 指的是预留，即资源的预留和锁定，<strong>注意是预留</strong>。</li>
+<li>Confirm 指的是确认操作，这一步其实就是真正的执行了。</li>
+<li>Cancel 指的是撤销操作，可以理解为把预留阶段的动作撤销了。</li>
+</ul>
+<p>其实从思想上看和 2PC 差不多，都是先试探性的执行，如果都可以那就真正的执行，如果不行就回滚。</p>
+<p>比如说一个事务要执行A、B、C三个操作，那么先对三个操作执行预留动作。如果都预留成功了那么就执行确认操作，如果有一个预留失败那就都执行撤销动作。</p>
+<p>我们来看下流程，TCC模型还有个事务管理者的角色，用来记录TCC全局事务状态并提交或者回滚事务。</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/TCC.png" alt="img" style="zoom:50%;" />
+
+<p>可以看到流程还是很简单的，难点在于业务上的定义，对于每一个操作你都需要定义三个动作分别对应<code>Try - Confirm - Cancel</code>。</p>
+<p>因此 <strong>TCC 对业务的侵入较大和业务紧耦合</strong>，需要根据特定的场景和业务逻辑来设计相应的操作。</p>
+<p>还有一点要注意，撤销和确认操作的执行可能需要重试，因此还需要保证<strong>操作的幂等</strong>。</p>
+<p>相对于 2PC、3PC ，TCC 适用的范围更大，但是开发量也更大，毕竟都在业务上实现，而且有时候你会发现这三个方法还真不好写。不过也因为是在业务上实现的，所以<strong>TCC可以跨数据库、跨不同的业务系统来实现事务</strong>。</p>
+<h3 id="example"><a href="#example" class="headerlink" title="example"></a>example</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AccountService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> AccountAMapper accountAMapper;</span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> AccountBMapper accountBMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Transactional(transactionManager = &quot;tm131&quot;,rollbackFor = Exception.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">transferAccount</span><span class="params">()</span></span>&#123;</span><br><span class="line">        AccountA accountA = accountAMapper.selectByPrimaryKey(<span class="number">1</span>);</span><br><span class="line">        accountA.setBalance(accountA.getBalance().subtract(<span class="keyword">new</span> BigDecimal(<span class="number">200</span>)));</span><br><span class="line">        accountAMapper.updateByPrimaryKey(accountA);</span><br><span class="line"></span><br><span class="line">        AccountB accountB = accountBMapper.selectByPrimaryKey(<span class="number">2</span>);</span><br><span class="line">        accountB.setBalance(accountB.getBalance().add(<span class="keyword">new</span> BigDecimal(<span class="number">200</span>)));</span><br><span class="line">        accountBMapper.updateByPrimaryKey(accountB);</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            <span class="keyword">int</span> i = <span class="number">1</span>/<span class="number">0</span>;</span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                AccountB accountb = accountBMapper.selectByPrimaryKey(<span class="number">2</span>);</span><br><span class="line">                accountb.setBalance(accountb.getBalance().subtract(<span class="keyword">new</span> BigDecimal(<span class="number">200</span>)));</span><br><span class="line">                accountBMapper.updateByPrimaryKey(accountb);</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception e1)&#123;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">throw</span> e;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="本地消息表-最终一致性"><a href="#本地消息表-最终一致性" class="headerlink" title="本地消息表[最终一致性]"></a>本地消息表[最终一致性]</h2><p>本地消息表其实就是利用了 <strong>各系统本地的事务</strong>来实现分布式事务。</p>
+<p>本地消息表顾名思义就是会有一张存放本地消息的表，一般都是放在数据库中，然后在执行业务的时候 <strong>将业务的执行和将消息放入消息表中的操作放在同一个事务中</strong>，这样就能保证消息放入本地表中业务肯定是执行成功的。</p>
+<p>然后再去调用下一个操作，如果下一个操作调用成功了好说，消息表的消息状态可以直接改成已成功。</p>
+<p>如果调用失败也没事，会有 <strong>后台任务定时去读取本地消息表</strong>，筛选出还未成功的消息再调用对应的服务，服务更新成功了再变更消息的状态。</p>
+<p>这时候有可能消息对应的操作不成功，因此也需要重试，重试就得保证对应服务的方法是幂等的，而且一般重试会有最大次数，超过最大次数可以记录下报警让人工处理。</p>
+<p>可以看到本地消息表其实实现的是<strong>最终一致性</strong>，容忍了数据暂时不一致的情况。</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/%E5%9F%BA%E4%BA%8E%E6%9C%AC%E5%9C%B0%E6%B6%88%E6%81%AF%E8%A1%A8.png"></p>
+<ol>
+<li><p>执行支付下单的操作，数据存入支付业务表（金额，账户，转账）</p>
+</li>
+<li><p>业务表记录成功后将该条操作录入消息表（订单信息，存储状态）</p>
+</li>
+<li><p>定时任务轮询消息表，找出外发送的消息，调用操作接口</p>
+</li>
+<li><p>操作接口根据消息表中的订单号，操作订单业务表中的对应数据</p>
+</li>
+<li><p>操作成功后通过操作接口反馈给支付业务（反馈内容success或ok），支付业务接收到反馈后更新消息表发送状态</p>
+</li>
+<li><p>操作接口反馈操作失败，消息表规定最大失败次数，定时任务找到发送失败的进行重试，如果从事次数大于最大失败次数，消息状态特殊标注，转为人工干预</p>
+</li>
+</ol>
+<p><strong>优点</strong>：避免了分布式事务，实现最终一致性（不一致的时间是定时任务调用操作接口那段时间）适用于一些对时间不敏感的业务。</p>
+<p><strong>缺点</strong>：要注意重试时的幂等性操作</p>
+<h2 id="基于MQ的最终一致方案-最终一致性"><a href="#基于MQ的最终一致方案-最终一致性" class="headerlink" title="基于MQ的最终一致方案[最终一致性]"></a>基于MQ的最终一致方案[最终一致性]</h2><ul>
+<li>原理、流程与本地消息表类似</li>
+<li>不同点：本地消息表改为MQ，定时任务改为MQ的消费者</li>
+</ul>
+<p>RocketMQ中实现了分布式事务，实际上是对本地消息表的一个封装，将本地消息表移动到了MQ内部。</p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/9/6/16d0588ae2844970?imageView2/0/w/1280/h/960/ignore-error/1" alt="image"></p>
+<ol>
+<li>业务系统1操作数据，将数据保存到DB1，另外写一条消息存入消息队列</li>
+<li>消费者从消息队列中取出消息，执行业务逻辑，将数据保存DB2</li>
+</ol>
+<p>事务消息作为一种异步确保型事务， 将两个事务分支通过 MQ 进行异步解耦，RocketMQ 事务消息的设计流程同样借鉴了两阶段提交理论，整体交互流程如下图所示：</p>
+<p><img src="https://user-gold-cdn.xitu.io/2019/9/6/16d0588aeba679cf?imageView2/0/w/1280/h/960/ignore-error/1&ynotemdtimestamp=1619092644755" alt="image"></p>
+<ol>
+<li>先给 Broker 发送事务消息即半消息(<strong>半消息不是说一半消息，而是这个消息对消费者来说不可见</strong>)，并接受Broker的ack或nack</li>
+<li>MQ发送者<strong>发送成功后发送方再执行本地事务</strong></li>
+<li>MQ发送者根据<strong>本地事务的结果向 Broker 发送 Commit 或者 RollBack 命令</strong></li>
+<li>并且MQ 的发送方会提供一个<strong>反查事务状态接口</strong>，如果一段时间内半消息没有收到任何操作请求，那么 Broker 会通过反查接口得知发送方事务是否执行成功，然后执行 Commit 或者 RollBack 命令。</li>
+<li>如果是 Commit 那么订阅方就能收到这条消息，然后再做对应的操作，做完了之后再消费这条消息即可。</li>
+<li>如果是 RollBack 那么订阅方收不到这条消息，等于事务就没执行过。</li>
+</ol>
+<p>MQ事务是对本地消息表的一层封装，将本地消息表移动到了MQ内部，所以也是基于BASE理论，是最终一致性模式，对强一致性要求不那么高的事务适用，同时MQ事务将整个流程异步化了，也非常适合在高并发情况下使用。</p>
+<ul>
+<li><p>优点：不依赖定时任务，基于MQ更高效 , 适用于一些对时间不敏感的业务。</p>
+</li>
+<li><p>适合于公司内部系统</p>
+</li>
+<li><p>不同公司之间无法基于MQ，本地消息表更合适</p>
+</li>
+</ul>
+<h2 id="最大努力通知"><a href="#最大努力通知" class="headerlink" title="最大努力通知"></a><strong>最大努力通知</strong></h2><p>其实我觉得本地消息表也可以算最大努力，事务消息也可以算最大努力。</p>
+<p>就本地消息表来说会有后台任务定时去查看未完成的消息，然后去调用对应的服务，当一个消息多次调用都失败的时候可以记录下然后引入人工，或者直接舍弃。这其实算是最大努力了。</p>
+<p>事务消息也是一样，当半消息被commit了之后确实就是普通消息了，如果订阅者一直不消费或者消费不了则会一直重试，到最后进入死信队列。其实这也算最大努力。</p>
+<p>所以<strong>最大努力通知其实只是表明了一种柔性事务的思想</strong>：我已经尽力我最大的努力想达成事务的最终一致了。</p>
+<p>适用于对时间不敏感的业务，例如短信通知。</p>
+<h2 id="Paxos-算法"><a href="#Paxos-算法" class="headerlink" title="Paxos 算法"></a><code>Paxos</code> 算法</h2><p><code>Paxos</code> 算法是基于<strong>消息传递且具有高度容错特性的一致性算法</strong>，是目前公认的解决分布式一致性问题最有效的算法之一，<strong>其解决的问题就是在分布式系统中如何就某个值（决议）达成一致</strong> 。</p>
+<p>在 <code>Paxos</code> 中主要有三个角色，分别为 <code>Proposer提案者</code>、<code>Acceptor表决者</code>、<code>Learner学习者</code>。<code>Paxos</code> 算法和 <code>2PC</code> 一样，也有两个阶段，分别为 <code>Prepare</code> 和 <code>accept</code> 阶段。</p>
+<h3 id="prepare-阶段"><a href="#prepare-阶段" class="headerlink" title="prepare 阶段"></a>prepare 阶段</h3><ul>
+<li><code>Proposer提案者</code>：负责提出 <code>proposal</code>，每个提案者在提出提案时都会首先获取到一个 <strong>具有全局唯一性的、递增的提案编号N</strong>，即在整个集群中是唯一的编号 N，然后将该编号赋予其要提出的提案，在<strong>第一阶段是只将提案编号发送给所有的表决者</strong>。</li>
+<li><code>Acceptor表决者</code>：每个表决者在 <code>accept</code> 某提案后，会将该提案编号N记录在本地，这样每个表决者中保存的已经被 accept 的提案中会存在一个<strong>编号最大的提案</strong>，其编号假设为 <code>maxN</code>。每个表决者仅会 <code>accept</code> 编号大于自己本地 <code>maxN</code> 的提案，在批准提案时表决者会将以前接受过的最大编号的提案作为响应反馈给 <code>Proposer</code> 。</li>
+</ul>
+<blockquote>
+<p>下面是 <code>prepare</code> 阶段的流程图，你可以对照着参考一下。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/22e8d512d954676bdf0cc92d200af8ef.png?ynotemdtimestamp=1618749953489" alt="paxos第一阶段"></p>
+<h3 id="accept-阶段"><a href="#accept-阶段" class="headerlink" title="accept 阶段"></a>accept 阶段</h3><p>当一个提案被 <code>Proposer</code> 提出后，如果 <code>Proposer</code> 收到了超过半数的 <code>Acceptor</code> 的批准（<code>Proposer</code> 本身同意），那么此时 <code>Proposer</code> 会给所有的 <code>Acceptor</code> 发送真正的提案（你可以理解为第一阶段为试探），这个时候 <code>Proposer</code> 就会发送提案的内容和提案编号。</p>
+<p>表决者收到提案请求后会再次比较本身已经批准过的最大提案编号和该提案编号，如果该提案编号 <strong>大于等于</strong> 已经批准过的最大提案编号，那么就 <code>accept</code> 该提案（此时执行提案内容但不提交），随后将情况返回给 <code>Proposer</code> 。如果不满足则不回应或者返回 NO 。</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/b82536f956f70a584c6a20c10113f225.png?ynotemdtimestamp=1618749953489" alt="paxos第二阶段1"></p>
+<p>当 <code>Proposer</code> 收到超过半数的 <code>accept</code> ，那么它这个时候会向所有的 <code>acceptor</code> 发送提案的提交请求。需要注意的是，因为上述仅仅是超过半数的 <code>acceptor</code> 批准执行了该提案内容，其他没有批准的并没有执行该提案内容，所以这个时候需要<strong>向未批准的 <code>acceptor</code>发送提案内容和提案编号并让它无条件执行和提交</strong>，而对于前面已经批准过该提案的 <code>acceptor</code> 来说 <strong>仅仅需要发送该提案的编号</strong> ，让 <code>acceptor</code> 执行提交就行了。</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/743889b97485fdfe2094e5ef0af6b141.png?ynotemdtimestamp=1618749953489" alt="paxos第二阶段2"></p>
+<p>而如果 <code>Proposer</code> 如果没有收到超过半数的 <code>accept</code> 那么它将会将 <strong>递增</strong> 该 <code>Proposal</code> 的编号，然后 <strong>重新进入 <code>Prepare</code> 阶段</strong> 。</p>
+<blockquote>
+<p>对于 <code>Learner</code> 来说如何去学习 <code>Acceptor</code> 批准的提案内容，这有很多方式，读者可以自己去了解一下，这里不做过多解释。</p>
+</blockquote>
+<h3 id="paxos-算法的死循环问题"><a href="#paxos-算法的死循环问题" class="headerlink" title="paxos 算法的死循环问题"></a><code>paxos</code> 算法的死循环问题</h3><p>其实就有点类似于两个人吵架，小明说我是对的，小红说我才是对的，两个人据理力争的谁也不让谁🤬🤬。</p>
+<p>比如说，此时提案者 P1 提出一个方案 M1，完成了 <code>Prepare</code> 阶段的工作，这个时候 <code>acceptor</code> 则批准了 M1，但是此时提案者 P2 同时也提出了一个方案 M2，它也完成了 <code>Prepare</code> 阶段的工作。然后 P1 的方案已经不能在第二阶段被批准了（因为 <code>acceptor</code> 已经批准了比 M1 更大的 M2），所以 P1 自增方案变为 M3 重新进入 <code>Prepare</code> 阶段，然后 <code>acceptor</code> ，又批准了新的 M3 方案，它又不能批准 M2 了，这个时候 M2 又自增进入 <code>Prepare</code> 阶段。。。</p>
+<p>就这样无休无止的永远提案下去，这就是 <code>paxos</code> 算法的死循环问题。</p>
+<p>那么如何解决呢？很简单，人多了容易吵架，我现在 <strong>就允许一个能提案</strong> 就行了。</p>
+<h1 id="RocketMQ选择异步-同步刷盘，异步-同步复制，背后的CP和AP思考"><a href="#RocketMQ选择异步-同步刷盘，异步-同步复制，背后的CP和AP思考" class="headerlink" title="RocketMQ选择异步/同步刷盘，异步/同步复制，背后的CP和AP思考"></a>RocketMQ选择异步/同步刷盘，异步/同步复制，背后的CP和AP思考</h1><p>虽然同步刷盘/异步刷盘，同步/异步复制，并没有对cAP直接的应用，但在配置的过程中也一样涉及到可用性和一致性的考虑</p>
+<h4 id="同步刷盘-异步刷盘"><a href="#同步刷盘-异步刷盘" class="headerlink" title="同步刷盘/异步刷盘"></a>同步刷盘/异步刷盘</h4><p>RocketMQ的消息是可以做到持久化的，数据会持久化到磁盘，RocketMQ为了提高性能，尽可能保证磁盘的顺序写入，消息在Producer写入RocketMq的时候，有两种写入磁盘方式：</p>
+<ol>
+<li>异步刷盘： 消息快速写入到内存的pagecache，就立马返回写成功状态，当内存的消息累计到一定程度的时候，会触发统一的写磁盘操作。这种方式可以保证大吞吐量，但也存在着消息可能未存入磁盘丢失的风险。</li>
+<li>同步刷盘： 消息快速写入内存的pagecahe，立刻通知刷盘线程进行刷盘，等待刷盘完成之后，唤醒等待的线程，返回消息写成功的状态。</li>
+</ol>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/RocketMQ.png?ynotemdtimestamp=1618994173556" alt="image"></p>
+<h4 id="同步复制-异步复制"><a href="#同步复制-异步复制" class="headerlink" title="同步复制/异步复制"></a>同步复制/异步复制</h4><p>一个broker组有Master和Slave，消息需要从Master复制到Slave上，所以有同步和异步两种复制方式。</p>
+<ol>
+<li>同步复制： 是等Master和Slave均写成功后才反馈给客户端写成功状态。</li>
+<li>异步复制： 是只要Master写成功即可反馈给客户端写成功状态。</li>
+</ol>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/RocketMQ1.png?ynotemdtimestamp=1618994173556" alt="image"></p>
+<p>异步复制的优点是可以提高响应速度，但牺牲了一致性 ，一般实现该类协议的算法需要增加额外的补偿机制。同步复制的优点是可以保证一致性(一般通过两阶段提交协议)，但是开销较大，可用性不好(参见CAP定理)，带来了更多的冲突和死锁等问题。值得一提的是Lazy+Primary/Copy的复制协议在实际生产环境中是非常实用的。</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/RocketMQ2.png?ynotemdtimestamp=1618994173556" alt="image"></p>
+<p>RocketMQ的设置要结合业务场景，合理设置刷盘方式和主从复制方式，尤其是SYNC_FLUSH方式，由于频繁的触发写磁盘动作，会明显降低性能。通常情况下，应该把Master和Slave设置成ASYNC_FLUSH的刷盘方式，主从之间配置成SYNC_MASTER的复制方式，这样即使有一台机器出故障，仍然可以保证数据不丢</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/%E5%88%86%E6%AD%A5%E5%BC%8F/" rel="tag"># 分步式</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/21/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%B8%83%E5%BC%8FID/" rel="next" title="分步式-分布式ID">
+                <i class="fa fa-chevron-left"></i> 分步式-分布式ID
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/22/%E5%88%86%E6%AD%A5%E5%BC%8F-%E6%8E%A5%E5%8F%A3%E5%B9%82%E7%AD%89%E6%80%A7/" rel="prev" title="分步式-接口幂等性">
+                分步式-接口幂等性 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%EF%BC%8C%E6%98%AF%E6%80%8E%E4%B9%88%E4%BB%8EACID%E8%A7%A3%E8%84%B1%EF%BC%8C%E6%8A%95%E8%BA%ABCAP-BASE"><span class="nav-number">1.</span> <span class="nav-text">分布式事务，是怎么从ACID解脱，投身CAP&#x2F;BASE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">分布式一致性问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E5%8D%8F%E8%AE%AE%E5%92%8C%E7%AE%97%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">一致性协议和算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1"><span class="nav-number">4.</span> <span class="nav-text">分布式事务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2PC%EF%BC%88%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%EF%BC%89-%E5%BC%BA%E4%B8%80%E8%87%B4"><span class="nav-number">4.1.</span> <span class="nav-text">2PC（两阶段提交）[强一致]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.1.</span> <span class="nav-text">具体实现方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.1.2.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3PC%EF%BC%88%E4%B8%89%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%EF%BC%89-%E5%BC%BA%E4%B8%80%E8%87%B4"><span class="nav-number">4.2.</span> <span class="nav-text">3PC（三阶段提交）[强一致]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E6%AF%942PC%EF%BC%8C3PC%E5%BC%95%E5%85%A5%E8%B6%85%E6%97%B6%E6%9C%BA%E5%88%B6"><span class="nav-number">4.2.1.</span> <span class="nav-text">相比2PC，3PC引入超时机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3PC-%E7%9A%84%E5%BC%95%E5%85%A5%E7%9B%AE%E7%9A%84"><span class="nav-number">4.2.2.</span> <span class="nav-text">3PC 的引入目的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-number">4.2.3.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A5%E5%81%BF%E4%BA%8B%E5%8A%A1%EF%BC%88TCC%EF%BC%89-%E8%A1%A5%E5%81%BF%E6%80%A7%E4%BA%8B%E5%8A%A1%E6%80%9D%E6%83%B3"><span class="nav-number">4.3.</span> <span class="nav-text">补偿事务（TCC）[补偿性事务思想]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#example"><span class="nav-number">4.3.1.</span> <span class="nav-text">example</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%B6%88%E6%81%AF%E8%A1%A8-%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-number">4.4.</span> <span class="nav-text">本地消息表[最终一致性]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EMQ%E7%9A%84%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%96%B9%E6%A1%88-%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-number">4.5.</span> <span class="nav-text">基于MQ的最终一致方案[最终一致性]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E5%8A%AA%E5%8A%9B%E9%80%9A%E7%9F%A5"><span class="nav-number">4.6.</span> <span class="nav-text">最大努力通知</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Paxos-%E7%AE%97%E6%B3%95"><span class="nav-number">4.7.</span> <span class="nav-text">Paxos 算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#prepare-%E9%98%B6%E6%AE%B5"><span class="nav-number">4.7.1.</span> <span class="nav-text">prepare 阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#accept-%E9%98%B6%E6%AE%B5"><span class="nav-number">4.7.2.</span> <span class="nav-text">accept 阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#paxos-%E7%AE%97%E6%B3%95%E7%9A%84%E6%AD%BB%E5%BE%AA%E7%8E%AF%E9%97%AE%E9%A2%98"><span class="nav-number">4.7.3.</span> <span class="nav-text">paxos 算法的死循环问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#RocketMQ%E9%80%89%E6%8B%A9%E5%BC%82%E6%AD%A5-%E5%90%8C%E6%AD%A5%E5%88%B7%E7%9B%98%EF%BC%8C%E5%BC%82%E6%AD%A5-%E5%90%8C%E6%AD%A5%E5%A4%8D%E5%88%B6%EF%BC%8C%E8%83%8C%E5%90%8E%E7%9A%84CP%E5%92%8CAP%E6%80%9D%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">RocketMQ选择异步&#x2F;同步刷盘，异步&#x2F;同步复制，背后的CP和AP思考</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E5%88%B7%E7%9B%98-%E5%BC%82%E6%AD%A5%E5%88%B7%E7%9B%98"><span class="nav-number">5.0.0.1.</span> <span class="nav-text">同步刷盘&#x2F;异步刷盘</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E5%A4%8D%E5%88%B6-%E5%BC%82%E6%AD%A5%E5%A4%8D%E5%88%B6"><span class="nav-number">5.0.0.2.</span> <span class="nav-text">同步复制&#x2F;异步复制</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="集群,redis,面试,缓存," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="主从（复制|集群|同步）Redis的主从结构可以采用一主多从或者级联结构，Redis主从复制可以根据是否是全量分为全量同步和增量同步  优点备份数据，这样当一个节点损坏（指不可恢复的硬件损坏）时，数据因为有备份，可以方便恢复。 缺点master节点挂了以后，redis就不能对外提供写服务了，因为剩下的slave不能成为master。 适用场景读请求较多场景 Redis主从同步策略主从刚刚连接的时候">
+<meta property="og:type" content="article">
+<meta property="og:title" content="中间件-redis集群知识点">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/03/30/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E9%9B%86%E7%BE%A4%E7%9F%A5%E8%AF%86%E7%82%B9/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="主从（复制|集群|同步）Redis的主从结构可以采用一主多从或者级联结构，Redis主从复制可以根据是否是全量分为全量同步和增量同步  优点备份数据，这样当一个节点损坏（指不可恢复的硬件损坏）时，数据因为有备份，可以方便恢复。 缺点master节点挂了以后，redis就不能对外提供写服务了，因为剩下的slave不能成为master。 适用场景读请求较多场景 Redis主从同步策略主从刚刚连接的时候">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/redis%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6.png">
+<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E5%85%A8%E9%87%8F%E5%90%8C%E6%AD%A5.png">
+<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/Redis%E6%97%A0%E7%A3%81%E7%9B%98%E5%8C%96%E5%A4%8D%E5%88%B6.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E5%93%A8%E5%85%B5%E7%9B%91%E6%8E%A7.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB%E8%BF%87%E7%A8%8B.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E9%80%89%E4%B8%BEleader.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redismaster%E8%8A%82%E7%82%B9%E6%81%A2%E5%A4%8D.png">
+<meta property="og:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/Cluster%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F.png">
+<meta property="article:published_time" content="2021-03-30T15:19:01.000Z">
+<meta property="article:modified_time" content="2021-04-23T15:18:04.642Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="集群">
+<meta property="article:tag" content="redis">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="缓存">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/redis%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/03/30/中间件-redis集群知识点/"/>
+
+
+
+
+
+  <title>中间件-redis集群知识点 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/30/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E9%9B%86%E7%BE%A4%E7%9F%A5%E8%AF%86%E7%82%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">中间件-redis集群知识点</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-30T23:19:01+08:00">
+                2021-03-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E9%9B%86%E7%BE%A4%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis集群知识点</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="主从（复制-集群-同步）"><a href="#主从（复制-集群-同步）" class="headerlink" title="主从（复制|集群|同步）"></a>主从（复制|集群|同步）</h1><p>Redis的主从结构可以采用一主多从或者级联结构，Redis主从复制可以根据是否是全量分为全量同步和增量同步</p>
+<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/redis%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6.png"></p>
+<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><p>备份数据，这样当一个节点损坏（指不可恢复的硬件损坏）时，数据因为有备份，可以方便恢复。</p>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><p>master节点挂了以后，redis就不能对外提供写服务了，因为剩下的slave不能成为master。</p>
+<h2 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h2><p>读请求较多场景</p>
+<h2 id="Redis主从同步策略"><a href="#Redis主从同步策略" class="headerlink" title="Redis主从同步策略"></a>Redis主从同步策略</h2><p>主从刚刚连接的时候，进行全量同步；</p>
+<p>全同步结束后，进行增量同步。</p>
+<p>当然，如果有需要，slave 在任何时候都可以发起全量同步。</p>
+<p>redis 策略是，无论如何，首先会尝试进行增量同步，如不成功，要求从机进行全量同步。</p>
+<h2 id="Redis-的同步机制"><a href="#Redis-的同步机制" class="headerlink" title="Redis 的同步机制"></a>Redis 的同步机制</h2><h3 id="全量同步"><a href="#全量同步" class="headerlink" title="全量同步"></a>全量同步</h3><p>Redis全量复制一般发生在Slave初始化阶段，这时Slave需要将Master上的所有数据都复制一份。具体步骤如下：</p>
+<ul>
+<li> 从服务器连接主服务器，发送SYNC命令；</li>
+<li> 主服务器接收到SYNC命名后，开始执行BGSAVE命令生成RDB文件并使用缓冲区记录此后执行的所有写命令；</li>
+<li> 主服务器BGSAVE执行完后，向所有从服务器发送快照文件，并在发送期间继续记录被执行的写命令；</li>
+<li> 从服务器收到快照文件后丢弃所有旧数据，载入收到的快照；</li>
+<li> 主服务器快照发送完毕后开始向从服务器发送缓冲区中的写命令；</li>
+<li> 从服务器完成对快照的载入，开始接收命令请求，并执行来自主服务器缓冲区的写命令；</li>
+</ul>
+<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E5%85%A8%E9%87%8F%E5%90%8C%E6%AD%A5.png" alt="image"></p>
+<p>完成上面几个步骤后就完成了从服务器数据初始化的所有操作，从服务器此时可以接收来自用户的读请求。</p>
+<h3 id="增量同步"><a href="#增量同步" class="headerlink" title="增量同步"></a>增量同步</h3><p>Redis增量复制是指Slave初始化后开始正常工作时主服务器发生的写操作同步到从服务器的过程。<br>增量复制的过程主要是主服务器每执行一个写命令就会向从服务器发送相同的写命令，从服务器接收并执行收到的写命令。</p>
+<h2 id="全量同步时需要注意："><a href="#全量同步时需要注意：" class="headerlink" title="全量同步时需要注意："></a>全量同步时需要注意：</h2><p>如果多个Slave断线了，需重启时，因为只要Slave启动，就会发送sync请求和主机全量同步，当多个同时出现的时候，可能会导致Master IO剧增宕机。</p>
+<h2 id="Redis主从复制重要内容"><a href="#Redis主从复制重要内容" class="headerlink" title="Redis主从复制重要内容"></a>Redis主从复制重要内容</h2><blockquote>
+<p>Redis主从复制的配置十分简单，它可以使从服务器是主服务器的完全拷贝。需要清楚知道Redis主从复制的几点重要内容：</p>
+</blockquote>
+<p>1）Redis使用异步复制。但从Redis 2.8开始，从服务器会周期性的应答从复制流中处理的数据量。</p>
+<p>2）一个主服务器可以有多个从服务器。</p>
+<p>3）从服务器也可以接受其他从服务器的连接。除了多个从服务器连接到一个主服务器之外，多个从服务器也可以连接到一个从服务器上，形成一个图状结构（级联）。</p>
+<p>4）Redis主从复制不阻塞主服务器端。也就是说当若干个从服务器在进行初始同步时，主服务器仍然可以处理请求。</p>
+<p>5）主从复制也不阻塞从服务器端。当从服务器进行初始同步时，它使用旧版本的数据来应对查询请求（假设你在redis.conf配置文件是这么配置的)。如果不想这样，你可以配置当复制流关闭时让从服务器给客户端返回一个错误。但是当初始同步完成后，需删除旧数据集和加载新的数据集，在这个短暂时间内，从服务器会阻塞连接进来的请求。</p>
+<p>6）主从复制可以用来增强扩展性，使用多个从服务器来处理只读的请求（比如，繁重的排序操作可以放到从服务器去做），也可以简单的用来做数据冗余。</p>
+<p>7）使用主从复制可以为主服务器免除把数据写入磁盘的消耗：在主服务器的redis.conf文件中配置“避免保存”（注释掉所有“保存“命令），然后连接一个配置为“进行保存”的从服务器即可。但是这个配置要确保主服务器不会自动重启，主redis服务器一旦重启，因为主redis服务器数据为空，这时候通过主从同步可能导致从redis服务器上的数据也被清空；</p>
+<h2 id="主从同步注意问题"><a href="#主从同步注意问题" class="headerlink" title="主从同步注意问题"></a>主从同步注意问题</h2><ul>
+<li><p>主从服务器之间会定期进行通话，但是如果master上设置了密码，那么如果不给slave设置密码就会导致slave不能跟master进行任何操作</p>
+</li>
+<li><p>关于slave服务器上过期键的处理，由master服务器负责键的过期删除处理，然后将相关删除命令已数据同步的方式同步给slave服务器，slave服务器根据删除命令删除本地的key。</p>
+</li>
+</ul>
+<h2 id="当主服务器不进行持久化时复制的安全性"><a href="#当主服务器不进行持久化时复制的安全性" class="headerlink" title="当主服务器不进行持久化时复制的安全性"></a>当主服务器不进行持久化时复制的安全性</h2><p>在进行主从复制设置时，强烈建议在主服务器上开启持久化，当不能这么做时，比如考虑到延迟的问题，应该将实例配置为避免自动重启。</p>
+<h3 id="为什么不持久化的主服务器自动重启非常危险呢？"><a href="#为什么不持久化的主服务器自动重启非常危险呢？" class="headerlink" title="为什么不持久化的主服务器自动重启非常危险呢？"></a>为什么不持久化的主服务器自动重启非常危险呢？</h3><p>为了更好的理解这个问题，看下面这个失败的例子，其中主服务器和从服务器中数据库都被删除了</p>
+<p>设置节点A为主服务器，关闭持久化，节点B和C从节点A复制数据。这时出现了一个崩溃，但Redis具有自动重启系统，重启了进程，因为关闭了持久化，节点重启后只有一个空的数据集。节点B和C从节点A进行复制，现在节点A是空的，所以节点B和C上的复制数据也会被删除。当在高可用系统中使用Redis Sentinel，关闭了主服务器的持久化，并且允许自动重启，这种情况是很危险的。比如主服务器可能在很短的时间就完成了重启，以至于Sentinel都无法检测到这次失败，那么上面说的这种失败的情况就发生了。如果数据比较重要，并且在使用主从复制时关闭了主服务器持久化功能的场景中，都应该禁止实例自动重启。</p>
+<hr>
+<h1 id="Redis无磁盘化复制"><a href="#Redis无磁盘化复制" class="headerlink" title="Redis无磁盘化复制"></a>Redis无磁盘化复制</h1><p>通过内存之间的传输，通过socket实现。</p>
+<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/Redis%E6%97%A0%E7%A3%81%E7%9B%98%E5%8C%96%E5%A4%8D%E5%88%B6.png" alt="image"></p>
+<ul>
+<li><p>磁盘有普通机械硬盘和SSD固定硬盘。如果是普通机械硬盘，硬盘读写效率低下。这样就出现了无磁盘化复制，从而提高了效率。</p>
+</li>
+<li><p>默认是关闭的</p>
+</li>
+<li><p>开启式将<code>repl-diskless-sync no --&gt;repl-diskless-sync yes</code></p>
+</li>
+</ul>
+<h1 id="哨兵机制"><a href="#哨兵机制" class="headerlink" title="哨兵机制"></a>哨兵机制</h1><h2 id="为何要有哨兵模式"><a href="#为何要有哨兵模式" class="headerlink" title="为何要有哨兵模式"></a>为何要有哨兵模式</h2><p>主从模式下<br>Master挂了，如何保证可用性，实现继续读写</p>
+<h2 id="什么是哨兵"><a href="#什么是哨兵" class="headerlink" title="什么是哨兵"></a>什么是哨兵</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F.png"></p>
+<p>Sentinel(哨兵)是用于监控Redis集群中Master状态的工具，是 Redis 高可用解决方案，哨兵可以监视一个或者多个redis master服务，以及这些master服务的所有从服务；当某个master服务宕机后，会把这个master下的某个从服务升级为master来替代已宕机的master继续工作。</p>
+<h2 id="哨兵模式的作用"><a href="#哨兵模式的作用" class="headerlink" title="哨兵模式的作用"></a>哨兵模式的作用</h2><ul>
+<li>通过发送命令，让Redis服务器返回监控其运行状态，包括主服务器和从服务器；</li>
+<li>当哨兵监测到master宕机，会自动将slave切换成master，然后通过发布订阅模式通知其他的从服务器，修改配置文件，让它们切换主机；</li>
+</ul>
+<h2 id="哨兵模式的工作方式："><a href="#哨兵模式的工作方式：" class="headerlink" title="哨兵模式的工作方式："></a>哨兵模式的工作方式：</h2><ul>
+<li>每个Sentinel（哨兵）进程以每秒钟一次的频率向整个集群中的Master主服务器，Slave从服务器以及其他Sentinel（哨兵）进程发送一个 PING 命令。</li>
+<li>如果一个实例（instance）距离最后一次有效回复 PING 命令的时间超过 down-after-milliseconds 选项所指定的值， 则这个实例会被 Sentinel（哨兵）进程标记为主观下线（SDOWN）</li>
+<li>如果一个Master主服务器被标记为主观下线（SDOWN），则正在监视这个Master主服务器的所有 Sentinel（哨兵）进程要以每秒一次的频率确认Master主服务器的确进入了主观下线状态</li>
+<li>当有足够数量的 Sentinel（哨兵）进程（大于等于配置文件指定的值）在指定的时间范围内确认Master主服务器进入了主观下线状态（SDOWN）， 则Master主服务器会被标记为客观下线（ODOWN）</li>
+<li>在一般情况下， 每个 Sentinel（哨兵）进程会以每 10 秒一次的频率向集群中的所有Master主服务器、Slave从服务器发送 INFO 命令。</li>
+<li>当Master主服务器被 Sentinel（哨兵）进程标记为客观下线（ODOWN）时，Sentinel（哨兵）进程向下线的 Master主服务器的所有 Slave从服务器发送 INFO 命令的频率会从 10 秒一次改为每秒一次。</li>
+<li>若没有足够数量的 Sentinel（哨兵）进程同意 Master主服务器下线， Master主服务器的客观下线状态就会被移除。若 Master主服务器重新向 Sentinel（哨兵）进程发送 PING 命令返回有效回复，Master主服务器的主观下线状态就会被移除。</li>
+</ul>
+<h2 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h2><p>哨兵模式是基于主从模式的，解决了主从模式下master挂了无法提供写服务的情况</p>
+<h2 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h2><p>当数据量过大到一台服务器存放不下的情况（内存不够时），主从模式或sentinel模式就不能满足需求了</p>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><p>存储量不大，单机可承受。</p>
+<h2 id="部署归约"><a href="#部署归约" class="headerlink" title="部署归约"></a>部署归约</h2><ul>
+<li>哨兵节点至少要有3个或奇数个节点</li>
+<li>哨兵分布式部署到不同计算机节点</li>
+<li>一组哨兵只监听一组主从</li>
+</ul>
+<h3 id="哨兵监控"><a href="#哨兵监控" class="headerlink" title="哨兵监控"></a>哨兵监控</h3><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E5%93%A8%E5%85%B5%E7%9B%91%E6%8E%A7.png"></p>
+<h3 id="故障转移"><a href="#故障转移" class="headerlink" title="故障转移"></a>故障转移</h3><blockquote>
+<p>推荐哨兵个数为奇数台，避免对半分</p>
+</blockquote>
+<p>假设主服务器宕机，哨兵1先检测到这个结果，系统并不会马上进行故障转移（ failover） 过程，仅仅是哨兵1主观的认为主服务器不可用，这个现象成为主观下线。</p>
+<p>当后面的哨兵也检测到主服务器不可用，并且数量达到一定值时，那么哨兵之间就会进行一次投票，投票的结果由一个哨兵发起，进行故障转移（ failover）操作。</p>
+<p>切换成功后，就会通过发布订阅模式，让各个哨兵把自己监控的从服务器实现切换主机，这个过程称为客观下线。 </p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB%E8%BF%87%E7%A8%8B.png"></p>
+<h3 id="选举Leader"><a href="#选举Leader" class="headerlink" title="选举Leader"></a>选举Leader</h3><blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">剩余的slaves重新和新的master做同步的并行个数</span></span><br><span class="line">sentinel parallel-syncs mymaster 1</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E9%80%89%E4%B8%BEleader.png"></p>
+<h3 id="原master恢复"><a href="#原master恢复" class="headerlink" title="原master恢复"></a>原master恢复</h3><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redismaster%E8%8A%82%E7%82%B9%E6%81%A2%E5%A4%8D.png"></p>
+<h1 id="Cluster集群模式"><a href="#Cluster集群模式" class="headerlink" title="Cluster集群模式"></a>Cluster集群模式</h1><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/Cluster%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F.png" alt="image"></p>
+<h2 id="工作模式"><a href="#工作模式" class="headerlink" title="工作模式"></a>工作模式</h2><p>在 Redis 的每一个节点上，都有这么两个东西，一个是<strong>插槽（slot）</strong>，它的的取值范围是：0-16383。还有一个就是<strong>cluster</strong>，可以理解为是一个集群管理的插件。<strong>当我们的存取的 Key到达的时候，Redis 会根据 crc16的算法得出一个结果，然后把结果对 16384 求余数，这样每个 key 都会对应一个编号在 0-16383 之间的哈希槽</strong>，通过这个值，去找到对应的插槽所对应的节点，然后直接自动跳转到这个<strong>对应的节点上</strong>进行存取操作。</p>
+<p>为了保证高可用，redis-cluster集群引入了<strong>主从模式</strong>，一个主节点对应一个或者多个从节点，当主节点宕机的时候，就会启用从节点。当其它主节点ping一个主节点A时，<strong>如果半数以上的主节点与A通信超时，那么认为主节点A宕机了</strong>。如果主节点A和它的从节点A1都宕机了，那么该集群就无法再提供服务了。</p>
+<p><strong>优点</strong>：</p>
+<ol>
+<li>无中心架构：三机房部署，其中一主一从构成一个分片，之间通过异步复制同步数据，异步复制存在数据不一致的时间窗口，保证高性能的同时牺牲了部分一致性一旦某个机房掉线，则分片上位于另一个机房的 slave 会被提升为 master 从而可以继续提供服务</li>
+<li>可扩展性：可线性扩展到 1000 多个节点，节点可动态添加或删除。</li>
+<li>降低运维成本，提高系统的扩展性和可用性。</li>
+</ol>
+<p><strong>使用场景</strong>：数据量大，高并发场景</p>
+<h2 id="集群容错"><a href="#集群容错" class="headerlink" title="集群容错"></a>集群容错</h2><p>构建Redis集群，需要至少3个节点作为master，以此组成一个高可用的集群，此外每个master都需要配备一个slave，所以整个集群需要6个节点，这也是最经典的Redis集群，也可以称之为三主三从，容错性更佳。所以在搭建的时候需要有6台虚拟机。</p>
+<h2 id="Redis-Cluster-实现的功能："><a href="#Redis-Cluster-实现的功能：" class="headerlink" title="Redis Cluster 实现的功能："></a>Redis Cluster 实现的功能：</h2><ul>
+<li>将数据分片到多个实例 (按照 slot 存储)；</li>
+<li>集群节点宕掉会自动 failover；</li>
+<li>提供相对平滑扩容 (缩容) 节点。</li>
+</ul>
+<h2 id="Redis-Cluster动态扩容和收缩"><a href="#Redis-Cluster动态扩容和收缩" class="headerlink" title="Redis Cluster动态扩容和收缩"></a>Redis Cluster动态扩容和收缩</h2><ul>
+<li>redis 的动态扩容操作都是通过redis源码文件夹中, redis-trib.rb脚本文件来完成的, 运行此脚本需要 ruby环境</li>
+<li>为Cluster动态增加节点(也就是添加的时候不影响正在运行的节点), 需要先主后从, slot迁移在添加主节点之后; 反之, 动态删除节点, 需要先从后主, slot迁移在删除主节点之前</li>
+<li>添加主节点到集群命令 <code>ruby redis-trib.rb add-node &lt;new node&gt; &lt;existing node&gt;</code>, 其中new node和 existing node(Cluster中任意一个master均可) 自行替换</li>
+<li>重新分片, 为新节点迁移slot: <code>ruby redis-trib.rb reshard &lt;existing node&gt;</code>此后按提示操作, 需要指定新的node中迁移的slot数量, 以及从哪些节点迁移</li>
+<li>删除主节点前, 先迁出slot, 移除slot 输入值要比slot总数小</li>
+<li>执行主节点删除:<code> ruby redis-trib.rb del-node &lt;existing node&gt; &lt;node id&gt;</code></li>
+</ul>
+<hr>
+<h1 id="Redis-集群方案什么情况下会导致整个集群不可用？"><a href="#Redis-集群方案什么情况下会导致整个集群不可用？" class="headerlink" title="Redis 集群方案什么情况下会导致整个集群不可用？"></a>Redis 集群方案什么情况下会导致整个集群不可用？</h1><p>有 A，B，C 三个节点的集群,在没有复制模型的情况下,如果节点 B 失败了，那么整个集群就会以为缺少 5501-11000 这个范围的槽而不可用。</p>
+<h1 id="redis集群相关问题"><a href="#redis集群相关问题" class="headerlink" title="redis集群相关问题"></a>redis集群相关问题</h1><h2 id="说说-Redis-哈希槽的概念？"><a href="#说说-Redis-哈希槽的概念？" class="headerlink" title="说说 Redis 哈希槽的概念？"></a>说说 Redis 哈希槽的概念？</h2><p>Redis 集群没有使用一致性 hash,而是引入了哈希槽的概念，Redis 集群有16384 个哈希槽，每个 key 通过 CRC16 校验后对 16384 取模来决定放置哪个槽，集群的每个节点负责一部分 hash 槽。</p>
+<h2 id="Redis-集群的主从复制模型是怎样的？"><a href="#Redis-集群的主从复制模型是怎样的？" class="headerlink" title="Redis 集群的主从复制模型是怎样的？"></a>Redis 集群的主从复制模型是怎样的？</h2><p>为了是在部分节点失败或者大部分节点无法通信的的情况下集群仍然可用，所以集群使用了主从复制模型，<br>每个节点都会有N-1个复制品</p>
+<h2 id="Redis-集群会有写操作丢失吗？为什么？"><a href="#Redis-集群会有写操作丢失吗？为什么？" class="headerlink" title="Redis 集群会有写操作丢失吗？为什么？"></a>Redis 集群会有写操作丢失吗？为什么？</h2><p>Redis 并不能保证数据的强一致性，这意味这在实际中集群在特定的条件下可能会丢失写操作。</p>
+<h2 id="Redis-集群之间是如何复制的？"><a href="#Redis-集群之间是如何复制的？" class="headerlink" title="Redis 集群之间是如何复制的？"></a>Redis 集群之间是如何复制的？</h2><p>异步复制</p>
+<h2 id="Redis-集群最大节点个数是多少？"><a href="#Redis-集群最大节点个数是多少？" class="headerlink" title="Redis 集群最大节点个数是多少？"></a>Redis 集群最大节点个数是多少？</h2><p>16384 个。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9B%86%E7%BE%A4/" rel="tag"># 集群</a>
+          
+            <a href="/tags/redis/" rel="tag"># redis</a>
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/%E7%BC%93%E5%AD%98/" rel="tag"># 缓存</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/03/28/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/" rel="next" title="中间件-redis集群配置">
+                <i class="fa fa-chevron-left"></i> 中间件-redis集群配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/03/30/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E6%8C%81%E4%B9%85%E5%8C%96/" rel="prev" title="中间件-redis持久化">
+                中间件-redis持久化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%EF%BC%88%E5%A4%8D%E5%88%B6-%E9%9B%86%E7%BE%A4-%E5%90%8C%E6%AD%A5%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">主从（复制|集群|同步）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E7%82%B9"><span class="nav-number">1.1.</span> <span class="nav-text">优点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9"><span class="nav-number">1.2.</span> <span class="nav-text">缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%82%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.3.</span> <span class="nav-text">适用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.</span> <span class="nav-text">Redis主从同步策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E7%9A%84%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6"><span class="nav-number">1.5.</span> <span class="nav-text">Redis 的同步机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E9%87%8F%E5%90%8C%E6%AD%A5"><span class="nav-number">1.5.1.</span> <span class="nav-text">全量同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A2%9E%E9%87%8F%E5%90%8C%E6%AD%A5"><span class="nav-number">1.5.2.</span> <span class="nav-text">增量同步</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%A8%E9%87%8F%E5%90%8C%E6%AD%A5%E6%97%B6%E9%9C%80%E8%A6%81%E6%B3%A8%E6%84%8F%EF%BC%9A"><span class="nav-number">1.6.</span> <span class="nav-text">全量同步时需要注意：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E9%87%8D%E8%A6%81%E5%86%85%E5%AE%B9"><span class="nav-number">1.7.</span> <span class="nav-text">Redis主从复制重要内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E5%90%8C%E6%AD%A5%E6%B3%A8%E6%84%8F%E9%97%AE%E9%A2%98"><span class="nav-number">1.8.</span> <span class="nav-text">主从同步注意问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%93%E4%B8%BB%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8D%E8%BF%9B%E8%A1%8C%E6%8C%81%E4%B9%85%E5%8C%96%E6%97%B6%E5%A4%8D%E5%88%B6%E7%9A%84%E5%AE%89%E5%85%A8%E6%80%A7"><span class="nav-number">1.9.</span> <span class="nav-text">当主服务器不进行持久化时复制的安全性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E6%8C%81%E4%B9%85%E5%8C%96%E7%9A%84%E4%B8%BB%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%87%AA%E5%8A%A8%E9%87%8D%E5%90%AF%E9%9D%9E%E5%B8%B8%E5%8D%B1%E9%99%A9%E5%91%A2%EF%BC%9F"><span class="nav-number">1.9.1.</span> <span class="nav-text">为什么不持久化的主服务器自动重启非常危险呢？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E6%97%A0%E7%A3%81%E7%9B%98%E5%8C%96%E5%A4%8D%E5%88%B6"><span class="nav-number">2.</span> <span class="nav-text">Redis无磁盘化复制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%93%A8%E5%85%B5%E6%9C%BA%E5%88%B6"><span class="nav-number">3.</span> <span class="nav-text">哨兵机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BD%95%E8%A6%81%E6%9C%89%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">为何要有哨兵模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%93%A8%E5%85%B5"><span class="nav-number">3.2.</span> <span class="nav-text">什么是哨兵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E7%9A%84%E4%BD%9C%E7%94%A8"><span class="nav-number">3.3.</span> <span class="nav-text">哨兵模式的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%96%B9%E5%BC%8F%EF%BC%9A"><span class="nav-number">3.4.</span> <span class="nav-text">哨兵模式的工作方式：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BC%98%E7%82%B9%EF%BC%9A"><span class="nav-number">3.5.</span> <span class="nav-text">优点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%BA%E7%82%B9%EF%BC%9A"><span class="nav-number">3.6.</span> <span class="nav-text">缺点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">3.7.</span> <span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%83%A8%E7%BD%B2%E5%BD%92%E7%BA%A6"><span class="nav-number">3.8.</span> <span class="nav-text">部署归约</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%93%A8%E5%85%B5%E7%9B%91%E6%8E%A7"><span class="nav-number">3.8.1.</span> <span class="nav-text">哨兵监控</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB"><span class="nav-number">3.8.2.</span> <span class="nav-text">故障转移</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%89%E4%B8%BELeader"><span class="nav-number">3.8.3.</span> <span class="nav-text">选举Leader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9Fmaster%E6%81%A2%E5%A4%8D"><span class="nav-number">3.8.4.</span> <span class="nav-text">原master恢复</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Cluster%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">Cluster集群模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.1.</span> <span class="nav-text">工作模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E5%AE%B9%E9%94%99"><span class="nav-number">4.2.</span> <span class="nav-text">集群容错</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-Cluster-%E5%AE%9E%E7%8E%B0%E7%9A%84%E5%8A%9F%E8%83%BD%EF%BC%9A"><span class="nav-number">4.3.</span> <span class="nav-text">Redis Cluster 实现的功能：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-Cluster%E5%8A%A8%E6%80%81%E6%89%A9%E5%AE%B9%E5%92%8C%E6%94%B6%E7%BC%A9"><span class="nav-number">4.4.</span> <span class="nav-text">Redis Cluster动态扩容和收缩</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-%E9%9B%86%E7%BE%A4%E6%96%B9%E6%A1%88%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E4%B8%8B%E4%BC%9A%E5%AF%BC%E8%87%B4%E6%95%B4%E4%B8%AA%E9%9B%86%E7%BE%A4%E4%B8%8D%E5%8F%AF%E7%94%A8%EF%BC%9F"><span class="nav-number">5.</span> <span class="nav-text">Redis 集群方案什么情况下会导致整个集群不可用？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#redis%E9%9B%86%E7%BE%A4%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98"><span class="nav-number">6.</span> <span class="nav-text">redis集群相关问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B4%E8%AF%B4-Redis-%E5%93%88%E5%B8%8C%E6%A7%BD%E7%9A%84%E6%A6%82%E5%BF%B5%EF%BC%9F"><span class="nav-number">6.1.</span> <span class="nav-text">说说 Redis 哈希槽的概念？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E9%9B%86%E7%BE%A4%E7%9A%84%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E6%A8%A1%E5%9E%8B%E6%98%AF%E6%80%8E%E6%A0%B7%E7%9A%84%EF%BC%9F"><span class="nav-number">6.2.</span> <span class="nav-text">Redis 集群的主从复制模型是怎样的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E9%9B%86%E7%BE%A4%E4%BC%9A%E6%9C%89%E5%86%99%E6%93%8D%E4%BD%9C%E4%B8%A2%E5%A4%B1%E5%90%97%EF%BC%9F%E4%B8%BA%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">6.3.</span> <span class="nav-text">Redis 集群会有写操作丢失吗？为什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E9%9B%86%E7%BE%A4%E4%B9%8B%E9%97%B4%E6%98%AF%E5%A6%82%E4%BD%95%E5%A4%8D%E5%88%B6%E7%9A%84%EF%BC%9F"><span class="nav-number">6.4.</span> <span class="nav-text">Redis 集群之间是如何复制的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-%E9%9B%86%E7%BE%A4%E6%9C%80%E5%A4%A7%E8%8A%82%E7%82%B9%E4%B8%AA%E6%95%B0%E6%98%AF%E5%A4%9A%E5%B0%91%EF%BC%9F"><span class="nav-number">6.5.</span> <span class="nav-text">Redis 集群最大节点个数是多少？</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

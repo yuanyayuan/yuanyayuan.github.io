@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="redis,面试,缓存," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Redis设置过期时间 expire key time(以秒为单位)–这是最常用的方式 setex(String key, int seconds, String value)–字符串独有的方式  注意：  除了字符串自己独有设置过期时间的方法外，其他方法都需要依靠expire方法来设置时间 如果没有设置时间，那缓存就是永不过期 如果设置了过期时间，之后又想让缓存永不过期，使用persist ke">
+<meta property="og:type" content="article">
+<meta property="og:title" content="中间件-redis内存淘汰机制">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="Redis设置过期时间 expire key time(以秒为单位)–这是最常用的方式 setex(String key, int seconds, String value)–字符串独有的方式  注意：  除了字符串自己独有设置过期时间的方法外，其他方法都需要依靠expire方法来设置时间 如果没有设置时间，那缓存就是永不过期 如果设置了过期时间，之后又想让缓存永不过期，使用persist ke">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-04-03T04:46:31.000Z">
+<meta property="article:modified_time" content="2021-04-23T15:17:31.410Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="redis">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="缓存">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/03/中间件-redis内存淘汰机制/"/>
+
+
+
+
+
+  <title>中间件-redis内存淘汰机制 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">中间件-redis内存淘汰机制</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-03T12:46:31+08:00">
+                2021-04-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis内存淘汰机制</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Redis设置过期时间"><a href="#Redis设置过期时间" class="headerlink" title="Redis设置过期时间"></a>Redis设置过期时间</h1><ul>
+<li>expire key time(以秒为单位)–这是最常用的方式</li>
+<li>setex(String key, int seconds, String value)–字符串独有的方式</li>
+</ul>
+<p>注意：</p>
+<ul>
+<li>除了字符串自己独有设置过期时间的方法外，其他方法都需要依靠expire方法来设置时间</li>
+<li>如果没有设置时间，那缓存就是永不过期</li>
+<li>如果设置了过期时间，之后又想让缓存永不过期，使用persist key</li>
+</ul>
+<h1 id="Redis-给缓存数据设置过期时间有啥用？"><a href="#Redis-给缓存数据设置过期时间有啥用？" class="headerlink" title="Redis 给缓存数据设置过期时间有啥用？"></a>Redis 给缓存数据设置过期时间有啥用？</h1><p>一般情况下，我们设置保存的缓存数据的时候都会设置一个过期时间。为什么呢？</p>
+<p>因为内存是有限的，如果缓存中的所有数据都是一直保存的话，分分钟直接Out of memory。</p>
+<p><strong>过期时间除了有助于缓解内存的消耗，还有什么其他用么？</strong></p>
+<p>很多时候，我们的业务场景就是需要某个数据只在某一时间段内存在，比如我们的短信验证码可能只在1分钟内有效，用户登录的 token 可能只在 1 天内有效。</p>
+<p>如果使用传统的数据库来处理的话，一般都是自己判断过期，这样更麻烦并且性能要差很多。</p>
+<h1 id="Redis是如何判断数据是否过期的呢？"><a href="#Redis是如何判断数据是否过期的呢？" class="headerlink" title="Redis是如何判断数据是否过期的呢？"></a>Redis是如何判断数据是否过期的呢？</h1><p>Redis  通过一个叫做过期字典（可以看作是hash表）来保存数据过期的时间。过期字典的键指向Redis数据库中的某个key(键)，过期字典的值是一个long long类型的整数，这个整数保存了key所指向的数据库键的过期时间（毫秒精度的UNIX时间戳）。 </p>
+<h1 id="Redis-过期键的删除策略"><a href="#Redis-过期键的删除策略" class="headerlink" title="Redis 过期键的删除策略"></a>Redis 过期键的删除策略</h1><p>A、<strong>定期删除策略</strong>。用一个<strong>定时器</strong>来负责检查 key，过期则删除 key，注意这里并不是检查所有的 key 而是<strong>随机抽取进行检查</strong>。定期策略虽然让内存及时释放，但也会<strong>额外消耗 CPU 资源</strong>，通常 CPU 应该将时间尽量用于处理业务请求，而不是删除 key。</p>
+<p>B、<strong>惰性删除策略</strong>。在你<strong>获取</strong>某个 key 的时候，redis 会检查一下，这个 key <strong>如果设置了过期时间那么是否过期了</strong>，如果<strong>过期</strong>则删除该 key。</p>
+<hr>
+<h1 id="Redis-的回收策略（淘汰策略）"><a href="#Redis-的回收策略（淘汰策略）" class="headerlink" title="Redis 的回收策略（淘汰策略）"></a>Redis 的回收策略（淘汰策略）</h1><h2 id="内存淘汰机制"><a href="#内存淘汰机制" class="headerlink" title="内存淘汰机制"></a>内存淘汰机制</h2><p>如果<strong>定期删除没删除 key</strong>，然后也<strong>没及时去请求 key</strong>，即<strong>惰性删除也没生效</strong>，持续下去 redis 的内存会越来越高，当超过 redis 设置的内存最大使用量时，就会进行内存数据淘汰。redis 有 6 种淘汰策略：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>volatile-lru</td>
+<td>从已设置过期时间的数据集中挑选最近最少使用的数据淘汰</td>
+</tr>
+<tr>
+<td>volatile-ttl</td>
+<td>从已设置过期时间的数据集中挑选将要过期的数据淘汰</td>
+</tr>
+<tr>
+<td>volatile-random</td>
+<td>从已设置过期时间的数据集中任意选择数据淘汰</td>
+</tr>
+<tr>
+<td>allkeys-lru</td>
+<td>从所有数据集中挑选最近最少使用的数据淘汰</td>
+</tr>
+<tr>
+<td>allkeys-random</td>
+<td>从所有数据集中任意选择数据进行淘汰</td>
+</tr>
+<tr>
+<td>noeviction</td>
+<td>当内存不足以容纳新写入数据时，新写入操作会报错。很少使用</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>注意这里的 6 种机制，前缀 volatile 和 allkeys 用于区分淘汰数据的数据集是从已设置过期时间的数据集还是从全部数据集中选取，后面的 lru、ttl 以及 random 是三种不同的淘汰策略，再加上一种 no-enviction 永不回收的策略。其中最常使用的是 volatile-lru/allkeys-lru。</p>
+</blockquote>
+<ul>
+<li>allkeys-lru：如果期望用户请求呈现幂律分布(power-law distribution)，也就是，期望一部分子集元素被访问得远比其他元素多时，可以使用allkeys-lru策略。在你不确定时这是一个好的选择</li>
+<li>allkeys-random：如果期望是循环周期的访问，所有的键被连续扫描，或者期望请求符合平均分布(每个元素以相同的概率被访问)，可以使用allkeys-random策略。</li>
+<li>volatile-ttl：如果你期望能让 Redis 通过使用你创建缓存对象的时候设置的TTL值，确定哪些对象应该是较好的清除候选项，可以使用volatile-ttl策略。</li>
+</ul>
+<p>另外值得注意的是，为键设置过期时间需要消耗内存，所以使用像allkeys-lru这样的策略会更高效，因为在内存压力下没有必要为键的回收设置过期时间。</p>
+<h2 id="常用缓存数据淘汰策略"><a href="#常用缓存数据淘汰策略" class="headerlink" title="常用缓存数据淘汰策略"></a>常用缓存数据淘汰策略</h2><ul>
+<li>FIFO（First In First Out）： 先进先出算法，即先放入缓存的先被移除。</li>
+<li>LRU（Least Recently Used）： 最近最少使用算法，使用时间距离现在最久的那个被移除。</li>
+<li>LFU（Least Frequently Used）： 最不常用算法，一定时间段内使用次数（频率）最少的那个被移除。</li>
+</ul>
+<h2 id="缓存数据更新策略"><a href="#缓存数据更新策略" class="headerlink" title="缓存数据更新策略"></a>缓存数据更新策略</h2><ul>
+<li>定时任务从数据库直接更新缓存：适用于对时间不敏感的数据。</li>
+<li>查询时写缓存，即查询优先查询缓存，若缓存未命中，查询数据库，将返回结果写入缓存，数据更新时先 delete缓存，再更新缓存。</li>
+<li>MQ 消息异步更新缓存。</li>
+</ul>
+<h1 id="Redis采用的过期策略"><a href="#Redis采用的过期策略" class="headerlink" title="Redis采用的过期策略"></a>Redis采用的过期策略</h1><p>惰性删除+定期删除</p>
+<ul>
+<li>惰性删除流程<ul>
+<li>在进行get或setnx等操作时，先检查key是否过期，</li>
+<li>若过期，删除key，然后执行相应操作；</li>
+<li>若没过期，直接执行相应操作</li>
+</ul>
+</li>
+<li>定期删除流程（简单而言，对指定个数个库的每一个库随机删除小于等于指定个数个过期key）<ul>
+<li>遍历每个数据库（就是redis.conf中配置的”database”数量，默认为16）<ul>
+<li>检查当前库中的指定个数个key（默认是每个库检查20个key，注意相当于该循环执行20次，循环体时下边的描述）<ul>
+<li>如果当前库中没有一个key设置了过期时间，直接执行下一个库的遍历</li>
+<li>随机获取一个设置了过期时间的key，检查该key是否过期，如果过期，删除key</li>
+<li>判断定期删除操作是否已经达到指定时长，若已经达到，直接退出定期删除。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/redis/" rel="tag"># redis</a>
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/%E7%BC%93%E5%AD%98/" rel="tag"># 缓存</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/" rel="next" title="中间件-redis线程模型">
+                <i class="fa fa-chevron-left"></i> 中间件-redis线程模型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E6%8C%87%E4%BB%A4/" rel="prev" title="中间件-redis指令">
+                中间件-redis指令 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E8%AE%BE%E7%BD%AE%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4"><span class="nav-number">1.</span> <span class="nav-text">Redis设置过期时间</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-%E7%BB%99%E7%BC%93%E5%AD%98%E6%95%B0%E6%8D%AE%E8%AE%BE%E7%BD%AE%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4%E6%9C%89%E5%95%A5%E7%94%A8%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">Redis 给缓存数据设置过期时间有啥用？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E6%98%AF%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E6%95%B0%E6%8D%AE%E6%98%AF%E5%90%A6%E8%BF%87%E6%9C%9F%E7%9A%84%E5%91%A2%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">Redis是如何判断数据是否过期的呢？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-%E8%BF%87%E6%9C%9F%E9%94%AE%E7%9A%84%E5%88%A0%E9%99%A4%E7%AD%96%E7%95%A5"><span class="nav-number">4.</span> <span class="nav-text">Redis 过期键的删除策略</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-%E7%9A%84%E5%9B%9E%E6%94%B6%E7%AD%96%E7%95%A5%EF%BC%88%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">Redis 的回收策略（淘汰策略）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6"><span class="nav-number">5.1.</span> <span class="nav-text">内存淘汰机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%BC%93%E5%AD%98%E6%95%B0%E6%8D%AE%E6%B7%98%E6%B1%B0%E7%AD%96%E7%95%A5"><span class="nav-number">5.2.</span> <span class="nav-text">常用缓存数据淘汰策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E6%95%B0%E6%8D%AE%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5"><span class="nav-number">5.3.</span> <span class="nav-text">缓存数据更新策略</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E9%87%87%E7%94%A8%E7%9A%84%E8%BF%87%E6%9C%9F%E7%AD%96%E7%95%A5"><span class="nav-number">6.</span> <span class="nav-text">Redis采用的过期策略</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

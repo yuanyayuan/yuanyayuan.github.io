@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="集群,redis,缓存," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="主从复制（主从集群）（读写分离）架构 树状架构 使用的不多   原理基于RDB  初始化复制（全量复制）以后的复制（增量复制）   注：一定要开启Master的持久化，如果不开启持久化，Master恢复后内存中无数据，也将会同步至从节点 主从复制的配置 192.168.159.128  192.168.159.129  192.168.159.130   配置从节点192.168.159.129与">
+<meta property="og:type" content="article">
+<meta property="og:title" content="中间件-redis集群配置">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/03/28/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="主从复制（主从集群）（读写分离）架构 树状架构 使用的不多   原理基于RDB  初始化复制（全量复制）以后的复制（增量复制）   注：一定要开启Master的持久化，如果不开启持久化，Master恢复后内存中无数据，也将会同步至从节点 主从复制的配置 192.168.159.128  192.168.159.129  192.168.159.130   配置从节点192.168.159.129与">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E6%A0%91%E7%8A%B6%E6%9E%B6%E6%9E%84.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%8E%9F%E7%90%86.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication128.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication130.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Redis%E6%97%A0%E7%A3%81%E7%9B%98%E5%8C%96%E5%A4%8D%E5%88%B6%E5%8E%9F%E7%90%86.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication129_1.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication130_1.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication128_1.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B52.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B53.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E6%A7%BDslot%E6%98%AF%E6%80%8E%E6%A0%B7%E5%88%86%E9%85%8D%E7%9A%84.png">
+<meta property="article:published_time" content="2021-03-28T08:49:43.000Z">
+<meta property="article:modified_time" content="2021-04-23T15:17:35.237Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="集群">
+<meta property="article:tag" content="redis">
+<meta property="article:tag" content="缓存">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/03/28/中间件-redis集群配置/"/>
+
+
+
+
+
+  <title>中间件-redis集群配置 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/28/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">中间件-redis集群配置</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-28T16:49:43+08:00">
+                2021-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis集群配置</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="主从复制（主从集群）（读写分离）"><a href="#主从复制（主从集群）（读写分离）" class="headerlink" title="主从复制（主从集群）（读写分离）"></a>主从复制（主从集群）（读写分离）</h1><h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6.png"></p>
+<h2 id="树状架构"><a href="#树状架构" class="headerlink" title="树状架构"></a>树状架构</h2><blockquote>
+<p>使用的不多</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E6%A0%91%E7%8A%B6%E6%9E%B6%E6%9E%84.png"></p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h3 id="基于RDB"><a href="#基于RDB" class="headerlink" title="基于RDB"></a>基于RDB</h3><blockquote>
+<p> 初始化复制（全量复制）以后的复制（增量复制）</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E5%8E%9F%E7%90%86.png"></p>
+<p><strong>注：一定要开启Master的持久化，如果不开启持久化，Master恢复后内存中无数据，也将会同步至从节点</strong></p>
+<h2 id="主从复制的配置"><a href="#主从复制的配置" class="headerlink" title="主从复制的配置"></a>主从复制的配置</h2><ul>
+<li><p>192.168.159.128</p>
+</li>
+<li><p>192.168.159.129</p>
+</li>
+<li><p>192.168.159.130</p>
+</li>
+</ul>
+<h3 id="配置从节点"><a href="#配置从节点" class="headerlink" title="配置从节点"></a>配置从节点</h3><p>192.168.159.129与192.168.159.130</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Master IP host</span></span><br><span class="line">replicaof 192.168.159.128 6379</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> redis密码</span></span><br><span class="line">masterauth redis</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> slave只读</span></span><br><span class="line">replica-read-only yes</span><br></pre></td></tr></table></figure>
+
+<h3 id="重启redis"><a href="#重启redis" class="headerlink" title="重启redis"></a>重启redis</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/etc/init.d/redis_init_script stop</span><br><span class="line"></span><br><span class="line">/etc/init.d/redis_init_script start</span><br></pre></td></tr></table></figure>
+
+<h3 id="查看Replication"><a href="#查看Replication" class="headerlink" title="查看Replication"></a>查看Replication</h3><ul>
+<li>192.168.159.128</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication128.png" style="zoom:50%;" />
+
+<ul>
+<li>192.168.159.129</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication.png" style="zoom:50%;" />
+
+<ul>
+<li>192.168.159.130</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication130.png" style="zoom:50%;" />
+
+<h2 id="Redis无磁盘化复制"><a href="#Redis无磁盘化复制" class="headerlink" title="Redis无磁盘化复制"></a>Redis无磁盘化复制</h2><blockquote>
+<p>如果磁盘读写特别慢，但是网速高，RDB不接触磁盘，直接通过sockets传输</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Redis%E6%97%A0%E7%A3%81%E7%9B%98%E5%8C%96%E5%A4%8D%E5%88%B6%E5%8E%9F%E7%90%86.png"></p>
+<h3 id="配置开启"><a href="#配置开启" class="headerlink" title="配置开启"></a>配置开启</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">repl-diskless-sync no --&gt;repl-diskless-sync yes</span><br></pre></td></tr></table></figure>
+
+<h1 id="哨兵机制"><a href="#哨兵机制" class="headerlink" title="哨兵机制"></a>哨兵机制</h1><blockquote>
+<p>当Master宕机后，Slave只能提供读操作，整个Redis集群将无法正常的写</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F.png"></p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><ul>
+<li>普通配置</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">port 26379</span><br><span class="line">pidfile &quot;/usr/local/redis/sentinel/redis-sentinel.pid&quot;</span><br><span class="line">dir &quot;/usr/local/redis/sentinel&quot;</span><br><span class="line">daemonize yes</span><br><span class="line">protected-mode no</span><br><span class="line">logfile &quot;/usr/local/redis/sentinel/redis-sentinel.log&quot;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>核心配置</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 配置哨兵  “2”是哨兵个数  <span class="comment"># 127.0.0.1改为Master的Ip</span></span></span><br><span class="line">sentinel monitor mymaster 127.0.0.1 6379 2</span><br><span class="line"><span class="meta">#</span><span class="bash"> 密码</span></span><br><span class="line">sentinel auth-pass &lt;master-name&gt; &lt;password&gt;</span><br><span class="line"><span class="meta">#</span><span class="bash"> master被sentinel认定为失效的间隔时间</span></span><br><span class="line">sentinel down-after-milliseconds mymaster 30000</span><br><span class="line"><span class="meta">#</span><span class="bash"> 剩余的slaves重新和新的master做同步的并行个数</span></span><br><span class="line">sentinel parallel-syncs mymaster 1</span><br><span class="line"><span class="meta">#</span><span class="bash"> 主备切换的超时时间，哨兵要去做故障转移，这个时候哨兵也是一个进程，如果他没有去执行，超过这个时间后，会由其他的哨兵来处理</span></span><br><span class="line">sentinel failover-timeout mymaster 180000</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将配置发送给另外2个服务器</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp sentinel.conf root@192.168.159.129:/usr/local/redis/</span><br><span class="line">scp sentinel.conf root@192.168.159.130:/usr/local/redis/</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>启动哨兵</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> redis-sentinel 的命令在这个文件夹中</span></span><br><span class="line">cd /usr/local/bin/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建日志目录</span></span><br><span class="line">mkdir /usr/local/redis/sentinel -p</span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动哨兵</span></span><br><span class="line">redis-sentinel sentinel.conf</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看是否启动成功</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ps -ef|grep redis</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">root      26797      1  0 05:59 ?        00:00:10 /usr/local/bin/redis-server 0.0.0.0:6379</span><br><span class="line">root      29317      1  0 09:05 ?        00:00:00 redis-sentinel *:26379 [sentinel]</span><br><span class="line">root      29332  17688  0 09:05 pts/0    00:00:00 grep --color=auto redis</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>前台查看哨兵日志</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tail -f /usr/local/redis/sentinel/redis-sentinel.log</span><br></pre></td></tr></table></figure>
+
+<h2 id="测试哨兵"><a href="#测试哨兵" class="headerlink" title="测试哨兵"></a>测试哨兵</h2><ul>
+<li><p>宕机192.168.159.128上的redis</p>
+</li>
+<li><p>查看另外两台服务器上redis信息</p>
+<ul>
+<li><p>192.168.159.129</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication129_1.png" style="zoom:50%;" /></li>
+<li><p>192.168.159.130 (已被选举为Master)</p>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication130_1.png" style="zoom:50%;" /></li>
+<li><p>重启192.168.159.128上的redis</p>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Replication128_1.png" style="zoom:50%;" />
+
+<p>​    <strong>原先的Master变为Salve</strong></p>
+<h2 id="查看哨兵信息"><a href="#查看哨兵信息" class="headerlink" title="查看哨兵信息"></a>查看哨兵信息</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 进入redis配置文件夹爱</span></span><br><span class="line">cd /usr/local/redis/</span><br><span class="line"><span class="meta">#</span><span class="bash"> 启动哨兵</span></span><br><span class="line">redis-sentinel sentinel.conf</span><br><span class="line"><span class="meta">#</span><span class="bash"> 进入哨兵</span></span><br><span class="line">redis-cli -p 26379</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 查看imooc-master下的master节点信息</span></span><br><span class="line">sentinel master mymaster</span><br></pre></td></tr></table></figure>
+
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5.png" style="zoom:50%;" />
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 查看imooc-master下的slaves节点信息</span></span><br><span class="line">sentinel slaves mymaster</span><br></pre></td></tr></table></figure>
+
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B52.png" style="zoom:50%;" />
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 查看imooc-master下的哨兵节点信息</span></span><br><span class="line">sentinel sentinels mymaster</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B53.png" style="zoom:50%;" />
+
+<blockquote>
+<p>在128上查询哨兵信息则显示130和129为哨兵</p>
+</blockquote>
+<h1 id="Redis-Cluster集群（多主多从）"><a href="#Redis-Cluster集群（多主多从）" class="headerlink" title="Redis-Cluster集群（多主多从）"></a>Redis-Cluster集群（多主多从）</h1><p><strong>主从模式或哨兵模式存在的问题：</strong>当主节点异步同步数据时，主节点宕机，在同步的这段时间写入的新数据无法同步至从节点，当原主节点恢复成从节点时，在之前同步的那段时间写入的新数据将丢失。</p>
+<h2 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h2><ul>
+<li>修改第一台，并启动redis</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 开启集群模式</span></span><br><span class="line">cluster-enabled yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> 每一个节点需要有一个配置文件，需要6份。每个节点处于集群的角色都需要告知其他所有节点，彼此知道，这个文件用于存储集群模式下的集群状态等信息，这个文件是由redis自己维护，我们不用管。如果你要重新创建集群，那么把这个文件删了就行</span></span><br><span class="line">cluster-config-file nodes-201.conf</span><br><span class="line"><span class="meta">#</span><span class="bash"> 超时时间，超时则认为master宕机，随后主备切换</span></span><br><span class="line">cluster-node-timeout 5000</span><br><span class="line"><span class="meta">#</span><span class="bash"> 开启AOF</span></span><br><span class="line">appendonly yes</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>启动过程出错，删除working中的文件</p>
+</blockquote>
+<ul>
+<li>配置三主三从的环境，配置剩下5台，并启动redis</li>
+</ul>
+<h2 id="创建集群"><a href="#创建集群" class="headerlink" title="创建集群"></a>创建集群</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">####</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 注意1：如果你使用的是redis3.x版本，需要使用redis-trib.rb来构建集群，最新版使用C语言来构建了，这个要注意</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 注意2：以下为新版的redis构建方式</span></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment">####</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建集群，主节点和从节点比例为1，1-3为主，4-6为从，1和4，2和5，3和6分别对应为主从关系，这也是最经典用的最多的集群模式</span></span><br><span class="line">redis-cli --cluster create ip1:port1 ip2:port2 ip3:port3 ip4:port4 ip5:port5 ip6:port6 --cluster-replicas 1</span><br></pre></td></tr></table></figure>
+
+<h2 id="检查集群信息"><a href="#检查集群信息" class="headerlink" title="检查集群信息"></a>检查集群信息</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">redis-cli --cluster check ip:host</span><br></pre></td></tr></table></figure>
+
+<h2 id="动态扩容与收缩"><a href="#动态扩容与收缩" class="headerlink" title="动态扩容与收缩"></a>动态扩容与收缩</h2><p>学习链接<a target="_blank" rel="noopener" href="https://www.cnblogs.com/PatrickLiu/p/8473135.html">Redis进阶实践之十二 Redis的Cluster集群动态扩容</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> redis-cli 查看集群信息</span></span><br><span class="line">cluster nodes</span><br></pre></td></tr></table></figure>
+
+<h3 id="动态增加Master主服务器节点"><a href="#动态增加Master主服务器节点" class="headerlink" title="动态增加Master主服务器节点"></a>动态增加Master主服务器节点</h3><h4 id="增"><a href="#增" class="headerlink" title="增"></a>增</h4><ol>
+<li>启动两台redis</li>
+<li>添加新主节点redis添加至集群</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby redis-trib.rb add-node ip1:host1 ip:host</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：当添加新节点成功以后，新的节点不会有任何数据，因为他没有分配任何的数据Slot（哈希slots）,这一步需要手动操作。</p>
+<p>ip2和host2是集群中已经存在的任意实例地址和其端口</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> redis-cli验证</span></span><br><span class="line">cluster info</span><br><span class="line">cluster nodes</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>为新主节点分配数据<strong>Slots</strong>，分配方法是从集群中知道任何一个主节点（因为只有Master主节点才有数据slots）,然后对其进行重新分片工作。</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby redis-trib.rb reshard ip:host</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>分配数据槽（分配多少数据槽）</li>
+<li>选择接收数据槽的节点和数据槽产生的方式</li>
+<li>执行分配计划</li>
+</ul>
+<ol start="4">
+<li>增加Slave从服务器节点</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby redis-trib.rb add-node ip2:host2 ip:host</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>指定ip2:host2节点作为ip1:host1的从节点，实现主从的配置。</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cluster replicate ...ID...(主节点的ID，ip1:host1的)</span><br></pre></td></tr></table></figure>
+
+<h4 id="删"><a href="#删" class="headerlink" title="删"></a>删</h4><p><strong>删除的顺序是先删除Slave从节点，然后在删除Master主节点</strong></p>
+<ol>
+<li><p>动态删除Slave从服务器节点</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 删除ip2:host2从节点，输入del-node命令，指定删除节点的IP地址和Port端口号，同时还要提供该从节点ID名称。</span></span><br><span class="line">ruby redis-trib.rb del-node ip2:host2 ...ID...</span><br></pre></td></tr></table></figure></li>
+<li><p>动态删除Master主服务器节点</p>
+<p><strong>要想删除Master主节点，可能要繁琐一些。因为在Master主节点上有数据槽（slots）,为了保证数据的不丢失，必须把这些数据槽迁移到其他Master主节点上，然后在删除主节点。</strong></p>
+<ol>
+<li>重新分片，把要删除的Master主节点的数据槽移动到其他Master主节点上，以免数据丢失。</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby redis-trib.rb reshard ip1:host1</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p><strong>移除多少槽如图：创建输入200，这里要输入199，因为计数是从0开始的，切记。</strong></p>
+</li>
+<li><p>接受槽的Master主节点ID：这个节点可以是任意一个主节点都可以，<strong>输入</strong>ID****</p>
+</li>
+<li><p>从哪个主节点移除，<strong>输入</strong>ID****</p>
+</li>
+<li><p><strong>删除主节点，提供要删除节点的IP地址和Port端口，当然还有要删除的节点的ID名称。</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby redis-trib.rb del-node ip1:host1 ...ID...</span><br></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ol>
+<h2 id="slots"><a href="#slots" class="headerlink" title="slots"></a>slots</h2><blockquote>
+<p>16384个槽节点被平均分配</p>
+</blockquote>
+<h3 id="槽的分配"><a href="#槽的分配" class="headerlink" title="槽的分配"></a>槽的分配</h3><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E6%A7%BDslot%E6%98%AF%E6%80%8E%E6%A0%B7%E5%88%86%E9%85%8D%E7%9A%84.png" style="zoom: 33%;" />
+
+<h3 id="如何存储数据"><a href="#如何存储数据" class="headerlink" title="如何存储数据"></a>如何存储数据</h3><p>set值时，根据key进行<strong>hash(key)%16384</strong>看结果的值看在那个范围，数据放到该范围的槽里面。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9B%86%E7%BE%A4/" rel="tag"># 集群</a>
+          
+            <a href="/tags/redis/" rel="tag"># redis</a>
+          
+            <a href="/tags/%E7%BC%93%E5%AD%98/" rel="tag"># 缓存</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/03/28/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-elasticsearch+kibana%E5%AE%89%E8%A3%85/" rel="next" title="软件安装-elasticsearch+kibana安装">
+                <i class="fa fa-chevron-left"></i> 软件安装-elasticsearch+kibana安装
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/03/30/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E9%9B%86%E7%BE%A4%E7%9F%A5%E8%AF%86%E7%82%B9/" rel="prev" title="中间件-redis集群知识点">
+                中间件-redis集群知识点 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%EF%BC%88%E4%B8%BB%E4%BB%8E%E9%9B%86%E7%BE%A4%EF%BC%89%EF%BC%88%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">主从复制（主从集群）（读写分离）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%91%E7%8A%B6%E6%9E%B6%E6%9E%84"><span class="nav-number">1.2.</span> <span class="nav-text">树状架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8ERDB"><span class="nav-number">1.3.1.</span> <span class="nav-text">基于RDB</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">1.4.</span> <span class="nav-text">主从复制的配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%BB%8E%E8%8A%82%E7%82%B9"><span class="nav-number">1.4.1.</span> <span class="nav-text">配置从节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%90%AFredis"><span class="nav-number">1.4.2.</span> <span class="nav-text">重启redis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8BReplication"><span class="nav-number">1.4.3.</span> <span class="nav-text">查看Replication</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis%E6%97%A0%E7%A3%81%E7%9B%98%E5%8C%96%E5%A4%8D%E5%88%B6"><span class="nav-number">1.5.</span> <span class="nav-text">Redis无磁盘化复制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%BC%80%E5%90%AF"><span class="nav-number">1.5.1.</span> <span class="nav-text">配置开启</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%93%A8%E5%85%B5%E6%9C%BA%E5%88%B6"><span class="nav-number">2.</span> <span class="nav-text">哨兵机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">2.1.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E5%93%A8%E5%85%B5"><span class="nav-number">2.2.</span> <span class="nav-text">测试哨兵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%93%A8%E5%85%B5%E4%BF%A1%E6%81%AF"><span class="nav-number">2.3.</span> <span class="nav-text">查看哨兵信息</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-Cluster%E9%9B%86%E7%BE%A4%EF%BC%88%E5%A4%9A%E4%B8%BB%E5%A4%9A%E4%BB%8E%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">Redis-Cluster集群（多主多从）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">3.1.</span> <span class="nav-text">修改配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E9%9B%86%E7%BE%A4"><span class="nav-number">3.2.</span> <span class="nav-text">创建集群</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E9%9B%86%E7%BE%A4%E4%BF%A1%E6%81%AF"><span class="nav-number">3.3.</span> <span class="nav-text">检查集群信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E6%89%A9%E5%AE%B9%E4%B8%8E%E6%94%B6%E7%BC%A9"><span class="nav-number">3.4.</span> <span class="nav-text">动态扩容与收缩</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%A2%9E%E5%8A%A0Master%E4%B8%BB%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%8A%82%E7%82%B9"><span class="nav-number">3.4.1.</span> <span class="nav-text">动态增加Master主服务器节点</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A2%9E"><span class="nav-number">3.4.1.1.</span> <span class="nav-text">增</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%A0"><span class="nav-number">3.4.1.2.</span> <span class="nav-text">删</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#slots"><span class="nav-number">3.5.</span> <span class="nav-text">slots</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A7%BD%E7%9A%84%E5%88%86%E9%85%8D"><span class="nav-number">3.5.1.</span> <span class="nav-text">槽的分配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%AD%98%E5%82%A8%E6%95%B0%E6%8D%AE"><span class="nav-number">3.5.2.</span> <span class="nav-text">如何存储数据</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

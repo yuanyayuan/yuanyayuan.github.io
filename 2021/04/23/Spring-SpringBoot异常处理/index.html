@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试,SpringBoot," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="SpringBoot异常处理1. 使用 @ControllerAdvice和@ExceptionHandler处理全局异常1. 新建异常信息实体类  项目搭建&#x2F;同一响应处理  12345678910111213141516171819202122232425262728293031ServerResponse.javapublic class ServerResponse&lt;T&gt; &amp;#1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring-SpringBoot异常处理">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/23/Spring-SpringBoot%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="SpringBoot异常处理1. 使用 @ControllerAdvice和@ExceptionHandler处理全局异常1. 新建异常信息实体类  项目搭建&#x2F;同一响应处理  12345678910111213141516171819202122232425262728293031ServerResponse.javapublic class ServerResponse&lt;T&gt; &amp;#1">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-04-23T15:22:36.000Z">
+<meta property="article:modified_time" content="2021-04-24T15:13:39.935Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="SpringBoot">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/23/Spring-SpringBoot异常处理/"/>
+
+
+
+
+
+  <title>Spring-SpringBoot异常处理 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/23/Spring-SpringBoot%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring-SpringBoot异常处理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-23T23:22:36+08:00">
+                2021-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringBoot%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - SpringBoot异常处理</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="SpringBoot"><a href="#SpringBoot" class="headerlink" title="SpringBoot"></a>SpringBoot</h1><h2 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h2><h3 id="1-使用-ControllerAdvice和-ExceptionHandler处理全局异常"><a href="#1-使用-ControllerAdvice和-ExceptionHandler处理全局异常" class="headerlink" title="1. 使用 @ControllerAdvice和@ExceptionHandler处理全局异常"></a>1. 使用 @ControllerAdvice和@ExceptionHandler处理全局异常</h3><p><strong>1. 新建异常信息实体类</strong></p>
+<blockquote>
+<p>项目搭建/同一响应处理</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">ServerResponse.java</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ServerResponse</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ApiModelProperty(value = &quot;状态码；200:成功&quot;,example = &quot;200&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> code;</span><br><span class="line">    <span class="meta">@ApiModelProperty(value = &quot;状态说明&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String message;</span><br><span class="line">    <span class="meta">@ApiModelProperty(value = &quot;返回数据&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> T data;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">ServerResponse</span><span class="params">(<span class="keyword">long</span> code)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.code = code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">ServerResponse</span><span class="params">(<span class="keyword">long</span> code, T data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.code = code;</span><br><span class="line">        <span class="keyword">this</span>.data = data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">ServerResponse</span><span class="params">(<span class="keyword">long</span> code, String message)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.code = code;</span><br><span class="line">        <span class="keyword">this</span>.message = message;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">ServerResponse</span><span class="params">(<span class="keyword">long</span> code, String message, T data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.code = code;</span><br><span class="line">        <span class="keyword">this</span>.message = message;</span><br><span class="line">        <span class="keyword">this</span>.data = data;</span><br><span class="line">    &#125;</span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. 自定义异常类型</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">src&#x2F;main&#x2F;java&#x2F;com&#x2F;nexus&#x2F;mall&#x2F;common&#x2F;exception&#x2F;ApiException.java</span><br></pre></td></tr></table></figure>
+
+<p>一般我们处理的都是 <code>RuntimeException</code> ，所以如果你需要自定义异常类型的话直接集成这个类就可以了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ApiException</span> <span class="keyword">extends</span> <span class="title">RuntimeException</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> IErrorCode errorCode;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ApiException</span><span class="params">(IErrorCode errorCode)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(errorCode.getMessage());</span><br><span class="line">        <span class="keyword">this</span>.errorCode = errorCode;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ApiException</span><span class="params">(String message)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(message);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ApiException</span><span class="params">(Throwable cause)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(cause);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ApiException</span><span class="params">(String message, Throwable cause)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(message, cause);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IErrorCode <span class="title">getErrorCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> errorCode;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>3. 新建异常处理类</strong></p>
+<p>我们只需要在类上加上<code>@ControllerAdvice</code>注解这个类就成为了全局异常处理类，当然你也可以通过 <code>assignableTypes</code>指定特定的 <code>Controller</code>类，让异常处理类只处理特定类抛出的异常。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">src/main/java/com/twuc/webApp/exception/GlobalExceptionHandler.java</span><br><span class="line"><span class="meta">@ControllerAdvice(assignableTypes = &#123;ExceptionController.class&#125;)</span></span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GlobalExceptionHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    ErrorResponse illegalArgumentResponse = <span class="keyword">new</span> ErrorResponse(<span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;参数错误!&quot;</span>));</span><br><span class="line">    ErrorResponse resourseNotFoundResponse = <span class="keyword">new</span> ErrorResponse(<span class="keyword">new</span> ResourceNotFoundException(<span class="string">&quot;Sorry, the resourse not found!&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ExceptionHandler(value = Exception.class)</span><span class="comment">// 拦截所有异常, 这里只是为了演示，一般情况下一个方法特定处理一种异常</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ResponseEntity&lt;ErrorResponse&gt; <span class="title">exceptionHandler</span><span class="params">(Exception e)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (e <span class="keyword">instanceof</span> IllegalArgumentException) &#123;</span><br><span class="line">            <span class="keyword">return</span> ResponseEntity.status(<span class="number">400</span>).body(illegalArgumentResponse);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (e <span class="keyword">instanceof</span> ResourceNotFoundException) &#123;</span><br><span class="line">            <span class="keyword">return</span> ResponseEntity.status(<span class="number">404</span>).body(resourseNotFoundResponse);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>例如</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 请求参数错误</span></span><br><span class="line"><span class="comment">**/</span></span><br><span class="line"><span class="meta">@ExceptionHandler(value = MissingServletRequestParameterException.class)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ServerResponse <span class="title">noHandlerFound</span><span class="params">(MissingServletRequestParameterException e)</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(!BLANK_STR.equals(String.valueOf(e.getCause())))&#123;</span><br><span class="line">		<span class="keyword">return</span> ServerResponse.failed(</span><br><span class="line">            ResultCode.PARAMETER_VALIDATION_ERROR,</span><br><span class="line">            String.valueOf(e.getCause()));</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">       <span class="keyword">return</span> ServerResponse.failed(ResultCode.PARAMETER_VALIDATION_ERROR);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-ExceptionHandler-处理-Controller-级别的异常"><a href="#2-ExceptionHandler-处理-Controller-级别的异常" class="headerlink" title="2. @ExceptionHandler 处理 Controller 级别的异常"></a>2. @ExceptionHandler 处理 Controller 级别的异常</h3><ul>
+<li>不建议使用的方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/api&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExceptionController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@GetMapping(&quot;/illegalArgumentException&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">throwException</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@GetMapping(&quot;/resourceNotFoundException&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">throwException2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ResourceNotFoundException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>通过<code>断言处理类，用于抛出API异常</code></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Asserts</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">fail</span><span class="params">(String message)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ApiException(message);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">fail</span><span class="params">(IErrorCode errorCode)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ApiException(errorCode);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ControllerAdvice组合使用"><a href="#ControllerAdvice组合使用" class="headerlink" title="@ControllerAdvice组合使用"></a>@ControllerAdvice组合使用</h2><p>在Spring里，我们可以使用@ControllerAdvice来声明一些全局性的东西，最常见的是结合@ExceptionHandler注解用于全局异常的处理。</p>
+<p>@ControllerAdvice是在类上声明的注解，其用法主要有三点：</p>
+<ul>
+<li>@ExceptionHandler注解标注的方法：用于捕获Controller中抛出的不同类型的异常，从而达到异常全局处理的目的；</li>
+<li>@InitBinder注解标注的方法：用于请求中注册自定义参数的解析，从而达到自定义请求参数格式的目的；</li>
+<li>@ModelAttribute注解标注的方法：表示此方法会在执行目标Controller方法之前执行 。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这里@RestControllerAdvice等同于@ControllerAdvice + @ResponseBody</span></span><br><span class="line"><span class="meta">@RestControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GlobalHandler</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Logger logger = LoggerFactory.getLogger(GlobalHandler.class);</span><br><span class="line">    <span class="comment">// 这里@ModelAttribute(&quot;loginUserInfo&quot;)标注的modelAttribute()方法表示会在Controller方法之前</span></span><br><span class="line">    <span class="comment">// 执行，返回当前登录用户的UserDetails对象</span></span><br><span class="line">    <span class="meta">@ModelAttribute(&quot;loginUserInfo&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> UserDetails <span class="title">modelAttribute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// @InitBinder标注的initBinder()方法表示注册一个Date类型的类型转换器，用于将类似这样的2019-06-10</span></span><br><span class="line">    <span class="comment">// 日期格式的字符串转换成Date对象</span></span><br><span class="line">    <span class="meta">@InitBinder</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initBinder</span><span class="params">(WebDataBinder binder)</span> </span>&#123;</span><br><span class="line">        SimpleDateFormat dateFormat = <span class="keyword">new</span> SimpleDateFormat(<span class="string">&quot;yyyy-MM-dd&quot;</span>);</span><br><span class="line">        dateFormat.setLenient(<span class="keyword">false</span>);</span><br><span class="line">        binder.registerCustomEditor(Date.class, <span class="keyword">new</span> CustomDateEditor(dateFormat, <span class="keyword">false</span>));</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="comment">// 这里表示Controller抛出的MethodArgumentNotValidException异常由这个方法处理</span></span><br><span class="line">    <span class="meta">@ExceptionHandler(MethodArgumentNotValidException.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Result <span class="title">exceptionHandler</span><span class="params">(MethodArgumentNotValidException e)</span> </span>&#123;</span><br><span class="line">        Result result = <span class="keyword">new</span> Result(BizExceptionEnum.INVALID_REQ_PARAM.getErrorCode(),</span><br><span class="line">                BizExceptionEnum.INVALID_REQ_PARAM.getErrorMsg());</span><br><span class="line">        logger.error(<span class="string">&quot;req params error&quot;</span>, e);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 这里表示Controller抛出的BizException异常由这个方法处理</span></span><br><span class="line">    <span class="meta">@ExceptionHandler(BizException.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Result <span class="title">exceptionHandler</span><span class="params">(BizException e)</span> </span>&#123;</span><br><span class="line">        BizExceptionEnum exceptionEnum = e.getBizExceptionEnum();</span><br><span class="line">        Result result = <span class="keyword">new</span> Result(exceptionEnum.getErrorCode(), exceptionEnum.getErrorMsg());</span><br><span class="line">        logger.error(<span class="string">&quot;business error&quot;</span>, e);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 这里就是通用的异常处理器了,所有预料之外的Exception异常都由这里处理</span></span><br><span class="line">    <span class="meta">@ExceptionHandler(Exception.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Result <span class="title">exceptionHandler</span><span class="params">(Exception e)</span> </span>&#123;</span><br><span class="line">        Result result = <span class="keyword">new</span> Result(<span class="number">1000</span>, <span class="string">&quot;网络繁忙,请稍后再试&quot;</span>);</span><br><span class="line">        logger.error(<span class="string">&quot;application error&quot;</span>, e);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ModelAttribute"><a href="#ModelAttribute" class="headerlink" title="@ModelAttribute"></a>@ModelAttribute</h3><p>在Controller里取出@ModelAttribute标注的方法返回的UserDetails对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">RestController</span><br><span class="line"><span class="meta">@RequestMapping(&quot;/json/exam&quot;)</span></span><br><span class="line"><span class="meta">@Validated</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExamController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> IExamService examService;</span><br><span class="line">    <span class="comment">// ......</span></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/getExamListByOpInfo&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Result&lt;List&lt;GetExamListResVo&gt;&gt; getExamListByOpInfo( <span class="meta">@NotNull</span> Date examOpDate,</span><br><span class="line">                                                              <span class="meta">@ModelAttribute(&quot;loginUserInfo&quot;)</span> UserDetails userDetails) &#123;</span><br><span class="line">        List&lt;GetExamListResVo&gt; resVos = examService.getExamListByOpInfo(examOpDate, userDetails);</span><br><span class="line">        Result&lt;List&lt;GetExamListResVo&gt;&gt; result = <span class="keyword">new</span> Result(resVos);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="InitBinder"><a href="#InitBinder" class="headerlink" title="@InitBinder"></a>@InitBinder</h3><p>这里当入参为examOpDate=2019-06-10时，Spring会使用我们上面@InitBinder注册的类型转换器将2019-06-10转换examOpDate对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostMapping(&quot;/getExamListByOpInfo&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Result&lt;List&lt;GetExamListResVo&gt;&gt; getExamListByOpInfo(<span class="meta">@NotNull</span> Date examOpDate,</span><br><span class="line">                                                          <span class="meta">@ModelAttribute(&quot;loginUserInfo&quot;)</span> UserDetails userDetails) &#123;</span><br><span class="line">    List&lt;GetExamListResVo&gt; resVos = examService.getExamListByOpInfo(examOpDate, userDetails);</span><br><span class="line">    Result&lt;List&lt;GetExamListResVo&gt;&gt; result = <span class="keyword">new</span> Result(resVos);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ExceptionHandler"><a href="#ExceptionHandler" class="headerlink" title="@ExceptionHandler"></a>@ExceptionHandler</h3><p>@ExceptionHandler标注的多个方法分别表示只处理特定的异常。这里需要注意的是当Controller抛出的某个异常多个@ExceptionHandler标注的方法都适用时，Spring会选择最具体的异常处理方法来处理，也就是说@ExceptionHandler(Exception.class)这里标注的方法优先级最低，只有当其它方法都不适用时，才会来到这里处理。</p>
+<ul>
+<li><strong>@ControllerAdvice</strong>：控制器增强，使@ExceptionHandler、@InitBinder、@ModelAttribute注解的方法应用到所有的 @RequestMapping注解的方法。</li>
+<li><strong>@ExceptionHandler</strong>：异常处理器，此注解的作用是当出现其定义的异常时进行处理的方法，此例中处理ValidationException异常。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GlobalExceptionHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String BLANK_STR = <span class="string">&quot;null&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@ExceptionHandler(value = ApiException.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">handle</span><span class="params">(ApiException e)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (e.getErrorCode() != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> ServerResponse.failed(e.getErrorCode());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.failed(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@ExceptionHandler(value = NoHandlerFoundException.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">noHandlerFound</span><span class="params">(NoHandlerFoundException e)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.failed(ResultCode.NO_HANDLER_FOUND, String.valueOf(e.getCause()));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@ExceptionHandler(value = IllegalArgumentException.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">noHandlerFound</span><span class="params">(IllegalArgumentException e)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.failed(ResultCode.PARAMETER_VALIDATION_ERROR, String.valueOf(e.getCause()));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@ExceptionHandler(value = IllegalStateException.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">noHandlerFound</span><span class="params">(IllegalStateException e)</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.failed(ResultCode.STATE_EXCEPTION_ERROR, String.valueOf(e.getCause()));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * 请求参数错误</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Author</span> LiYuan</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Description</span> 请求参数错误</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Date</span> 15:45 2020/11/2</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> e</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> com.nexus.mall.common.api.ServerResponse</span></span><br><span class="line"><span class="comment">    **/</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@ExceptionHandler(value = MissingServletRequestParameterException.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">noHandlerFound</span><span class="params">(MissingServletRequestParameterException e)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(!BLANK_STR.equals(String.valueOf(e.getCause())))&#123;</span><br><span class="line">            <span class="keyword">return</span> ServerResponse.failed(ResultCode.PARAMETER_VALIDATION_ERROR, String.valueOf(e.getCause()));</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> ServerResponse.failed(ResultCode.PARAMETER_VALIDATION_ERROR);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * post请求参数校验抛出的异常</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Author</span> : Nexus</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Description</span> : post请求参数校验抛出的异常</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Date</span> : 2020/9/7 23:25</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Param</span> : e</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> : com.nexus.mall.common.api.ServerResponse</span></span><br><span class="line"><span class="comment">     **/</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@ExceptionHandler(value = MethodArgumentNotValidException.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">handleValidException</span><span class="params">(MethodArgumentNotValidException e)</span> </span>&#123;</span><br><span class="line">        BindingResult bindingResult = e.getBindingResult();</span><br><span class="line">        String message = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (bindingResult.hasErrors()) &#123;</span><br><span class="line">            FieldError fieldError = bindingResult.getFieldError();</span><br><span class="line">            <span class="keyword">if</span> (fieldError != <span class="keyword">null</span>) &#123;</span><br><span class="line">                message = fieldError.getField()+fieldError.getDefaultMessage();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.validateFailed(message);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * get请求参数校验抛出的异常</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Author</span> : Nexus</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Description</span> : get请求参数校验抛出的异常</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Date</span> : 2020/9/7 23:26</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Param</span> : e</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> : com.nexus.mall.common.api.ServerResponse</span></span><br><span class="line"><span class="comment">     **/</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@ExceptionHandler(value = BindException.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">handleValidException</span><span class="params">(BindException e)</span> </span>&#123;</span><br><span class="line">        BindingResult bindingResult = e.getBindingResult();</span><br><span class="line">        String message = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (bindingResult.hasErrors()) &#123;</span><br><span class="line">            FieldError fieldError = bindingResult.getFieldError();</span><br><span class="line">            <span class="keyword">if</span> (fieldError != <span class="keyword">null</span>) &#123;</span><br><span class="line">                message = fieldError.getField()+fieldError.getDefaultMessage();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.validateFailed(message);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 请求方法中校验抛出的异常</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Author</span> : Nexus</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Description</span> : 请求方法中校验抛出的异常</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Date</span> : 2020/9/7 23:26</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Param</span> : e</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> : com.nexus.mall.common.api.ServerResponse</span></span><br><span class="line"><span class="comment">     **/</span></span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@ExceptionHandler(ConstraintViolationException.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">constraintViolationExceptionHandler</span><span class="params">(ConstraintViolationException e)</span></span>&#123;</span><br><span class="line">        <span class="comment">//获取异常中第一个错误信息</span></span><br><span class="line">        String message = e.getConstraintViolations().iterator().next().getMessage();</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.validateFailed(message);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 上传文件超过500k，捕获异常：MaxUploadSizeExceededException</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Author</span> : Nexus</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Description</span> : 上传文件超过500k，捕获异常：MaxUploadSizeExceededException</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Date</span> : 2020/11/21 18:40</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Param</span> : ex</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> : com.nexus.mall.common.api.ServerResponse</span></span><br><span class="line"><span class="comment">     **/</span></span><br><span class="line">    <span class="meta">@ExceptionHandler(MaxUploadSizeExceededException.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">handlerMaxUploadFile</span><span class="params">(MaxUploadSizeExceededException ex)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.failed(<span class="string">&quot;文件上传大小不能超过500k，请压缩图片或者降低图片质量再上传！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/SpringBoot/" rel="tag"># SpringBoot</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/23/Spring-SpringBoot%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B/" rel="next" title="Spring-SpringBoot启动流程">
+                <i class="fa fa-chevron-left"></i> Spring-SpringBoot启动流程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/23/Spring-SpringBoot%E6%8B%A6%E6%88%AA%E5%99%A8%E5%92%8C%E8%BF%87%E6%BB%A4%E5%99%A8/" rel="prev" title="Spring-SpringBoot拦截器和过滤器">
+                Spring-SpringBoot拦截器和过滤器 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SpringBoot"><span class="nav-number">1.</span> <span class="nav-text">SpringBoot</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="nav-number">1.1.</span> <span class="nav-text">异常处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BD%BF%E7%94%A8-ControllerAdvice%E5%92%8C-ExceptionHandler%E5%A4%84%E7%90%86%E5%85%A8%E5%B1%80%E5%BC%82%E5%B8%B8"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. 使用 @ControllerAdvice和@ExceptionHandler处理全局异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-ExceptionHandler-%E5%A4%84%E7%90%86-Controller-%E7%BA%A7%E5%88%AB%E7%9A%84%E5%BC%82%E5%B8%B8"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. @ExceptionHandler 处理 Controller 级别的异常</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ControllerAdvice%E7%BB%84%E5%90%88%E4%BD%BF%E7%94%A8"><span class="nav-number">1.2.</span> <span class="nav-text">@ControllerAdvice组合使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ModelAttribute"><span class="nav-number">1.2.1.</span> <span class="nav-text">@ModelAttribute</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#InitBinder"><span class="nav-number">1.2.2.</span> <span class="nav-text">@InitBinder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ExceptionHandler"><span class="nav-number">1.2.3.</span> <span class="nav-text">@ExceptionHandler</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

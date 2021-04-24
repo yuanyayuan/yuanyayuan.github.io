@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试,分步式,解决方案," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="限流流量模型：网关层—–&gt;服务—&gt;缓存—-&gt;数据库限流：在某个时间窗口对资源访问做限制 限流分类 合法性验证限流：比如验证码、IP 黑名单等，这些手段可以有效的防止恶意攻击和爬虫采集； 容器限流：比如 Tomcat、Nginx 等限流手段，其中 Tomcat 可以设置最大线程数（maxThreads），当并发超过最大线程数会排队等待执行；而 Nginx 提供了两种限流手段：一是控">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分步式-限流">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/22/%E5%88%86%E6%AD%A5%E5%BC%8F-%E9%99%90%E6%B5%81/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="限流流量模型：网关层—–&gt;服务—&gt;缓存—-&gt;数据库限流：在某个时间窗口对资源访问做限制 限流分类 合法性验证限流：比如验证码、IP 黑名单等，这些手段可以有效的防止恶意攻击和爬虫采集； 容器限流：比如 Tomcat、Nginx 等限流手段，其中 Tomcat 可以设置最大线程数（maxThreads），当并发超过最大线程数会排队等待执行；而 Nginx 提供了两种限流手段：一是控">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/%E5%9F%BA%E4%BA%8Eredis.png">
+<meta property="article:published_time" content="2021-04-22T12:45:58.000Z">
+<meta property="article:modified_time" content="2021-04-23T15:13:12.658Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="分步式">
+<meta property="article:tag" content="解决方案">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/22/分步式-限流/"/>
+
+
+
+
+
+  <title>分步式-限流 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/22/%E5%88%86%E6%AD%A5%E5%BC%8F-%E9%99%90%E6%B5%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">分步式-限流</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-22T20:45:58+08:00">
+                2021-04-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E6%AD%A5%E5%BC%8F-%E9%99%90%E6%B5%81/" itemprop="url" rel="index">
+                    <span itemprop="name">分步式 - 限流</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="限流"><a href="#限流" class="headerlink" title="限流"></a>限流</h1><p>流量模型：网关层—–&gt;服务—&gt;缓存—-&gt;数据库<br>限流：在某个时间窗口对资源访问做限制</p>
+<h1 id="限流分类"><a href="#限流分类" class="headerlink" title="限流分类"></a>限流分类</h1><ol>
+<li><strong>合法性验证限流</strong>：比如验证码、IP 黑名单等，这些手段可以有效的防止恶意攻击和爬虫采集；</li>
+<li><strong>容器限流</strong>：比如 Tomcat、Nginx 等限流手段，其中 Tomcat 可以设置最大线程数（maxThreads），当并发超过最大线程数会排队等待执行；而 Nginx 提供了两种限流手段：一是控制速率，二是控制并发连接数；</li>
+<li><strong>服务端限流</strong>：比如我们在服务器端通过限流算法实现限流</li>
+</ol>
+<h2 id="分布式限流的几种维度"><a href="#分布式限流的几种维度" class="headerlink" title="分布式限流的几种维度"></a>分布式限流的几种维度</h2><p>1、连接数</p>
+<p>2、访问频率（QPS）</p>
+<p>3、黑白名单</p>
+<p>4、传输速率</p>
+<h2 id="目前比较主流的限流方案"><a href="#目前比较主流的限流方案" class="headerlink" title="目前比较主流的限流方案"></a>目前比较主流的限流方案</h2><p>1、网管层限流 将限流规则应用在所有流量的入口处</p>
+<p>2、中间件限流 将限流信息存储在分布式环境中某个中间件里（如Redis缓存），每个组件都可以从这里获取到当前时刻的流量统计，从而决定是拒绝服务还是放行流量</p>
+<h2 id="常见限流算法"><a href="#常见限流算法" class="headerlink" title="常见限流算法"></a>常见限流算法</h2><ol>
+<li><strong>令牌桶算法</strong><br>a、令牌 获取到令牌的Request才会被处理，其他Request要么排队，要么被丢弃<br>b、桶 用来装令牌的地方，所有Request都从这个桶里获取令牌</li>
+</ol>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95.png"></p>
+<p>​    <strong>令牌生成</strong></p>
+<p>​    根据一个预定的速率相同中添加令牌（<strong>发放的速率是匀速</strong>，并非是每个时间窗口刚开始就一次性发放，而是会    在这个时间窗口内匀速发放）令牌桶的容量是有限的，如果当前已经放满了额定容量的令牌，那么信赖的令牌    就会被丢弃掉</p>
+<p>​    <strong>令牌获取</strong></p>
+<p>​    每个请求到来后，必须拿到令牌才能执行后面的逻辑。假如遇到令牌少而请求多的情况，可以设置一个”缓冲队    列”来暂存这些多余的令牌（“缓冲队列”是一个可选方案）</p>
+<p>​    实际应用中也可以对缓存队列添加一些特性，比如队列中请求存活时间，或者将队列改造为<code>PriorityQueue</code>，    根据某种优先级排序</p>
+<blockquote>
+<p><em>为什么需要匀速限流</em> ?</p>
+<p>假如我们设置限流策略设置了10r/s,也就是说10个令牌平均到1秒钟的时间窗口中生成，每0.1秒产生一个令牌。如果在这一秒来了10个请求，这些请求会在一秒钟内匀速消化掉</p>
+<ol>
+<li><p>令牌利用率低</p>
+<p>每秒初就把令牌全部发放会出现下面情况，比如：</p>
+<p>上一秒还有还剩9个令牌，在这一秒初就直接投放10个令牌，这时桶明显放不下，只能放一个，剩下的九个全部浪费了。这时又正好有15个请求过来，因为这一秒的令牌已经全部发放，所以只能处理10个请求，剩下5个要等下一秒</p>
+</li>
+<li><p>容易引发服务雪崩</p>
+<p>假如上一秒的10个令牌没有消耗，攻击者在上一秒末发起10的请求消耗掉这10个令牌，这一秒初10个令牌发放时紧跟着又发起10个请求消耗掉这10个令牌，所以可以瞬间发起20个瞬间流量，假如策略是1wr/s,那瞬间就是2w的请求。</p>
+</li>
+</ol>
+</blockquote>
+<ol start="2">
+<li><p><strong>漏桶算法</strong></p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/%E6%BC%8F%E6%A1%B6%E7%AE%97%E6%B3%95.png" style="zoom: 67%;" />
+
+<p>将请求的数据包放在桶里，如果桶满了九江后面来的数据包丢弃。漏桶算法只会以一个恒定的速率将数据包从桶内流出。</p>
+<p><strong>楼桶算法</strong>vs<strong>令牌桶算法</strong></p>
+<ul>
+<li><p><strong>令牌桶算法</strong>操作的对象是令牌</p>
+</li>
+<li><p><strong>漏桶算法</strong>操作的对象是请求</p>
+</li>
+<li><p>两种算法都有一个<strong>恒定</strong>的速率：<strong>令牌桶算法</strong>——恒定的创建令牌速率；<strong>漏桶算法</strong>——恒定的处理请求速率</p>
+</li>
+<li><p>两种算法都有一个<strong>不定</strong>的速率：<strong>令牌桶算法</strong>——不定的访问请求获取令牌速率；<strong>漏桶算法</strong>——不定的请求流入漏铜速率</p>
+</li>
+</ul>
+<ul>
+<li><strong>漏桶算法</strong>的特性节点他不会发生突发流量。服务器访问速率永远恒定，<strong>令牌桶算法</strong>可通过”预存一些”令牌产生突发流量现象</li>
+</ul>
+<ol start="3">
+<li><strong>滑动窗口</strong><br>限定一个时间窗口中，访问流量。时间窗口越长，限流效果越平滑。<br><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3.png"><br>比如：第一秒有5个用户，第5秒有10个用户，那么在0-5秒这个时间窗口内访问量就是15。        接口设置了时间窗口内访问上限是20，那么当时间到第六秒的时候，因为1秒的格子已经退                 出了时间窗口，因此在第六秒内可以接收的访问量就是“20-10=10”个。</li>
+</ol>
+</li>
+</ol>
+<h2 id="容器限流"><a href="#容器限流" class="headerlink" title="容器限流"></a>容器限流</h2><h2 id="Tomcat-限流"><a href="#Tomcat-限流" class="headerlink" title="Tomcat 限流"></a>Tomcat 限流</h2><p>Tomcat 8.5 版本的最大线程数在 conf/server.xml 配置中，如下所示：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;Connector port=&quot;8080&quot; protocol=&quot;HTTP/1.1&quot;</span><br><span class="line">          connectionTimeout=&quot;20000&quot;</span><br><span class="line">          maxThreads=&quot;150&quot;</span><br><span class="line">          redirectPort=&quot;8443&quot; /&gt;</span><br></pre></td></tr></table></figure>
+
+<p>其中 maxThreads 就是 Tomcat 的最大线程数，当请求的并发大于此值（maxThreads）时，请求就会排队执行，这样就完成了限流的目的。</p>
+<blockquote>
+<p>小贴士：maxThreads 的值可以适当的调大一些，此值默认为 150（Tomcat 版本  8.5.42），但这个值也不是越大越好，要看具体的硬件配置，需要注意的是每开启一个线程需要耗用 1MB 的 JVM  内存空间用于作为线程栈之用，并且线程越多 GC 的负担也越重。最后需要注意一下，操作系统对于进程中的线程数有一定的限制，Windows  每个进程中的线程数不允许超过 2000，Linux 每个进程中的线程数不允许超过 1000。</p>
+</blockquote>
+<h2 id="基于Nginx的分布式限流"><a href="#基于Nginx的分布式限流" class="headerlink" title="基于Nginx的分布式限流"></a>基于Nginx的分布式限流</h2><p>1、基于IP地址和基于服务器访问请求限流</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 根据IP地址限制速度</span></span><br><span class="line"><span class="comment"># 1） 第一个参数 $binary_remote_addr</span></span><br><span class="line"><span class="comment">#    binary_目的是缩写内存占用，remote_addr表示通过IP地址来限流</span></span><br><span class="line"><span class="comment"># 2） 第二个参数 zone=iplimit:20m</span></span><br><span class="line"><span class="comment">#    iplimit是一块内存区域（记录访问频率信息），20m是指这块内存区域的大小</span></span><br><span class="line"><span class="comment"># 3） 第三个参数 rate=1r/s</span></span><br><span class="line"><span class="comment">#    比如100r/m，标识访问的限流频率</span></span><br><span class="line"><span class="attr">limit_req_zone</span> <span class="string">$binary_remote_addr zone=iplimit:20m rate=1r/s;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">server</span> <span class="string">&#123;</span></span><br><span class="line">        <span class="attr">server_name</span> <span class="string">www.imooc-training.com;</span></span><br><span class="line">        <span class="attr">location</span> <span class="string">/access-limit/ &#123;</span></span><br><span class="line">            <span class="attr">proxy_pass</span> <span class="string">http://127.0.0.1:10086/;</span></span><br><span class="line">            </span><br><span class="line"><span class="comment">            # 基于IP地址的限制</span></span><br><span class="line"><span class="comment">            # 1） 第一个参数zone=iplimit =&gt; 引用limit_req_zone中的zone变量</span></span><br><span class="line"><span class="comment">            # 2） 第二个参数burst=2，设置一个大小为2的缓冲区域，当大量请求到来。</span></span><br><span class="line"><span class="comment">            #     请求数量超过限流频率时，将其放入缓冲区域</span></span><br><span class="line"><span class="comment">            # 3) 第三个参数nodelay=&gt; 缓冲区满了以后，直接返回503异常</span></span><br><span class="line">            <span class="attr">limit_req</span> <span class="string">zone=iplimit burst=2 nodelay;</span></span><br><span class="line">        <span class="attr">&#125;</span></span><br><span class="line"><span class="meta">&#125;</span>        <span class="string"></span></span><br></pre></td></tr></table></figure>
+
+<p>2、并发量（连接数）限流</p>
+<p>利用 limit_conn_zone 和 limit_conn 两个指令即可控制并发数，示例配置如下：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 基于连接数的配置</span></span><br><span class="line"><span class="attr">limit_conn_zone</span> <span class="string">$binary_remote_addr zone=perip:20m;</span></span><br><span class="line"><span class="attr">limit_conn_zone</span> <span class="string">$server_name zone=perserver:20m;</span></span><br><span class="line"><span class="attr">server</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="attr">...</span></span><br><span class="line"><span class="comment">    # 每个server最多保持100个连接</span></span><br><span class="line">    <span class="attr">limit_conn</span> <span class="string">perserver 100;</span></span><br><span class="line"><span class="comment">    # 每个IP地址最多保持1个连接</span></span><br><span class="line">    <span class="attr">limit_conn</span> <span class="string">perip 5;</span></span><br><span class="line"><span class="attr">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>其中 limit_conn perip 10 表示限制单个 IP 同时最多能持有 10 个连接；limit_conn perserver 100 表示 server 同时能处理并发连接的总数为 100 个。</p>
+<blockquote>
+<p>小贴士：只有当 request header 被后端处理后，这个连接才进行计数。</p>
+</blockquote>
+<p>3、基于服务器级别的限制</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">limit_req_zone</span> <span class="string">$server_name zone=serverlimit:10m rate=100r/s;</span></span><br><span class="line"><span class="attr">server</span> <span class="string">&#123; </span></span><br><span class="line">    <span class="attr">location</span> <span class="string">/ &#123; </span></span><br><span class="line"><span class="comment">        # 基于服务器级别的限制</span></span><br><span class="line"><span class="comment">        # 通常情况下，server级别的限流速率是最大的</span></span><br><span class="line">        <span class="attr">limit_req</span> <span class="string">zone=serverlimit burst=100 nodelay;</span></span><br><span class="line">    <span class="attr">&#125;</span></span><br><span class="line"><span class="attr">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>以上配置表示，限制每个 IP 访问的速度为 2r/s，因为 Nginx 的限流统计是基于毫秒的，我们设置的速度是 2r/s，转换一下就是 500ms 内单个 IP 只允许通过 1 个请求，从 501ms 开始才允许通过第 2 个请求。</p>
+<p><strong>速率限制升级版</strong></p>
+<p>上面的速率控制虽然很精准但是应用于真实环境未免太苛刻了，真实情况下我们应该控制一个 IP 单位总时间内的总访问次数，而不是像上面那么精确但毫秒，我们可以使用 burst 关键字开启此设置，示例配置如下：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">limit_req_zone $binary_remote_addr zone=mylimit:10m rate=2r/s;</span><br><span class="line">server &#123; </span><br><span class="line">    location / &#123; </span><br><span class="line">        limit_req zone=mylimit burst=4;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>burst=4 表示每个 IP 最多允许4个突发请求</p>
+<h1 id="服务限流"><a href="#服务限流" class="headerlink" title="服务限流"></a>服务限流</h1><h2 id="Guava-RateLimiter客户端限流"><a href="#Guava-RateLimiter客户端限流" class="headerlink" title="Guava RateLimiter客户端限流"></a>Guava RateLimiter客户端限流</h2><h3 id="Guava-RateLimiter客户端限流（阻塞模式）"><a href="#Guava-RateLimiter客户端限流（阻塞模式）" class="headerlink" title="Guava RateLimiter客户端限流（阻塞模式）"></a>Guava RateLimiter客户端限流（阻塞模式）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">RateLimiter limiter = RateLimiter.create(<span class="number">2.0</span>);</span><br><span class="line"><span class="comment">// 同步阻塞限流</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/acquire&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">acquire</span><span class="params">(Integer count)</span> </span>&#123;</span><br><span class="line">    limiter.acquire(count);</span><br><span class="line">    log.info(<span class="string">&quot;success, rate is &#123;&#125;&quot;</span>, limiter.getRate());</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;success&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Guava-RateLimiter客户端限流（非阻塞模式）"><a href="#Guava-RateLimiter客户端限流（非阻塞模式）" class="headerlink" title="Guava RateLimiter客户端限流（非阻塞模式）"></a>Guava RateLimiter客户端限流（非阻塞模式）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">RateLimiter limiter = RateLimiter.create(<span class="number">2.0</span>);</span><br><span class="line"><span class="comment">// 非阻塞限流</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/tryAcquire&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">tryAcquire</span><span class="params">(Integer count)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (limiter.tryAcquire(count)) &#123;</span><br><span class="line">        log.info(<span class="string">&quot;success, rate is &#123;&#125;&quot;</span>, limiter.getRate());</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;success&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;fail, rate is &#123;&#125;&quot;</span>, limiter.getRate());</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;fail&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Guava-RateLimiter客户端限流（限定时间的非阻塞限流）"><a href="#Guava-RateLimiter客户端限流（限定时间的非阻塞限流）" class="headerlink" title="Guava RateLimiter客户端限流（限定时间的非阻塞限流）"></a>Guava RateLimiter客户端限流（限定时间的非阻塞限流）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">RateLimiter limiter = RateLimiter.create(<span class="number">2.0</span>);</span><br><span class="line"><span class="comment">// 限定时间的非阻塞限流</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/tryAcquireWithTimeout&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">tryAcquireWithTimeout</span><span class="params">(Integer count, Integer timeout)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (limiter.tryAcquire(count, timeout, TimeUnit.SECONDS)) &#123;</span><br><span class="line">        log.info(<span class="string">&quot;success, rate is &#123;&#125;&quot;</span>, limiter.getRate());</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;success&quot;</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;fail, rate is &#123;&#125;&quot;</span>, limiter.getRate());</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;fail&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="基于Redis-lua的分布式限流"><a href="#基于Redis-lua的分布式限流" class="headerlink" title="基于Redis+lua的分布式限流"></a>基于Redis+lua的分布式限流</h2><p><strong>首选Redis</strong>：</p>
+<p>​    <strong>为什么用：</strong></p>
+<ul>
+<li>基于内存操作，性能优异</li>
+<li>单线程承接网络请求，天然的线程安全，而且支持原子操作</li>
+</ul>
+<p>​    <strong>怎么用：</strong></p>
+<ol>
+<li><strong>限流请求</strong>：需要被限流的对象</li>
+<li><strong>限流规则</strong>：定义一段程序或者脚本，当请求到来的时候执行</li>
+<li><strong>存储介质</strong>:   用于存储限流信息的地方，比如令牌个数或者是访问请求的计数</li>
+</ol>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/%E5%9F%BA%E4%BA%8Eredis.png" style="zoom:50%;" />
+
+<ul>
+<li>利用redis过期时间特性，设置限流的时间跨度（如每秒10个请求）</li>
+<li>利用redis脚本编程，将限流逻辑编写成一段脚本植入到Redis中，这样就将限流的重任从服务层完全剥离。</li>
+<li>redis集群方便横向扩展</li>
+</ul>
+<h3 id="限流组件封装（Redis-Lua）"><a href="#限流组件封装（Redis-Lua）" class="headerlink" title="限流组件封装（Redis+Lua）"></a>限流组件封装（Redis+Lua）</h3><blockquote>
+<p>使用自定义切面，若接口使用自定义切面，则开启限流</p>
+</blockquote>
+<ul>
+<li>pom引用</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-aop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.google.guava<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>guava<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>18.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>ratelimiter.lua</li>
+</ul>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 获取方法签名特征、</span></span><br><span class="line"><span class="comment">-- 用作限流的key</span></span><br><span class="line"><span class="keyword">local</span> methodKey = KEYS[<span class="number">1</span>]</span><br><span class="line">redis.<span class="built_in">log</span>(redis.LOG_DEBUG, <span class="string">&#x27;key is&#x27;</span>, methodKey)</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 调用脚本传入的限流大小</span></span><br><span class="line"><span class="keyword">local</span> limit = <span class="built_in">tonumber</span>(ARGV[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 获取当前流量大小</span></span><br><span class="line"><span class="keyword">local</span> count = <span class="built_in">tonumber</span>(redis.call(<span class="string">&#x27;get&#x27;</span>, methodKey) <span class="keyword">or</span> <span class="string">&quot;0&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 是否超出限流阈值</span></span><br><span class="line"><span class="keyword">if</span> count + <span class="number">1</span> &gt; limit <span class="keyword">then</span></span><br><span class="line">    <span class="comment">-- 拒绝服务访问</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="comment">-- 没有超过阈值</span></span><br><span class="line">    <span class="comment">-- 设置当前访问的数量+1</span></span><br><span class="line">    redis.call(<span class="string">&quot;INCRBY&quot;</span>, methodKey, <span class="number">1</span>)</span><br><span class="line">    <span class="comment">-- 设置过期时间</span></span><br><span class="line">    redis.call(<span class="string">&quot;EXPIRE&quot;</span>, methodKey, <span class="number">1</span>)</span><br><span class="line">    <span class="comment">-- 放行</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>AccessLimiter.java</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(&#123;ElementType.METHOD&#125;)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> AccessLimiter &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">limit</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function">String <span class="title">methodKey</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>AccessLimiterAspect.java</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AccessLimiterAspect</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> StringRedisTemplate stringRedisTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedisScript&lt;Boolean&gt; rateLimitLua;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Pointcut(&quot;@annotation(com.imooc.springcloud.annotation.AccessLimiter)&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cut</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;cut&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Before(&quot;cut()&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">before</span><span class="params">(JoinPoint joinPoint)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 1. 获得方法签名，作为method Key</span></span><br><span class="line">        MethodSignature signature = (MethodSignature) joinPoint.getSignature();</span><br><span class="line">        Method method = signature.getMethod();</span><br><span class="line">		<span class="comment">//指定拿到的自定义注解</span></span><br><span class="line">        AccessLimiter annotation = method.getAnnotation(AccessLimiter.class);</span><br><span class="line">        String key = annotation.methodKey();</span><br><span class="line">        Integer limit = annotation.limit()；</span><br><span class="line">        <span class="comment">// 如果没设置methodkey, 从调用方法签名生成自动一个key</span></span><br><span class="line">        <span class="keyword">if</span> (StringUtils.isEmpty(key)) &#123;</span><br><span class="line">            Class[] type = method.getParameterTypes();</span><br><span class="line">            key = method.getClass() + method.getName();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (type != <span class="keyword">null</span>) &#123;</span><br><span class="line">                String paramTypes = Arrays.stream(type)</span><br><span class="line">                        .map(Class::getName)</span><br><span class="line">                        .collect(Collectors.joining(<span class="string">&quot;,&quot;</span>));</span><br><span class="line">                log.info(<span class="string">&quot;param types: &quot;</span> + paramTypes);</span><br><span class="line">                key += <span class="string">&quot;#&quot;</span> + paramTypes;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2. 调用Redis</span></span><br><span class="line">        <span class="keyword">boolean</span> acquired = stringRedisTemplate.execute(</span><br><span class="line">                rateLimitLua, <span class="comment">// Lua script的真身</span></span><br><span class="line">                Lists.newArrayList(key), <span class="comment">// Lua脚本中的Key列表</span></span><br><span class="line">                limit.toString() <span class="comment">// Lua脚本Value列表</span></span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!acquired) &#123;</span><br><span class="line">            log.error(<span class="string">&quot;your access is blocked, key=&#123;&#125;&quot;</span>, key);</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Your access is blocked&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Controller测试</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(&quot;test-annotation&quot;)</span></span><br><span class="line"><span class="meta">@AccessLimiter(limit = 1)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">testAnnotation</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;success&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/%E5%88%86%E6%AD%A5%E5%BC%8F/" rel="tag"># 分步式</a>
+          
+            <a href="/tags/%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" rel="tag"># 解决方案</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/22/%E5%88%86%E6%AD%A5%E5%BC%8F-%E6%8E%A5%E5%8F%A3%E5%B9%82%E7%AD%89%E6%80%A7/" rel="next" title="分步式-接口幂等性">
+                <i class="fa fa-chevron-left"></i> 分步式-接口幂等性
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/23/Spring-SpringBoot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/" rel="prev" title="Spring-SpringBoot自动装配">
+                Spring-SpringBoot自动装配 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%90%E6%B5%81"><span class="nav-number">1.</span> <span class="nav-text">限流</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%90%E6%B5%81%E5%88%86%E7%B1%BB"><span class="nav-number">2.</span> <span class="nav-text">限流分类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81%E7%9A%84%E5%87%A0%E7%A7%8D%E7%BB%B4%E5%BA%A6"><span class="nav-number">2.1.</span> <span class="nav-text">分布式限流的几种维度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%89%8D%E6%AF%94%E8%BE%83%E4%B8%BB%E6%B5%81%E7%9A%84%E9%99%90%E6%B5%81%E6%96%B9%E6%A1%88"><span class="nav-number">2.2.</span> <span class="nav-text">目前比较主流的限流方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%99%90%E6%B5%81%E7%AE%97%E6%B3%95"><span class="nav-number">2.3.</span> <span class="nav-text">常见限流算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%B9%E5%99%A8%E9%99%90%E6%B5%81"><span class="nav-number">2.4.</span> <span class="nav-text">容器限流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tomcat-%E9%99%90%E6%B5%81"><span class="nav-number">2.5.</span> <span class="nav-text">Tomcat 限流</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8ENginx%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81"><span class="nav-number">2.6.</span> <span class="nav-text">基于Nginx的分布式限流</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E9%99%90%E6%B5%81"><span class="nav-number">3.</span> <span class="nav-text">服务限流</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Guava-RateLimiter%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%99%90%E6%B5%81"><span class="nav-number">3.1.</span> <span class="nav-text">Guava RateLimiter客户端限流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Guava-RateLimiter%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%99%90%E6%B5%81%EF%BC%88%E9%98%BB%E5%A1%9E%E6%A8%A1%E5%BC%8F%EF%BC%89"><span class="nav-number">3.1.1.</span> <span class="nav-text">Guava RateLimiter客户端限流（阻塞模式）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Guava-RateLimiter%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%99%90%E6%B5%81%EF%BC%88%E9%9D%9E%E9%98%BB%E5%A1%9E%E6%A8%A1%E5%BC%8F%EF%BC%89"><span class="nav-number">3.1.2.</span> <span class="nav-text">Guava RateLimiter客户端限流（非阻塞模式）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Guava-RateLimiter%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%99%90%E6%B5%81%EF%BC%88%E9%99%90%E5%AE%9A%E6%97%B6%E9%97%B4%E7%9A%84%E9%9D%9E%E9%98%BB%E5%A1%9E%E9%99%90%E6%B5%81%EF%BC%89"><span class="nav-number">3.1.3.</span> <span class="nav-text">Guava RateLimiter客户端限流（限定时间的非阻塞限流）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8ERedis-lua%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81"><span class="nav-number">3.2.</span> <span class="nav-text">基于Redis+lua的分布式限流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%90%E6%B5%81%E7%BB%84%E4%BB%B6%E5%B0%81%E8%A3%85%EF%BC%88Redis-Lua%EF%BC%89"><span class="nav-number">3.2.1.</span> <span class="nav-text">限流组件封装（Redis+Lua）</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
