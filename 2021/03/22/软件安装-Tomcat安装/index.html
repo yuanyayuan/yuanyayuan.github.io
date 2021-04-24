@@ -87,7 +87,7 @@
 <meta property="og:description" content="解压下载的Tomcat1tar -zxvf apache-tomcat-8.5.50.tar.gz   安装Java启动1.&#x2F;startup.sh  检查防火墙1systemctl status firewalld.service  重启防火墙1systemctl restart firewalld.service  停止防火墙1systemctl stop firewalld.service">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-03-22T14:40:13.000Z">
-<meta property="article:modified_time" content="2021-04-19T08:31:56.707Z">
+<meta property="article:modified_time" content="2021-04-24T16:36:57.918Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="软件安装">
 <meta property="article:tag" content="tomcat">
@@ -362,6 +362,9 @@
 <h2 id="重启防火墙"><a href="#重启防火墙" class="headerlink" title="重启防火墙"></a>重启防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart firewalld.service</span><br></pre></td></tr></table></figure>
 
 <h2 id="停止防火墙"><a href="#停止防火墙" class="headerlink" title="停止防火墙"></a>停止防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld.service</span><br></pre></td></tr></table></figure>
+
+<p><strong>永久关闭防火墙</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl disable firewalld</span><br></pre></td></tr></table></figure>
 
 <h2 id="启动防火墙"><a href="#启动防火墙" class="headerlink" title="启动防火墙"></a>启动防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start firewalld.service</span><br></pre></td></tr></table></figure>
 
