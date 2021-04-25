@@ -261,6 +261,239 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/" itemprop="url">中间件-redis内存淘汰机制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-03T12:46:31+08:00">
+                2021-04-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis内存淘汰机制</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Redis设置过期时间"><a href="#Redis设置过期时间" class="headerlink" title="Redis设置过期时间"></a>Redis设置过期时间</h1><ul>
+<li>expire key time(以秒为单位)–这是最常用的方式</li>
+<li>setex(String key, int seconds, String value)–字符串独有的方式</li>
+</ul>
+<p>注意：</p>
+<ul>
+<li>除了字符串自己独有设置过期时间的方法外，其他方法都需要依靠expire方法来设置时间</li>
+<li>如果没有设置时间，那缓存就是永不过期</li>
+<li>如果设置了过期时间，之后又想让缓存永不过期，使用persist key</li>
+</ul>
+<h1 id="Redis-给缓存数据设置过期时间有啥用？"><a href="#Redis-给缓存数据设置过期时间有啥用？" class="headerlink" title="Redis 给缓存数据设置过期时间有啥用？"></a>Redis 给缓存数据设置过期时间有啥用？</h1><p>一般情况下，我们设置保存的缓存数据的时候都会设置一个过期时间。为什么呢？</p>
+<p>因为内存是有限的，如果缓存中的所有数据都是一直保存的话，分分钟直接Out of memory。</p>
+<p><strong>过期时间除了有助于缓解内存的消耗，还有什么其他用么？</strong></p>
+<p>很多时候，我们的业务场景就是需要某个数据只在某一时间段内存在，比如我们的短信验证码可能只在1分钟内有效，用户登录的 token 可能只在 1 天内有效。</p>
+<p>如果使用传统的数据库来处理的话，一般都是自己判断过期，这样更麻烦并且性能要差很多。</p>
+<h1 id="Redis是如何判断数据是否过期的呢？"><a href="#Redis是如何判断数据是否过期的呢？" class="headerlink" title="Redis是如何判断数据是否过期的呢？"></a>Redis是如何判断数据是否过期的呢？</h1><p>Redis  通过一个叫做过期字典（可以看作是hash表）来保存数据过期的时间。过期字典的键指向Redis数据库中的某个key(键)，过期字典的值是一个long long类型的整数，这个整数保存了key所指向的数据库键的过期时间（毫秒精度的UNIX时间戳）。 </p>
+<h1 id="Redis-过期键的删除策略"><a href="#Redis-过期键的删除策略" class="headerlink" title="Redis 过期键的删除策略"></a>Redis 过期键的删除策略</h1><p>A、<strong>定期删除策略</strong>。用一个<strong>定时器</strong>来负责检查 key，过期则删除 key，注意这里并不是检查所有的 key 而是<strong>随机抽取进行检查</strong>。定期策略虽然让内存及时释放，但也会<strong>额外消耗 CPU 资源</strong>，通常 CPU 应该将时间尽量用于处理业务请求，而不是删除 key。</p>
+<p>B、<strong>惰性删除策略</strong>。在你<strong>获取</strong>某个 key 的时候，redis 会检查一下，这个 key <strong>如果设置了过期时间那么是否过期了</strong>，如果<strong>过期</strong>则删除该 key。</p>
+<hr>
+<h1 id="Redis-的回收策略（淘汰策略）"><a href="#Redis-的回收策略（淘汰策略）" class="headerlink" title="Redis 的回收策略（淘汰策略）"></a>Redis 的回收策略（淘汰策略）</h1><h2 id="内存淘汰机制"><a href="#内存淘汰机制" class="headerlink" title="内存淘汰机制"></a>内存淘汰机制</h2><p>如果<strong>定期删除没删除 key</strong>，然后也<strong>没及时去请求 key</strong>，即<strong>惰性删除也没生效</strong>，持续下去 redis 的内存会越来越高，当超过 redis 设置的内存最大使用量时，就会进行内存数据淘汰。redis 有 6 种淘汰策略：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>volatile-lru</td>
+<td>从已设置过期时间的数据集中挑选最近最少使用的数据淘汰</td>
+</tr>
+<tr>
+<td>volatile-ttl</td>
+<td>从已设置过期时间的数据集中挑选将要过期的数据淘汰</td>
+</tr>
+<tr>
+<td>volatile-random</td>
+<td>从已设置过期时间的数据集中任意选择数据淘汰</td>
+</tr>
+<tr>
+<td>allkeys-lru</td>
+<td>从所有数据集中挑选最近最少使用的数据淘汰</td>
+</tr>
+<tr>
+<td>allkeys-random</td>
+<td>从所有数据集中任意选择数据进行淘汰</td>
+</tr>
+<tr>
+<td>noeviction</td>
+<td>当内存不足以容纳新写入数据时，新写入操作会报错。很少使用</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>注意这里的 6 种机制，前缀 volatile 和 allkeys 用于区分淘汰数据的数据集是从已设置过期时间的数据集还是从全部数据集中选取，后面的 lru、ttl 以及 random 是三种不同的淘汰策略，再加上一种 no-enviction 永不回收的策略。其中最常使用的是 volatile-lru/allkeys-lru。</p>
+</blockquote>
+<ul>
+<li>allkeys-lru：如果期望用户请求呈现幂律分布(power-law distribution)，也就是，期望一部分子集元素被访问得远比其他元素多时，可以使用allkeys-lru策略。在你不确定时这是一个好的选择</li>
+<li>allkeys-random：如果期望是循环周期的访问，所有的键被连续扫描，或者期望请求符合平均分布(每个元素以相同的概率被访问)，可以使用allkeys-random策略。</li>
+<li>volatile-ttl：如果你期望能让 Redis 通过使用你创建缓存对象的时候设置的TTL值，确定哪些对象应该是较好的清除候选项，可以使用volatile-ttl策略。</li>
+</ul>
+<p>另外值得注意的是，为键设置过期时间需要消耗内存，所以使用像allkeys-lru这样的策略会更高效，因为在内存压力下没有必要为键的回收设置过期时间。</p>
+<h2 id="常用缓存数据淘汰策略"><a href="#常用缓存数据淘汰策略" class="headerlink" title="常用缓存数据淘汰策略"></a>常用缓存数据淘汰策略</h2><ul>
+<li>FIFO（First In First Out）： 先进先出算法，即先放入缓存的先被移除。</li>
+<li>LRU（Least Recently Used）： 最近最少使用算法，使用时间距离现在最久的那个被移除。</li>
+<li>LFU（Least Frequently Used）： 最不常用算法，一定时间段内使用次数（频率）最少的那个被移除。</li>
+</ul>
+<h2 id="缓存数据更新策略"><a href="#缓存数据更新策略" class="headerlink" title="缓存数据更新策略"></a>缓存数据更新策略</h2><ul>
+<li>定时任务从数据库直接更新缓存：适用于对时间不敏感的数据。</li>
+<li>查询时写缓存，即查询优先查询缓存，若缓存未命中，查询数据库，将返回结果写入缓存，数据更新时先 delete缓存，再更新缓存。</li>
+<li>MQ 消息异步更新缓存。</li>
+</ul>
+<h1 id="Redis采用的过期策略"><a href="#Redis采用的过期策略" class="headerlink" title="Redis采用的过期策略"></a>Redis采用的过期策略</h1><p>惰性删除+定期删除</p>
+<ul>
+<li>惰性删除流程<ul>
+<li>在进行get或setnx等操作时，先检查key是否过期，</li>
+<li>若过期，删除key，然后执行相应操作；</li>
+<li>若没过期，直接执行相应操作</li>
+</ul>
+</li>
+<li>定期删除流程（简单而言，对指定个数个库的每一个库随机删除小于等于指定个数个过期key）<ul>
+<li>遍历每个数据库（就是redis.conf中配置的”database”数量，默认为16）<ul>
+<li>检查当前库中的指定个数个key（默认是每个库检查20个key，注意相当于该循环执行20次，循环体时下边的描述）<ul>
+<li>如果当前库中没有一个key设置了过期时间，直接执行下一个库的遍历</li>
+<li>随机获取一个设置了过期时间的key，检查该key是否过期，如果过期，删除key</li>
+<li>判断定期删除操作是否已经达到指定时长，若已经达到，直接退出定期删除。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2663,232 +2896,11 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/24/Nginx-Keepalived%E9%85%8D%E7%BD%AE%E5%AE%9E%E7%8E%B0nginx%E9%AB%98%E5%8F%AF%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/24/Nginx-Keepalived%E9%85%8D%E7%BD%AE%E5%AE%9E%E7%8E%B0nginx%E9%AB%98%E5%8F%AF%E7%94%A8/" itemprop="url">Nginx-Keepalived配置实现nginx高可用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-24T01:53:30+08:00">
-                2021-03-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/LVS-nginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4-keepalived%E4%BD%BF%E7%94%A8%E9%85%8D%E7%BD%AE%E9%85%8D%E7%BD%AE/" itemprop="url" rel="index">
-                    <span itemprop="name">LVS+nginx实现高可用集群 - keepalived使用配置配置</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="启动nginx"><a href="#启动nginx" class="headerlink" title="启动nginx"></a>启动nginx</h1><p>启动两台服务器的nginx</p>
-<ul>
-<li>192.168.159.128</li>
-<li>192.168.159.129</li>
-</ul>
-<h1 id="配置Keepalived-主"><a href="#配置Keepalived-主" class="headerlink" title="配置Keepalived-主"></a>配置Keepalived-主</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">global_defs &#123;</span><br><span class="line">   <span class="comment">#配置节点挂掉后通知的邮箱</span></span><br><span class="line">   <span class="comment">#notification_email &#123;</span></span><br><span class="line">     <span class="comment">#acassen@firewall.loc</span></span><br><span class="line">     <span class="comment">#failover@firewall.loc</span></span><br><span class="line">     <span class="comment">#sysadmin@firewall.loc</span></span><br><span class="line">   <span class="comment">#&#125;</span></span><br><span class="line">   <span class="comment">#notification_email_from Alexandre.Cassen@firewall.loc</span></span><br><span class="line">   <span class="comment">#smtp_server 192.168.200.1</span></span><br><span class="line">   <span class="comment">#smtp_connect_timeout 30</span></span><br><span class="line">   <span class="comment">#配置节点挂掉后通知的邮箱</span></span><br><span class="line">   router_id keep_128 <span class="comment"># 路由id ：当前安装keepalived节点主机的标识符,全局唯一</span></span><br><span class="line">   <span class="comment">#vrrp_skip_check_adv_addr # 暂用不到</span></span><br><span class="line">   <span class="comment">#vrrp_strict # 暂用不到</span></span><br><span class="line">   <span class="comment">#vrrp_garp_interval 0 # 暂用不到</span></span><br><span class="line">   <span class="comment">#vrrp_gna_interval 0 # 暂用不到</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># 计算机节点</span></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">	<span class="comment"># 表示的状态，当前nginx的主节点，MASTER/BACKUP</span></span><br><span class="line">    state MASTER</span><br><span class="line">    <span class="comment"># 当前实例绑定的网卡</span></span><br><span class="line">    interface ens33</span><br><span class="line">    <span class="comment"># 保证主备节点一致</span></span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    <span class="comment"># 优先级/权重 谁的优先级高，在MASTER挂掉后，就能成为MASTER</span></span><br><span class="line">    priority 100</span><br><span class="line">    <span class="comment"># 主备之间同步检查的时间间隔，默认1s</span></span><br><span class="line">    advert_int 2</span><br><span class="line">    <span class="comment"># 认证和授权的密码，防止非法节点的进入</span></span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment"># VIP</span></span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        <span class="comment">#192.168.200.16</span></span><br><span class="line">        192.168.159.118</span><br><span class="line">        <span class="comment">#192.168.200.18</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="启动Keepalived"><a href="#启动Keepalived" class="headerlink" title="启动Keepalived"></a>启动Keepalived</h2><ul>
-<li><code>cd /usr/local/keepalived/sbin/</code></li>
-<li><code>./keepalived</code></li>
-</ul>
-<p>通过<code>ip addr</code>查看虚拟IP</p>
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.png" style="zoom: 50%;" />
-
-<p>ens33下出现<code>192.168.1.161</code>的虚拟IP</p>
-<h2 id="停止Keepalived"><a href="#停止Keepalived" class="headerlink" title="停止Keepalived"></a>停止Keepalived</h2><p><code>ps -ef|grep Keepalived</code></p>
-<p><code>kill -9 ...</code></p>
-<h2 id="把Keepalived注册为系统服务"><a href="#把Keepalived注册为系统服务" class="headerlink" title="把Keepalived注册为系统服务"></a>把Keepalived注册为系统服务</h2><p><code>cd /usr/software/keepalived/keepalived-2.2.2/keepalived/etc</code></p>
-<p><code>cp init.d/keepalived /etc/init.d/</code></p>
-<p><code>cp sysconfig/keepalived /etc/sysconfig/</code></p>
-<p><code>systemctl daemon-reload</code></p>
-<p><code>systemctl start keepalived.service</code></p>
-<h1 id="配置Host"><a href="#配置Host" class="headerlink" title="配置Host"></a>配置Host</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># keepalived</span></span><br><span class="line">192.168.159.128 www.128.com</span><br><span class="line">192.168.159.129 www.129.com</span><br><span class="line"></span><br><span class="line">192.168.159.118 www.118.com</span><br></pre></td></tr></table></figure>
-
-<h1 id="验证keepalived生效"><a href="#验证keepalived生效" class="headerlink" title="验证keepalived生效"></a>验证keepalived生效</h1><p>访问虚拟ip可以访问到192.168.159.128的nginx主页</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/%E9%AA%8C%E8%AF%81keepalived%E7%94%9F%E6%95%88.png"></p>
-<h1 id="配置Keepalived-备"><a href="#配置Keepalived-备" class="headerlink" title="配置Keepalived-备"></a>配置Keepalived-备</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">global_defs &#123;</span><br><span class="line">   <span class="comment"># 路由id：当前安装keepalived的节点主机标识符，保证全局唯一</span></span><br><span class="line">   router_id keep_129</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    <span class="comment"># 备用机设置为BACKUP</span></span><br><span class="line">    state BACKUP</span><br><span class="line">    interface ens33</span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    <span class="comment"># 权重低于MASTER</span></span><br><span class="line">    priority 80</span><br><span class="line">    advert_int 2</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        <span class="comment"># 注意：主备两台的vip都是一样的，绑定到同一个vip</span></span><br><span class="line">        192.168.159.118</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="检验主备节点是否生效"><a href="#检验主备节点是否生效" class="headerlink" title="检验主备节点是否生效"></a>检验主备节点是否生效</h1><ul>
-<li>停止192.168.159.128的keepalived</li>
-</ul>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E5%81%9C%E6%AD%A2.png"></p>
-<ul>
-<li>查看192.168.159.129的ip</li>
-</ul>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E4%BB%8E%E8%8A%82%E7%82%B9.png"></p>
-<p>keepalived从节点的ip出现<code>192.168.159.118</code></p>
-<ul>
-<li><a target="_blank" rel="noopener" href="http://www.118.com仍可以访问/">www.118.com仍可以访问</a></li>
-</ul>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E4%BB%8E%E8%8A%82%E7%82%B9%E6%9B%BF%E4%BB%A3.png"></p>
-<ul>
-<li>重启192.168.159.128的keepalived</li>
-</ul>
-<p>访问<a target="_blank" rel="noopener" href="http://www.118.com/">www.118.com</a></p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/%E9%AA%8C%E8%AF%81keepalived%E7%94%9F%E6%95%88.png"></p>
-<h1 id="Keepalived配置Nginx自动重启"><a href="#Keepalived配置Nginx自动重启" class="headerlink" title="Keepalived配置Nginx自动重启"></a>Keepalived配置Nginx自动重启</h1><blockquote>
-<p> 上述主备情况实在Keepalived失效情况下出现，即服务器宕机。如果仅仅是主节点的nginx挂掉，那整个主备服务会处于不可用状态。</p>
-</blockquote>
-<ul>
-<li>增加Nginx重启检测脚本</li>
-</ul>
-<p><code>vim /etc/keepalived/check_nginx_alive_or_not.sh</code></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line">A=`ps -C nginx --no-header |wc -l`</span><br><span class="line"><span class="meta">#</span><span class="bash"> 判断nginx是否宕机，如果宕机了，尝试重启</span></span><br><span class="line">if [ $A -eq 0 ];then</span><br><span class="line">    /usr/local/nginx/sbin/nginx</span><br><span class="line">    # 等待一小会再次检查nginx，如果没有启动成功，则停止keepalived，使其启动备用机</span><br><span class="line">    sleep 3</span><br><span class="line">    if [ `ps -C nginx --no-header |wc -l` -eq 0 ];then</span><br><span class="line">        killall keepalived</span><br><span class="line">    fi</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>增加运行权限</li>
-</ul>
-<p><code>chmod +x /etc/keepalived/check_nginx_alive_or_not.sh</code></p>
-<ul>
-<li>配置Keepalived监听nginx脚本(写在Keepalived核心配置文件中)</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vrrp_script check_nginx_alive &#123;</span><br><span class="line">    script &quot;/etc/keepalived/check_nginx_alive_or_not.sh&quot;</span><br><span class="line">    interval 2 # 每隔两秒运行上一行脚本</span><br><span class="line">    weight 10 # 如果脚本运行成功，则升级权重+10</span><br><span class="line">    # weight -10 # 如果脚本运行失败，则升级权重-10</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在vrrp_instance中新增监控的脚本（写在Keepalived核心配置文件中）</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">track_script &#123;</span><br><span class="line">    check_nginx_alive   # 追踪 nginx 脚本</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li> 重启Keepalived使配置文件生效</li>
-</ul>
-<p><code>systemctl restart keepalived</code></p>
-<h1 id="高可用集群架构Keepalived双主热备"><a href="#高可用集群架构Keepalived双主热备" class="headerlink" title="高可用集群架构Keepalived双主热备"></a>高可用集群架构Keepalived双主热备</h1><p>两台服务器的keepalived实现互为主备，实现双主热备，不浪费性能</p>
-<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><h3 id="在原先主节点的配置文件中添加新备节点配置"><a href="#在原先主节点的配置文件中添加新备节点配置" class="headerlink" title="在原先主节点的配置文件中添加新备节点配置"></a>在原先主节点的配置文件中添加新备节点配置</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">! Configuration File <span class="keyword">for</span> keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">   router_id keep_128</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_script check_nginx_alive &#123;</span><br><span class="line">    script <span class="string">&quot;/etc/keepalived/check_nginx_alive_or_not.sh&quot;</span></span><br><span class="line">    interval 2 <span class="comment"># 每隔两秒运行上一行脚本</span></span><br><span class="line">    weight 10 <span class="comment"># 如果脚本运行成功，则升级权重+10</span></span><br><span class="line">    <span class="comment"># weight -10 # 如果脚本运行失败，则升级权重-10</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state MASTER</span><br><span class="line">    interface ens33</span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    priority 100</span><br><span class="line">    advert_int 2</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    track_script &#123;</span><br><span class="line">        check_nginx_alive   <span class="comment"># 追踪 nginx 脚本</span></span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.159.118</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_2 &#123;</span><br><span class="line">    state BACKUP</span><br><span class="line">    interface ens33</span><br><span class="line">    virtual_router_id 52</span><br><span class="line">    priority 80</span><br><span class="line">    advert_int 2</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.159.117</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="在原先备节点的配置文件中添加新主节点配置"><a href="#在原先备节点的配置文件中添加新主节点配置" class="headerlink" title="在原先备节点的配置文件中添加新主节点配置"></a>在原先备节点的配置文件中添加新主节点配置</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">! Configuration File <span class="keyword">for</span> keepalived</span><br><span class="line">  </span><br><span class="line">global_defs &#123;</span><br><span class="line">   router_id keep_129</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_script check_nginx_alive &#123;</span><br><span class="line">    script <span class="string">&quot;/etc/keepalived/check_nginx_alive_or_not.sh&quot;</span></span><br><span class="line">    interval 2 <span class="comment"># 每隔两秒运行上一行脚本</span></span><br><span class="line">    weight 10 <span class="comment"># 如果脚本运行成功，则升级权重+10</span></span><br><span class="line">    <span class="comment"># weight -10 # 如果脚本运行失败，则升级权重-10</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state BACKUP</span><br><span class="line">    interface eth33</span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    priority 80</span><br><span class="line">    advert_int 2</span><br><span class="line">     authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    track_script &#123;</span><br><span class="line">        check_nginx_alive   <span class="comment"># 追踪 nginx 脚本</span></span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.159.118</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_2 &#123;</span><br><span class="line">    state MASTER</span><br><span class="line">    interface eth0</span><br><span class="line">    virtual_router_id 52</span><br><span class="line">    priority 100</span><br><span class="line">    advert_int 2</span><br><span class="line">     authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.159.117</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/8/">&gt;</a>
+    <a class="extend prev" rel="prev" href="/page/6/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/8/">&gt;</a>
   </nav>
 
 
@@ -2935,7 +2947,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-count">81</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2946,7 +2958,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">57</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

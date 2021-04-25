@@ -261,6 +261,369 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/15/Java-%E7%BA%BF%E7%A8%8B%E5%92%8C%E8%BF%9B%E7%A8%8Bpart1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/15/Java-%E7%BA%BF%E7%A8%8B%E5%92%8C%E8%BF%9B%E7%A8%8Bpart1/" itemprop="url">Java线程和进程part1</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-15T14:59:20+08:00">
+                2021-04-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java多线程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h1><h2 id="什么是进程和线程"><a href="#什么是进程和线程" class="headerlink" title="什么是进程和线程"></a>什么是进程和线程</h2><ul>
+<li><p>进程是程序的一次执行过程，是系统运行程序的基本单位，因此进程是动态的。系统运行一个程序即是一个进程从创建，运行到消亡的过程。进程有独立的地址空间，一个进程崩溃后，在保护模式下不会对其它进程产生影响。</p>
+</li>
+<li><p>线程是一个比进程更小的执行单位。一个进程在其执行的过程中可以产生多个线程。线程有自己的堆栈和局部变量，但线程之间没有单独的地址空间，一个线程死掉就等于整个进程死掉。与进程不同的是同类的多个线程共享进程的堆和方法区资源，但每个线程有自己的程序计数器、虚拟机栈和本地方法栈，所以系统在产生一个线程，或是在各个线程之间作切换工作时，负担要比进程小得多，也正因为如此，线程也被称为轻量级进程</p>
+</li>
+</ul>
+<p>多进程的程序要比多线程的程序健壮，但在进程切换时，耗费资源较大，效率要差一些。但对于一些要求同时进行并且又要共享某些变量的并发操作，只能用线程，不能用进程。</p>
+<h3 id="程序计数器为什么是私有的"><a href="#程序计数器为什么是私有的" class="headerlink" title="程序计数器为什么是私有的?"></a>程序计数器为什么是私有的?</h3><p>程序计数器私有主要是为了<strong>线程切换后能恢复到正确的执行位置</strong></p>
+<h3 id="虚拟机栈和本地方法栈为什么是私有的"><a href="#虚拟机栈和本地方法栈为什么是私有的" class="headerlink" title="虚拟机栈和本地方法栈为什么是私有的?"></a>虚拟机栈和本地方法栈为什么是私有的?</h3><p>为了<strong>保证线程中的局部变量不被别的线程访问到</strong>，虚拟机栈和本地方法栈是线程私有的</p>
+<h3 id="为什么堆和方法区是线程共享的呢？"><a href="#为什么堆和方法区是线程共享的呢？" class="headerlink" title="为什么堆和方法区是线程共享的呢？"></a>为什么堆和方法区是线程共享的呢？</h3><p>堆和方法区是所有线程共享的资源，其中堆是进程中最大的一块内存，主要用于存放新创建的对象 (几乎所有对象都在这里分配内存)，方法区主要用于存放已被加载的类信息、常量、静态变量、即时编译器编译后的代码等数据</p>
+<h2 id="多线程和单线程有什么区别？"><a href="#多线程和单线程有什么区别？" class="headerlink" title="多线程和单线程有什么区别？"></a>多线程和单线程有什么区别？</h2><p>单线程程序：程序执行过程中只有一个有效操作的序列，不同操作之间都有明确的执行先后顺序，容易出现代码阻塞</p>
+<p>多线程程序：有多个线程，线程间独立运行，能有效地避免代码阻塞，并且提高程序的运行性能 </p>
+<h2 id="什么是线程安全？"><a href="#什么是线程安全？" class="headerlink" title="什么是线程安全？"></a>什么是线程安全？</h2><p>当多个线程访问同一个对象时，如果不用考虑这些线程在运行时环境下的调度和交替运行，也不需要进行额外的同步，或者在调用方进行任何其他的协调操作，调用这个对象的行为都可以获取正确的结果，那这个对象是线程安全的。</p>
+<h2 id="为何要使用线程同步？"><a href="#为何要使用线程同步？" class="headerlink" title="为何要使用线程同步？"></a>为何要使用线程同步？</h2><p>Java允许多线程并发控制，当多个线程同时操作一个可共享的资源变量时（如数据的增删改查），将会导致数据不准确，相互之间产生冲突。</p>
+<p>因此加入同步锁以避免在该线程没有完成操作之前，被其他线程的调用，从而保证了该变量的唯一性和准确性。</p>
+<h2 id="如何确保线程安全？"><a href="#如何确保线程安全？" class="headerlink" title="如何确保线程安全？"></a>如何确保线程安全？</h2><p>1、对非安全的代码进行加锁控制；</p>
+<p>2、使用线程安全的类；</p>
+<p>3、多线程并发情况下，线程共享的变量改为方法级的局部变量</p>
+<h3 id="线程安全的级别？"><a href="#线程安全的级别？" class="headerlink" title="线程安全的级别？"></a>线程安全的级别？</h3><p>1、不可变。不可变的对象一定是线程安全的，并且永远也不需要额外的同步。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Java类库中大多数基本数值类如Integer、String和BigInteger都是不可变的。</span><br></pre></td></tr></table></figure>
+
+<p>2、无条件的线程安全。由类的规格说明所规定的约束在对象被多个线程访问时仍然有效，不管运行时环境如何排列，线程都不需要任何额外的同步。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如 Random 、ConcurrentHashMap、ConcurrentList、atomic</span><br></pre></td></tr></table></figure>
+
+<p>3、有条件的线程安全。有条件的线程安全类对于单独的操作可以是线程安全的，但是某些操作序列可能需要外部同步。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">有条件线程安全的最常见的例子是遍历由 Hashtable 或者 Vector 或者返回的迭代器</span><br></pre></td></tr></table></figure>
+
+<p>4、非线程安全(线程兼容)。线程兼容类不是线程安全的，但是可以通过正确使用同步而在并发环境中安全地使用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如ArrayList,HashMap</span><br></pre></td></tr></table></figure>
+
+<p>5、线程对立。线程对立是那些不管是否采用了同步措施，都不能在多线程环境中并发使用的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如如System.setOut()、System.runFinalizersOnExit()</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建线程有哪些方式？"><a href="#创建线程有哪些方式？" class="headerlink" title="创建线程有哪些方式？"></a>创建线程有哪些方式？</h2><ol>
+<li><p>继承 Thread 类创建线程类并重写该类的run方；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;MyThread.run()&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">MyThread myThread1 = <span class="keyword">new</span> MyThread();</span><br><span class="line">myThread1.start();</span><br></pre></td></tr></table></figure></li>
+<li><p>通过 Runnable 接口创建线程类并重写该接口的run()方法。(无返回值的任务必须 Runnable 接口)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyThread</span> <span class="keyword">extends</span> <span class="title">OtherClass</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;MyThread.run()&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//启动 MyThread，需要首先实例化一个 Thread，并传入自己的 MyThread 实例：</span></span><br><span class="line">MyThread myThread = <span class="keyword">new</span> MyThread();</span><br><span class="line">Thread thread = <span class="keyword">new</span> Thread(myThread);</span><br><span class="line">thread.start();</span><br><span class="line"><span class="comment">//事实上，当传入一个 Runnable target 参数给 Thread 后， Thread 的 run()方法就会调用</span></span><br><span class="line">target.run()</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (target != <span class="keyword">null</span>) &#123;</span><br><span class="line">		target.run();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>使用ExecutorService、Callable、Future实现有返回结果的多线程(有返回值的任务必须实现 Callable 接口)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建一个线程池</span></span><br><span class="line">ExecutorService pool = Executors.newFixedThreadPool(taskSize);</span><br><span class="line"><span class="comment">// 创建多个有返回值的任务</span></span><br><span class="line">List&lt;Future&gt; list = <span class="keyword">new</span> ArrayList&lt;Future&gt;();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; taskSize; i++) &#123;</span><br><span class="line">	Callable c = <span class="keyword">new</span> MyCallable(i + <span class="string">&quot; &quot;</span>);</span><br><span class="line">	<span class="comment">// 执行任务并获取 Future 对象</span></span><br><span class="line">	Future f = pool.submit(c);</span><br><span class="line">	list.add(f);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 关闭线程池</span></span><br><span class="line">pool.shutdown();</span><br><span class="line"><span class="comment">// 获取所有并发任务的运行结果</span></span><br><span class="line"><span class="keyword">for</span> (Future f : list) &#123;</span><br><span class="line">	<span class="comment">// 从 Future 对象上获取任务的返回值，并输出到控制台</span></span><br><span class="line">	System.out.println(<span class="string">&quot;res： &quot;</span> + f.get().toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>线程池</p>
+</li>
+</ol>
+<h3 id="用Runnable还是Thread"><a href="#用Runnable还是Thread" class="headerlink" title="用Runnable还是Thread"></a>用Runnable还是Thread</h3><p>Java不支持类的多重继承，但允许调用多个接口。所以如果要继承其他类，当然是调用Runnable接口</p>
+<h3 id="Java中Runnable和Callable有什么不同"><a href="#Java中Runnable和Callable有什么不同" class="headerlink" title="Java中Runnable和Callable有什么不同"></a>Java中Runnable和Callable有什么不同</h3><p>Runnable和Callable都代表那些要在不同的线程中执行的任务。它们的主要区别是Callable的 call() 方法可以返回值和抛出异常，而Runnable的run()方法没有这些功能。Callable可以返回装载有计算结果的Future对象。</p>
+<h3 id="什么是FutureTask？"><a href="#什么是FutureTask？" class="headerlink" title="什么是FutureTask？"></a>什么是FutureTask？</h3><p>在Java并发程序中FutureTask表示一个可以取消的异步运算。一个FutureTask对象可以对调用了Callable和Runnable的对象进行包装</p>
+<h3 id="线程类的构造方法、静态块是被哪个线程调用的"><a href="#线程类的构造方法、静态块是被哪个线程调用的" class="headerlink" title="线程类的构造方法、静态块是被哪个线程调用的"></a>线程类的构造方法、静态块是被哪个线程调用的</h3><p>线程类的构造方法、静态块是被new这个线程类所在的线程所调用的，而run方法里面的代码才是被线程自身所调用的。</p>
+<h1 id="说说并发与并行的区别"><a href="#说说并发与并行的区别" class="headerlink" title="说说并发与并行的区别?"></a>说说并发与并行的区别?</h1><ul>
+<li><strong>并发：</strong> 同一时间段，多个任务都在执行 (单位时间内不一定同时执行)；</li>
+<li><strong>并行：</strong> 单位时间内，多个任务同时执行。</li>
+</ul>
+<h1 id="为什么要使用多线程呢"><a href="#为什么要使用多线程呢" class="headerlink" title="为什么要使用多线程呢"></a>为什么要使用多线程呢</h1><p>1、使用多线程可以减少程序的响应时间。 在单线程的情况下，如果某个程序很耗时或者陷入长时间等待（如等待网络响应），此时程序将不会相应鼠标和键盘等操作，使用多线程后，可以把这个耗时的线程分配到一个单独的线程去执行，从而是程序具备了更好的交互性。</p>
+<p>2、与进程相比，线程的创建和切换开销更小。 由于启动一个新的进程必须给这个进程分配独立的地址空间，建立许多数据结构来维护进程代码段、数据段等信息，而运行于同一个进程内的线程共享代码段、数据段，线程的启动或切换的开销就比进程要少很多。同时多线程在数据共享方面效率非常高。</p>
+<p>3、多CPU或多核心计算机本身就具有执行多线程的能力。 如果使用单个线程，将无法重复利用计算机资源，造成资源的巨大浪费。因此在多CPU计算机上使用多线程能提高CPU的利用率。</p>
+<p>4、使用多线程能简化程序的结构，使用程序便于理解和维护。 一个非常复杂的进程可以分成多个线程来执行。</p>
+<h2 id="使用多线程可能带来什么问题"><a href="#使用多线程可能带来什么问题" class="headerlink" title="使用多线程可能带来什么问题?"></a>使用多线程可能带来什么问题?</h2><p>并发编程的目的就是为了能提高程序的执行效率提高程序运行速度，但是并发编程并不总是能提高程序运行速度的，而且并发编程可能会遇到很多问题，比如：内存泄漏、死锁、线程不安全等等。</p>
+<h1 id="说说线程的生命周期和状态"><a href="#说说线程的生命周期和状态" class="headerlink" title="说说线程的生命周期和状态?"></a>说说线程的生命周期和状态?</h1><p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/19-1-29/Java+%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81%E5%8F%98%E8%BF%81.png?ynotemdtimestamp=1618464916797" alt="Java 线程状态变迁 "></p>
+<ol>
+<li>线程创建之后它将处于<strong>NEW</strong>状态，调用<strong>start</strong>()方法后开始运行，线程这时候处于<strong>READY</strong> 状态。可运行状态的线程获得了<strong>CPU</strong>时间片后就处于<strong>RUNNING</strong>状态。</li>
+<li>线程执行 <code>wait () </code>方法后，进入<code> WAITING</code> 状态，此时需要依靠其他线程的通知才能够返回到运行状态，而 <code>TIME_WAITING </code>状态相当于在等待状态的基础上增加了超时限制，比如通过 <code>sleep（）</code>或 <code>wait（）</code>可以将线程置于<code>TIME_WAITING</code>状态。当超时时间到达又会返回到 <code>RUNNABLE </code>状态。当线程调用同步方法时，在没有获取到锁的情况下，线程将会进入到 <code>BLOCKED </code>状态。线程在执行<code>Runnable</code>的 <code>run () </code>方法之后将会进入到 <code>TERMINATED </code>状态。</li>
+</ol>
+<p>共 6 种状态：</p>
+<p>**初始状态 (NEW)**：尚未启动的线程处于此状态。通常是新创建了线程，但还没有调用 start () 方法；</p>
+<p>**运行状态 (RUNNABLE)**：Java 线程中将就绪（ready）和运行中（running）两种状态笼统的称为 “运行中”。比如说线程可运行线程池中，等待被调度选中，获取 CPU 的使用权，此时处于就绪状态（ready）。就绪状态的线程在获得 CPU 时间片后变为运行中状态（running）。</p>
+<p>**阻塞状态 (BLOCKED)**：表示线程阻塞于锁；</p>
+<p>**等待状态 (WAITING)**：进入该状态的线程需要等待其他线程做出一些特定动作（通知或中断）；</p>
+<p>**超时等待状态 (TIMED_WAITING)**：进入该状态的线程需要等待其他线程在指定时间内做出一些特定动作（通知或中断），可以在指定的时间自行返回；</p>
+<p>**终止状态 (TERMINATED)**：表示该线程已经执行完毕，已退出的线程处理此状态。</p>
+<h2 id="线程状态-RUNNABLE-如何变为-BLOCKED"><a href="#线程状态-RUNNABLE-如何变为-BLOCKED" class="headerlink" title="线程状态 RUNNABLE 如何变为 BLOCKED?"></a>线程状态 RUNNABLE 如何变为 BLOCKED?</h2><p>线程状态变为阻塞有多种原因：可能调用 wait () 方法进入等待池，可能执行同步方法 / 同步代码块进入等锁池，可能调用了 sleep ()/join () 等待休眠或其他线程结束，可能发生了 I/O 中断等</p>
+<h1 id="怎么唤醒一个阻塞的线程"><a href="#怎么唤醒一个阻塞的线程" class="headerlink" title="怎么唤醒一个阻塞的线程"></a>怎么唤醒一个阻塞的线程</h1><ol>
+<li>如果线程是因为调用了了wait()、sleep()或者join()方法而导致的阻塞；<ul>
+<li>suspend()与resume()<br>Java废弃 suspend() 去挂起线程的原因，是因为 suspend() 在导致线程暂停的同时，并不不会去释放任何锁资源。其他线程都无法访问被它占用的锁。直到对应的线程执行行 resume() 方法后，被挂起的线程才能继续，从而其它被阻塞在这个锁的线程才可以继续执行。<br>但是，如果 resume() 操作出现在 suspend() 之前执行行，那么线程将一直处于挂起状态，同时一直占⽤用锁，这就产生了了死锁。而且，对于被挂起的线程，它的线程状态居然还是 Runnable。</li>
+<li>wait()与notify()<br>wait与notify必须配合synchronized使用，因为调用之前必须持有锁，wait会立即释放锁，notify则是同步块执行完了才释放</li>
+<li>await()与singal()<br>Condition类提供，而Condition对象由new ReentLock().newCondition()获得，与wait和notify相同，因为使用Lock锁后无法使用wait方法</li>
+<li>park()与unpark()<br>LockSupport是一个非常方便便实用的线程阻塞⼯工具，它可以在线程任意位置让线程阻塞。和Thread.suspenf()相比，它弥补了了由于resume()在前发生，导致线程无法继续执行行的情况。和Object.wait()相比，它不不需要先获得某个对象的锁，也不会抛出IException异常。可以唤醒指定线程。</li>
+</ul>
+</li>
+<li>如果线程遇到了了IO阻塞，无能为力，因为IO是操作系统实现的，Java代码并没有办法直接接触到操作系统。</li>
+</ol>
+<h1 id="Condition-类和-Object-类锁方法区别区别"><a href="#Condition-类和-Object-类锁方法区别区别" class="headerlink" title="Condition 类和 Object 类锁方法区别区别"></a>Condition 类和 Object 类锁方法区别区别</h1><ol>
+<li>Condition 类的 awiat 方法和 Object 类的 wait 方法等效</li>
+<li>Condition 类的 signal 方法和 Object 类的 notify 方法等效</li>
+<li>Condition 类的 signalAll 方法和 Object 类的 notifyAll 方法等效</li>
+<li>ReentrantLock 类可以唤醒指定条件的线程，而 object 的唤醒是随机的</li>
+</ol>
+<h1 id="什么是上下文切换"><a href="#什么是上下文切换" class="headerlink" title="什么是上下文切换"></a>什么是上下文切换</h1><p>当前任务在执行完 CPU 时间片切换到另一个任务之前会先保存自己的状态，以便下次再切换回这个任务时，可以再加载这个任务的状态。<strong>任务从保存到再加载的过程就是一次上下文切换</strong>。</p>
+<h1 id="什么是线程死锁-如何避免死锁"><a href="#什么是线程死锁-如何避免死锁" class="headerlink" title="什么是线程死锁?如何避免死锁?"></a>什么是线程死锁?如何避免死锁?</h1><h2 id="认识线程死锁"><a href="#认识线程死锁" class="headerlink" title="认识线程死锁"></a>认识线程死锁</h2><p>线程死锁描述的是这样一种情况：多个线程同时被阻塞，它们中的一个或者全部都在等待某个资源被释放。由于线程被无限期地阻塞，因此程序不可能正常终止。</p>
+<p>如下图所示，线程 A 持有资源 2，线程 B 持有资源 1，他们同时都想申请对方的资源，所以这两个线程就会互相等待而进入死锁状态</p>
+<p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-4/2019-4%E6%AD%BB%E9%94%811.png?ynotemdtimestamp=1618464916797" alt="线程死锁示意图 "></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">下面通过一个例子来说明线程死锁,代码模拟了上图的死锁的情况 (代码来源于《并发编程之美》)：</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DeadLockDemo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Object resource1 = <span class="keyword">new</span> Object();<span class="comment">//资源 1</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Object resource2 = <span class="keyword">new</span> Object();<span class="comment">//资源 2</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (resource1) &#123;</span><br><span class="line">                System.out.println(Thread.currentThread() + <span class="string">&quot;get resource1&quot;</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(Thread.currentThread() + <span class="string">&quot;waiting get resource2&quot;</span>);</span><br><span class="line">                <span class="keyword">synchronized</span> (resource2) &#123;</span><br><span class="line">                    System.out.println(Thread.currentThread() + <span class="string">&quot;get resource2&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="string">&quot;线程 1&quot;</span>).start();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (resource2) &#123;</span><br><span class="line">                System.out.println(Thread.currentThread() + <span class="string">&quot;get resource2&quot;</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(Thread.currentThread() + <span class="string">&quot;waiting get resource1&quot;</span>);</span><br><span class="line">                <span class="keyword">synchronized</span> (resource1) &#123;</span><br><span class="line">                    System.out.println(Thread.currentThread() + <span class="string">&quot;get resource1&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="string">&quot;线程 2&quot;</span>).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Output</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Thread[线程 1,5,main]get resource1</span><br><span class="line">Thread[线程 2,5,main]get resource2</span><br><span class="line">Thread[线程 1,5,main]waiting get resource2</span><br><span class="line">Thread[线程 2,5,main]waiting get resource1</span><br></pre></td></tr></table></figure>
+
+<p>线程 A 通过 synchronized (resource1) 获得 resource1 的监视器锁，然后通过<code>Thread.sleep(1000);</code>让线程 A 休眠 1s 为的是让线程 B 得到执行然后获取到 resource2 的监视器锁。线程 A 和线程 B 休眠结束了都开始企图请求获取对方的资源，然后这两个线程就会陷入互相等待的状态，这也就产生了死锁。上面的例子符合产生死锁的四个必要条件。</p>
+<p>学过操作系统的朋友都知道产生死锁必须具备以下四个条件：</p>
+<ol>
+<li>互斥条件：该资源任意一个时刻只由一个线程占用。</li>
+<li>请求与保持条件：一个进程因请求资源而阻塞时，对已获得的资源保持不放。</li>
+<li>不剥夺条件:线程已获得的资源在末使用完之前不能被其他线程强行剥夺，只有自己使用完毕后才释放资源。</li>
+<li>循环等待条件:若干进程之间形成一种头尾相接的循环等待资源关系。</li>
+</ol>
+<h2 id="如何避免线程死锁"><a href="#如何避免线程死锁" class="headerlink" title="如何避免线程死锁?"></a>如何避免线程死锁?</h2><p>只要破坏产生死锁的四个条件中的其中一个就可以了</p>
+<ol>
+<li><strong>破坏互斥条件</strong> ：这个条件我们没有办法破坏，因为我们用锁本来就是想让他们互斥的（临界资源需要互斥访问）。</li>
+<li><strong>破坏请求与保持条件</strong> ：一次性申请所有的资源。</li>
+<li><strong>破坏不剥夺条件</strong> ：占用部分资源的线程进一步申请其他资源时，如果申请不到，可以主动释放它占有的资源。</li>
+<li><strong>破坏循环等待条件</strong> ：靠按序申请资源来预防。按某一顺序申请资源，释放资源则反序释放。破坏循环等待条件。</li>
+</ol>
+<p>对线程 2 的代码修改成下面这样就不会产生死锁了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (resource1) &#123;</span><br><span class="line">        System.out.println(Thread.currentThread() + <span class="string">&quot;get resource1&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(Thread.currentThread() + <span class="string">&quot;waiting get resource2&quot;</span>);</span><br><span class="line">        <span class="keyword">synchronized</span> (resource2) &#123;</span><br><span class="line">            System.out.println(Thread.currentThread() + <span class="string">&quot;get resource2&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;, <span class="string">&quot;线程 2&quot;</span>).start();</span><br></pre></td></tr></table></figure>
+
+<p>Output</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Thread[线程 1,5,main]get resource1</span><br><span class="line">Thread[线程 1,5,main]waiting get resource2</span><br><span class="line">Thread[线程 1,5,main]get resource2</span><br><span class="line">Thread[线程 2,5,main]get resource1</span><br><span class="line">Thread[线程 2,5,main]waiting get resource2</span><br><span class="line">Thread[线程 2,5,main]get resource2</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码为什么避免了死锁的发生?</p>
+<p>线程 1 首先获得到 resource1 的监视器锁,这时候线程 2 就获取不到了。</p>
+<p>然后线程 1 再去获取 resource2 的监视器锁，可以获取到。然后线程 1 释放了对 resource1、resource2 的监视器锁的占用，线程 2 获取到就可以执行了。</p>
+<p>这样就破坏了破坏循环等待条件，因此避免了死锁。</p>
+<h1 id="Java中活锁和死锁有什么区别？"><a href="#Java中活锁和死锁有什么区别？" class="headerlink" title="Java中活锁和死锁有什么区别？"></a>Java中活锁和死锁有什么区别？</h1><ol>
+<li><p>死锁：是指两个或两个以上的进程（或线程）在执行过程中，因争夺资源而造成的一种互相等待的现象，若无外力作用，它们都将无法推进下去。此时称系统处于死锁状态或系统产生了死锁，这些永远在互相等待的进程称为死锁进程。</p>
+<blockquote>
+<p>迎面开来的汽车A和汽车B过马路，汽车A得到了半条路的资源（满足死锁发生条件1：资源访问是排他性的，我占了路你就不能上来，除非你爬我头上去），汽车B占了汽车A的另外半条路的资源，A想过去必须请求另一半被B占用的道路（死锁发生条件2：必须整条车身的空间才能开过去，我已经占了一半，尼玛另一半的路被B占用了），B若想过去也必须等待A让路，A是辆兰博基尼，B是开奇瑞QQ的屌丝，A素质比较低开窗对B狂骂：快给老子让开，B很生气，你妈逼的，老子就不让（死锁发生条件3：在未使用完资源前，不能被其他线程剥夺），于是两者相互僵持一个都走不了（死锁发生条件4：环路等待条件），而且导致整条道上的后续车辆也走不了。（很粗鲁的相互竞争）</p>
+</blockquote>
+</li>
+<li><p>活锁：线程A和B都需要过桥(都需要使用进程),而都礼让不走(那到的系统优先级相同,都认为不是自己优先级高),就这么僵持下去.（很绅士，互相谦让）</p>
+</li>
+<li><p>饥饿：这是个独木桥(单进程),桥上只能走一个人,B来到时A在桥上,B等待;而此时比B年龄小的C来了,B让C现行(A走完后系统把进程分给了C), C上桥后,D又来了,B又让D现行(C走完后系统把进程分个了D)以此类推B一直是等待状态.</p>
+</li>
+</ol>
+<p>活锁指的是任务或者执行者没有被阻塞，由于某些条件没有满足，导致一直重复尝试，失败，尝试，失败。活锁和死锁的区别在于，处于活锁的实体是在不断的改变状态，所谓的“活”， 而处于死锁的实体表现为等待；活锁有可能自行解开，死锁则不能。</p>
+<p>饥饿，是指一个可运行的进程尽管能继续执行，但被调度器无限期地忽视，而不能被调度执行的情况。</p>
+<p>饥饿是由资源分配策略决定的， 饥饿可以通过先来先服务等资源分配策略来避免。</p>
+<h1 id="说说-sleep-方法和-wait-方法区别和共同点"><a href="#说说-sleep-方法和-wait-方法区别和共同点" class="headerlink" title="说说 sleep() 方法和 wait() 方法区别和共同点"></a>说说 sleep() 方法和 wait() 方法区别和共同点</h1><ul>
+<li>两者最主要的区别在于：sleep 方法没有释放锁，而 wait 方法释放了锁 。</li>
+<li>两者都可以暂停线程的执行。</li>
+<li>Wait 通常被用于线程间交互/通信，sleep 通常被用于暂停执行。</li>
+<li>wait() [<strong>线程等待</strong>]方法被调用后，线程不会自动苏醒，需要别的线程调用同一个对象上的 notify() 或者 notifyAll() 方法。sleep() [<strong>线程睡眠</strong>]方法执行完成后，线程会自动苏醒。或者可以使用 wait(long timeout)超时后线程会自动苏醒。</li>
+</ul>
+<h1 id="同步线程及线程调度相关的方法（除wait和sleep）"><a href="#同步线程及线程调度相关的方法（除wait和sleep）" class="headerlink" title="同步线程及线程调度相关的方法（除wait和sleep）"></a>同步线程及线程调度相关的方法（除wait和sleep）</h1><ul>
+<li><p>join() 方法，等待其他线程终止，在当前线程中调用一个线程的 join() 方法，则当前线程转为阻塞状态，等到另一个线程结束，当前线程再由阻塞状态变为就绪状态，等待 cpu 的宠幸。注意该方法也需要捕捉异常。</p>
+</li>
+<li><p>yield()[<strong>线程让步</strong>]方法:</p>
+<p>Yield()方法可以暂停当前正在执行的线程对象，让其它有相同优先级的线程执行。它是一个静态方法而且只保证当前线程放弃CPU占用而不能保证使其它线程一定能占用CPU，执行yield()的线程有可能在进入到暂停状态后马上又被执行。</p>
+<p>使用场景（为什么使用）：很多情况下，主线程生成并启动了子线程，需要用到子线程返回的结果，也就是需要主线程需要在子线程结束后再结束，这时候就要用到 join() 方法 。</p>
+</li>
+<li><p><strong>线程唤醒</strong>（notify）</p>
+<p>Object 类中的 notify() 方法， 唤醒在此对象监视器上等待的单个线程，如果所有线程都在此对象<br>上等待，则会选择唤醒其中一个线程，选择是任意的，并在对实现做出决定时发生，线程通过调<br>用其中一个 wait() 方法，在对象的监视器上等待， 直到当前的线程放弃此对象上的锁定，才能继<br>续执行被唤醒的线程，被唤醒的线程将以常规方式与在该对象上主动同步的其他所有线程进行竞<br>争。类似的方法还有 notifyAll() ，唤醒再次监视器上等待的所有线程。</p>
+</li>
+</ul>
+<h1 id="为什么我们调用-start-方法时会执行-run-方法，为什么我们不能直接调用-run-方法？"><a href="#为什么我们调用-start-方法时会执行-run-方法，为什么我们不能直接调用-run-方法？" class="headerlink" title="为什么我们调用 start() 方法时会执行 run() 方法，为什么我们不能直接调用 run() 方法？"></a>为什么我们调用 start() 方法时会执行 run() 方法，为什么我们不能直接调用 run() 方法？</h1><p>new 一个 Thread，线程进入了新建状态。</p>
+<p>调用 <code>start()</code>方法，会启动一个线程并使线程进入了就绪状态，当分配到时间片后就可以开始运行了。 <code>start()</code> 会执行线程的相应准备工作，然后自动执行 <code>run()</code> 方法的内容，这是真正的多线程工作。 但是，直接执行 <code>run()</code> 方法，会把 <code>run()</code> 方法当成一个 main 线程下的普通方法去执行，并不会在某个线程中执行它，所以这并不是多线程工作。</p>
+<p><strong>总结： 调用 <code>start()</code> 方法方可启动线程并使线程进入就绪状态，直接执行 <code>run()</code> 方法的话不会以多线程的方式执行。</strong></p>
+<h1 id="进程间通讯的四种方式"><a href="#进程间通讯的四种方式" class="headerlink" title="进程间通讯的四种方式"></a>进程间通讯的四种方式</h1><h2 id="共享内存"><a href="#共享内存" class="headerlink" title="共享内存"></a>共享内存</h2><p>共享内存是最快的进程间通讯的方式</p>
+<blockquote>
+<p>原因：相对于其他几种方式，共享内存直接在进程的虚拟地址空间进行操作，不再通过执行进入内核的系统调用来传递彼此的数据</p>
+</blockquote>
+<h2 id="信号"><a href="#信号" class="headerlink" title="信号"></a>信号</h2><p>在进程访问临界资源之前，需要测试信号量，如果为正数，则信号量-1并且进程可以进入临界区，若为非正数，则进程挂起放入等待队列，直至有进程退出临界区，释放资源并+1信号量，此时唤醒等待队列的进程。</p>
+<p>信号量本身就是临界资源，所以必须是原子操作。</p>
+<h2 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h2><p>单向，一端输入，另一端输出，先进先出FIFO。管道也是文件。管道大小4096字节。</p>
+<p>特点：管道满时，写阻塞；空时，读阻塞。</p>
+<h2 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h2><p>消息队列是先进先出FIFO原则</p>
+<h1 id="线程间通信的几种实现方式"><a href="#线程间通信的几种实现方式" class="headerlink" title="线程间通信的几种实现方式"></a>线程间通信的几种实现方式</h1><ul>
+<li>使用 volatile 关键字</li>
+</ul>
+<p>基于 volatile 关键字来实现线程间相互通信是使用共享内存的思想，大致意思就是多个线程同时监听一个变量，当这个变量发生变化的时候 ，线程能够感知并执行相应的业务</p>
+<ul>
+<li>使用Object类的wait() 和 notify() 方法</li>
+</ul>
+<p>众所周知，Object类提供了线程间通信的方法：wait()、notify()、notifyaAl()，它们是多线程通信的基础，而这种实现方式的思想自然是线程间通信。</p>
+<blockquote>
+<p>注意： wait和 notify必须配合synchronized使用，wait方法释放锁，notify方法不释放锁</p>
+</blockquote>
+<ul>
+<li>使用JUC工具类 CountDownLatch</li>
+<li>使用 ReentrantLock 结合 Condition</li>
+<li>基本LockSupport实现线程间的阻塞和唤醒</li>
+</ul>
+<h2 id="Java中notify-和-notifyAll有什么区别？"><a href="#Java中notify-和-notifyAll有什么区别？" class="headerlink" title="Java中notify 和 notifyAll有什么区别？"></a>Java中notify 和 notifyAll有什么区别？</h2><p>notify()方法不能唤醒某个具体的线程，所以只有一个线程在等待的时候它才有。</p>
+<p>notifyAll()唤醒所有线程并允许他们争夺锁确保了至少有一个线程能继续运行。</p>
+<h2 id="为什么wait-notify-和-notifyAll这些方法不在thread类里面？"><a href="#为什么wait-notify-和-notifyAll这些方法不在thread类里面？" class="headerlink" title="为什么wait, notify 和 notifyAll这些方法不在thread类里面？"></a>为什么wait, notify 和 notifyAll这些方法不在thread类里面？</h2><p>JAVA提供的锁是对象级的而不是线程级的。由于wait，notify和notifyAll都是锁级别的操作，所以把他们定义在Object类。</p>
+<h2 id="为什么wait和notify方法要在同步块中调用？"><a href="#为什么wait和notify方法要在同步块中调用？" class="headerlink" title="为什么wait和notify方法要在同步块中调用？"></a>为什么wait和notify方法要在同步块中调用？</h2><ol>
+<li>只有在调用线程拥有某个对象的独占锁时，才能够调用该对象的wait(),notify()和notifyAll()方法。</li>
+<li>如果你不这么做，你的代码会抛出IllegalMonitorStateException异常。</li>
+<li>还有一个原因是为了避免wait和notify之间产生竞态条件。</li>
+</ol>
+<h1 id="线程间如何同步"><a href="#线程间如何同步" class="headerlink" title="线程间如何同步"></a>线程间如何同步</h1><blockquote>
+<p>各个线程可以访问进程中的公共变量，所以使用多线程的过程中需要注意的问题是如何防止两个或两个以上的线程同时访问同一个数据，以免破坏数据的完整性。保证各个线程可以在一起适当的协调工作称为线程之间的同步</p>
+</blockquote>
+<ul>
+<li>（一）临界区</li>
+<li>（二）互斥</li>
+<li>（三）信号量</li>
+</ul>
+<h1 id="什么是竞态条件？你怎样发现和解决竞争？"><a href="#什么是竞态条件？你怎样发现和解决竞争？" class="headerlink" title="什么是竞态条件？你怎样发现和解决竞争？"></a>什么是竞态条件？你怎样发现和解决竞争？</h1><p>当两个线程竞争同一资源时，如果对资源的访问顺序敏感，就称存在竞态条件。在临界区中使用适当的同步就可以避免竞态条件，实现方法有两种，一种是用synchronized，一种是用Lock显式锁实现。</p>
+<h1 id="你对线程优先级的理解是什么？"><a href="#你对线程优先级的理解是什么？" class="headerlink" title="你对线程优先级的理解是什么？"></a>你对线程优先级的理解是什么？</h1><p>每一个线程都是有优先级的，一般来说，高优先级的线程在运行时会具有优先权，但这依赖于线程调度的实现，这个实现是和操作系统相关的(OSdependent)。</p>
+<p>可以定义线程的优先级，但是这并不能保证高优先级的线程会在低优先级的线程前执行。线程优先级是一个int变量(从1-10)，1代表最低优先级，10代表最高优先级。</p>
+<h1 id="一个线程运行时发生异常会怎样"><a href="#一个线程运行时发生异常会怎样" class="headerlink" title="一个线程运行时发生异常会怎样"></a>一个线程运行时发生异常会怎样</h1><ol>
+<li>如果这个异常没有被捕获的话，这个线程就停止执行了。</li>
+<li>另外重要的一点是：如果这个线程持有某个对象的监视器器，那么这个对象监视器器会被立即释放.</li>
+</ol>
+<h1 id="用户线程和守护线程有什么区别？（JAVA-后台线程）"><a href="#用户线程和守护线程有什么区别？（JAVA-后台线程）" class="headerlink" title="用户线程和守护线程有什么区别？（JAVA 后台线程）"></a>用户线程和守护线程有什么区别？（JAVA 后台线程）</h1><p>守护线程都是为JVM中所有非守护线程的运行提供便利服务： 只要当前JVM实例中尚存在任何一个非守护线程没有结束，守护线程就全部工作；只有当最后一个非守护线程结束时，守护线程随着JVM一同结束工作。</p>
+<p>两者几乎没有区别，唯一的不同之处就在于虚拟机的离开：如果用户线程已经全部退出运行了，只剩下守护线程存在了，虚拟机也就退出了。</p>
+<p>因为没有了被守护者，守护线程也就没有工作可做了，也就没有继续运行程序的必要了。</p>
+<h1 id="如何创建守护线程？以及在什么场合来使用它？"><a href="#如何创建守护线程？以及在什么场合来使用它？" class="headerlink" title="如何创建守护线程？以及在什么场合来使用它？"></a>如何创建守护线程？以及在什么场合来使用它？</h1><p>任何线程都可以设置为守护线程和用户线程，通过方法Thread.setDaemon(bool on)；true则把该线程设置为守护线程，反之则为用户线程。Thread.setDaemon()必须在Thread.start()之前调用，否则运行时会抛出异常。</p>
+<p>守护线程相当于后台管理者 比如 : 进行内存回收,垃圾清理等工作</p>
+<h1 id="如何停止一个正在运行的线程"><a href="#如何停止一个正在运行的线程" class="headerlink" title="如何停止一个正在运行的线程"></a>如何停止一个正在运行的线程</h1><p>1、使用退出标志，使线程正常退出，也就是当run方法完成后线程终止。<br>2、使用stop方法强行终止，但是不推荐这个方法，因为stop和suspend及resume一样都是过期作废的<br>方法。<br>3、使用interrupt方法中断线程。</p>
+<h1 id="Java-中用到的线程调度算法是什么？"><a href="#Java-中用到的线程调度算法是什么？" class="headerlink" title="Java 中用到的线程调度算法是什么？"></a>Java 中用到的线程调度算法是什么？</h1><p>采用时间片轮转的方式。可以设置线程的优先级，会映射到下层的系统上面的优<br>先级上，如非特别需要，尽量不要用，防止线程饥饿。</p>
+<h1 id="多线程同步和互斥有几种实现方法，都是什么？"><a href="#多线程同步和互斥有几种实现方法，都是什么？" class="headerlink" title="多线程同步和互斥有几种实现方法，都是什么？"></a>多线程同步和互斥有几种实现方法，都是什么？</h1><p>线程同步是指线程之间所具有的一种制约关系，一个线程的执行依赖另一个线程的消息，当它没有得到<br>另一个线程的消息时应等待，直到消息到达时才被唤醒。线程互斥是指对于共享的进程系统资源，在各<br>单个线程访问时的排它性</p>
+<p>线程间的同步方法大体可分为两类：用户模式和内核模式。顾名思义，内核模式就是指利用系统内核对<br>象的单一性来进行同步，使用时需要切换内核态与用户态，而用户模式就是不需要切换到内核态，只在<br>用户态完成操作。用户模式下的方法有：原子操作（例如一个单一的全局变量），临界区。内核模式下<br>的方法有：事件，信号量，互斥量。</p>
+<h1 id="说说java同步机制"><a href="#说说java同步机制" class="headerlink" title="说说java同步机制"></a>说说java同步机制</h1><ul>
+<li><p>synchronized关键字修饰</p>
+</li>
+<li><p>使用特殊域变量(volatile)实现线程同步</p>
+</li>
+<li><p>使用重入锁（ReenreantLock）实现线程同步</p>
+</li>
+<li><p>使用局部变量（ThreadLocal）实现线程同步</p>
+</li>
+</ul>
+<h1 id="什么是不可变对象，它对写并发应用有什么帮助"><a href="#什么是不可变对象，它对写并发应用有什么帮助" class="headerlink" title="什么是不可变对象，它对写并发应用有什么帮助"></a>什么是不可变对象，它对写并发应用有什么帮助</h1><p>不可变对象(Immutable Objects)即对象一旦被创建它的状态（对象的数据，也即对象属性值）就不能<br>改变，反之即为可变对象(Mutable Objects)。不可变对象的类即为不可变类(Immutable Class)。Java<br>平台类库中包含许多不可变类，如 String、基本类型的包装类、BigInteger 和 BigDecimal 等。不可变<br>对象天生是线程安全的。它们的常量（域）是在构造函数中创建的。既然它们的状态无法修改，这些常<br>量永远不会变。</p>
+<p>不可变对象永远是线程安全的。<br>只有满足如下状态，一个对象才是不可变的；<br>它的状态不能在创建后再被修改；<br>所有域都是 final 类型；并且，<br>它被正确创建（创建期间没有发生 this 引用的逸出）。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/14/Java-JVM%E9%85%8D%E7%BD%AE%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0%E5%92%8C%E5%B8%B8%E7%94%A8GC%E8%B0%83%E4%BC%98%E7%AD%96%E7%95%A5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2948,337 +3311,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/Java-%E5%8F%8D%E5%B0%84%E5%92%8C%E5%BC%82%E5%B8%B8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/13/Java-%E5%8F%8D%E5%B0%84%E5%92%8C%E5%BC%82%E5%B8%B8/" itemprop="url">Java-反射和异常</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T01:14:56+08:00">
-                2021-04-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
-                    <span itemprop="name">Java基础 - Java知识点</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="反射机制"><a href="#反射机制" class="headerlink" title="反射机制"></a>反射机制</h1><p>JAVA 反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为 java 语言的反射机制。</p>
-<h2 id="静态编译和动态编译"><a href="#静态编译和动态编译" class="headerlink" title="静态编译和动态编译"></a>静态编译和动态编译</h2><ul>
-<li><strong>静态编译：</strong> 在编译时确定类型，绑定对象</li>
-<li><strong>动态编译：</strong> 运行时确定类型，绑定对象</li>
-</ul>
-<h2 id="反射机制优缺点"><a href="#反射机制优缺点" class="headerlink" title="反射机制优缺点"></a>反射机制优缺点</h2><ul>
-<li><strong>优点：</strong> 运行期类型的判断，动态加载类，提高代码灵活度。</li>
-<li><strong>缺点：</strong> 1,性能瓶颈：反射相当于一系列解释操作，通知 JVM 要做的事情，性能比直接的 java 代码要慢很多。2,安全问题，让我们可以动态操作改变类的属性同时也增加了类的安全隐患。</li>
-</ul>
-<h2 id="反射的应用场景"><a href="#反射的应用场景" class="headerlink" title="反射的应用场景"></a>反射的应用场景</h2><p><strong>反射是框架设计的灵魂。</strong></p>
-<p>在我们平时的项目开发过程中，基本上很少会直接使用到反射机制，但这不能说明反射机制没有用，实际上有很多设计、开发都与反射机制有关，例如模块化的开发，通过反射去调用对应的字节码；动态代理设计模式也采用了反射机制，还有我们日常使用的 Spring／Hibernate 等框架也大量使用到了反射机制。</p>
-<p>举例：</p>
-<ol>
-<li>我们在使用 JDBC 连接数据库时使用 <code>Class.forName()</code>通过反射加载数据库的驱动程序；</li>
-<li>Spring 框架的 IOC（动态加载管理 Bean）创建对象以及 AOP（动态代理）功能都和反射有联系；</li>
-<li>动态配置实例的属性；</li>
-</ol>
-<h2 id="获取-Class-对象的四种方式"><a href="#获取-Class-对象的四种方式" class="headerlink" title="获取 Class 对象的四种方式"></a>获取 Class 对象的四种方式</h2><p>如果我们动态获取到这些信息，我们需要依靠 Class 对象。Class 类对象将一个类的方法、变量等信息告诉运行的程序。Java 提供了四种方式获取 Class 对象:</p>
-<p>1.知道具体类的情况下可以使用：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Class alunbarClass &#x3D; TargetObject.class;</span><br></pre></td></tr></table></figure>
-
-<p>但是我们一般是不知道具体类的，基本都是通过遍历包下面的类来获取 Class 对象，通过此方式获取Class对象不会进行初始化</p>
-<p>2.通过 <code>Class.forName()</code>传入类的路径获取：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Class alunbarClass1 &#x3D; Class.forName(&quot;cn.javaguide.TargetObject&quot;);</span><br></pre></td></tr></table></figure>
-
-<p>Class.forName(className)方法，内部实际调用的是一个native方法 forName0(className, true, ClassLoader.getClassLoader(caller), caller);</p>
-<p>第2个boolean参数表示类是否需要初始化，Class.forName(className)默认是需要初始化。</p>
-<p>一旦初始化，就会触发目标对象的 static块代码执行，static参数也会被再次初始化。</p>
-<p>3.通过对象实例<code>instance.getClass()</code>获取：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Employee e &#x3D; new Employee();</span><br><span class="line">Class alunbarClass2 &#x3D; e.getClass();</span><br></pre></td></tr></table></figure>
-
-<p>4.通过类加载器<code>xxxClassLoader.loadClass()</code>传入类路径获取</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class clazz &#x3D; ClassLoader.LoadClass(&quot;cn.javaguide.TargetObject&quot;);</span><br></pre></td></tr></table></figure>
-
-<p>通过类加载器获取Class对象不会进行初始化，意味着不进行包括初始化等一些列步骤，静态块和静态对象不会得到执行</p>
-<h2 id="动态代理是指什么？它有哪几种实现方法"><a href="#动态代理是指什么？它有哪几种实现方法" class="headerlink" title="动态代理是指什么？它有哪几种实现方法"></a>动态代理是指什么？它有哪几种实现方法</h2><ul>
-<li>动态代理是指在程序运行时生成代理类。</li>
-<li>有两种实现方式：<ul>
-<li>JDK 动态代理，被代理对象必须实现接口，利用反射机制生成一个实现代理接口的匿名类，在调用具体方法前调用InvokeHandler来处理；</li>
-<li>字节码实现（比如说cglib/asm等），得用ASM开源包，将代理对象类的class文件加载进来，通过修改其字节码生成子类来处理。</li>
-</ul>
-</li>
-</ul>
-<p>动态代理是和反射机制一脉相承的，其核心也就是两个：动态+代理。动态是指在在运行时生成的代理类，与此对应的就是静态代理，代理类在程序编译时就实现。现在很多框架都是利用类似机制来提供灵活性的扩展性，比如用来包装 RPC 调用，面向切面编程（AOP）等。</p>
-<h3 id="通常使用JDK的动态代理可以分为以下两步："><a href="#通常使用JDK的动态代理可以分为以下两步：" class="headerlink" title="通常使用JDK的动态代理可以分为以下两步："></a>通常使用JDK的动态代理可以分为以下两步：</h3><p>（1）定义一个接口，该接口里有需要实现的方法，并且编写实际的实现类。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//用户管理接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserManager</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">addUser</span><span class="params">(String userName,String password)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//用户管理实现类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserManagerImpl</span> <span class="keyword">implements</span> <span class="title">UserManager</span></span>&#123;</span><br><span class="line"> <span class="meta">@Override</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addUser</span><span class="params">(String userName, String password)</span> </span>&#123;</span><br><span class="line">     System.out.println(<span class="string">&quot;传入参数为 userName: &quot;</span>+userName+<span class="string">&quot; password: &quot;</span>+password);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>（2）定义一个实现InvocationHandler接口的代理类，重写invoke()方法，且添加getProxy()方法。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JdkProxy</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> Object target ;<span class="comment">//需要代理的目标对象</span></span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> </span></span><br><span class="line"><span class="function">Throwable </span>&#123;</span><br><span class="line">     System.out.println(<span class="string">&quot;JDK动态代理，监听开始！&quot;</span>);</span><br><span class="line">     Object result = method.invoke(target, args);</span><br><span class="line">     System.out.println(<span class="string">&quot;JDK动态代理，监听结束！&quot;</span>);</span><br><span class="line">     <span class="keyword">return</span> result;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">//定义获取代理对象方法</span></span><br><span class="line"> <span class="function"><span class="keyword">private</span> Object <span class="title">getProxy</span><span class="params">(Object targetObject)</span></span>&#123;</span><br><span class="line">     <span class="comment">//为目标对象target赋值</span></span><br><span class="line">     <span class="keyword">this</span>.target = targetObject;</span><br><span class="line">     <span class="comment">//JDK动态代理只能针对实现了接口的类进行代理，newProxyInstance 函数所需参数就可看出</span></span><br><span class="line">     <span class="keyword">return</span> Proxy.newProxyInstance(targetObject.getClass().getClassLoader(), </span><br><span class="line">targetObject.getClass().getInterfaces(), <span class="keyword">this</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">     JdkProxy jdkProxy = <span class="keyword">new</span> JdkProxy();<span class="comment">//实例化JDKProxy对象</span></span><br><span class="line">     UserManager user = (UserManager) jdkProxy.getProxy(<span class="keyword">new</span> UserManagerImpl</span><br><span class="line">());<span class="comment">//获取代理对象</span></span><br><span class="line">     user.addUser(<span class="string">&quot;admin&quot;</span>, <span class="string">&quot;123&quot;</span>);<span class="comment">//执行新增方法</span></span><br><span class="line"> &#125;    </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="而cglibf动态代理的步骤也是类似，但是相对来说要简单一些："><a href="#而cglibf动态代理的步骤也是类似，但是相对来说要简单一些：" class="headerlink" title="而cglibf动态代理的步骤也是类似，但是相对来说要简单一些："></a>而cglibf动态代理的步骤也是类似，但是相对来说要简单一些：</h3><p>（1）定义一个实现类。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserCglibServiceImpl</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hobby</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     System.out.println(<span class="string">&quot;跳舞&quot;</span>);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>（2）定义一个实现MethodInterceptor接口的代理类，重写intercept()方法，且添加getProxy()方法。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserCglibServiceProxy</span> <span class="keyword">implements</span> <span class="title">MethodInterceptor</span> </span>&#123;</span><br><span class="line"><span class="comment">// 维护目标对象    </span></span><br><span class="line"><span class="keyword">private</span> Object target; </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">UserCglibServiceProxy</span><span class="params">(Object target)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.target = target;  </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 给目标对象创建一个代理对象    </span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getProxyInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line"> <span class="comment">//1.工具类        </span></span><br><span class="line"> Enhancer en = <span class="keyword">new</span> Enhancer();        </span><br><span class="line"> <span class="comment">//2.设置父类        </span></span><br><span class="line"> en.setSuperclass(target.getClass());        </span><br><span class="line"> <span class="comment">//3.设置回调函数        </span></span><br><span class="line"> en.setCallback(<span class="keyword">this</span>);        </span><br><span class="line"> <span class="comment">//4.创建子类(代理对象)        </span></span><br><span class="line"> <span class="keyword">return</span> en.create();    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span>     </span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Object obj, Method method, Object[] args, MethodProxy proxy)</span> <span class="keyword">throws</span> Throwable </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> System.out.println(<span class="string">&quot;唱歌&quot;</span>);        </span><br><span class="line"> <span class="comment">//执行目标对象的方法        </span></span><br><span class="line"> Object returnValue = method.invoke(target, args);        </span><br><span class="line"> System.out.println(<span class="string">&quot;RAP&quot;</span>);        </span><br><span class="line"> <span class="keyword">return</span> returnValue;    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"> <span class="comment">//目标对象        </span></span><br><span class="line"> UserCglibServiceImpl target = <span class="keyword">new</span> UserCglibServiceImpl();        </span><br><span class="line"> <span class="comment">//代理对象        </span></span><br><span class="line"> UserCglibServiceImpl proxy = (UserCglibServiceImpl)<span class="keyword">new</span> UserCglibServiceProxy(target).getProxyInstance();     </span><br><span class="line"> <span class="comment">//执行代理对象的方法       </span></span><br><span class="line"> proxy.hobby();    </span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<table>
-<thead>
-<tr>
-<th>代理方式</th>
-<th>实现</th>
-<th>优点</th>
-<th>缺点</th>
-<th>特点</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>JDK静态代理</td>
-<td>代理类与委托类实现同一接口，并且在代理类中需要硬编码接口</td>
-<td>简单粗暴</td>
-<td>代理类需要硬编码接口，在实际应用中可能会导致重复编码，浪费存储空间并且效率很低</td>
-<td></td>
-</tr>
-<tr>
-<td>JDK动态代理</td>
-<td>代理类与委托类实现同一接口，主要是通过代理类实现InvocationHandler并重写invoke方法来进行动态代理的，在invoke方法中将对方法进行增强处理</td>
-<td>不需要硬编码接口，代码复用率高</td>
-<td>只能够代理实现了接口的委托类</td>
-<td>底层使用反射机制进行方法的调用</td>
-</tr>
-<tr>
-<td>CGLIB动态代理</td>
-<td>代理类将委托类作为自己的父类并为其中的非final委托方法创建两个方法，一个是与委托方法签名相同的方法，它在方法中会通过super调用委托方法；另一个是代理类独有的方法。在代理方法中，它会判断是否存在实现了MethodInterceptor接口的对象，若存在则将调用intercept方法对委托方法进行代理</td>
-<td>可以在运行时对类或者是接口进行增强操作，且被代理的类无需实现接口</td>
-<td>不能对final类以及final方法进行代理</td>
-<td>底层将方法全部存入一个数组中，通过数组索引直接进行方法调用</td>
-</tr>
-</tbody></table>
-<h2 id="为什么反射的性能较差？有没有什么方法可以让他变快"><a href="#为什么反射的性能较差？有没有什么方法可以让他变快" class="headerlink" title="为什么反射的性能较差？有没有什么方法可以让他变快"></a>为什么反射的性能较差？有没有什么方法可以让他变快</h2><p>java反射要解析字节码，将内存中的对象进行解析，包括了一些动态类型，JVM难以优化，而且在调用时还需要拼接参数，执行步骤也更多。因此，反射操作的效率要更低</p>
-<p>常用的改进性能方法主要有：</p>
-<ul>
-<li>m.setAccessible(true);</li>
-</ul>
-<p>由于JDK的安全检查耗时较多.所以通过setAccessible(true)的方式关闭安全检查就可以达到提升反射速度的目的;</p>
-<ul>
-<li>用缓存将反射得到的元数据保存起来；</li>
-<li>利用一些高性能的反射库，如ReflectASM ReflectASM 使用字节码生成的方式实现了更为高效的反射机制。执行时会生成一个存取类来 set/get 字段，访问方法或创建实例。一看到 ASM 就能领悟到 ReflectASM 会用字节码生成的方式，而不是依赖于 Java 本身的反射机制来实现的，所以它更快，并且避免了访问原始类型因自动装箱而产生的问题。</li>
-</ul>
-<h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><h2 id="Java-异常类层次结构图"><a href="#Java-异常类层次结构图" class="headerlink" title="Java 异常类层次结构图"></a>Java 异常类层次结构图</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/java%E5%BC%82%E5%B8%B8.png" alt="img"></p>
-<p>在 Java 中，所有的异常都有一个共同的祖先 <code>java.lang</code> 包中的 <code>Throwable</code> 类。<code>Throwable</code> 类有两个重要的子类 <code>Exception</code>（异常）和 <code>Error</code>（错误）。<code>Exception</code> 能被程序本身处理(<code>try-catch</code>)， <code>Error</code> 是无法处理的(只能尽量避免)。</p>
-<p><code>Exception</code> 和 <code>Error</code> 二者都是 Java 异常处理的重要子类，各自都包含大量子类。</p>
-<ul>
-<li><strong><code>Exception</code></strong> :程序本身可以处理的异常，可以通过 <code>catch</code> 来进行捕获。<code>Exception</code> 又可以分为 受检查异常(必须处理) 和 不受检查异常(可以不处理)。</li>
-<li><strong><code>Error</code></strong> ：<code>Error</code> 属于程序无法处理的错误 ，我们没办法通过 <code>catch</code> 来进行捕获 。例如，Java 虚拟机运行错误（<code>Virtual MachineError</code>）、虚拟机内存不够错误(<code>OutOfMemoryError</code>)、类定义错误（<code>NoClassDefFoundError</code>）等 。这些异常发生时，Java 虚拟机（JVM）一般会选择线程终止。</li>
-</ul>
-<p><strong>运行时异常与受检异常有何异同</strong></p>
-<p>运行时异常表示虚拟机的通常操作中可能遇到的异常，是一种常见运行错误，只要程序设计得没有问题通常就不会发生；</p>
-<p>受检异常跟程序运行的上下文环境有关，即使程序设计无误，仍然可能因使用的问题而引发。</p>
-<p>Java编译器要求方法必须声明抛出可能发生的受检异常，但是并不要求必须声明抛出未被捕获的运行时异常。</p>
-<p><strong>列出一些你常见的运行时异常</strong></p>
-<ul>
-<li>ArithmeticException（算术异常）</li>
-<li>ClassCastException （类转换异常）</li>
-<li>IllegalArgumentException （非法参数异常）</li>
-<li>IndexOutOfBoundsException （下标越界异常）</li>
-<li>NullPointerException （空指针异常）</li>
-<li>SecurityException （安全异常）</li>
-</ul>
-<p><strong>受检查异常</strong></p>
-<p>Java 代码在编译过程中，如果受检查异常没有被 <code>catch</code>/<code>throw</code> 处理的话，就没办法通过编译 。比如下面这段 IO 操作的代码。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">        FileInputStream fis = <span class="keyword">null</span>;</span><br><span class="line">        fis = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;C/myFile.txt&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> k;</span><br><span class="line">        <span class="keyword">while</span>((k = fis.read()) != -<span class="number">1</span>)&#123;</span><br><span class="line">            System.out.print((<span class="keyword">char</span>)k);</span><br><span class="line">        &#125;</span><br><span class="line">        fis.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>除了<code>RuntimeException</code>及其子类以外，其他的<code>Exception</code>类及其子类都属于检查异常 。常见的受检查异常有： IO 相关的异常、<code>ClassNotFoundException</code> 、<code>SQLException</code>…。</p>
-<p><strong>不受检查异常</strong></p>
-<p>Java 代码在编译过程中 ，我们即使不处理不受检查异常也可以正常通过编译。</p>
-<p><code>RuntimeException</code> 及其子类都统称为非受检查异常，例如：<code>NullPointExecrption</code>、<code>NumberFormatException</code>（字符串转换为数字）、<code>ArrayIndexOutOfBoundsException</code>（数组越界）、<code>ClassCastException</code>（类型转换错误）、<code>ArithmeticException</code>（算术错误）等。</p>
-<h2 id="Throwable-类常用方法"><a href="#Throwable-类常用方法" class="headerlink" title="Throwable 类常用方法"></a>Throwable 类常用方法</h2><ul>
-<li><strong><code>public string getMessage()</code></strong>:返回异常发生时的简要描述</li>
-<li><strong><code>public string toString()</code></strong>:返回异常发生时的详细信息</li>
-<li><strong><code>public string getLocalizedMessage()</code></strong>:返回异常对象的本地化信息。使用 <code>Throwable</code> 的子类覆盖这个方法，可以生成本地化信息。如果子类没有覆盖该方法，则该方法返回的信息与 <code>getMessage（）</code>返回的结果相同</li>
-<li><strong><code>public void printStackTrace()</code></strong>:在控制台上打印 <code>Throwable</code> 对象封装的异常信息</li>
-</ul>
-<h2 id="try-catch-finally"><a href="#try-catch-finally" class="headerlink" title="try-catch-finally"></a>try-catch-finally</h2><ul>
-<li><strong><code>try</code>块：</strong> 用于捕获异常。其后可接零个或多个 <code>catch</code> 块，如果没有 <code>catch</code> 块，则必须跟一个 <code>finally</code> 块。</li>
-<li><strong><code>catch</code>块：</strong> 用于处理 try 捕获到的异常。</li>
-<li><strong><code>finally</code> 块：</strong> 无论是否捕获或处理异常，<code>finally</code> 块里的语句都会被执行。当在 <code>try</code> 块或 <code>catch</code> 块中遇到 <code>return</code> 语句时，<code>finally</code> 语句块将在方法返回之前被执行。</li>
-</ul>
-<p><strong>在以下 3 种特殊情况下，<code>finally</code> 块不会被执行：</strong></p>
-<ol>
-<li>在 <code>try</code> 或 <code>finally</code>块中用了 <code>System.exit(int)</code>退出程序。但是，如果 <code>System.exit(int)</code> 在异常语句之后，<code>finally</code> 还是会被执行</li>
-<li>程序所在的线程死亡。</li>
-<li>关闭 CPU。</li>
-</ol>
-<p><strong>注意：</strong> 当 try 语句和 finally 语句中都有 return 语句时，在方法返回之前，finally 语句的内容将被执行，并且 finally 语句的返回值将会覆盖原始的返回值。如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> value * value;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (value == <span class="number">2</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果调用 <code>f(2)</code>，返回值将是 0，因为 finally 语句的返回值覆盖了 try 语句块的返回值。</p>
-<h3 id="try、catch、finally执行顺序"><a href="#try、catch、finally执行顺序" class="headerlink" title="try、catch、finally执行顺序"></a>try、catch、finally执行顺序</h3><p>这三个关键字常用于我们捕捉异常的一整套流程，try 用来确定代码执行的范围，catch 捕捉可能会发生的异常，finally 用来执行一定要执行的代码块，除了这些，我们还需要清楚，每个地方如果发生异常会怎么办，我们举一个例子来演示一下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testCatchFinally</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;try is run&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;try exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    log.info(<span class="string">&quot;catch is run&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;catch exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;finally is run&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这个代码演示了在 try、catch 中都遇到了异常，代码的执行顺序为：try -&gt; catch -&gt; finally，输出的结果如下：</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/Java%E5%BC%82%E5%B8%B8%E9%A1%BA%E5%BA%8F.png" alt="图片描述"></p>
-<p>可以看到两点：</p>
-<p>1、不管有没有出现异常，finally块中代码都会执行； 2、当try和catch中有return时，finally仍然会执行； 3、finally是在return后面的表达式运算后执行的（此时并没有返回运算后的值，而是先把要返回的值保存起来，不管finally中的代码怎么样，返回的值都不会改变，任然是之前保存的值），所以函数返回值是在finally执行前确定的； 4、finally中最好不要包含return，否则程序会提前退出，返回值不是try或catch中保存的返回值。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">catch</span>()&#123;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">finally</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125; </span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">显然程序按顺序执行。</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123; </span><br><span class="line">	<span class="keyword">return</span>; </span><br><span class="line">&#125;<span class="keyword">catch</span>()&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">finally</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">程序执行<span class="keyword">try</span>块中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码；</span><br><span class="line">再执行<span class="keyword">finally</span>块，最后执行<span class="keyword">try</span>中<span class="keyword">return</span>;</span><br><span class="line"><span class="keyword">finally</span>块之后的语句<span class="keyword">return</span>，因为程序在<span class="keyword">try</span>中已经<span class="keyword">return</span>所以不再执行。</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">catch</span>()&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125; <span class="keyword">finally</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125; </span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">程序先执行<span class="keyword">try</span>，如果遇到异常执行<span class="keyword">catch</span>块，</span><br><span class="line">有异常：</span><br><span class="line">则执行<span class="keyword">catch</span>中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码，再执行<span class="keyword">finally</span>语句中全部代码，最后执行<span class="keyword">catch</span>块中return. <span class="keyword">finally</span>之后的代码不再执行。</span><br><span class="line">无异常：执行完<span class="keyword">try</span>再<span class="keyword">finally</span>再return.</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123; </span><br><span class="line">	<span class="keyword">return</span>; </span><br><span class="line">&#125;<span class="keyword">catch</span>()&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">finally</span>&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">程序执行<span class="keyword">try</span>块中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码；</span><br><span class="line">再执行<span class="keyword">finally</span>块，因为<span class="keyword">finally</span>块中有<span class="keyword">return</span>所以提前退出。</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">catch</span>()&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">程序执行<span class="keyword">catch</span>块中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码；</span><br><span class="line">再执行<span class="keyword">finally</span>块，因为<span class="keyword">finally</span>块中有<span class="keyword">return</span>所以提前退出。</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123; </span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;<span class="keyword">catch</span>()&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125; <span class="keyword">finally</span>&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">程序执行<span class="keyword">try</span>块中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码；</span><br><span class="line">有异常：</span><br><span class="line">执行<span class="keyword">catch</span>块中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码；</span><br><span class="line">则再执行<span class="keyword">finally</span>块，因为<span class="keyword">finally</span>块中有<span class="keyword">return</span>所以提前退出。</span><br><span class="line">无异常：</span><br><span class="line">则再执行<span class="keyword">finally</span>块，因为<span class="keyword">finally</span>块中有<span class="keyword">return</span>所以提前退出。</span><br></pre></td></tr></table></figure>
-
-<p><strong>最终结论</strong>：任何执行try 或者catch中的return语句之前，都会先执行finally语句，如果finally存在的话。如果finally中有return语句，那么程序就return了，所以finally中的return是一定会被return的，编译器把finally中的return实现为一个warning。</p>
-<h3 id="catch-中发生了未知异常，finally-还会执行么？"><a href="#catch-中发生了未知异常，finally-还会执行么？" class="headerlink" title="catch 中发生了未知异常，finally 还会执行么？"></a>catch 中发生了未知异常，finally 还会执行么？</h3><p>会的，catch 发生了异常，finally 还会执行的，并且是 finally 执行完成之后，才会抛出 catch 中的异常。</p>
-<p>不过 catch 会吃掉 try 中抛出的异常，为了避免这种情况，在一些可以预见 catch 中会发生异常的地方，先把 try 抛出的异常打印出来，这样从日志中就可以看到完整的异常了。</p>
-<h2 id="使用-try-with-resources-来代替try-catch-finally"><a href="#使用-try-with-resources-来代替try-catch-finally" class="headerlink" title="使用 try-with-resources 来代替try-catch-finally"></a>使用 <code>try-with-resources</code> 来代替<code>try-catch-finally</code></h2><ol>
-<li><strong>适用范围（资源的定义）：</strong> 任何实现 <code>java.lang.AutoCloseable</code>或者``java.io.Closeable` 的对象</li>
-<li><strong>关闭资源和 final 的执行顺序：</strong> 在 <code>try-with-resources</code> 语句中，任何 catch 或 finally 块在声明的资源关闭后运行</li>
-</ol>
-<p>《Effecitve Java》中明确指出：</p>
-<blockquote>
-<p>面对必须要关闭的资源，我们总是应该优先使用 <code>try-with-resources</code> 而不是<code>try-finally</code>。随之产生的代码更简短，更清晰，产生的异常对我们也更有用。<code>try-with-resources</code>语句让我们更容易编写必须要关闭的资源的代码，若采用<code>try-finally</code>则几乎做不到这点。</p>
-</blockquote>
-<p>Java 中类似于<code>InputStream</code>、<code>OutputStream</code> 、<code>Scanner</code> 、<code>PrintWriter</code>等的资源都需要我们调用<code>close()</code>方法来手动关闭，一般情况下我们都是通过<code>try-catch-finally</code>语句来实现这个需求，如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//读取文本文件的内容</span></span><br><span class="line">Scanner scanner = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	scanner = <span class="keyword">new</span> Scanner(<span class="keyword">new</span> File(<span class="string">&quot;D://read.txt&quot;</span>));</span><br><span class="line">	<span class="keyword">while</span> (scanner.hasNext()) &#123;</span><br><span class="line">		System.out.println(scanner.nextLine());</span><br><span class="line">	&#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">	e.printStackTrace();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> (scanner != <span class="keyword">null</span>) &#123;</span><br><span class="line">		scanner.close();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>使用 Java 7 之后的 <code>try-with-resources</code> 语句改造上面的代码:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (Scanner scanner = <span class="keyword">new</span> Scanner(<span class="keyword">new</span> File(<span class="string">&quot;test.txt&quot;</span>))) &#123;</span><br><span class="line">    <span class="keyword">while</span> (scanner.hasNext()) &#123;</span><br><span class="line">        System.out.println(scanner.nextLine());</span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException fnfe) &#123;</span><br><span class="line">    fnfe.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>当然多个资源需要关闭的时候，使用 <code>try-with-resources</code> 实现起来也非常简单，如果你还是用<code>try-catch-finally</code>可能会带来很多问题。</p>
-<p>通过使用分号分隔，可以在<code>try-with-resources</code>块中声明多个资源。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (BufferedInputStream bin = <span class="keyword">new</span> BufferedInputStream(<span class="keyword">new</span> FileInputStream(<span class="keyword">new</span> File(<span class="string">&quot;test.txt&quot;</span>)));</span><br><span class="line">     BufferedOutputStream bout = <span class="keyword">new</span> BufferedOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="keyword">new</span> File(<span class="string">&quot;out.txt&quot;</span>)))) &#123;</span><br><span class="line">    <span class="keyword">int</span> b;</span><br><span class="line">    <span class="keyword">while</span> ((b = bin.read()) != -<span class="number">1</span>) &#123;</span><br><span class="line">        bout.write(b);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/6/">&gt;</a>
+    <a class="extend prev" rel="prev" href="/page/4/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/6/">&gt;</a>
   </nav>
 
 
@@ -3325,7 +3362,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-count">81</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3336,7 +3373,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">57</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

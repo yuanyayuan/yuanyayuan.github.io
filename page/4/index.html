@@ -261,6 +261,153 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/16/Java-%E9%98%9F%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/16/Java-%E9%98%9F%E5%88%97/" itemprop="url">Java-队列</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-16T00:59:58+08:00">
+                2021-04-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="栈（Stack）和队列（Queue）的相同点和不同点是什么？如何用两个栈实现队列（入队和出队）"><a href="#栈（Stack）和队列（Queue）的相同点和不同点是什么？如何用两个栈实现队列（入队和出队）" class="headerlink" title="栈（Stack）和队列（Queue）的相同点和不同点是什么？如何用两个栈实现队列（入队和出队）"></a>栈（Stack）和队列（Queue）的相同点和不同点是什么？如何用两个栈实现队列（入队和出队）</h1><ul>
+<li>相同点<ul>
+<li>栈和队列都是属于线性表；</li>
+<li>栈和队列插入操作都是限定在线性表的头尾进行；</li>
+<li>栈和队列插入与删除的时间复杂度都是 O (1)；</li>
+</ul>
+</li>
+<li>不同点<ul>
+<li>特性不同，栈后进先出（LIFO，Last In First Out），队列先进先出（FIFO，First In First Out）；</li>
+<li>栈只在表的一端进行插入和删除操作，队列只在表的一端进行插入操作，在表的另一端进行删除操作；</li>
+<li>JAVA 中的栈 (Stack) 继承自 Vector，再往上的接口是 List/Collection；而队列（Queue) 直接继承的是 Collection 接口。</li>
+</ul>
+</li>
+</ul>
+<h1 id="用两个栈实现队列"><a href="#用两个栈实现队列" class="headerlink" title="用两个栈实现队列"></a>用两个栈实现队列</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 两个栈组成队列</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StackQueue</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> Stack&lt;E&gt; stack1 =<span class="keyword">new</span> Stack&lt;&gt;();<span class="comment">//入队操作的栈</span></span><br><span class="line">    <span class="keyword">private</span> Stack&lt;E&gt; stack2 =<span class="keyword">new</span> Stack&lt;&gt;();<span class="comment">//出队操作的栈</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 压入队列元素，只使用stack1</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> element</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(E element)</span> </span>&#123;</span><br><span class="line">        stack1.add(element);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 取出队列顶部元素</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">poll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// stack2的数据为空时，才把stack1中的元素压入stack2（两种情况：1、初始化时两个栈的数据均为空；2、stack2数据出栈出完了</span></span><br><span class="line">        <span class="keyword">if</span> (stack2.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">while</span> (stack1.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                stack2.add(stack1.pop());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//stack1的数据出栈完成后，stack2仍然为空，说明两个栈的数据都为空</span></span><br><span class="line">        <span class="keyword">if</span> (stack2.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;queue is Empty!&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        E head = stack2.pop();</span><br><span class="line">        <span class="keyword">return</span> head;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 测试</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> args</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        StackQueue&lt;String&gt; stackQueue = <span class="keyword">new</span> StackQueue();</span><br><span class="line">        stackQueue.push(<span class="string">&quot;first&quot;</span>);</span><br><span class="line">        stackQueue.push(<span class="string">&quot;second&quot;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;------first time poll in StackQueue---------&quot;</span>);</span><br><span class="line">        System.out.println(stackQueue.poll());</span><br><span class="line">        System.out.println(<span class="string">&quot;------second time poll in StackQueue---------&quot;</span>);</span><br><span class="line">        System.out.println(stackQueue.poll());</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;------third time poll in StackQueue---------&quot;</span>);</span><br><span class="line">        stackQueue.push(<span class="string">&quot;third&quot;</span>);</span><br><span class="line">        System.out.println(stackQueue.poll());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="点评"><a href="#点评" class="headerlink" title="点评"></a>点评</h2><p>栈，只能在表尾插入或删除的线性表。对栈来说，表尾称为栈顶、表头称为栈底。因此，最先入栈的元素最后被删除，最晚入栈的元素最先被删除，所以栈又称为后进先出的线性表；</p>
+<p>队列，只能在表的一端进行插入（队尾），在表的另一端删除元素（队头），所以又称先进先出的线性表；</p>
+<p>本质上，是各自不同的数据结构决定了栈和队列的特性和应用场景，比如说栈经常用于括号匹配检验、行编辑程序、表达式求值、递归实现等等，而队列常用于作业任务排队等。</p>
+<p><img src="file:///E:/YouDaoYun/m18739288920@163.com/1354e96afe6149689ecdfe7c5a9ed3c4/de5vxq7u.bmp?ynotemdtimestamp=1618464916797" alt="image"></p>
+<p>stack1 用于存储元素，stack2 用于弹出元素。简单地说，就是把数据先压入 stack1，然后再从 stack1 中取出压入 stack2（后进先出），取数的时候直接从 stack2 出（后进先出），经过两次后进先出就符合队列先进先出的特性了。</p>
+<h1 id="LinkedHashMap和PriorityQueue的区别？"><a href="#LinkedHashMap和PriorityQueue的区别？" class="headerlink" title="LinkedHashMap和PriorityQueue的区别？"></a>LinkedHashMap和PriorityQueue的区别？</h1><ul>
+<li>PriorityQueue 是一个优先级队列,保证最高或者最低优先级的的元素总是在队列头部，但是 LinkedHashMap 维持的顺序是元素插入的顺序。当遍历一个 PriorityQueue 时，没有任何顺序保证，</li>
+<li>但是 LinkedHashMap 课保证遍历顺序是元素插入的顺序。</li>
+</ul>
+<h1 id="Queue中add-offer方法的区别？"><a href="#Queue中add-offer方法的区别？" class="headerlink" title="Queue中add/offer方法的区别？"></a>Queue中add/offer方法的区别？</h1><p>add()和offer()都是向队列中添加一个元素。一些队列有大小限制，因此如果想在一个满的队列中加入一个新项，调用 add() 方法就会抛出IllegalStateException异常，而调用 offer() 方法会返回 false。</p>
+<h1 id="Queue中remove-poll-方法的区别？"><a href="#Queue中remove-poll-方法的区别？" class="headerlink" title="Queue中remove()/poll()方法的区别？"></a>Queue中remove()/poll()方法的区别？</h1><p>poll()/remove()方法都是从队列中删除第一个元素。如果队列元素为空，调用remove() 则会抛出NoSuchElementException，而poll() 方法在用空集合调用时只是返回 null。</p>
+<h1 id="Queue中element-peek-方法的区别？"><a href="#Queue中element-peek-方法的区别？" class="headerlink" title="Queue中element()/peek()方法的区别？"></a>Queue中element()/peek()方法的区别？</h1><p>element() 和 peek() 用于在队列的头部查询元素。与 remove() 方法类似，在队列为空时， element() 抛出NoSuchElementException异常，而 peek() 返回 null。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/16/Java-IO/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2823,374 +2970,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/15/Java-%E7%BA%BF%E7%A8%8B%E5%92%8C%E8%BF%9B%E7%A8%8Bpart1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/15/Java-%E7%BA%BF%E7%A8%8B%E5%92%8C%E8%BF%9B%E7%A8%8Bpart1/" itemprop="url">Java线程和进程part1</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-15T14:59:20+08:00">
-                2021-04-15
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
-                    <span itemprop="name">Java基础 - Java多线程</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h1><h2 id="什么是进程和线程"><a href="#什么是进程和线程" class="headerlink" title="什么是进程和线程"></a>什么是进程和线程</h2><ul>
-<li><p>进程是程序的一次执行过程，是系统运行程序的基本单位，因此进程是动态的。系统运行一个程序即是一个进程从创建，运行到消亡的过程。进程有独立的地址空间，一个进程崩溃后，在保护模式下不会对其它进程产生影响。</p>
-</li>
-<li><p>线程是一个比进程更小的执行单位。一个进程在其执行的过程中可以产生多个线程。线程有自己的堆栈和局部变量，但线程之间没有单独的地址空间，一个线程死掉就等于整个进程死掉。与进程不同的是同类的多个线程共享进程的堆和方法区资源，但每个线程有自己的程序计数器、虚拟机栈和本地方法栈，所以系统在产生一个线程，或是在各个线程之间作切换工作时，负担要比进程小得多，也正因为如此，线程也被称为轻量级进程</p>
-</li>
-</ul>
-<p>多进程的程序要比多线程的程序健壮，但在进程切换时，耗费资源较大，效率要差一些。但对于一些要求同时进行并且又要共享某些变量的并发操作，只能用线程，不能用进程。</p>
-<h3 id="程序计数器为什么是私有的"><a href="#程序计数器为什么是私有的" class="headerlink" title="程序计数器为什么是私有的?"></a>程序计数器为什么是私有的?</h3><p>程序计数器私有主要是为了<strong>线程切换后能恢复到正确的执行位置</strong></p>
-<h3 id="虚拟机栈和本地方法栈为什么是私有的"><a href="#虚拟机栈和本地方法栈为什么是私有的" class="headerlink" title="虚拟机栈和本地方法栈为什么是私有的?"></a>虚拟机栈和本地方法栈为什么是私有的?</h3><p>为了<strong>保证线程中的局部变量不被别的线程访问到</strong>，虚拟机栈和本地方法栈是线程私有的</p>
-<h3 id="为什么堆和方法区是线程共享的呢？"><a href="#为什么堆和方法区是线程共享的呢？" class="headerlink" title="为什么堆和方法区是线程共享的呢？"></a>为什么堆和方法区是线程共享的呢？</h3><p>堆和方法区是所有线程共享的资源，其中堆是进程中最大的一块内存，主要用于存放新创建的对象 (几乎所有对象都在这里分配内存)，方法区主要用于存放已被加载的类信息、常量、静态变量、即时编译器编译后的代码等数据</p>
-<h2 id="多线程和单线程有什么区别？"><a href="#多线程和单线程有什么区别？" class="headerlink" title="多线程和单线程有什么区别？"></a>多线程和单线程有什么区别？</h2><p>单线程程序：程序执行过程中只有一个有效操作的序列，不同操作之间都有明确的执行先后顺序，容易出现代码阻塞</p>
-<p>多线程程序：有多个线程，线程间独立运行，能有效地避免代码阻塞，并且提高程序的运行性能 </p>
-<h2 id="什么是线程安全？"><a href="#什么是线程安全？" class="headerlink" title="什么是线程安全？"></a>什么是线程安全？</h2><p>当多个线程访问同一个对象时，如果不用考虑这些线程在运行时环境下的调度和交替运行，也不需要进行额外的同步，或者在调用方进行任何其他的协调操作，调用这个对象的行为都可以获取正确的结果，那这个对象是线程安全的。</p>
-<h2 id="为何要使用线程同步？"><a href="#为何要使用线程同步？" class="headerlink" title="为何要使用线程同步？"></a>为何要使用线程同步？</h2><p>Java允许多线程并发控制，当多个线程同时操作一个可共享的资源变量时（如数据的增删改查），将会导致数据不准确，相互之间产生冲突。</p>
-<p>因此加入同步锁以避免在该线程没有完成操作之前，被其他线程的调用，从而保证了该变量的唯一性和准确性。</p>
-<h2 id="如何确保线程安全？"><a href="#如何确保线程安全？" class="headerlink" title="如何确保线程安全？"></a>如何确保线程安全？</h2><p>1、对非安全的代码进行加锁控制；</p>
-<p>2、使用线程安全的类；</p>
-<p>3、多线程并发情况下，线程共享的变量改为方法级的局部变量</p>
-<h3 id="线程安全的级别？"><a href="#线程安全的级别？" class="headerlink" title="线程安全的级别？"></a>线程安全的级别？</h3><p>1、不可变。不可变的对象一定是线程安全的，并且永远也不需要额外的同步。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Java类库中大多数基本数值类如Integer、String和BigInteger都是不可变的。</span><br></pre></td></tr></table></figure>
-
-<p>2、无条件的线程安全。由类的规格说明所规定的约束在对象被多个线程访问时仍然有效，不管运行时环境如何排列，线程都不需要任何额外的同步。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如 Random 、ConcurrentHashMap、ConcurrentList、atomic</span><br></pre></td></tr></table></figure>
-
-<p>3、有条件的线程安全。有条件的线程安全类对于单独的操作可以是线程安全的，但是某些操作序列可能需要外部同步。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">有条件线程安全的最常见的例子是遍历由 Hashtable 或者 Vector 或者返回的迭代器</span><br></pre></td></tr></table></figure>
-
-<p>4、非线程安全(线程兼容)。线程兼容类不是线程安全的，但是可以通过正确使用同步而在并发环境中安全地使用。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如ArrayList,HashMap</span><br></pre></td></tr></table></figure>
-
-<p>5、线程对立。线程对立是那些不管是否采用了同步措施，都不能在多线程环境中并发使用的代码。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">如如System.setOut()、System.runFinalizersOnExit()</span><br></pre></td></tr></table></figure>
-
-<h2 id="创建线程有哪些方式？"><a href="#创建线程有哪些方式？" class="headerlink" title="创建线程有哪些方式？"></a>创建线程有哪些方式？</h2><ol>
-<li><p>继承 Thread 类创建线程类并重写该类的run方；</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyThread</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;MyThread.run()&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">MyThread myThread1 = <span class="keyword">new</span> MyThread();</span><br><span class="line">myThread1.start();</span><br></pre></td></tr></table></figure></li>
-<li><p>通过 Runnable 接口创建线程类并重写该接口的run()方法。(无返回值的任务必须 Runnable 接口)</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyThread</span> <span class="keyword">extends</span> <span class="title">OtherClass</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;MyThread.run()&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//启动 MyThread，需要首先实例化一个 Thread，并传入自己的 MyThread 实例：</span></span><br><span class="line">MyThread myThread = <span class="keyword">new</span> MyThread();</span><br><span class="line">Thread thread = <span class="keyword">new</span> Thread(myThread);</span><br><span class="line">thread.start();</span><br><span class="line"><span class="comment">//事实上，当传入一个 Runnable target 参数给 Thread 后， Thread 的 run()方法就会调用</span></span><br><span class="line">target.run()</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (target != <span class="keyword">null</span>) &#123;</span><br><span class="line">		target.run();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p>使用ExecutorService、Callable、Future实现有返回结果的多线程(有返回值的任务必须实现 Callable 接口)</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//创建一个线程池</span></span><br><span class="line">ExecutorService pool = Executors.newFixedThreadPool(taskSize);</span><br><span class="line"><span class="comment">// 创建多个有返回值的任务</span></span><br><span class="line">List&lt;Future&gt; list = <span class="keyword">new</span> ArrayList&lt;Future&gt;();</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; taskSize; i++) &#123;</span><br><span class="line">	Callable c = <span class="keyword">new</span> MyCallable(i + <span class="string">&quot; &quot;</span>);</span><br><span class="line">	<span class="comment">// 执行任务并获取 Future 对象</span></span><br><span class="line">	Future f = pool.submit(c);</span><br><span class="line">	list.add(f);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 关闭线程池</span></span><br><span class="line">pool.shutdown();</span><br><span class="line"><span class="comment">// 获取所有并发任务的运行结果</span></span><br><span class="line"><span class="keyword">for</span> (Future f : list) &#123;</span><br><span class="line">	<span class="comment">// 从 Future 对象上获取任务的返回值，并输出到控制台</span></span><br><span class="line">	System.out.println(<span class="string">&quot;res： &quot;</span> + f.get().toString());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p>线程池</p>
-</li>
-</ol>
-<h3 id="用Runnable还是Thread"><a href="#用Runnable还是Thread" class="headerlink" title="用Runnable还是Thread"></a>用Runnable还是Thread</h3><p>Java不支持类的多重继承，但允许调用多个接口。所以如果要继承其他类，当然是调用Runnable接口</p>
-<h3 id="Java中Runnable和Callable有什么不同"><a href="#Java中Runnable和Callable有什么不同" class="headerlink" title="Java中Runnable和Callable有什么不同"></a>Java中Runnable和Callable有什么不同</h3><p>Runnable和Callable都代表那些要在不同的线程中执行的任务。它们的主要区别是Callable的 call() 方法可以返回值和抛出异常，而Runnable的run()方法没有这些功能。Callable可以返回装载有计算结果的Future对象。</p>
-<h3 id="什么是FutureTask？"><a href="#什么是FutureTask？" class="headerlink" title="什么是FutureTask？"></a>什么是FutureTask？</h3><p>在Java并发程序中FutureTask表示一个可以取消的异步运算。一个FutureTask对象可以对调用了Callable和Runnable的对象进行包装</p>
-<h3 id="线程类的构造方法、静态块是被哪个线程调用的"><a href="#线程类的构造方法、静态块是被哪个线程调用的" class="headerlink" title="线程类的构造方法、静态块是被哪个线程调用的"></a>线程类的构造方法、静态块是被哪个线程调用的</h3><p>线程类的构造方法、静态块是被new这个线程类所在的线程所调用的，而run方法里面的代码才是被线程自身所调用的。</p>
-<h1 id="说说并发与并行的区别"><a href="#说说并发与并行的区别" class="headerlink" title="说说并发与并行的区别?"></a>说说并发与并行的区别?</h1><ul>
-<li><strong>并发：</strong> 同一时间段，多个任务都在执行 (单位时间内不一定同时执行)；</li>
-<li><strong>并行：</strong> 单位时间内，多个任务同时执行。</li>
-</ul>
-<h1 id="为什么要使用多线程呢"><a href="#为什么要使用多线程呢" class="headerlink" title="为什么要使用多线程呢"></a>为什么要使用多线程呢</h1><p>1、使用多线程可以减少程序的响应时间。 在单线程的情况下，如果某个程序很耗时或者陷入长时间等待（如等待网络响应），此时程序将不会相应鼠标和键盘等操作，使用多线程后，可以把这个耗时的线程分配到一个单独的线程去执行，从而是程序具备了更好的交互性。</p>
-<p>2、与进程相比，线程的创建和切换开销更小。 由于启动一个新的进程必须给这个进程分配独立的地址空间，建立许多数据结构来维护进程代码段、数据段等信息，而运行于同一个进程内的线程共享代码段、数据段，线程的启动或切换的开销就比进程要少很多。同时多线程在数据共享方面效率非常高。</p>
-<p>3、多CPU或多核心计算机本身就具有执行多线程的能力。 如果使用单个线程，将无法重复利用计算机资源，造成资源的巨大浪费。因此在多CPU计算机上使用多线程能提高CPU的利用率。</p>
-<p>4、使用多线程能简化程序的结构，使用程序便于理解和维护。 一个非常复杂的进程可以分成多个线程来执行。</p>
-<h2 id="使用多线程可能带来什么问题"><a href="#使用多线程可能带来什么问题" class="headerlink" title="使用多线程可能带来什么问题?"></a>使用多线程可能带来什么问题?</h2><p>并发编程的目的就是为了能提高程序的执行效率提高程序运行速度，但是并发编程并不总是能提高程序运行速度的，而且并发编程可能会遇到很多问题，比如：内存泄漏、死锁、线程不安全等等。</p>
-<h1 id="说说线程的生命周期和状态"><a href="#说说线程的生命周期和状态" class="headerlink" title="说说线程的生命周期和状态?"></a>说说线程的生命周期和状态?</h1><p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/19-1-29/Java+%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81%E5%8F%98%E8%BF%81.png?ynotemdtimestamp=1618464916797" alt="Java 线程状态变迁 "></p>
-<ol>
-<li>线程创建之后它将处于<strong>NEW</strong>状态，调用<strong>start</strong>()方法后开始运行，线程这时候处于<strong>READY</strong> 状态。可运行状态的线程获得了<strong>CPU</strong>时间片后就处于<strong>RUNNING</strong>状态。</li>
-<li>线程执行 <code>wait () </code>方法后，进入<code> WAITING</code> 状态，此时需要依靠其他线程的通知才能够返回到运行状态，而 <code>TIME_WAITING </code>状态相当于在等待状态的基础上增加了超时限制，比如通过 <code>sleep（）</code>或 <code>wait（）</code>可以将线程置于<code>TIME_WAITING</code>状态。当超时时间到达又会返回到 <code>RUNNABLE </code>状态。当线程调用同步方法时，在没有获取到锁的情况下，线程将会进入到 <code>BLOCKED </code>状态。线程在执行<code>Runnable</code>的 <code>run () </code>方法之后将会进入到 <code>TERMINATED </code>状态。</li>
-</ol>
-<p>共 6 种状态：</p>
-<p>**初始状态 (NEW)**：尚未启动的线程处于此状态。通常是新创建了线程，但还没有调用 start () 方法；</p>
-<p>**运行状态 (RUNNABLE)**：Java 线程中将就绪（ready）和运行中（running）两种状态笼统的称为 “运行中”。比如说线程可运行线程池中，等待被调度选中，获取 CPU 的使用权，此时处于就绪状态（ready）。就绪状态的线程在获得 CPU 时间片后变为运行中状态（running）。</p>
-<p>**阻塞状态 (BLOCKED)**：表示线程阻塞于锁；</p>
-<p>**等待状态 (WAITING)**：进入该状态的线程需要等待其他线程做出一些特定动作（通知或中断）；</p>
-<p>**超时等待状态 (TIMED_WAITING)**：进入该状态的线程需要等待其他线程在指定时间内做出一些特定动作（通知或中断），可以在指定的时间自行返回；</p>
-<p>**终止状态 (TERMINATED)**：表示该线程已经执行完毕，已退出的线程处理此状态。</p>
-<h2 id="线程状态-RUNNABLE-如何变为-BLOCKED"><a href="#线程状态-RUNNABLE-如何变为-BLOCKED" class="headerlink" title="线程状态 RUNNABLE 如何变为 BLOCKED?"></a>线程状态 RUNNABLE 如何变为 BLOCKED?</h2><p>线程状态变为阻塞有多种原因：可能调用 wait () 方法进入等待池，可能执行同步方法 / 同步代码块进入等锁池，可能调用了 sleep ()/join () 等待休眠或其他线程结束，可能发生了 I/O 中断等</p>
-<h1 id="怎么唤醒一个阻塞的线程"><a href="#怎么唤醒一个阻塞的线程" class="headerlink" title="怎么唤醒一个阻塞的线程"></a>怎么唤醒一个阻塞的线程</h1><ol>
-<li>如果线程是因为调用了了wait()、sleep()或者join()方法而导致的阻塞；<ul>
-<li>suspend()与resume()<br>Java废弃 suspend() 去挂起线程的原因，是因为 suspend() 在导致线程暂停的同时，并不不会去释放任何锁资源。其他线程都无法访问被它占用的锁。直到对应的线程执行行 resume() 方法后，被挂起的线程才能继续，从而其它被阻塞在这个锁的线程才可以继续执行。<br>但是，如果 resume() 操作出现在 suspend() 之前执行行，那么线程将一直处于挂起状态，同时一直占⽤用锁，这就产生了了死锁。而且，对于被挂起的线程，它的线程状态居然还是 Runnable。</li>
-<li>wait()与notify()<br>wait与notify必须配合synchronized使用，因为调用之前必须持有锁，wait会立即释放锁，notify则是同步块执行完了才释放</li>
-<li>await()与singal()<br>Condition类提供，而Condition对象由new ReentLock().newCondition()获得，与wait和notify相同，因为使用Lock锁后无法使用wait方法</li>
-<li>park()与unpark()<br>LockSupport是一个非常方便便实用的线程阻塞⼯工具，它可以在线程任意位置让线程阻塞。和Thread.suspenf()相比，它弥补了了由于resume()在前发生，导致线程无法继续执行行的情况。和Object.wait()相比，它不不需要先获得某个对象的锁，也不会抛出IException异常。可以唤醒指定线程。</li>
-</ul>
-</li>
-<li>如果线程遇到了了IO阻塞，无能为力，因为IO是操作系统实现的，Java代码并没有办法直接接触到操作系统。</li>
-</ol>
-<h1 id="Condition-类和-Object-类锁方法区别区别"><a href="#Condition-类和-Object-类锁方法区别区别" class="headerlink" title="Condition 类和 Object 类锁方法区别区别"></a>Condition 类和 Object 类锁方法区别区别</h1><ol>
-<li>Condition 类的 awiat 方法和 Object 类的 wait 方法等效</li>
-<li>Condition 类的 signal 方法和 Object 类的 notify 方法等效</li>
-<li>Condition 类的 signalAll 方法和 Object 类的 notifyAll 方法等效</li>
-<li>ReentrantLock 类可以唤醒指定条件的线程，而 object 的唤醒是随机的</li>
-</ol>
-<h1 id="什么是上下文切换"><a href="#什么是上下文切换" class="headerlink" title="什么是上下文切换"></a>什么是上下文切换</h1><p>当前任务在执行完 CPU 时间片切换到另一个任务之前会先保存自己的状态，以便下次再切换回这个任务时，可以再加载这个任务的状态。<strong>任务从保存到再加载的过程就是一次上下文切换</strong>。</p>
-<h1 id="什么是线程死锁-如何避免死锁"><a href="#什么是线程死锁-如何避免死锁" class="headerlink" title="什么是线程死锁?如何避免死锁?"></a>什么是线程死锁?如何避免死锁?</h1><h2 id="认识线程死锁"><a href="#认识线程死锁" class="headerlink" title="认识线程死锁"></a>认识线程死锁</h2><p>线程死锁描述的是这样一种情况：多个线程同时被阻塞，它们中的一个或者全部都在等待某个资源被释放。由于线程被无限期地阻塞，因此程序不可能正常终止。</p>
-<p>如下图所示，线程 A 持有资源 2，线程 B 持有资源 1，他们同时都想申请对方的资源，所以这两个线程就会互相等待而进入死锁状态</p>
-<p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-4/2019-4%E6%AD%BB%E9%94%811.png?ynotemdtimestamp=1618464916797" alt="线程死锁示意图 "></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">下面通过一个例子来说明线程死锁,代码模拟了上图的死锁的情况 (代码来源于《并发编程之美》)：</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DeadLockDemo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Object resource1 = <span class="keyword">new</span> Object();<span class="comment">//资源 1</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Object resource2 = <span class="keyword">new</span> Object();<span class="comment">//资源 2</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (resource1) &#123;</span><br><span class="line">                System.out.println(Thread.currentThread() + <span class="string">&quot;get resource1&quot;</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(Thread.currentThread() + <span class="string">&quot;waiting get resource2&quot;</span>);</span><br><span class="line">                <span class="keyword">synchronized</span> (resource2) &#123;</span><br><span class="line">                    System.out.println(Thread.currentThread() + <span class="string">&quot;get resource2&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="string">&quot;线程 1&quot;</span>).start();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (resource2) &#123;</span><br><span class="line">                System.out.println(Thread.currentThread() + <span class="string">&quot;get resource2&quot;</span>);</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">                System.out.println(Thread.currentThread() + <span class="string">&quot;waiting get resource1&quot;</span>);</span><br><span class="line">                <span class="keyword">synchronized</span> (resource1) &#123;</span><br><span class="line">                    System.out.println(Thread.currentThread() + <span class="string">&quot;get resource1&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="string">&quot;线程 2&quot;</span>).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Output</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Thread[线程 1,5,main]get resource1</span><br><span class="line">Thread[线程 2,5,main]get resource2</span><br><span class="line">Thread[线程 1,5,main]waiting get resource2</span><br><span class="line">Thread[线程 2,5,main]waiting get resource1</span><br></pre></td></tr></table></figure>
-
-<p>线程 A 通过 synchronized (resource1) 获得 resource1 的监视器锁，然后通过<code>Thread.sleep(1000);</code>让线程 A 休眠 1s 为的是让线程 B 得到执行然后获取到 resource2 的监视器锁。线程 A 和线程 B 休眠结束了都开始企图请求获取对方的资源，然后这两个线程就会陷入互相等待的状态，这也就产生了死锁。上面的例子符合产生死锁的四个必要条件。</p>
-<p>学过操作系统的朋友都知道产生死锁必须具备以下四个条件：</p>
-<ol>
-<li>互斥条件：该资源任意一个时刻只由一个线程占用。</li>
-<li>请求与保持条件：一个进程因请求资源而阻塞时，对已获得的资源保持不放。</li>
-<li>不剥夺条件:线程已获得的资源在末使用完之前不能被其他线程强行剥夺，只有自己使用完毕后才释放资源。</li>
-<li>循环等待条件:若干进程之间形成一种头尾相接的循环等待资源关系。</li>
-</ol>
-<h2 id="如何避免线程死锁"><a href="#如何避免线程死锁" class="headerlink" title="如何避免线程死锁?"></a>如何避免线程死锁?</h2><p>只要破坏产生死锁的四个条件中的其中一个就可以了</p>
-<ol>
-<li><strong>破坏互斥条件</strong> ：这个条件我们没有办法破坏，因为我们用锁本来就是想让他们互斥的（临界资源需要互斥访问）。</li>
-<li><strong>破坏请求与保持条件</strong> ：一次性申请所有的资源。</li>
-<li><strong>破坏不剥夺条件</strong> ：占用部分资源的线程进一步申请其他资源时，如果申请不到，可以主动释放它占有的资源。</li>
-<li><strong>破坏循环等待条件</strong> ：靠按序申请资源来预防。按某一顺序申请资源，释放资源则反序释放。破坏循环等待条件。</li>
-</ol>
-<p>对线程 2 的代码修改成下面这样就不会产生死锁了。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (resource1) &#123;</span><br><span class="line">        System.out.println(Thread.currentThread() + <span class="string">&quot;get resource1&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(Thread.currentThread() + <span class="string">&quot;waiting get resource2&quot;</span>);</span><br><span class="line">        <span class="keyword">synchronized</span> (resource2) &#123;</span><br><span class="line">            System.out.println(Thread.currentThread() + <span class="string">&quot;get resource2&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;, <span class="string">&quot;线程 2&quot;</span>).start();</span><br></pre></td></tr></table></figure>
-
-<p>Output</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Thread[线程 1,5,main]get resource1</span><br><span class="line">Thread[线程 1,5,main]waiting get resource2</span><br><span class="line">Thread[线程 1,5,main]get resource2</span><br><span class="line">Thread[线程 2,5,main]get resource1</span><br><span class="line">Thread[线程 2,5,main]waiting get resource2</span><br><span class="line">Thread[线程 2,5,main]get resource2</span><br><span class="line"></span><br><span class="line">Process finished with exit code 0</span><br></pre></td></tr></table></figure>
-
-<p>上面的代码为什么避免了死锁的发生?</p>
-<p>线程 1 首先获得到 resource1 的监视器锁,这时候线程 2 就获取不到了。</p>
-<p>然后线程 1 再去获取 resource2 的监视器锁，可以获取到。然后线程 1 释放了对 resource1、resource2 的监视器锁的占用，线程 2 获取到就可以执行了。</p>
-<p>这样就破坏了破坏循环等待条件，因此避免了死锁。</p>
-<h1 id="Java中活锁和死锁有什么区别？"><a href="#Java中活锁和死锁有什么区别？" class="headerlink" title="Java中活锁和死锁有什么区别？"></a>Java中活锁和死锁有什么区别？</h1><ol>
-<li><p>死锁：是指两个或两个以上的进程（或线程）在执行过程中，因争夺资源而造成的一种互相等待的现象，若无外力作用，它们都将无法推进下去。此时称系统处于死锁状态或系统产生了死锁，这些永远在互相等待的进程称为死锁进程。</p>
-<blockquote>
-<p>迎面开来的汽车A和汽车B过马路，汽车A得到了半条路的资源（满足死锁发生条件1：资源访问是排他性的，我占了路你就不能上来，除非你爬我头上去），汽车B占了汽车A的另外半条路的资源，A想过去必须请求另一半被B占用的道路（死锁发生条件2：必须整条车身的空间才能开过去，我已经占了一半，尼玛另一半的路被B占用了），B若想过去也必须等待A让路，A是辆兰博基尼，B是开奇瑞QQ的屌丝，A素质比较低开窗对B狂骂：快给老子让开，B很生气，你妈逼的，老子就不让（死锁发生条件3：在未使用完资源前，不能被其他线程剥夺），于是两者相互僵持一个都走不了（死锁发生条件4：环路等待条件），而且导致整条道上的后续车辆也走不了。（很粗鲁的相互竞争）</p>
-</blockquote>
-</li>
-<li><p>活锁：线程A和B都需要过桥(都需要使用进程),而都礼让不走(那到的系统优先级相同,都认为不是自己优先级高),就这么僵持下去.（很绅士，互相谦让）</p>
-</li>
-<li><p>饥饿：这是个独木桥(单进程),桥上只能走一个人,B来到时A在桥上,B等待;而此时比B年龄小的C来了,B让C现行(A走完后系统把进程分给了C), C上桥后,D又来了,B又让D现行(C走完后系统把进程分个了D)以此类推B一直是等待状态.</p>
-</li>
-</ol>
-<p>活锁指的是任务或者执行者没有被阻塞，由于某些条件没有满足，导致一直重复尝试，失败，尝试，失败。活锁和死锁的区别在于，处于活锁的实体是在不断的改变状态，所谓的“活”， 而处于死锁的实体表现为等待；活锁有可能自行解开，死锁则不能。</p>
-<p>饥饿，是指一个可运行的进程尽管能继续执行，但被调度器无限期地忽视，而不能被调度执行的情况。</p>
-<p>饥饿是由资源分配策略决定的， 饥饿可以通过先来先服务等资源分配策略来避免。</p>
-<h1 id="说说-sleep-方法和-wait-方法区别和共同点"><a href="#说说-sleep-方法和-wait-方法区别和共同点" class="headerlink" title="说说 sleep() 方法和 wait() 方法区别和共同点"></a>说说 sleep() 方法和 wait() 方法区别和共同点</h1><ul>
-<li>两者最主要的区别在于：sleep 方法没有释放锁，而 wait 方法释放了锁 。</li>
-<li>两者都可以暂停线程的执行。</li>
-<li>Wait 通常被用于线程间交互/通信，sleep 通常被用于暂停执行。</li>
-<li>wait() [<strong>线程等待</strong>]方法被调用后，线程不会自动苏醒，需要别的线程调用同一个对象上的 notify() 或者 notifyAll() 方法。sleep() [<strong>线程睡眠</strong>]方法执行完成后，线程会自动苏醒。或者可以使用 wait(long timeout)超时后线程会自动苏醒。</li>
-</ul>
-<h1 id="同步线程及线程调度相关的方法（除wait和sleep）"><a href="#同步线程及线程调度相关的方法（除wait和sleep）" class="headerlink" title="同步线程及线程调度相关的方法（除wait和sleep）"></a>同步线程及线程调度相关的方法（除wait和sleep）</h1><ul>
-<li><p>join() 方法，等待其他线程终止，在当前线程中调用一个线程的 join() 方法，则当前线程转为阻塞状态，等到另一个线程结束，当前线程再由阻塞状态变为就绪状态，等待 cpu 的宠幸。注意该方法也需要捕捉异常。</p>
-</li>
-<li><p>yield()[<strong>线程让步</strong>]方法:</p>
-<p>Yield()方法可以暂停当前正在执行的线程对象，让其它有相同优先级的线程执行。它是一个静态方法而且只保证当前线程放弃CPU占用而不能保证使其它线程一定能占用CPU，执行yield()的线程有可能在进入到暂停状态后马上又被执行。</p>
-<p>使用场景（为什么使用）：很多情况下，主线程生成并启动了子线程，需要用到子线程返回的结果，也就是需要主线程需要在子线程结束后再结束，这时候就要用到 join() 方法 。</p>
-</li>
-<li><p><strong>线程唤醒</strong>（notify）</p>
-<p>Object 类中的 notify() 方法， 唤醒在此对象监视器上等待的单个线程，如果所有线程都在此对象<br>上等待，则会选择唤醒其中一个线程，选择是任意的，并在对实现做出决定时发生，线程通过调<br>用其中一个 wait() 方法，在对象的监视器上等待， 直到当前的线程放弃此对象上的锁定，才能继<br>续执行被唤醒的线程，被唤醒的线程将以常规方式与在该对象上主动同步的其他所有线程进行竞<br>争。类似的方法还有 notifyAll() ，唤醒再次监视器上等待的所有线程。</p>
-</li>
-</ul>
-<h1 id="为什么我们调用-start-方法时会执行-run-方法，为什么我们不能直接调用-run-方法？"><a href="#为什么我们调用-start-方法时会执行-run-方法，为什么我们不能直接调用-run-方法？" class="headerlink" title="为什么我们调用 start() 方法时会执行 run() 方法，为什么我们不能直接调用 run() 方法？"></a>为什么我们调用 start() 方法时会执行 run() 方法，为什么我们不能直接调用 run() 方法？</h1><p>new 一个 Thread，线程进入了新建状态。</p>
-<p>调用 <code>start()</code>方法，会启动一个线程并使线程进入了就绪状态，当分配到时间片后就可以开始运行了。 <code>start()</code> 会执行线程的相应准备工作，然后自动执行 <code>run()</code> 方法的内容，这是真正的多线程工作。 但是，直接执行 <code>run()</code> 方法，会把 <code>run()</code> 方法当成一个 main 线程下的普通方法去执行，并不会在某个线程中执行它，所以这并不是多线程工作。</p>
-<p><strong>总结： 调用 <code>start()</code> 方法方可启动线程并使线程进入就绪状态，直接执行 <code>run()</code> 方法的话不会以多线程的方式执行。</strong></p>
-<h1 id="进程间通讯的四种方式"><a href="#进程间通讯的四种方式" class="headerlink" title="进程间通讯的四种方式"></a>进程间通讯的四种方式</h1><h2 id="共享内存"><a href="#共享内存" class="headerlink" title="共享内存"></a>共享内存</h2><p>共享内存是最快的进程间通讯的方式</p>
-<blockquote>
-<p>原因：相对于其他几种方式，共享内存直接在进程的虚拟地址空间进行操作，不再通过执行进入内核的系统调用来传递彼此的数据</p>
-</blockquote>
-<h2 id="信号"><a href="#信号" class="headerlink" title="信号"></a>信号</h2><p>在进程访问临界资源之前，需要测试信号量，如果为正数，则信号量-1并且进程可以进入临界区，若为非正数，则进程挂起放入等待队列，直至有进程退出临界区，释放资源并+1信号量，此时唤醒等待队列的进程。</p>
-<p>信号量本身就是临界资源，所以必须是原子操作。</p>
-<h2 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h2><p>单向，一端输入，另一端输出，先进先出FIFO。管道也是文件。管道大小4096字节。</p>
-<p>特点：管道满时，写阻塞；空时，读阻塞。</p>
-<h2 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h2><p>消息队列是先进先出FIFO原则</p>
-<h1 id="线程间通信的几种实现方式"><a href="#线程间通信的几种实现方式" class="headerlink" title="线程间通信的几种实现方式"></a>线程间通信的几种实现方式</h1><ul>
-<li>使用 volatile 关键字</li>
-</ul>
-<p>基于 volatile 关键字来实现线程间相互通信是使用共享内存的思想，大致意思就是多个线程同时监听一个变量，当这个变量发生变化的时候 ，线程能够感知并执行相应的业务</p>
-<ul>
-<li>使用Object类的wait() 和 notify() 方法</li>
-</ul>
-<p>众所周知，Object类提供了线程间通信的方法：wait()、notify()、notifyaAl()，它们是多线程通信的基础，而这种实现方式的思想自然是线程间通信。</p>
-<blockquote>
-<p>注意： wait和 notify必须配合synchronized使用，wait方法释放锁，notify方法不释放锁</p>
-</blockquote>
-<ul>
-<li>使用JUC工具类 CountDownLatch</li>
-<li>使用 ReentrantLock 结合 Condition</li>
-<li>基本LockSupport实现线程间的阻塞和唤醒</li>
-</ul>
-<h2 id="Java中notify-和-notifyAll有什么区别？"><a href="#Java中notify-和-notifyAll有什么区别？" class="headerlink" title="Java中notify 和 notifyAll有什么区别？"></a>Java中notify 和 notifyAll有什么区别？</h2><p>notify()方法不能唤醒某个具体的线程，所以只有一个线程在等待的时候它才有。</p>
-<p>notifyAll()唤醒所有线程并允许他们争夺锁确保了至少有一个线程能继续运行。</p>
-<h2 id="为什么wait-notify-和-notifyAll这些方法不在thread类里面？"><a href="#为什么wait-notify-和-notifyAll这些方法不在thread类里面？" class="headerlink" title="为什么wait, notify 和 notifyAll这些方法不在thread类里面？"></a>为什么wait, notify 和 notifyAll这些方法不在thread类里面？</h2><p>JAVA提供的锁是对象级的而不是线程级的。由于wait，notify和notifyAll都是锁级别的操作，所以把他们定义在Object类。</p>
-<h2 id="为什么wait和notify方法要在同步块中调用？"><a href="#为什么wait和notify方法要在同步块中调用？" class="headerlink" title="为什么wait和notify方法要在同步块中调用？"></a>为什么wait和notify方法要在同步块中调用？</h2><ol>
-<li>只有在调用线程拥有某个对象的独占锁时，才能够调用该对象的wait(),notify()和notifyAll()方法。</li>
-<li>如果你不这么做，你的代码会抛出IllegalMonitorStateException异常。</li>
-<li>还有一个原因是为了避免wait和notify之间产生竞态条件。</li>
-</ol>
-<h1 id="线程间如何同步"><a href="#线程间如何同步" class="headerlink" title="线程间如何同步"></a>线程间如何同步</h1><blockquote>
-<p>各个线程可以访问进程中的公共变量，所以使用多线程的过程中需要注意的问题是如何防止两个或两个以上的线程同时访问同一个数据，以免破坏数据的完整性。保证各个线程可以在一起适当的协调工作称为线程之间的同步</p>
-</blockquote>
-<ul>
-<li>（一）临界区</li>
-<li>（二）互斥</li>
-<li>（三）信号量</li>
-</ul>
-<h1 id="什么是竞态条件？你怎样发现和解决竞争？"><a href="#什么是竞态条件？你怎样发现和解决竞争？" class="headerlink" title="什么是竞态条件？你怎样发现和解决竞争？"></a>什么是竞态条件？你怎样发现和解决竞争？</h1><p>当两个线程竞争同一资源时，如果对资源的访问顺序敏感，就称存在竞态条件。在临界区中使用适当的同步就可以避免竞态条件，实现方法有两种，一种是用synchronized，一种是用Lock显式锁实现。</p>
-<h1 id="你对线程优先级的理解是什么？"><a href="#你对线程优先级的理解是什么？" class="headerlink" title="你对线程优先级的理解是什么？"></a>你对线程优先级的理解是什么？</h1><p>每一个线程都是有优先级的，一般来说，高优先级的线程在运行时会具有优先权，但这依赖于线程调度的实现，这个实现是和操作系统相关的(OSdependent)。</p>
-<p>可以定义线程的优先级，但是这并不能保证高优先级的线程会在低优先级的线程前执行。线程优先级是一个int变量(从1-10)，1代表最低优先级，10代表最高优先级。</p>
-<h1 id="一个线程运行时发生异常会怎样"><a href="#一个线程运行时发生异常会怎样" class="headerlink" title="一个线程运行时发生异常会怎样"></a>一个线程运行时发生异常会怎样</h1><ol>
-<li>如果这个异常没有被捕获的话，这个线程就停止执行了。</li>
-<li>另外重要的一点是：如果这个线程持有某个对象的监视器器，那么这个对象监视器器会被立即释放.</li>
-</ol>
-<h1 id="用户线程和守护线程有什么区别？（JAVA-后台线程）"><a href="#用户线程和守护线程有什么区别？（JAVA-后台线程）" class="headerlink" title="用户线程和守护线程有什么区别？（JAVA 后台线程）"></a>用户线程和守护线程有什么区别？（JAVA 后台线程）</h1><p>守护线程都是为JVM中所有非守护线程的运行提供便利服务： 只要当前JVM实例中尚存在任何一个非守护线程没有结束，守护线程就全部工作；只有当最后一个非守护线程结束时，守护线程随着JVM一同结束工作。</p>
-<p>两者几乎没有区别，唯一的不同之处就在于虚拟机的离开：如果用户线程已经全部退出运行了，只剩下守护线程存在了，虚拟机也就退出了。</p>
-<p>因为没有了被守护者，守护线程也就没有工作可做了，也就没有继续运行程序的必要了。</p>
-<h1 id="如何创建守护线程？以及在什么场合来使用它？"><a href="#如何创建守护线程？以及在什么场合来使用它？" class="headerlink" title="如何创建守护线程？以及在什么场合来使用它？"></a>如何创建守护线程？以及在什么场合来使用它？</h1><p>任何线程都可以设置为守护线程和用户线程，通过方法Thread.setDaemon(bool on)；true则把该线程设置为守护线程，反之则为用户线程。Thread.setDaemon()必须在Thread.start()之前调用，否则运行时会抛出异常。</p>
-<p>守护线程相当于后台管理者 比如 : 进行内存回收,垃圾清理等工作</p>
-<h1 id="如何停止一个正在运行的线程"><a href="#如何停止一个正在运行的线程" class="headerlink" title="如何停止一个正在运行的线程"></a>如何停止一个正在运行的线程</h1><p>1、使用退出标志，使线程正常退出，也就是当run方法完成后线程终止。<br>2、使用stop方法强行终止，但是不推荐这个方法，因为stop和suspend及resume一样都是过期作废的<br>方法。<br>3、使用interrupt方法中断线程。</p>
-<h1 id="Java-中用到的线程调度算法是什么？"><a href="#Java-中用到的线程调度算法是什么？" class="headerlink" title="Java 中用到的线程调度算法是什么？"></a>Java 中用到的线程调度算法是什么？</h1><p>采用时间片轮转的方式。可以设置线程的优先级，会映射到下层的系统上面的优<br>先级上，如非特别需要，尽量不要用，防止线程饥饿。</p>
-<h1 id="多线程同步和互斥有几种实现方法，都是什么？"><a href="#多线程同步和互斥有几种实现方法，都是什么？" class="headerlink" title="多线程同步和互斥有几种实现方法，都是什么？"></a>多线程同步和互斥有几种实现方法，都是什么？</h1><p>线程同步是指线程之间所具有的一种制约关系，一个线程的执行依赖另一个线程的消息，当它没有得到<br>另一个线程的消息时应等待，直到消息到达时才被唤醒。线程互斥是指对于共享的进程系统资源，在各<br>单个线程访问时的排它性</p>
-<p>线程间的同步方法大体可分为两类：用户模式和内核模式。顾名思义，内核模式就是指利用系统内核对<br>象的单一性来进行同步，使用时需要切换内核态与用户态，而用户模式就是不需要切换到内核态，只在<br>用户态完成操作。用户模式下的方法有：原子操作（例如一个单一的全局变量），临界区。内核模式下<br>的方法有：事件，信号量，互斥量。</p>
-<h1 id="说说java同步机制"><a href="#说说java同步机制" class="headerlink" title="说说java同步机制"></a>说说java同步机制</h1><ul>
-<li><p>synchronized关键字修饰</p>
-</li>
-<li><p>使用特殊域变量(volatile)实现线程同步</p>
-</li>
-<li><p>使用重入锁（ReenreantLock）实现线程同步</p>
-</li>
-<li><p>使用局部变量（ThreadLocal）实现线程同步</p>
-</li>
-</ul>
-<h1 id="什么是不可变对象，它对写并发应用有什么帮助"><a href="#什么是不可变对象，它对写并发应用有什么帮助" class="headerlink" title="什么是不可变对象，它对写并发应用有什么帮助"></a>什么是不可变对象，它对写并发应用有什么帮助</h1><p>不可变对象(Immutable Objects)即对象一旦被创建它的状态（对象的数据，也即对象属性值）就不能<br>改变，反之即为可变对象(Mutable Objects)。不可变对象的类即为不可变类(Immutable Class)。Java<br>平台类库中包含许多不可变类，如 String、基本类型的包装类、BigInteger 和 BigDecimal 等。不可变<br>对象天生是线程安全的。它们的常量（域）是在构造函数中创建的。既然它们的状态无法修改，这些常<br>量永远不会变。</p>
-<p>不可变对象永远是线程安全的。<br>只有满足如下状态，一个对象才是不可变的；<br>它的状态不能在创建后再被修改；<br>所有域都是 final 类型；并且，<br>它被正确创建（创建期间没有发生 this 引用的逸出）。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/5/">&gt;</a>
+    <a class="extend prev" rel="prev" href="/page/3/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/5/">&gt;</a>
   </nav>
 
 
@@ -3237,7 +3021,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-count">81</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3248,7 +3032,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-count">57</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
