@@ -93,7 +93,7 @@
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/collection/images/TreeMap继承结构.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/%E5%AE%B9%E5%99%A8/image.png">
 <meta property="article:published_time" content="2021-04-13T10:47:40.000Z">
-<meta property="article:modified_time" content="2021-04-18T15:56:09.112Z">
+<meta property="article:modified_time" content="2021-05-07T16:55:44.442Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="面试">
@@ -599,8 +599,8 @@
 <h3 id="TreeSet-有用过么，平时都在什么场景下使用"><a href="#TreeSet-有用过么，平时都在什么场景下使用" class="headerlink" title="TreeSet 有用过么，平时都在什么场景下使用"></a>TreeSet 有用过么，平时都在什么场景下使用</h3><p>一般都是在需要把元素进行排序的时候使用 TreeSet，使用时需要我们注意元素最好实现 Comparable 接口，这样方便底层的 TreeMap 根据 key 进行排序。</p>
 <h4 id="追问，如果我想实现根据-key-的新增顺序进行遍历怎么办"><a href="#追问，如果我想实现根据-key-的新增顺序进行遍历怎么办" class="headerlink" title="追问，如果我想实现根据 key 的新增顺序进行遍历怎么办"></a>追问，如果我想实现根据 key 的新增顺序进行遍历怎么办</h4><p>要按照 key 的新增顺序进行遍历，首先想到的应该就是 LinkedHashMap，而 LinkedHashSet 正好是基于 LinkedHashMap 实现的，所以我们可以选择使用 LinkedHashSet。</p>
 <h4 id="追问，如果我想对-key-进行去重，有什么好的办法么？"><a href="#追问，如果我想对-key-进行去重，有什么好的办法么？" class="headerlink" title="追问，如果我想对 key 进行去重，有什么好的办法么？"></a>追问，如果我想对 key 进行去重，有什么好的办法么？</h4><p>我们首先想到的是 TreeSet，TreeSet 底层使用的是 TreeMap，TreeMap 在 put 的时候，如果发现 key 是相同的，会把 value 值进行覆盖，所有不会产生重复的 key ，利用这一特性，使用 TreeSet 正好可以去重。</p>
-<h4 id="说说-TreeSet-和-HashSet-两个-Set-的内部实现结构和原理？"><a href="#说说-TreeSet-和-HashSet-两个-Set-的内部实现结构和原理？" class="headerlink" title="说说 TreeSet 和 HashSet 两个 Set 的内部实现结构和原理？"></a>说说 TreeSet 和 HashSet 两个 Set 的内部实现结构和原理？</h4><p>HashSet 底层对 HashMap 的能力进行封装，比如说 add 方法，是直接使用 HashMap 的 put 方法，比较简单，但在初始化的时候，我看源码有一些感悟：说一下 HashSet 小结的四小点。</p>
-<p>TreeSet 主要是对 TreeMap 底层能力进行封装复用，我发现了两种非常有意思的复用思路，重复 TreeSet 两种复用思路。</p>
+<h4 id="说说-TreeSet-和-HashSet-两个-Set-的内部实现结构和原理？"><a href="#说说-TreeSet-和-HashSet-两个-Set-的内部实现结构和原理？" class="headerlink" title="说说 TreeSet 和 HashSet 两个 Set 的内部实现结构和原理？"></a>说说 TreeSet 和 HashSet 两个 Set 的内部实现结构和原理？</h4><p>HashSet 底层对 HashMap 的能力进行封装，比如说 add 方法，是直接使用 HashMap 的 put 方法</p>
+<p>TreeSet 主要是对 TreeMap 底层能力进行封装复用</p>
 <h2 id="Map-接口"><a href="#Map-接口" class="headerlink" title="Map 接口"></a>Map 接口</h2><h3 id="Map相关类"><a href="#Map相关类" class="headerlink" title="Map相关类"></a>Map相关类</h3><p><img src="https://img1.sycdn.imooc.com/5e6af08a00013e4c16000500.jpg" alt="图片描述"></p>
 <h3 id="jdk8中对HashMap做了哪些改变"><a href="#jdk8中对HashMap做了哪些改变" class="headerlink" title="jdk8中对HashMap做了哪些改变?"></a>jdk8中对HashMap做了哪些改变?</h3><ul>
 <li><p><code>在java1.7中</code>使用数组+链表在<code>java1.8</code>中改成了数组+链表或红黑树,如果链表的长度超过了8,那么链表将转换为红黑树(将链表转换成红黑树前会判断，如果当前数组的长度小于 64，那么会选择先进行数组扩容，而不是转换为红黑树)</p>
@@ -616,7 +616,7 @@
 </ul>
 <h3 id="为什么JDK1-8使用红黑树？"><a href="#为什么JDK1-8使用红黑树？" class="headerlink" title="为什么JDK1.8使用红黑树？"></a>为什么JDK1.8使用红黑树？</h3><p>比如某些人通过找到你的hash碰撞值，来让你的HashMap不断地产生碰撞，那么相同key位置的链表就会不断增长，当你需要对这个HashMap的相应位置进行查询的时候，就会去循环遍历这个超级大的链表，性能及其地下。java8使用红黑树来替代超过8个节点数的链表后，查询方式性能得到了很好的提升，从原来的是O(n)到O(logn)。</p>
 <h3 id="HashMap-和-Hashtable-的区别"><a href="#HashMap-和-Hashtable-的区别" class="headerlink" title="HashMap 和 Hashtable 的区别"></a>HashMap 和 Hashtable 的区别</h3><ol>
-<li><p><strong>线程是否安全：</strong> <code>HashMap</code> 是非线程安全的，<code>HashTable</code> 是线程安全的,因为 <code>HashTable</code> 内部的方法基本都经过<code>synchronized</code> 修饰。（如果你要保证线程安全的话就使用 <code>ConcurrentHashMap</code> 吧！）；</p>
+<li><p><strong>线程是否安全：</strong> <code>HashMap</code> 是非线程安全的，<code>HashTable</code> 是线程安全的,因为 <code>HashTable</code> 内部的方法基本都经过<code>synchronized</code> 修饰。（如果要保证线程安全的话就使用 <code>ConcurrentHashMap</code> ）；</p>
 </li>
 <li><p><strong>效率：</strong> 因为线程安全的问题，<code>HashMap</code> 要比 <code>HashTable</code> 效率高一点。另外，<code>HashTable</code> 基本被淘汰，不要在代码中使用它；</p>
 </li>

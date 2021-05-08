@@ -89,7 +89,7 @@
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/java%E5%BC%82%E5%B8%B8.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/Java%E5%BC%82%E5%B8%B8%E9%A1%BA%E5%BA%8F.png">
 <meta property="article:published_time" content="2021-04-12T17:14:56.000Z">
-<meta property="article:modified_time" content="2021-04-18T10:15:38.100Z">
+<meta property="article:modified_time" content="2021-05-07T12:24:42.799Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="面试">
@@ -389,8 +389,6 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Employee e &#x3D; new Employee();</span><br><span class="line">Class alunbarClass2 &#x3D; e.getClass();</span><br></pre></td></tr></table></figure>
 
 <p>4.通过类加载器<code>xxxClassLoader.loadClass()</code>传入类路径获取</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">class clazz &#x3D; ClassLoader.LoadClass(&quot;cn.javaguide.TargetObject&quot;);</span><br></pre></td></tr></table></figure>
-
 <p>通过类加载器获取Class对象不会进行初始化，意味着不进行包括初始化等一些列步骤，静态块和静态对象不会得到执行</p>
 <h2 id="动态代理是指什么？它有哪几种实现方法"><a href="#动态代理是指什么？它有哪几种实现方法" class="headerlink" title="动态代理是指什么？它有哪几种实现方法"></a>动态代理是指什么？它有哪几种实现方法</h2><ul>
 <li>动态代理是指在程序运行时生成代理类。</li>
@@ -462,11 +460,11 @@
 <li><strong><code>Exception</code></strong> :程序本身可以处理的异常，可以通过 <code>catch</code> 来进行捕获。<code>Exception</code> 又可以分为 受检查异常(必须处理) 和 不受检查异常(可以不处理)。</li>
 <li><strong><code>Error</code></strong> ：<code>Error</code> 属于程序无法处理的错误 ，我们没办法通过 <code>catch</code> 来进行捕获 。例如，Java 虚拟机运行错误（<code>Virtual MachineError</code>）、虚拟机内存不够错误(<code>OutOfMemoryError</code>)、类定义错误（<code>NoClassDefFoundError</code>）等 。这些异常发生时，Java 虚拟机（JVM）一般会选择线程终止。</li>
 </ul>
-<p><strong>运行时异常与受检异常有何异同</strong></p>
-<p>运行时异常表示虚拟机的通常操作中可能遇到的异常，是一种常见运行错误，只要程序设计得没有问题通常就不会发生；</p>
+<p><strong>运行时异常（不受检查异常）与受检异常有何异同</strong></p>
+<p>运行时异常表示虚拟机的通常操作中可能遇到的异常，是一种常见运行错误，只要程序设计得没有问题通常就不会发生；<code>RuntimeException</code> 及其子类都统称为非受检查异常</p>
 <p>受检异常跟程序运行的上下文环境有关，即使程序设计无误，仍然可能因使用的问题而引发。</p>
 <p>Java编译器要求方法必须声明抛出可能发生的受检异常，但是并不要求必须声明抛出未被捕获的运行时异常。</p>
-<p><strong>列出一些你常见的运行时异常</strong></p>
+<p><strong>列出一些你常见的（不受检查异常）运行时异常</strong></p>
 <ul>
 <li>ArithmeticException（算术异常）</li>
 <li>ClassCastException （类转换异常）</li>
@@ -480,9 +478,6 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">        FileInputStream fis = <span class="keyword">null</span>;</span><br><span class="line">        fis = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;C/myFile.txt&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> k;</span><br><span class="line">        <span class="keyword">while</span>((k = fis.read()) != -<span class="number">1</span>)&#123;</span><br><span class="line">            System.out.print((<span class="keyword">char</span>)k);</span><br><span class="line">        &#125;</span><br><span class="line">        fis.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>除了<code>RuntimeException</code>及其子类以外，其他的<code>Exception</code>类及其子类都属于检查异常 。常见的受检查异常有： IO 相关的异常、<code>ClassNotFoundException</code> 、<code>SQLException</code>…。</p>
-<p><strong>不受检查异常</strong></p>
-<p>Java 代码在编译过程中 ，我们即使不处理不受检查异常也可以正常通过编译。</p>
-<p><code>RuntimeException</code> 及其子类都统称为非受检查异常，例如：<code>NullPointExecrption</code>、<code>NumberFormatException</code>（字符串转换为数字）、<code>ArrayIndexOutOfBoundsException</code>（数组越界）、<code>ClassCastException</code>（类型转换错误）、<code>ArithmeticException</code>（算术错误）等。</p>
 <h2 id="Throwable-类常用方法"><a href="#Throwable-类常用方法" class="headerlink" title="Throwable 类常用方法"></a>Throwable 类常用方法</h2><ul>
 <li><strong><code>public string getMessage()</code></strong>:返回异常发生时的简要描述</li>
 <li><strong><code>public string toString()</code></strong>:返回异常发生时的详细信息</li>
