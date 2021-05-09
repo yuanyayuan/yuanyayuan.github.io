@@ -261,6 +261,558 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/19/MyCat-MyCat%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/19/MyCat-MyCat%E5%AD%A6%E4%B9%A0/" itemprop="url">MyCat-MyCat学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-19T16:52:33+08:00">
+                2021-04-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mycat-Mycat%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%EF%BC%8C%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">Mycat - Mycat读写分离，分库分表</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="server-xml"><a href="#server-xml" class="headerlink" title="server.xml"></a>server.xml</h1><ul>
+<li>配置MyCat的用户名，密码，权限，Schema等</li>
+<li>如同给MySQL新建用户</li>
+<li>客户端连接MyCat与连接MySQL相同</li>
+</ul>
+<h2 id="schema"><a href="#schema" class="headerlink" title="schema"></a>schema</h2><ul>
+<li>server.xml</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">user</span> <span class="attr">name</span>=<span class="string">&quot;root&quot;</span> <span class="attr">defaultAccount</span>=<span class="string">&quot;true&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;password&quot;</span>&gt;</span>123456<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--如有多个schema用“，”号隔开--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;schemas&quot;</span>&gt;</span>user,schema1,schema2<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">user</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>schema.xml</li>
+</ul>
+<p><code>schema</code>的<code>name</code>字段与<code>&lt;property name=&quot;schemas&quot;&gt;user,schema1,schema2&lt;/property&gt;</code>对应</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">schema</span> <span class="attr">name</span>=<span class="string">&quot;user&quot;</span> <span class="attr">checkSQLschema</span>=<span class="string">&quot;true&quot;</span> <span class="attr">sqlMaxLimit</span>=<span class="string">&quot;100&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">table</span> <span class="attr">name</span>=<span class="string">&quot;user&quot;</span> <span class="attr">dataNode</span>=<span class="string">&quot;dn129,dn130&quot;</span> <span class="attr">rule</span>=<span class="string">&quot;auto-sharding-long&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">schema</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="schema-xml"><a href="#schema-xml" class="headerlink" title="schema.xml"></a>schema.xml</h1><ul>
+<li>配置dataHost（节点主机），包括读host，写host</li>
+<li>配置dataNode（数据节点），指定到具体的数据库</li>
+<li>配置schema，表名，数据节点，分片规则等</li>
+</ul>
+<h2 id="dataHost"><a href="#dataHost" class="headerlink" title="dataHost"></a>dataHost</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dataHost</span> <span class="attr">name</span>=<span class="string">&quot;db129&quot;</span> <span class="attr">maxCon</span>=<span class="string">&quot;1000&quot;</span> <span class="attr">minCon</span>=<span class="string">&quot;10&quot;</span> <span class="attr">balance</span>=<span class="string">&quot;0&quot;</span></span></span><br><span class="line"><span class="tag">          <span class="attr">writeType</span>=<span class="string">&quot;0&quot;</span> <span class="attr">dbType</span>=<span class="string">&quot;mysql&quot;</span> <span class="attr">dbDriver</span>=<span class="string">&quot;jdbc&quot;</span> <span class="attr">switchType</span>=<span class="string">&quot;1&quot;</span>  <span class="attr">slaveThreshold</span>=<span class="string">&quot;100&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">heartbeat</span>&gt;</span>select user()<span class="tag">&lt;/<span class="name">heartbeat</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">writeHost</span> <span class="attr">host</span>=<span class="string">&quot;M1&quot;</span> <span class="attr">url</span>=<span class="string">&quot;jdbc:mysql://192.168.159.129:3306?useSSL=false<span class="symbol">&amp;amp;</span>serverTimezone=UTC&quot;</span> <span class="attr">user</span>=<span class="string">&quot;root&quot;</span></span></span><br><span class="line"><span class="tag">               <span class="attr">password</span>=<span class="string">&quot;12345&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">writeHost</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dataHost</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>writeHost</strong></p>
+<p>写库，**user=”root”，password=”12345”**一定要使用<code>mysql_native_password</code>加密方式</p>
+</li>
+<li><p><strong>readHost</strong></p>
+</li>
+<li><p><strong>balance</strong>：</p>
+<ul>
+<li> balance=”0”, 不开启读写分离机制，所有读操作都发送到当前可用的writeHost上。</li>
+<li>balance=”1”，全部的readHost与stand by writeHost参与select语句的负载均衡，简单的说，当双主双从模式(M1-&gt;S1，M2-&gt;S2，并且M1与 M2互为主备)，正常情况下，M2,S1,S2都参与select语句的负载均衡。</li>
+<li>balance=”2”，所有读操作都随机的在writeHost、readhost上分发。</li>
+<li>balance=”3”，所有读请求随机的分发到wiriterHost对应的readhost执行，writerHost不负担读压力，注意balance=3只在1.4及其以后版本有，1.3没有。</li>
+</ul>
+</li>
+<li><p><strong>writeType</strong>：</p>
+<ol>
+<li><p>writeType=”0”, 所有写操作发送到配置的第一个writeHost，第一个挂了切到还生存的第二个writeHost，重新启动后已切换后的为准，切换记录在配置文件中:dnindex.properties .</p>
+<blockquote>
+<p>如果第一个writeHost挂掉后又重启，还是会操作第二个writeHost，即挂掉后又重启后，第一个writeHost会排到第二个writeHost后</p>
+</blockquote>
+</li>
+<li><p>writeType=”1”，所有写操作都随机的发送到配置的writeHost，1.5以后废弃不推荐。</p>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="balance修改"><a href="#balance修改" class="headerlink" title="balance修改"></a>balance修改</h3><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/129.png"></p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/130.png"></p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/131.png"></p>
+<ol>
+<li><p><strong>balance=”0”</strong>:不开启读写分离机制，所有读操作都发送到当前可用的writeHost上</p>
+<ul>
+<li><p>dataHost：129</p>
+<ul>
+<li>writeHost：129<ul>
+<li>readHost ：131</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>dataHost：130</p>
+<ul>
+<li>writeHost：130</li>
+</ul>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D0.png" style="zoom:50%;" /></li>
+</ol>
+<ol start="2">
+<li><p>**balance=”1”**，全部的readHost与stand by writeHost参与select语句的负载均衡，简单的说，当双主双从模式(M1-&gt;S1，M2-&gt;S2，并且M1与 M2互为主备)，正常情况下，M2,S1,S2都参与select语句的负载均衡。</p>
+<ul>
+<li><p>dataHost：129</p>
+<ul>
+<li>writeHost：129<ul>
+<li>readHost ：131</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>dataHost：130</p>
+<ul>
+<li>writeHost：130</li>
+</ul>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D1.png" style="zoom:50%;" /></li>
+<li><p>**balance=”2”**，所有读操作都随机的在writeHost、readhost上分发。</p>
+<ul>
+<li><p>dataHost：129</p>
+<ul>
+<li>writeHost：129<ul>
+<li>readHost ：131</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>dataHost：130</p>
+<ul>
+<li>writeHost：130</li>
+</ul>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D2%281%29.png" style="zoom:50%;" />
+
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D2.png" style="zoom:50%;" /></li>
+<li><p>**balance=”3”**，所有读请求随机的分发到wiriterHost对应的readhost执行，writerHost不负担读压力，</p>
+<ul>
+<li><p>dataHost：129</p>
+<ul>
+<li>writeHost：129<ul>
+<li>readHost ：131</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>dataHost：130</p>
+<ul>
+<li>writeHost：130</li>
+</ul>
+</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/balance%3D1.png" style="zoom:50%;" /></li>
+</ol>
+<h2 id="dataNode"><a href="#dataNode" class="headerlink" title="dataNode"></a>dataNode</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--dataNode自定义; dataHost下方dataHost的name; database为指定的数据库 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dataNode</span> <span class="attr">name</span>=<span class="string">&quot;dn129&quot;</span> <span class="attr">dataHost</span>=<span class="string">&quot;db129&quot;</span> <span class="attr">database</span>=<span class="string">&quot;user_129&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dataNode</span> <span class="attr">name</span>=<span class="string">&quot;dn130&quot;</span> <span class="attr">dataHost</span>=<span class="string">&quot;db130&quot;</span> <span class="attr">database</span>=<span class="string">&quot;user_130&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="schema-1"><a href="#schema-1" class="headerlink" title="schema"></a>schema</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">schema</span> <span class="attr">name</span>=<span class="string">&quot;user&quot;</span> <span class="attr">checkSQLschema</span>=<span class="string">&quot;true&quot;</span> <span class="attr">sqlMaxLimit</span>=<span class="string">&quot;100&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">table</span> <span class="attr">name</span>=<span class="string">&quot;user&quot;</span> <span class="attr">dataNode</span>=<span class="string">&quot;dn129,dn130&quot;</span> <span class="attr">rule</span>=<span class="string">&quot;auto-sharding-long&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">schema</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>checkSQLschema</strong>：checkSQLschema是否去掉SQL中的Schema</li>
+<li><strong>sqlMaxLimit</strong>：检索时加上limit，防止运算压力过大，<strong>sql语句中有limit时默认不生效</strong></li>
+<li>table：定义表</li>
+<li>name：定义逻辑表的表名</li>
+<li>dataNode：定义逻辑表的数据节点</li>
+<li><strong>rule</strong>：定义分片表的分片规则，必须与rule.xml中的tableRule对应</li>
+<li><strong>ruleRequired</strong>：是否绑定分片规则，为true却没有绑定分片规则，程序报错</li>
+</ul>
+<h3 id="rule属性"><a href="#rule属性" class="headerlink" title="rule属性"></a>rule属性</h3><p><code>schema.xml</code>中<code>&quot;auto-sharding-long&quot; </code>对应<code>rule.xml</code>中的</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tableRule</span> <span class="attr">name</span>=<span class="string">&quot;auto-sharding-long&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rule</span>&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--按照那一列分片--&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">columns</span>&gt;</span>id<span class="tag">&lt;/<span class="name">columns</span>&gt;</span> </span><br><span class="line">        <span class="tag">&lt;<span class="name">algorithm</span>&gt;</span>rang-long<span class="tag">&lt;/<span class="name">algorithm</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">rule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tableRule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">function</span> <span class="attr">name</span>=<span class="string">&quot;rang-long&quot;</span></span></span><br><span class="line"><span class="tag">          <span class="attr">class</span>=<span class="string">&quot;io.mycat.route.function.AutoPartitionByLong&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;mapFile&quot;</span>&gt;</span>autopartition-long.txt<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">function</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>分片规则在<code>autopartition-long.txt</code></p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># range start-end ,data node index</span><br><span class="line"># K=1000,M=10000.</span><br><span class="line">0-500M=0</span><br><span class="line">500M-1000M=1</span><br><span class="line"># 只配置了两个数据节点所以注释掉了</span><br><span class="line"># 1000M-1500M=2 </span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="分片规则"><a href="#分片规则" class="headerlink" title="分片规则"></a>分片规则</h3><ol>
+<li><p>sharding-by-intfile（<strong>分片枚举</strong>）</p>
+<p>分片的列是固定的值（比如有些业务需要按照省份或区县来做保存，而全国省份区县固定的）</p>
+<ul>
+<li>rule.xml<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tableRule</span> <span class="attr">name</span>=<span class="string">&quot;sharding-by-intfile&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rule</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">columns</span>&gt;</span>sharding_id<span class="tag">&lt;/<span class="name">columns</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">algorithm</span>&gt;</span>hash-int<span class="tag">&lt;/<span class="name">algorithm</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">rule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tableRule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">function</span> <span class="attr">name</span>=<span class="string">&quot;hash-int&quot;</span></span></span><br><span class="line"><span class="tag">          <span class="attr">class</span>=<span class="string">&quot;io.mycat.route.function.PartitionByFileMap&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;mapFile&quot;</span>&gt;</span>partition-hash-int.txt<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;type&quot;</span>&gt;</span>0<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">function</span>&gt;</span></span><br></pre></td></tr></table></figure>
+其中分片函数配置中，mapFile标识配置文件名称，type默认值为0，0表示Integer，非零表示String，<br>所有的节点配置都是从0开始，及0代表节点1</li>
+</ul>
+<blockquote>
+<p>defaultNode 默认节点:小于0表示不设置默认节点，大于等于0表示设置默认节点    </p>
+<ul>
+<li>默认节点的作用：枚举分片时，如果碰到不识别的枚举值，就让它路由到默认节点   </li>
+<li>如果不配置默认节点（defaultNode值小于0表示不配置默认节点），碰到不识别的枚举值就会报错,like this：can’t find datanode for sharding column:column_name val:ffffffff</li>
+</ul>
+</blockquote>
+<ul>
+<li>partition-hash-int.txt<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">10000=0</span><br><span class="line">10010=1</span><br><span class="line">DEFAULT_NODE=1</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>id为1000则放入第一个节点。id为10010则放入第二个节点。其他id放入第二个节点</p>
+</li>
+<li><p>mod-long（<strong>取模</strong>）</p>
+<p>此规则为对分片字段求摸运算。</p>
+</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">tableRule</span> <span class="attr">name</span>=<span class="string">&quot;mod-long&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rule</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">columns</span>&gt;</span>user_id<span class="tag">&lt;/<span class="name">columns</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">algorithm</span>&gt;</span>mod-long<span class="tag">&lt;/<span class="name">algorithm</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">rule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">tableRule</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">function</span> <span class="attr">name</span>=<span class="string">&quot;mod-long&quot;</span> <span class="attr">class</span>=<span class="string">&quot;org.opencloudb.route.function.PartitionByMod&quot;</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- how many data nodes  --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;count&quot;</span>&gt;</span>3<span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">function</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>配置说明：<br>上面columns 标识将要分片的表字段，algorithm 分片函数，<br>此种配置非常明确即根据id进行十进制求模预算，相比固定分片hash，此种在批量插入时可能存在批量插入单事务插入多数据分片，增大事务一致性难度。</p>
+<p>count对应分片节点数</p>
+</blockquote>
+<blockquote>
+<p>取模扩容最好以2的多少次方 2,4,8</p>
+</blockquote>
+<ol start="3">
+<li>一致性hash（murmur）</li>
+</ol>
+<blockquote>
+<p>将要分片的表字段是String类型的</p>
+</blockquote>
+<h1 id="全局表"><a href="#全局表" class="headerlink" title="全局表"></a>全局表</h1><p>字典表，数据量不大，不用分片，比如用户表和省市表，如果省市表分片了，那与用户表关联查询将很麻烦，省市表可作为全局表在各个分片中都存在一份</p>
+<ul>
+<li>type属性：<strong>global为全局表</strong>，不指定则为分片表</li>
+</ul>
+<h1 id="子表"><a href="#子表" class="headerlink" title="子表"></a>子表</h1><blockquote>
+<p>可以理解为Order_Item,存放商品id，商品名称，商品数量，商品金额</p>
+<p>订单表是按照订单的id进行切分，订单id取模为0的分配到第一个数据库，订单id取模为1的分配到第二个数据库，Order_Item表想跟随Order表落入相同的数据库，Order_Item表作为Order表的字表落入相同的数据库</p>
+</blockquote>
+<ul>
+<li><p>childTable标签，定义分片字表</p>
+</li>
+<li><p>name属性，字表名称</p>
+</li>
+<li><p>joinKey属性，标志子表中的列，用于与父表做关联</p>
+</li>
+<li><p>parnetKey，标志父表中的列，与joinKey对应</p>
+</li>
+<li><p>primaryKey，子表主键，同table标签</p>
+</li>
+<li><p>needAddLimit属性，同table标签</p>
+</li>
+</ul>
+<h1 id="mycatk控制台"><a href="#mycatk控制台" class="headerlink" title="mycatk控制台"></a>mycatk控制台</h1><p>端口号：9066</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reload @@config_all;</span><br></pre></td></tr></table></figure>
+
+<h1 id="mycat高可用"><a href="#mycat高可用" class="headerlink" title="mycat高可用"></a>mycat高可用</h1><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/mycat/mycat%E9%AB%98%E5%8F%AF%E7%94%A8.png"></p>
+<p><strong>haproxy:</strong></p>
+<p>mycat不是HTTP请求，mysql是TCP协议</p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><h3 id="配置Haproxy"><a href="#配置Haproxy" class="headerlink" title="配置Haproxy"></a>配置Haproxy</h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">...</span></span><br><span class="line"><span class="attr">defaults</span></span><br><span class="line"><span class="comment">   # mode                    http</span></span><br><span class="line">    <span class="attr">mode</span>                    <span class="string">tcp</span></span><br><span class="line">    <span class="attr">log</span>                     <span class="string">global</span></span><br><span class="line">    <span class="attr">option</span>                  <span class="string">httplog</span></span><br><span class="line">    <span class="attr">option</span>                  <span class="string">dontlognull</span></span><br><span class="line">    <span class="attr">option</span> <span class="string">http-server-close</span></span><br><span class="line">    <span class="attr">option</span> <span class="string">forwardfor       except 127.0.0.0/8</span></span><br><span class="line">    <span class="attr">option</span>                  <span class="string">redispatch</span></span><br><span class="line">    <span class="attr">retries</span>                 <span class="string">3</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">http-request    10s</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">queue           1m</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">connect         10s</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">client          1m</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">server          1m</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">http-keep-alive 10s</span></span><br><span class="line">    <span class="attr">timeout</span> <span class="string">check           10s</span></span><br><span class="line">    <span class="attr">maxconn</span>                 <span class="string">3000</span></span><br><span class="line"><span class="attr">...</span></span><br><span class="line"><span class="comment"># haproxy的端口5000</span></span><br><span class="line"><span class="attr">frontend</span>  <span class="string">main *:5000</span></span><br><span class="line">    <span class="attr">acl</span> <span class="string">url_static       path_beg       -i /static /images /javascript /stylesheets</span></span><br><span class="line">    <span class="attr">acl</span> <span class="string">url_static       path_end       -i .jpg .gif .png .css .js</span></span><br><span class="line"></span><br><span class="line">    <span class="attr">use_backend</span> <span class="string">static          if url_static</span></span><br><span class="line">    <span class="attr">default_backend</span>             <span class="string">app</span></span><br><span class="line"></span><br><span class="line"><span class="attr">...</span></span><br><span class="line"><span class="attr">backend</span> <span class="string">app</span></span><br><span class="line">    <span class="attr">balance</span>     <span class="string">roundrobin</span></span><br><span class="line">    <span class="attr">server</span>  <span class="string">app1 192.168.159.128:8066 check</span></span><br><span class="line">    <span class="attr">server</span>  <span class="string">app2 192.168.159.129:8066 check</span></span><br><span class="line"><span class="comment">    #server  app3 127.0.0.1:5003 check</span></span><br><span class="line"><span class="comment">    #server  app4 127.0.0.1:5004 check</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="启动Haproxy"><a href="#启动Haproxy" class="headerlink" title="启动Haproxy"></a>启动Haproxy</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">haproxy -f /etc/haproxy/haproxy.cfg </span><br></pre></td></tr></table></figure>
+
+<h3 id="Navicat连接Haproxy"><a href="#Navicat连接Haproxy" class="headerlink" title="Navicat连接Haproxy"></a>Navicat连接Haproxy</h3><ul>
+<li>连接名：192.168.159.130-haproxy</li>
+<li>主机：192.168.159.130</li>
+<li>端口：5000</li>
+<li>用户名：root（mycat用户名）</li>
+<li>密码：12345（mycat密码）</li>
+</ul>
+<h3 id="测试其中一个MyCat宕机"><a href="#测试其中一个MyCat宕机" class="headerlink" title="测试其中一个MyCat宕机"></a>测试其中一个MyCat宕机</h3><h3 id="keepalived避免Haproxy单点故障"><a href="#keepalived避免Haproxy单点故障" class="headerlink" title="keepalived避免Haproxy单点故障"></a>keepalived避免Haproxy单点故障</h3><p><a href="https://yuanyayuan.github.io/2021/03/24/Keepalived%E9%85%8D%E7%BD%AE%E5%AE%9E%E7%8E%B0nginx%E9%AB%98%E5%8F%AF%E7%94%A8/">参考keepalived避免Nginx单点故障</a>和<a href="https://yuanyayuan.github.io/2021/03/22/LVS-DR%E6%A8%A1%E5%BC%8F%E6%90%AD%E5%BB%BA%E9%85%8D%E7%BD%AE/">keepalived避免LVS单点故障</a></p>
+<h1 id="MyCat使用过程出现的错误"><a href="#MyCat使用过程出现的错误" class="headerlink" title="MyCat使用过程出现的错误"></a>MyCat使用过程出现的错误</h1><ol>
+<li><p>分片规则要仔细思考</p>
+<p>例如：</p>
+<p>order表被垂直切分出，user表所在数据库与order表所在数据库分离order表与user表是根据user_id关联</p>
+<p>如果order表选择以自己的id为分片列，那会导致同一个用户的订单落于不同的数据库。MyCat根据用户id检索用户所有订单时，MyCat会在所有节点上都执行sql语句，汇总结果集反馈至服务端，性能根据节点的增对会加大资源消耗。</p>
+<p>如果order表选择以用户的id为分片列，同一个用户的订单一定会落入同一个数据库。</p>
+</li>
+<li><p><code>cant find (root) parnet sharding node for sql :...</code></p>
+<p>原因：字表先于父表的数据库插入，Order_item先于Order在数据库中新增，Order_item插入数据时找不到Order</p>
+<p>修改方法，代码逻辑更改，父表记录先于字表记录录入数据库</p>
+</li>
+<li><p><code>Sharding column cant be updated ...</code></p>
+<p>原因：分片列是不能更新的，因为MyCat对数据进行水平切分是根据分片列进行切分得，分片列的值决定该条记录被分配到那个节点数据库，值一旦确定是不能跟新的，只改变是要重新计算分片的</p>
+<p>修改方法，更新时将分片列值为空在使用<code>mapper.updateByPrimaryKeySelective(...)</code></p>
+</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/19/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/19/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" itemprop="url">分步式-分库分表</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-19T16:42:38+08:00">
+                2021-04-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">分步式 - 分库分表</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="垂直切分、水平切分"><a href="#垂直切分、水平切分" class="headerlink" title="垂直切分、水平切分"></a>垂直切分、水平切分</h1><h2 id="垂直切分"><a href="#垂直切分" class="headerlink" title="垂直切分"></a>垂直切分</h2><ul>
+<li>按业务去切分</li>
+<li>每种业务一个数据库</li>
+<li>不同业务之间，禁止跨库join联查</li>
+</ul>
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>拆分后业务清晰，拆分规则明确</li>
+<li>系统之间容易扩展和整合</li>
+<li>数据维护简单</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>业务之间无法join，只能通过接口调用，提升了系统复杂度</li>
+<li>跨库事务难以处理</li>
+<li>垂直切分后，某些业务数据过于庞大，仍然存在单体性能瓶颈</li>
+</ul>
+<h2 id="水平切分"><a href="#水平切分" class="headerlink" title="水平切分"></a>水平切分</h2><ul>
+<li>将一张表的数据按照某些规则分到不同的数据库中</li>
+<li>需确定分片的规则</li>
+<li>使用分片字段查询时，可确定实体库，其他字段查询，查询所有表</li>
+</ul>
+<h3 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>解决单库大数据、高并发的性能瓶颈;</li>
+<li>拆分规则封装好，对应用端几乎透明，开发人员无需关心拆分细节</li>
+</ul>
+<h3 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>拆分规则很难抽象（按用户拆分还是按订单拆分）</li>
+<li>分片事务一致性难以解决</li>
+<li>二次扩展时、数据迁移、维护难度大</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/19/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-MySQL%E5%AE%89%E8%A3%85/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2412,573 +2964,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/16/%E4%B8%AD%E9%97%B4%E4%BB%B6-elasticsearch%E5%AD%A6%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/16/%E4%B8%AD%E9%97%B4%E4%BB%B6-elasticsearch%E5%AD%A6%E4%B9%A0/" itemprop="url">中间件-elasticsearch基础概念学习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-16T16:04:12+08:00">
-                2021-04-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/elasticsearch-elasticsearch%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index">
-                    <span itemprop="name">elasticsearch - elasticsearch知识</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="核心术语"><a href="#核心术语" class="headerlink" title="核心术语"></a>核心术语</h1><h2 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h2><ul>
-<li><p>Near Realtime（近实时）：Elasticsearch是一个近乎实时的搜索平台，这意味着从索引文档到可搜索文档之间只有一个轻微的延迟(通常是一秒钟)。</p>
-</li>
-<li><p>Cluster（集群）：群集是一个或多个节点的集合，它们一起保存整个数据，并提供跨所有节点的联合索引和搜索功能。每个群集都有自己的唯一群集名称，节点通过名称加入群集。</p>
-</li>
-<li><p>Node（节点）：节点是指属于集群的单个Elasticsearch实例，存储数据并参与集群的索引和搜索功能。可以将节点配置为按集群名称加入特定集群，默认情况下，每个节点都设置为加入一个名为<code>elasticsearch</code>的群集。</p>
-</li>
-<li><p>Index（索引）：索引是一些具有相似特征的文档集合，类似于MySql中数据库的表。</p>
-</li>
-<li><p>Type（类型）(<strong>已不再使用</strong>)：类型是索引的逻辑类别分区，通常，为具有一组公共字段的文档类型，类似MySql中表的概念。<code>注意</code>：在Elasticsearch 6.0.0及更高的版本中，一个索引只能包含一个类型。</p>
-</li>
-<li><p>Document（文档）：文档是可被索引的基本信息单位，以JSON形式表示，类似于MySql中行记录的概念。</p>
-</li>
-</ul>
-<h2 id="集群相关"><a href="#集群相关" class="headerlink" title="集群相关"></a>集群相关</h2><ul>
-<li><p>Shards（分片）：当索引存储大量数据时，可能会超出单个节点的硬件限制，为了解决这个问题，Elasticsearch提供了将索引细分为分片的概念。分片机制赋予了索引水平扩容的能力、并允许跨分片分发和并行化操作，从而提高性能和吞吐量。</p>
-</li>
-<li><p>Replicas（副本）：在可能出现故障的网络环境中，需要有一个故障切换机制，Elasticsearch提供了将索引的分片复制为一个或多个副本的功能，副本在某些节点失效的情况下提供高可用性</p>
-</li>
-</ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">stu_index</span><br><span class="line">&#123;</span><br><span class="line">	id: 1001,</span><br><span class="line">	name: jason,</span><br><span class="line">	age: 19</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">	id: 1002,</span><br><span class="line">	name: tom,</span><br><span class="line">	age: 18</span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">	id: 1003,</span><br><span class="line">	name: rose,</span><br><span class="line">	age: 22</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="倒排索引"><a href="#倒排索引" class="headerlink" title="倒排索引"></a>倒排索引</h1><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%951.png"></p>
-<p><strong>正排索引</strong></p>
-<p>在<strong>搜索引擎</strong>中每个文件都对应一个文件ID，文件内容被表示为一系列关键词的集合（实际上在搜索引擎索引库中，关键词也已经转换为关键词ID）。例如“文档1”经过分词，提取了20个关键词，每个关键词都会记录它在文档中的出现次数和出现位置。</p>
-<p>得到<strong>正向索引</strong>的结构如下：</p>
-<p>​    “文档1”的ID &gt; 单词1：出现次数，出现位置列表；单词2：出现次数，出现位置列表；…………。</p>
-<p>​    “文档2”的ID &gt; 此文档出现的关键词列表。</p>
-<p>一般是通过key，去找value。</p>
-<blockquote>
-<p><strong>当用户在主页上搜索关键词“华为手机”时，假设只存在正向索引（forward index），那么就需要扫描索引库中的所有文档，找出所有包含关键词“华为手机”的文档，再根据打分模型进行打分，排出名次后呈现给用户。</strong>因为互联网上收录在搜索引擎中的文档的数目是个天文数字，<strong>这样的索引结构根本无法满足实时返回排名结果的要求。</strong></p>
-</blockquote>
-<p><strong>倒排索引</strong></p>
-<p>文件ID对应到关键词的映射转换为<strong>关键词到文件ID的映射</strong>，每个关键词都对应着一系列的文件，这些文件中都出现这个关键词。</p>
-<p>​    得到<strong>倒排索引</strong>的结构如下：</p>
-<p>​    “关键词1”：“文档1”的ID，“文档2”的ID，…………。</p>
-<p>​    “关键词2”：带有此关键词的文档ID列表。</p>
-<h1 id="索引（表）操作"><a href="#索引（表）操作" class="headerlink" title="索引（表）操作"></a>索引（表）操作</h1><h2 id="创建索引"><a href="#创建索引" class="headerlink" title="创建索引"></a>创建索引</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">PUT     /index_test</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;settings&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;index&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;number_of_shards&quot;</span>: <span class="string">&quot;2&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;number_of_replicas&quot;</span>: <span class="string">&quot;0&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;acknowledged&quot;</span> : <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">&quot;shards_acknowledged&quot;</span> : <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">&quot;index&quot;</span> : <span class="string">&quot;index_test&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="查看索引"><a href="#查看索引" class="headerlink" title="查看索引"></a>查看索引</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /_cat/indices?v</span><br></pre></td></tr></table></figure>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">health status index                           uuid                   pri rep docs.count docs.deleted store.size pri.store.size</span><br><span class="line">green  open   index_test                      qYS97Qe4SWmMF5Se1SJXZA   2   0          0            0       416b           416b</span><br></pre></td></tr></table></figure>
-<h2 id="删除索引"><a href="#删除索引" class="headerlink" title="删除索引"></a>删除索引</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELETE	/index_test</span><br></pre></td></tr></table></figure>
-
-<h1 id="mappings自定义创建映射"><a href="#mappings自定义创建映射" class="headerlink" title="mappings自定义创建映射"></a>mappings自定义创建映射</h1><h3 id="主要数据类型"><a href="#主要数据类型" class="headerlink" title="主要数据类型"></a>主要数据类型</h3><ol>
-<li><p>text，keywork，</p>
-</li>
-<li><p>long，integer，short，byte</p>
-</li>
-<li><p>double，float</p>
-</li>
-<li><p>boolean</p>
-</li>
-<li><p>date</p>
-</li>
-<li><p>object</p>
-</li>
-<li><p>数组不能混用，类型须一致</p>
-</li>
-</ol>
-<p><strong>text</strong>：文字类需要被分词被倒排索引的内容，比如<code>商品名称</code>，<code>商品详情</code>，<code>商品介绍</code></p>
-<p><strong>keyword</strong>：不会被分词，不会被倒排索引，直接搜索匹配，比如<code>订单状态</code>，<code>手机号</code>，<code>微信号</code>，等需要精确匹配的</p>
-<h2 id="创建索引同时创建mappings"><a href="#创建索引同时创建mappings" class="headerlink" title="创建索引同时创建mappings"></a>创建索引同时创建mappings</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">PUT	/index_str</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;mappings&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;properties&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;realname&quot;</span>: &#123;</span><br><span class="line">            	<span class="attr">&quot;type&quot;</span>: <span class="string">&quot;text&quot;</span>,</span><br><span class="line">            	<span class="attr">&quot;index&quot;</span>: <span class="literal">true</span></span><br><span class="line">            &#125;,</span><br><span class="line">            <span class="attr">&quot;username&quot;</span>: &#123;</span><br><span class="line">            	<span class="attr">&quot;type&quot;</span>: <span class="string">&quot;keyword&quot;</span>,</span><br><span class="line">            	<span class="attr">&quot;index&quot;</span>: <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="查看分词效果"><a href="#查看分词效果" class="headerlink" title="查看分词效果"></a>查看分词效果</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">GET	/index_str/_analyze</span><br><span class="line">&#123;</span><br><span class="line">	<span class="attr">&quot;field&quot;</span>: <span class="string">&quot;realname&quot;</span>,</span><br><span class="line">	<span class="attr">&quot;text&quot;</span>: <span class="string">&quot;I am a good man&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">GET	/index_str/_analyze</span><br><span class="line">&#123;</span><br><span class="line">	<span class="attr">&quot;field&quot;</span>: <span class="string">&quot;realname&quot;</span>,</span><br><span class="line">	<span class="attr">&quot;text&quot;</span>: <span class="string">&quot;Elasticsearch是一个基于Lucene的搜索服务器。&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="尝试修改"><a href="#尝试修改" class="headerlink" title="尝试修改"></a>尝试修改</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST	/index_str/_mapping</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;properties&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: &#123;</span><br><span class="line">        	   <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;long&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;error&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;root_cause&quot;</span> : [</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">&quot;type&quot;</span> : <span class="string">&quot;illegal_argument_exception&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;reason&quot;</span> : <span class="string">&quot;mapper [name] cannot be changed from type [long] to [text]&quot;</span></span><br><span class="line">      &#125;</span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">&quot;type&quot;</span> : <span class="string">&quot;illegal_argument_exception&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;reason&quot;</span> : <span class="string">&quot;mapper [name] cannot be changed from type [long] to [text]&quot;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;status&quot;</span> : <span class="number">400</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>不能修改已经存在的属性</strong></p>
-<h2 id="新增额外属性"><a href="#新增额外属性" class="headerlink" title="新增额外属性"></a>新增额外属性</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">POST	/index_str/_mapping</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;properties&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;id&quot;</span>: &#123;</span><br><span class="line">        	<span class="attr">&quot;type&quot;</span>: <span class="string">&quot;long&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;age&quot;</span>: &#123;</span><br><span class="line">        	<span class="attr">&quot;type&quot;</span>: <span class="string">&quot;integer&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;nickname&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;keyword&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;money1&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;float&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;money2&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;double&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;sex&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;byte&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;score&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;short&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;is_teenager&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;boolean&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;birthday&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;date&quot;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;relationship&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;object&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意：某个属性一旦被建立，就不能修改，但是可以新增额外属性</strong></p>
-<h1 id="文档操作"><a href="#文档操作" class="headerlink" title="文档操作"></a>文档操作</h1><h2 id="添加"><a href="#添加" class="headerlink" title="添加"></a>添加</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST	/my_doc/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;id&quot;</span>: <span class="number">1001</span>,</span><br><span class="line">    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;imooc-1&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;desc&quot;</span>: <span class="string">&quot;imooc is very good, 慕课网非常牛！&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;create_date&quot;</span>: <span class="string">&quot;2019-12-24&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;_index&quot;</span> : <span class="string">&quot;my_doc&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;_type&quot;</span> : <span class="string">&quot;_doc&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;_id&quot;</span> : <span class="string">&quot;1&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;_version&quot;</span> : <span class="number">1</span>,</span><br><span class="line">  <span class="attr">&quot;result&quot;</span> : <span class="string">&quot;created&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;_shards&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;total&quot;</span> : <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;successful&quot;</span> : <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;failed&quot;</span> : <span class="number">0</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;_seq_no&quot;</span> : <span class="number">0</span>,</span><br><span class="line">  <span class="attr">&quot;_primary_term&quot;</span> : <span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>不设置id，es会自己生成id</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST	&#x2F;my_doc&#x2F;_doc&#x2F;</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1003,</span><br><span class="line">    &quot;name&quot;: &quot;imooc-3&quot;,</span><br><span class="line">    &quot;desc&quot;: &quot;imooc is niubility, 慕课网很好很强大！&quot;,</span><br><span class="line">    &quot;create_date&quot;: &quot;2019-12-26&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<table>
-<thead>
-<tr>
-<th align="left">_index</th>
-<th align="left">_type</th>
-<th align="left">_id</th>
-<th align="left">▲_score</th>
-<th align="left">id</th>
-<th align="left">name</th>
-<th align="left">desc</th>
-<th align="left">create_date</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">my_doc</td>
-<td align="left">_doc</td>
-<td align="left">1</td>
-<td align="left">1</td>
-<td align="left">1001</td>
-<td align="left">imooc-1</td>
-<td align="left">imooc is very good, 慕课网非常牛！</td>
-<td align="left">2019-12-24</td>
-</tr>
-<tr>
-<td align="left">my_doc</td>
-<td align="left">_doc</td>
-<td align="left">1zs5CHkBzM3Z7Jj7nJTH</td>
-<td align="left">1</td>
-<td align="left">1003</td>
-<td align="left">imooc-3</td>
-<td align="left">imooc is niubility, 慕课网很好很强大！</td>
-<td align="left">2019-12-26</td>
-</tr>
-</tbody></table>
-<ul>
-<li>_id: 文档的id，文档在当前索引中的id</li>
-<li>id: 数据自身的id</li>
-</ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&quot;mappings&quot;: &#123;</span><br><span class="line">	&quot;_doc&quot;: &#123;</span><br><span class="line">		&quot;properties&quot;: &#123;</span><br><span class="line">			&quot;name&quot;: &#123;</span><br><span class="line">				&quot;type&quot;: &quot;text&quot;,</span><br><span class="line">					&quot;fields&quot;: &#123;</span><br><span class="line">						&quot;keyword&quot;: &#123;</span><br><span class="line">							&quot;ignore_above&quot;: 256,</span><br><span class="line">							&quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">						&#125;</span><br><span class="line">					&#125;</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;id&quot;: &#123;</span><br><span class="line">				&quot;type&quot;: &quot;long&quot;</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;create_date&quot;: &#123;</span><br><span class="line">				&quot;type&quot;: &quot;date&quot;</span><br><span class="line">			&#125;,</span><br><span class="line">			&quot;desc&quot;: &#123;</span><br><span class="line">				&quot;type&quot;: &quot;text&quot;,</span><br><span class="line">				&quot;fields&quot;: &#123;</span><br><span class="line">					&quot;keyword&quot;: &#123;</span><br><span class="line">						&quot;ignore_above&quot;: 256,</span><br><span class="line">						&quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>如果索引没有手动建立mappings，那么当插入文档数据的时候会根据文档类型自动设置属性类型。这个就是es的动态映射，帮我们在index索引库中去建立数据类型的相关配置信息</li>
-<li>“fields”: {“keyword”: {“ignore_above”: 256,”type”: “keyword”}} <ul>
-<li>对一个字段设置多中索引模式，使用text类型做全文检索，也可以使用keyword类型做聚合和排序</li>
-<li>ignore_above”: 256 设置字段索引和存储的长度最大值，超过则被忽略</li>
-</ul>
-</li>
-</ul>
-<h2 id="查看"><a href="#查看" class="headerlink" title="查看"></a>查看</h2><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 单个查询</span><br><span class="line">GET /my_doc/_doc/1</span><br><span class="line"># 全部查询</span><br><span class="line">GET /my_doc/_doc/_search</span><br></pre></td></tr></table></figure>
-
-<p>元数据：</p>
-<ul>
-<li>_index: 文档数据所属那个索引，理解为数据库那张表</li>
-<li>_type: 文档数据属于那个类型，新版本用<code>_doc</code></li>
-<li>_id: 文档数据的唯一标识，类似数据库中某张表的主键。可以自动生成也可以手动指定</li>
-<li>_score: 查询相关度，是否契合用户匹配，分数越高用户搜索体验越高</li>
-<li>_version: 版本号</li>
-<li>_source: 文档数据，json格式</li>
-</ul>
-<h3 id="定制结果集"><a href="#定制结果集" class="headerlink" title="定制结果集"></a>定制结果集</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET /my_doc/_doc/1?_source=id,name</span><br><span class="line">GET /my_doc/_doc/_search?_source=id,name</span><br></pre></td></tr></table></figure>
-
-<h3 id="判断文档是否存在"><a href="#判断文档是否存在" class="headerlink" title="判断文档是否存在"></a>判断文档是否存在</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HEAD /my_doc/_doc/1</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">status:200 - OK </span><br><span class="line">status:404 Not Found</span><br></pre></td></tr></table></figure>
-
-<h2 id="修改与删除"><a href="#修改与删除" class="headerlink" title="修改与删除"></a>修改与删除</h2><ul>
-<li>局部修改</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST /my_doc/_doc/1/_update</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;doc&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;慕课&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>全量替换</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">PUT /my_doc/_doc/1</span><br><span class="line">&#123;</span><br><span class="line">     <span class="attr">&quot;id&quot;</span>: <span class="number">1001</span>,</span><br><span class="line">    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;imooc-1&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;desc&quot;</span>: <span class="string">&quot;imooc is very good, 慕课网非常牛！&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;create_date&quot;</span>: <span class="string">&quot;2019-12-24&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>每次修改后，version会更改</strong></p>
-<h2 id="乐观锁控制"><a href="#乐观锁控制" class="headerlink" title="乐观锁控制"></a>乐观锁控制</h2><ol>
-<li>创建一条新数据</li>
-</ol>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST /my_doc/_doc</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;id&quot;</span>: <span class="number">1010</span>,</span><br><span class="line">    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;imooc-1010&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;desc&quot;</span>: <span class="string">&quot;imoocimooc！&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;create_date&quot;</span>: <span class="string">&quot;2019-12-24&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;_index&quot;</span> : <span class="string">&quot;my_doc&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;_type&quot;</span> : <span class="string">&quot;_doc&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;_id&quot;</span> : <span class="string">&quot;2DtICHkBzM3Z7Jj7RJRs&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;_version&quot;</span> : <span class="number">1</span>,</span><br><span class="line">  <span class="attr">&quot;result&quot;</span> : <span class="string">&quot;created&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;_shards&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;total&quot;</span> : <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;successful&quot;</span> : <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;failed&quot;</span> : <span class="number">0</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;_seq_no&quot;</span> : <span class="number">2</span>,</span><br><span class="line">  <span class="attr">&quot;_primary_term&quot;</span> : <span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>version</strong>是1</p>
-<ol start="2">
-<li>修改数据</li>
-</ol>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">POST    /my_doc/_doc/2DtICHkBzM3Z7Jj7RJRs/_update</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;doc&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;慕课&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>查看改数据</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /my_doc/_doc/2DtICHkBzM3Z7Jj7RJRs</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;_index&quot;</span> : <span class="string">&quot;my_doc&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;_type&quot;</span> : <span class="string">&quot;_doc&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;_id&quot;</span> : <span class="string">&quot;2DtICHkBzM3Z7Jj7RJRs&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;_version&quot;</span> : <span class="number">2</span>,</span><br><span class="line">  <span class="attr">&quot;_seq_no&quot;</span> : <span class="number">3</span>,</span><br><span class="line">  <span class="attr">&quot;_primary_term&quot;</span> : <span class="number">1</span>,</span><br><span class="line">  <span class="attr">&quot;found&quot;</span> : <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">&quot;_source&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;id&quot;</span> : <span class="number">1010</span>,</span><br><span class="line">    <span class="attr">&quot;name&quot;</span> : <span class="string">&quot;慕课&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;desc&quot;</span> : <span class="string">&quot;imoocimooc！&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;create_date&quot;</span> : <span class="string">&quot;2019-12-24&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>根据版本号更新</li>
-</ol>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># 操作1</span><br><span class="line">POST    /my_doc/_doc/&#123;_id&#125;/_update?if_seq_no=&#123;数值&#125;&amp;if_primary_term=&#123;数值&#125;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;doc&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;慕课1&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 操作2</span><br><span class="line">POST    /my_doc/_doc/&#123;_id&#125;/_update?if_seq_no=&#123;数值&#125;&amp;if_primary_term=&#123;数值&#125;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;doc&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;慕课2&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>seq_no: 文档版本号，作用同version（相当于学生编号，每个班级的班主任为学生分配编号，效率要比需校教务处分配来的更加高效，管理起来更加方便）</li>
-<li>primary_term: 文档所在位置（相当于班级）</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/16/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/16/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/" itemprop="url">分步式-分步式会话</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-16T16:03:07+08:00">
-                2021-04-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/" itemprop="url" rel="index">
-                    <span itemprop="name">分步式 - 分步式会话</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="什么是会话"><a href="#什么是会话" class="headerlink" title="什么是会话"></a>什么是会话</h1><p>会话Session代表的是客户端与服务器的一次交互过程，</p>
-<p>这个过程可以是连续也可以是时断时续的。曾经的Servlet时代（jsp），一旦用户与服务端交互，服务器tomcat就会为用户创建一个session，同时前端会有一个sessionid，每次交互都会携带。</p>
-<p>如此一来，服务器只要在接到用户请求时候，就可以拿到jsessionid，并根据这个ID在内存中找到对应的会话session，当拿到session会话后，那么我们就可以操作会话了。会话存活期间，我们就能认为用户一直处于正在使用着网站的状态，一旦session超期过时，那么就可以认为用户已经离开网站，停止交互了。用户的身份信息，我们也是通过session来判断的，在session中可以保存不同用户的信息</p>
-<p>操作<code>session</code>的代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(&quot;/setSession&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">setSession</span><span class="params">(HttpServletRequest request)</span> </span>&#123;</span><br><span class="line">    HttpSession session = request.getSession();</span><br><span class="line">    session.setAttribute(<span class="string">&quot;userInfo&quot;</span>, <span class="string">&quot;new user&quot;</span>);</span><br><span class="line">    session.setMaxInactiveInterval(<span class="number">3600</span>);</span><br><span class="line">    session.getAttribute(<span class="string">&quot;userInfo&quot;</span>);</span><br><span class="line">    <span class="comment">// session.removeAttribute(&quot;userInfo&quot;);</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;ok&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="无状态会话"><a href="#无状态会话" class="headerlink" title="无状态会话"></a>无状态会话</h2><p>HTTP请求是无状态的，用户向服务端发起多个请求，服务端并不会知道这多次请求都是来自同一用户，这个就是无状态的。cookie的出现就是为了有状态的记录用户。</p>
-<p>常见的，ios与服务端交互，安卓与服务端交互，前后端分离，小程序与服务端交互，他们都是通过发起http来调用接口数据的，每次交互服务端都不会拿到客户端的状态，但是我们可以通过手段去处理，比如每次用户发起请求的时候携带一个userid或者user-token，如此一来，就能让服务端根据用户id或token来获得相应的数据。每个用户的下一次请求都能被服务端识别来自同一个用户。</p>
-<h2 id="有状态会话"><a href="#有状态会话" class="headerlink" title="有状态会话"></a>有状态会话</h2><p>Tomcat中的会话，就是有状态的，一旦用户和服务端交互，就有会话，会话保存了用户的信息，这样用户就“有状态”了，服务端会和每个客户端都保持着这样的一层关系，这个由容器来管理（也就是tomcat），这个session会话是保存到内存空间里的，如此一来，当不同的用户访问服务端，那么就能通过会话知道谁是谁了。tomcat会话的出现也是为了让http请求变的有状态。如果用户不再和服务端交互，那么会话超时则消失，结束了他的生命周期。如此一来，每个用户其实都会有一个会话被维护，这就是有状态会话。 场景：在传统项目或者jsp项目中是使用的最多的session都是有状态的，session的存在就是为了弥补http的无状态。</p>
-<p><strong>注：</strong>tomcat会话可以通过手段实现多系统之间的状态同步，但是会损耗一定的时间，一旦发生同步那么用户请求就会等待，这种做法不可取。</p>
-<h3 id="单Tomcat会话"><a href="#单Tomcat会话" class="headerlink" title="单Tomcat会话"></a>单Tomcat会话</h3><p>单个tomcat会话，这个就是有状态的，用户首次访问服务端，这个时候会话产生，并且会设置jsessionid放入cookie中，后续每次请求都会携带jsessionid以保持用户状态。</p>
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/%E5%8D%95Tomcat%E4%BC%9A%E8%AF%9D.png" style="zoom:50%;" />
-
-<h3 id="动静分离会话"><a href="#动静分离会话" class="headerlink" title="动静分离会话"></a>动静分离会话</h3><p>用户请求服务端，由于动静分离，前端发起http请求，不会携带任何状态，当用户第一次请求以后，我们手动设置一个token，作为用户会话，放入redis中，如此作为redis-session，并且这个token设置后放入前端cookie中（app或小程序可以放入本地缓存），如此后续交互过程中，前端只需要传递token给后端，后端就能识别这个用户请求来自谁了。 </p>
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB%E4%BC%9A%E8%AF%9D.png" style="zoom: 50%;" />
-
-<h3 id="集群分布式系统会话"><a href="#集群分布式系统会话" class="headerlink" title="集群分布式系统会话"></a>集群分布式系统会话</h3><p>集群或分布式系统本质都是多个系统，假设这个里有两个服务器节点，分别是AB系统，他们可以是集群，也可以是分布式系统，一开始用户和A系统交互，那么这个时候的用户状态，我们可以保存到redis中，作为A系统的会话信息，随后用户的请求进入到了B系统，那么B系统中的会话我也同样和redis关联，如此AB系统的session就统一了。当然cookie是会随着用户的访问携带过来的。那么这个其实就是分布式会话，通过redis来保存用户的状态。 </p>
-<blockquote>
-<p>相同顶级域名的二级域名才可以共享cookie</p>
-</blockquote>
-<blockquote>
-<p>集群状态下还可以使用ip_hash的模式保证同一个ip访问同一个tomcat</p>
-</blockquote>
-<h1 id="相同顶级域名的单点登录"><a href="#相同顶级域名的单点登录" class="headerlink" title="相同顶级域名的单点登录"></a>相同顶级域名的单点登录</h1><h2 id="Cookie-Redis-实现-SSO"><a href="#Cookie-Redis-实现-SSO" class="headerlink" title="Cookie + Redis 实现 SSO"></a>Cookie + Redis 实现 SSO</h2><p>分布式会话后端是基于redis的，如此会话可以流窜在后端的任意系统，都能获取到缓存中的用户数据信息。前端通过使用cookie，可以保证在同域名的下的单点登录</p>
-<p><strong>原理</strong></p>
-<ul>
-<li><p>cookie和网站的依赖关系，顶级域名 <a target="_blank" rel="noopener" href="http://www.test.com和*.test.com的cookie值是可以共享的,可以被携带至后端的,比如设置为/">www.test.com和*.test.com的cookie值是可以共享的，可以被携带至后端的，比如设置为</a> 一级域名设置为<code>.imooc.com</code>或<code>.t.mukewang.com</code>。</p>
-</li>
-<li><p>二级域名自己的独立cookie是不能共享的，不能被其他二级域名获取，比如：music.test.com的cookie是不能被mtv.test.com共享，两者互不影响，要共享必须是解析于同一个顶级域名之下,cookieDomain设置为<code>.imooc.com</code>才行。</p>
-</li>
-</ul>
-<h1 id="不同顶级域名的单点登录"><a href="#不同顶级域名的单点登录" class="headerlink" title="不同顶级域名的单点登录"></a>不同顶级域名的单点登录</h1><blockquote>
-<p>谷歌禁用sso了，本身现在也不流行这种做法了，所以了解一下即可,通常也只做同级域名的单点登录，跨域名不做的。</p>
-</blockquote>
-<p><a target="_blank" rel="noopener" href="http://www.test.com要和www.demo.com的会话实现共享,这个时候的cookie由于顶级域名不同,就不能实现cookie跨域了,每个站点各自请求到服务端,cookie无法同步.比如,www.test.com下的用户发起请求后会有cookie,但是他又访问了www.demo.com,由于cookie无法携带,所以会要你二次登录./">www.test.com要和www.demo.com的会话实现共享，这个时候的cookie由于顶级域名不同，就不能实现cookie跨域了，每个站点各自请求到服务端，cookie无法同步。比如，www.test.com下的用户发起请求后会有cookie，但是他又访问了www.demo.com，由于cookie无法携带，所以会要你二次登录。</a> </p>
-<h2 id="解决方法——CAS系统"><a href="#解决方法——CAS系统" class="headerlink" title="解决方法——CAS系统"></a>解决方法——CAS系统</h2><p>多个系统之间的登录会通过一个独立的登录系统去做验证，它就相当于是一个中介公司，整合了所有人，你要看房经过中介允许拿钥匙就行，实现了统一的登录。CAS全称为Central Authentication Service即中央认证服务，是一个单点登录的解决方案，可以用于不同顶级域名之间的单点登录</p>
-<p>用户在浏览需要登录的页面时，客户端将AuthToken提交给CAS服务校验登录状态/获取用户登录信息</p>
-<table>
-<thead>
-<tr>
-<th>对象</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>AuthToken</td>
-<td>直接使用UUID/GUID即可，如果有验证AuthToken合法性需求，可以将userId+时间戳加密生成，服务端解密之后验证合法性</td>
-</tr>
-<tr>
-<td>登录信息</td>
-<td>通常是将UserId，UserName缓存起来</td>
-</tr>
-</tbody></table>
-<h2 id="CAS系统时序图"><a href="#CAS系统时序图" class="headerlink" title="CAS系统时序图"></a>CAS系统时序图</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/CAS%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt="image" style="zoom: 50%;" />
-
-
-
-<h3 id="第一部分（用户初次访问MTV系统）"><a href="#第一部分（用户初次访问MTV系统）" class="headerlink" title="第一部分（用户初次访问MTV系统）"></a>第一部分（用户初次访问MTV系统）</h3><ol>
-<li><p>用户初次访问<a target="_blank" rel="noopener" href="http://www.mtv.com:8080/sso-mtv/index.html">http://www.mtv.com:8080/sso-mtv/index.html</a></p>
-</li>
-<li><p>mtv系统在Cookie中未获取到用户信息</p>
-</li>
-<li><p>跳转至携带回跳URL访问CAS系统<a target="_blank" rel="noopener" href="http://www.sso.com:8090/login?returnUrl=http://www.mtv.com:8080/sso-mtv/index.html">http://www.sso.com:8090/login?returnUrl=http://www.mtv.com:8080/sso-mtv/index.html</a></p>
-</li>
-<li><p>CAS系统未能从cookie中能够获取到userTicket门票，证明用户从未登录过</p>
-<ul>
-<li><p>用户从未登录过则跳转到CAS的统一登录页面</p>
-</li>
-<li><p>验证登录信息</p>
-<ol>
-<li><p>创建用户的会话（登录信息，AuthToken统一存放的VO）存入redis</p>
-</li>
-<li><p>创建全局门票存入Cookie,全局门票和用户ID关联放入到redis中，代表这个用户有门票了，可以在访问各个站点了</p>
-</li>
-</ol>
-</li>
-<li><p>生成临时票据（存入redis中并对value加密，设置过期时间），回跳到调用端网站</p>
-</li>
-<li><p>mtv系统接收到临时票据会凭临时票据向CAS系统换取用户会话</p>
-</li>
-<li><p>CAS系统使用一次性临时票据来验证用户是否登录（redis中查找这个临时票据），之前的临时票据value加密是为了此时验证临时票据是否正确，如果登录过需要销毁临时票据，并从CAS系统的Cookie中取出全局门票，去redis中查到用户ID，后再用用户ID在redis中查到用户会话（登录信息，AuthToken统一存放的VO），把用户会话信息返回给站点</p>
-</li>
-<li><p>mtv系统使用Cookie保存用户会话</p>
-</li>
-<li><p>显示登陆成功</p>
-</li>
-</ul>
-</li>
-</ol>
-<h2 id="第二部分（用户在次访问MUSIC系统）"><a href="#第二部分（用户在次访问MUSIC系统）" class="headerlink" title="第二部分（用户在次访问MUSIC系统）"></a>第二部分（用户在次访问MUSIC系统）</h2><ol>
-<li><p>用户在次访问<a target="_blank" rel="noopener" href="http://www.music.com:8080/sso-music/index.html">http://www.music.com:8080/sso-music/index.html</a></p>
-</li>
-<li><p>music系统在Cookie中未获取到用户信息</p>
-</li>
-<li><p>跳转至携带回跳URL访问CAS系统<a target="_blank" rel="noopener" href="http://www.sso.com:8090/login?returnUrl=http://www.music.com:8080/sso-music/index.html">http://www.sso.com:8090/login?returnUrl=http://www.music.com:8080/sso-music/index.html</a></p>
-</li>
-<li><p>CAS系统从Cookie中能够获取到userTicket门票，证明用户登录过，此时签发一个一次性的临时票据（存入redis中并对value加密，设置过期时间）并且回跳</p>
-<ul>
-<li>music系统接收到临时票据会凭临时票据向CAS系统换取用户会话</li>
-<li>CAS系统使用一次性临时票据来验证用户是否登录（redis中查找这个临时票据），之前的临时票据value加密是为了此时验证临时票据是否正确，如果登录过需要销毁临时票据，并从CAS系统的Cookie中取出全局门票，去redis中查到用户ID，后再用用户ID在redis中查到用户会话（登录信息，AuthToken统一存放的VO），把用户会话信息返回给站点</li>
-<li>music系统使用Cookie保存用户会话</li>
-<li>显示登陆成功</li>
-</ul>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3030,7 +3015,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-count">83</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3041,7 +3026,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

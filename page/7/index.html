@@ -261,6 +261,542 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8/" itemprop="url">中间件-redis实际应用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-03T16:32:57+08:00">
+                2021-04-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E5%BA%94%E7%94%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis应用</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Redis-最适合的场景是什么？"><a href="#Redis-最适合的场景是什么？" class="headerlink" title="Redis 最适合的场景是什么？"></a>Redis 最适合的场景是什么？</h1><p>1、会话缓存（Session Cache）</p>
+<p>最常用的一种使用 Redis 的情景是会话缓存（session cache）。用 Redis 缓存会话比其他存储（如 Memcached）的优势在于：Redis 提供持久化。</p>
+<p>2、全页缓存（FPC）</p>
+<p>除基本的会话 token 之外，Redis 还提供很简便的 FPC 平台。回到一致性问题，即使重启了 Redis 实例，因为有磁盘的持久化，用户也不会看到页面加载速度的下降，这是一个极大改进，类似 PHP 本地 FPC。能帮助你以最快速度加载你曾浏览过的页面。</p>
+<p>3、队列</p>
+<p>Reids 在内存存储引擎领域的一大优点是提供 list 和 set 操作，这使得 Redis能作为一个很好的消息队列平台来使用。Redis 作为队列使用的操作，就类似于本地程序语言（如 Python）对 list 的 push/pop 操作。</p>
+<p>4，排行榜/计数器</p>
+<p>Redis 在内存中对数字进行递增或递减的操作实现的非常好。集合（Set）和有序集合（Sorted Set）也使得我们在执行这些操作的时候变的非常简单，Redis 只是正好提供了这两种数据结构。所以，我们要从排序集合中获取到排名最靠前的 10个用户，我们只需要像下面一样执行即可： 当然，这是假定你是根据你用户的分数做递增的排序。如果你想返回用户及用户的分数，你需要这样执行： ZRANGE user_scores 0 10 WITHSCORES。</p>
+<p>5、发布/订阅</p>
+<p>最后（但肯定不是最不重要的）是 Redis 的发布/订阅功能。发布/订阅的使用场景确实非常多。在社交网络中甚至可以用 Redis 的发布/订阅功能来建立聊天系统！</p>
+<h1 id="Redis-做异步队列（发布-订阅）"><a href="#Redis-做异步队列（发布-订阅）" class="headerlink" title="Redis 做异步队列（发布/订阅）"></a>Redis 做异步队列（发布/订阅）</h1><p>一般使用 list 结构作为队列，rpush 生产消息，lpop 消费消息。当 lpop 没有消息的时候，要适当 sleep 一会再重试。</p>
+<h2 id="可不可以不用-sleep-呢？"><a href="#可不可以不用-sleep-呢？" class="headerlink" title="可不可以不用 sleep 呢？"></a>可不可以不用 sleep 呢？</h2><p>list 还有个指令叫 blpop，在没有消息的时候，它会阻塞住直到消息到来。</p>
+<h2 id="能不能生产一次消费多次呢？"><a href="#能不能生产一次消费多次呢？" class="headerlink" title="能不能生产一次消费多次呢？"></a>能不能生产一次消费多次呢？</h2><p>使用 pub/sub 主题订阅者模式，可以实现1:N 的消息队列。</p>
+<h2 id="pub-sub-有什么缺点？"><a href="#pub-sub-有什么缺点？" class="headerlink" title="pub/sub 有什么缺点？"></a>pub/sub 有什么缺点？</h2><p>在消费者下线的情况下，生产的消息会丢失，得使用专业的消息队列如 RabbitMQ等。</p>
+<h2 id="redis-如何实现延时队列？"><a href="#redis-如何实现延时队列？" class="headerlink" title="redis 如何实现延时队列？"></a>redis 如何实现延时队列？</h2><p>使用 sortedset，拿时间戳作为score，消息内容作为 key 调用 zadd 来生产消息，消费者用 zrangebyscore 指令获取 N 秒之前的数据轮询进行处理。<br>40.使用过 Redis 分布式锁么，它是什么回事？</p>
+<h1 id="Redis分布式锁"><a href="#Redis分布式锁" class="headerlink" title="Redis分布式锁"></a>Redis分布式锁</h1><p>先拿setnx来争抢锁，抢到之后，再用expire给锁加一个过期时间防止忘记释放</p>
+<h1 id="Redis-Cookie分布式会话"><a href="#Redis-Cookie分布式会话" class="headerlink" title="Redis+Cookie分布式会话"></a>Redis+Cookie分布式会话</h1><h2 id="如果在setnx之后执行expire之前进程意外crash或者重启维护了，怎么办？"><a href="#如果在setnx之后执行expire之前进程意外crash或者重启维护了，怎么办？" class="headerlink" title="如果在setnx之后执行expire之前进程意外crash或者重启维护了，怎么办？"></a>如果在setnx之后执行expire之前进程意外crash或者重启维护了，怎么办？</h2><p>setnx和expire合成一条指令</p>
+<h1 id="redis批量查询优化"><a href="#redis批量查询优化" class="headerlink" title="redis批量查询优化"></a>redis批量查询优化</h1><h2 id="优化前"><a href="#优化前" class="headerlink" title="优化前"></a>优化前</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 大量key查询</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> keys</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/getALot&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getALot</span><span class="params">(String... keys)</span> </span>&#123;</span><br><span class="line">    List&lt;String&gt; resutl = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (String k:keys) &#123;</span><br><span class="line">        resutl.add(redisOperator.get(k));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> resutl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="优化后"><a href="#优化后" class="headerlink" title="优化后"></a>优化后</h2><h3 id="mget进行批量查询"><a href="#mget进行批量查询" class="headerlink" title="mget进行批量查询"></a>mget进行批量查询</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 批量查询 mget</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> keys</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/mget&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">mget</span><span class="params">(String... keys)</span> </span>&#123;</span><br><span class="line">    List&lt;String&gt; keysList = Arrays.asList(keys);</span><br><span class="line">    <span class="keyword">return</span> redisOperator.mget(keysList);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="pipeline-进行批量查询"><a href="#pipeline-进行批量查询" class="headerlink" title="pipeline 进行批量查询"></a>pipeline 进行批量查询</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 批量查询 pipeline</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> keys</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/batchGet&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">batchGet</span><span class="params">(String... keys)</span> </span>&#123;</span><br><span class="line">    List&lt;String&gt; keysList = Arrays.asList(keys);</span><br><span class="line">    <span class="keyword">return</span> redisOperator.batchGet(keysList);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="redis热点数据问题"><a href="#redis热点数据问题" class="headerlink" title="redis热点数据问题"></a>redis热点数据问题</h1><h2 id="MySQL-里有-2000w-数据，Redis-中只存-20w-的数据，如何保证Redis-中的数据都是热点数据？"><a href="#MySQL-里有-2000w-数据，Redis-中只存-20w-的数据，如何保证Redis-中的数据都是热点数据？" class="headerlink" title="MySQL 里有 2000w 数据，Redis 中只存 20w 的数据，如何保证Redis 中的数据都是热点数据？"></a>MySQL 里有 2000w 数据，Redis 中只存 20w 的数据，如何保证Redis 中的数据都是热点数据？</h2><p>限定 Redis 占用的内存，Redis 会根据自身数据淘汰策略，加载热数据到内存。 所以，计算一下 20W 数据大约占用的内存，然后设置一下 Redis 内存限制即可。</p>
+<p>Redis存储数据会限制它内存大小，如果超过了最大内存容量，会触发数据淘汰策略</p>
+<h2 id="由于内存限制，导致了Redis中只能存储最多1W条的数据信息，如何确保这1w条数据是最热门的数据？"><a href="#由于内存限制，导致了Redis中只能存储最多1W条的数据信息，如何确保这1w条数据是最热门的数据？" class="headerlink" title="由于内存限制，导致了Redis中只能存储最多1W条的数据信息，如何确保这1w条数据是最热门的数据？"></a>由于内存限制，导致了Redis中只能存储最多1W条的数据信息，如何确保这1w条数据是最热门的数据？</h2><h3 id="热点数据排序（点击次数）"><a href="#热点数据排序（点击次数）" class="headerlink" title="热点数据排序（点击次数）"></a>热点数据排序（点击次数）</h3><p>既然热门数据，那么就需要有排序，使用redis中的zset数据类型是很自然的想法。数据中的某个唯一字段作为zset中的value，而点击次数作为score，记为click_zset。这样就可选出最热门的数据。而数据，则直接用HashMap存储。</p>
+<h3 id="热点数据时间（近期访问）"><a href="#热点数据时间（近期访问）" class="headerlink" title="热点数据时间（近期访问）"></a>热点数据时间（近期访问）</h3><p>既然只能存1w条数据且需要是热门数据，那么，点击次数是一方面，时效性也是一方面，如何保证？可以另起一个zset，数据的字段为value，而每次点击时更新当前时间戳为其score，记为time_zset这样，就可以记录时间。在后台跑一个任务，间隔一定时间段删除两个zset中长时间没有发生点击事件的键，并删除hash数据，为产生的新数据腾出数据空间。</p>
+<h3 id="处理新热点数据"><a href="#处理新热点数据" class="headerlink" title="处理新热点数据"></a>处理新热点数据</h3><p>如果有空间，则保存到自己的hashmap，并将key存到两个zset中。 而没有空间时，就应该在click_zset中取出点击次数排在最前第1w位后面的键，删除对应的hash数据。然后看这1w个score的值，然后把key放入两个zset中即可。</p>
+<h1 id="redis在自己工作中的使用"><a href="#redis在自己工作中的使用" class="headerlink" title="redis在自己工作中的使用"></a>redis在自己工作中的使用</h1><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_37334135/article/details/77751562?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-5.channel_param&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-5.channel_param">参考</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/yuanyayuan/yymall/blob/master/mall_api/src/main/java/com/nexus/mall/api/controller/ShopcatController.java">源代码(登录状态购物车修改)</a>，<a target="_blank" rel="noopener" href="https://github.com/yuanyayuan/yymall/blob/master/mall_api/src/main/java/com/nexus/mall/api/controller/PassportController.java">源代码(用户登录后购物车同步)</a></p>
+<p>未实现购物车数量修改，未登录时由前端修改cookie</p>
+<h2 id="redis结合cookie实现购物车"><a href="#redis结合cookie实现购物车" class="headerlink" title="redis结合cookie实现购物车"></a>redis结合cookie实现购物车</h2><h3 id="未登录状态下购物车功能实现"><a href="#未登录状态下购物车功能实现" class="headerlink" title="未登录状态下购物车功能实现"></a>未登录状态下购物车功能实现</h3><blockquote>
+<p> 把购物车信息写入cookie。</p>
+</blockquote>
+<ul>
+<li>优点：<br>1、不占用服务端存储空间<br>2、用户体验好。<br>3、代码实现简单。</li>
+<li>缺点：<br>1、cookie中保存的容量有限。最大4k<br>2、把购物车信息保存在cookie中，更换设备购物车信息不能同步。</li>
+</ul>
+<h4 id="实现方式："><a href="#实现方式：" class="headerlink" title="实现方式："></a>实现方式：</h4><ol>
+<li><p>完全由前端实现，操作cookie存储购物车信息修改</p>
+</li>
+<li><p>后端提供接口，实现cookie的信息修改</p>
+<ul>
+<li>购物车新增商品分析：</li>
+</ul>
+<ol>
+<li>从cookie中获取购物车列表</li>
+<li>遍历购物车列表，判断需要添加的商品在购物车列表是否存在</li>
+<li>商品存在的话，那么取出该商品原来的数量+添加的数量作为该商品现在的数量</li>
+<li>如果商品不存在，那么调用服务，根据传来的商品id查询商品数量，设置商品的数量为页面传来的数量，取商品的第一张图片(购物车列表只展示一张图片)。</li>
+<li>把修改后的购物车列表重新存入到cookie中</li>
+</ol>
+<ul>
+<li>购物车删除商品分析</li>
+</ul>
+<ol>
+<li>从cookie中获取购物车列表</li>
+<li>遍历，查找到要删除的商品</li>
+<li>将该商品从购物车列表移除</li>
+<li>更新后的购物车列表重新写入cookie</li>
+</ol>
+<ul>
+<li>购物车列表页面修改商品数量(点击“+”或者“-”)</li>
+</ul>
+<ol>
+<li>从cookie中获取购物车列表</li>
+<li>取所选择的需要更新的商品</li>
+<li>更新商品数量</li>
+<li>物车信息写入cookie</li>
+</ol>
+</li>
+</ol>
+<h3 id="登录状态下购物车功能的实现"><a href="#登录状态下购物车功能的实现" class="headerlink" title="登录状态下购物车功能的实现"></a>登录状态下购物车功能的实现</h3><blockquote>
+<p>未登录状态下，把购物车数据保存到cookie中。登录状态下，需要把购物车数据保存到服务端。需要永久保存，可以保存到数据库中也可以把购物车数据保存到redis中，但数据库和redis同时保存购物车信息时需考虑数据一致性问题</p>
+</blockquote>
+<h4 id="redis使用的数据类型"><a href="#redis使用的数据类型" class="headerlink" title="redis使用的数据类型"></a>redis使用的数据类型</h4><ol>
+<li> 使用hash数据类型</li>
+<li>Hash的key应该是用户id。Hash中的field是商品id，value可以是把商品信息转换成json</li>
+</ol>
+<h4 id="实现方式：-1"><a href="#实现方式：-1" class="headerlink" title="实现方式："></a>实现方式：</h4><p>把购物车数据保存到redis(<em>数据类型是hash  key:用户id   field:商品id  value:商品信息</em>)</p>
+<ul>
+<li>购物车新增商品分析</li>
+</ul>
+<ol>
+<li>判断商品是否存在</li>
+<li>如果存在,把 value中的json转换成购物车对象，增加数量，写回redis</li>
+<li>如果存在，根据商品id取商品信息，设置购物车数量，添加到购物车列表</li>
+</ol>
+<ul>
+<li><p>修改购物车商品数量</p>
+<ol>
+<li>根据用户id，商品id从redis中取出对应的商品</li>
+<li> 设置商品的数量</li>
+<li> 该商品更新到redis中</li>
+</ol>
+</li>
+<li><p>删除购物车商品</p>
+<ol>
+<li>获取redis中购物车</li>
+<li>如果redis中已经有购物车了，判断购物车中是否存在已有商品，如果有的话则删除</li>
+</ol>
+</li>
+<li><p>用户登录，购物车同步</p>
+<ol>
+<li>redis中无数据，<pre><code>     - 如果cookie中的购物车为空，那么这个时候不做任何处理
+     - 如果cookie中的购物车不为空，此时直接放入redis中
+</code></pre>
+</li>
+<li>redis中有数据，<ul>
+<li>如果cookie中的购物车为空，那么直接把redis的购物车覆盖本地cookie</li>
+<li>如果cookie中的购物车不为空，如果cookie中的某个商品在redis中存在，则以cookie为主，删除redis中的，把cookie中的商品直接覆盖redis中（参考京东）</li>
+</ul>
+</li>
+<li>同步到redis中去了以后，覆盖本地cookie购物车的数据，保证本地购物车的数据是同步最新的</li>
+</ol>
+</li>
+</ul>
+<h2 id="缓存用户权限，不用每次登陆都去数据库查询"><a href="#缓存用户权限，不用每次登陆都去数据库查询" class="headerlink" title="缓存用户权限，不用每次登陆都去数据库查询"></a>缓存用户权限，不用每次登陆都去数据库查询</h2><p><a target="_blank" rel="noopener" href="http://www.macrozheng.com/#/technology/redis_permission">参考</a></p>
+<h3 id="优化点"><a href="#优化点" class="headerlink" title="优化点"></a>优化点</h3><p>用户登录请求会经过<code>JwtAuthenticationTokenFilter </code>验证token，其中有一步会从数据库中查询登录用户信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doFilterInternal</span><span class="params">(HttpServletRequest request,</span></span></span><br><span class="line"><span class="function"><span class="params">                                HttpServletResponse response,</span></span></span><br><span class="line"><span class="function"><span class="params">                                FilterChain chain)</span> <span class="keyword">throws</span> ServletException, IOException </span>&#123;</span><br><span class="line">    String authHeader = request.getHeader(<span class="keyword">this</span>.tokenHeader);</span><br><span class="line">    <span class="keyword">if</span> (authHeader != <span class="keyword">null</span> &amp;&amp; authHeader.startsWith(<span class="keyword">this</span>.tokenHead)) &#123;</span><br><span class="line">        <span class="comment">// The part after &quot;Bearer &quot;</span></span><br><span class="line">        String authToken = authHeader.substring(<span class="keyword">this</span>.tokenHead.length());</span><br><span class="line">        String username = jwtTokenUtil.getUserNameFromToken(authToken);</span><br><span class="line">        log.info(<span class="string">&quot;checking username:&#123;&#125;&quot;</span>, username);</span><br><span class="line">        <span class="keyword">if</span> (username != <span class="keyword">null</span> &amp;&amp; SecurityContextHolder.getContext().getAuthentication() == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">//此处会从数据库中获取登录用户信息</span></span><br><span class="line">            UserDetails userDetails = <span class="keyword">this</span>.userDetailsService.loadUserByUsername(username);</span><br><span class="line">            <span class="keyword">if</span> (jwtTokenUtil.validateToken(authToken, userDetails)) &#123;</span><br><span class="line">                UsernamePasswordAuthenticationToken authentication = <span class="keyword">new</span> UsernamePasswordAuthenticationToken(userDetails, <span class="keyword">null</span>, userDetails.getAuthorities());</span><br><span class="line">                authentication.setDetails(<span class="keyword">new</span> WebAuthenticationDetailsSource().buildDetails(request));</span><br><span class="line">                log.info(<span class="string">&quot;authenticated user:&#123;&#125;&quot;</span>, username);</span><br><span class="line">                SecurityContextHolder.getContext().setAuthentication(authentication);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    chain.doFilter(request, response);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>访问任何接口，都会从数据库中查询用户信息和用户所拥有的资源信息，每次访问接口都触发这种操作，有的时候会带来一定的性能问题。</p>
+<h3 id="使用redis作为缓存"><a href="#使用redis作为缓存" class="headerlink" title="使用redis作为缓存"></a>使用redis作为缓存</h3><blockquote>
+<p>主要是获取用户信息和获取用户的资源信息这两个操作。当查询数据时，先去Redis缓存中查询，如果Redis中没有，再从数据库查询，查询到以后在把数据存储到Redis中去。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * UmsAdminService实现类</span></span><br><span class="line"><span class="comment"> * Created by macro on 2018/4/26.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UmsAdminServiceImpl</span> <span class="keyword">implements</span> <span class="title">UmsAdminService</span> </span>&#123;</span><br><span class="line">    <span class="comment">//专门用来操作Redis缓存的业务类</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UmsAdminCacheService adminCacheService;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> UmsAdmin <span class="title">getAdminByUsername</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//先从缓存中获取数据</span></span><br><span class="line">        BackendAdmin admin = adminCacheService.getAdmin(username);</span><br><span class="line">        <span class="keyword">if</span>(admin!=<span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>  admin;</span><br><span class="line">        &#125;</span><br><span class="line">        Example example = <span class="keyword">new</span> Example(BackendAdmin.class);</span><br><span class="line">        Example.Criteria criteria = example.createCriteria();</span><br><span class="line">        criteria.andEqualTo(<span class="string">&quot;username&quot;</span>,username);</span><br><span class="line">        List&lt;BackendAdmin&gt; adminList = adminMapper.selectByExample(example);</span><br><span class="line">        <span class="keyword">if</span> (adminList != <span class="keyword">null</span> &amp;&amp; adminList.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            admin = adminList.get(<span class="number">0</span>);</span><br><span class="line">            <span class="comment">//将数据库中的数据存入缓存中</span></span><br><span class="line">            adminCacheService.setAdmin(admin);</span><br><span class="line">            <span class="keyword">return</span> admin;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;UmsResource&gt; <span class="title">getResourceList</span><span class="params">(Long adminId)</span> </span>&#123;</span><br><span class="line">       <span class="comment">//先从缓存中获取数据</span></span><br><span class="line">        List&lt;BackendResource&gt; resourceList = adminCacheService.getResourceList(adminId);</span><br><span class="line">        <span class="keyword">if</span>(CollUtil.isNotEmpty(resourceList))&#123;</span><br><span class="line">            <span class="keyword">return</span>  resourceList;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//缓存中没有从数据库中获取</span></span><br><span class="line">        resourceList = adminRoleRelationMapperCustom.getResourceList(adminId);</span><br><span class="line">        <span class="keyword">if</span>(CollUtil.isNotEmpty(resourceList))&#123;</span><br><span class="line">            <span class="comment">//将数据库中的数据存入缓存中</span></span><br><span class="line">            adminCacheService.setResourceList(adminId,resourceList);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> resourceList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://github.com/yuanyayuan/yymall/blob/master/mall_backend_service/src/main/java/com/nexus/mall/service/backend/BackendAdminCacheService.java">后台用户缓存操作类</a></p>
+<h3 id="使用AOP处理缓存操作异常"><a href="#使用AOP处理缓存操作异常" class="headerlink" title="使用AOP处理缓存操作异常"></a>使用AOP处理缓存操作异常</h3><blockquote>
+<p>为什么要用AOP来解决这个问题呢？因为我们的缓存业务类<code>UmsAdminCacheService</code>已经写好了，要保证缓存业务类中的方法执行不影响正常的业务逻辑，就需要在所有方法中添加<code>try catch</code>逻辑。使用AOP，我们可以在一个地方写上<code>try catch</code>逻辑，然后应用到所有方法上去</p>
+</blockquote>
+<ol>
+<li><p>定义切面，在相关缓存业务类上面应用，在它的环绕通知中直接处理掉异常，保障后续操作能执行</p>
+<blockquote>
+<p>不过并不是所有的方法都需要处理异常的，比如我们的验证码存储，如果我们的Redis宕机了，我们的验证码存储接口需要的是报错，而不是返回执行成功。</p>
+<p>对于上面这种需求我们可以通过自定义注解来完成，首先我们自定义一个<code>CacheException</code>注解，如果方法上面有这个注解，发生异常则直接抛出。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 自定义注解，有该注解的缓存方法会抛出异常</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Target(ElementType.METHOD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> CacheException &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Order(2)</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisCacheAspect</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Pointcut(&quot;execution(public * com.nexus.mall.service.backend.*CacheService.*(..)) || execution(public * com.nexus.mall.service.*CacheService.*(..))&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cacheAspect</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Around(&quot;cacheAspect()&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">doAround</span><span class="params">(ProceedingJoinPoint joinPoint)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        Signature signature = joinPoint.getSignature();</span><br><span class="line">        MethodSignature methodSignature = (MethodSignature) signature;</span><br><span class="line">        Method method = methodSignature.getMethod();</span><br><span class="line">        Object result = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            result = joinPoint.proceed();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable throwable) &#123;</span><br><span class="line">            <span class="comment">//有CacheException注解的方法需要抛出异常</span></span><br><span class="line">            <span class="keyword">if</span> (method.isAnnotationPresent(CacheException.class)) &#123;</span><br><span class="line">                <span class="keyword">throw</span> throwable;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                log.error(throwable.getMessage());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>接下来我们需要把<code>@CacheException</code>注解应用到存储和获取验证码的方法上去，这里需要注意的是要<strong>应用在实现类上而不是接口上，因为<code>isAnnotationPresent</code>方法只能获取到当前方法上的注解，而不能获取到它实现接口方法上的注解。</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * UmsMemberCacheService实现类</span></span><br><span class="line"><span class="comment"> * Created by macro on 2020/3/14.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UmsMemberCacheServiceImpl</span> <span class="keyword">implements</span> <span class="title">UmsMemberCacheService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedisService redisService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@CacheException</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAuthCode</span><span class="params">(String telephone, String authCode)</span> </span>&#123;</span><br><span class="line">        String key = REDIS_DATABASE + <span class="string">&quot;:&quot;</span> + REDIS_KEY_AUTH_CODE + <span class="string">&quot;:&quot;</span> + telephone;</span><br><span class="line">        redisService.set(key,authCode,REDIS_EXPIRE_AUTH_CODE);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@CacheException</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getAuthCode</span><span class="params">(String telephone)</span> </span>&#123;</span><br><span class="line">        String key = REDIS_DATABASE + <span class="string">&quot;:&quot;</span> + REDIS_KEY_AUTH_CODE + <span class="string">&quot;:&quot;</span> + telephone;</span><br><span class="line">        <span class="keyword">return</span> (String) redisService.get(key);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="缓存一些热点数据"><a href="#缓存一些热点数据" class="headerlink" title="缓存一些热点数据"></a>缓存一些热点数据</h2><blockquote>
+<p>缓存一些不常修改但是经常被访问的数据</p>
+</blockquote>
+<p>缓存商品分类，并防止缓存穿透</p>
+<ul>
+<li>显示一级分类</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 首页分类展示需求：</span></span><br><span class="line"><span class="comment">     * 1. 第一次刷新主页查询大分类，渲染展示到首页</span></span><br><span class="line"><span class="comment">     * 2. 如果鼠标上移到大分类，则加载其子分类的内容，如果已经存在子分类，则不需要加载（懒加载）</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">@ApiOperation(value = &quot;获取商品分类(一级分类)&quot;, notes = &quot;获取商品分类(一级分类)&quot;, httpMethod = &quot;GET&quot;)</span></span><br><span class="line"><span class="meta">@GetMapping(value = &quot;/cats&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ServerResponse <span class="title">cats</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">//引入redis缓存</span></span><br><span class="line">    List&lt;Category&gt; list;</span><br><span class="line">    String catStr = redisOperator.get(<span class="string">&quot;cat&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (StringUtils.isBlank(catStr))&#123;</span><br><span class="line">        list = categoryService.queryAllRootLevelCat();</span><br><span class="line">        redisOperator.set(<span class="string">&quot;cat&quot;</span>, JsonUtils.objectToJson(list));</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        list = JsonUtils.jsonToList(catStr, Category.class);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ServerResponse.success(list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>根据一级分类id查询下一层子分类信息</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiOperation(value = &quot;根据一级分类id查询下一层子分类信息&quot;, notes = &quot;根据一级分类id查询下一层子分类信息&quot;, httpMethod = &quot;GET&quot;)</span></span><br><span class="line"><span class="meta">@GetMapping(value = &quot;/subCat/&#123;rootCatId&#125;&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ServerResponse <span class="title">subCat</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="meta">@ApiParam(name = &quot;rootCatId&quot;, value = &quot;一级分类id&quot;, required = true)</span></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="meta">@PathVariable</span></span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="meta">@NotNull(message = &quot;分类不存在&quot;)</span></span></span></span><br><span class="line"><span class="function"><span class="params">    Integer rootCatId)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    List&lt;CategoryVO&gt; list;</span><br><span class="line">    String subCatStr = redisOperator.get(<span class="string">&quot;subCat:&quot;</span> + rootCatId);</span><br><span class="line">    <span class="keyword">if</span> (StringUtils.isBlank(subCatStr))&#123;</span><br><span class="line">        list = categoryService.getSubCatList(rootCatId);</span><br><span class="line">        <span class="comment">/* Redis 防止缓存穿透</span></span><br><span class="line"><span class="comment">              查询的key在redis中不存在，</span></span><br><span class="line"><span class="comment">              对应的id在数据库也不存在，</span></span><br><span class="line"><span class="comment">              此时被非法用户进行攻击，大量的请求会直接打在db上，</span></span><br><span class="line"><span class="comment">              造成宕机，从而影响整个系统，</span></span><br><span class="line"><span class="comment">              这种现象称之为缓存穿透。</span></span><br><span class="line"><span class="comment">              解决方案：把空的数据也缓存起来，比如空字符串，空对象，空数组或list</span></span><br><span class="line"><span class="comment">             */</span></span><br><span class="line">        <span class="keyword">if</span> (list != <span class="keyword">null</span> &amp;&amp; list.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            redisOperator.set(<span class="string">&quot;subCat:&quot;</span> + rootCatId, JsonUtils.objectToJson(list));</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            redisOperator.set(<span class="string">&quot;subCat:&quot;</span> + rootCatId, JsonUtils.objectToJson(list), <span class="number">5</span>*<span class="number">60</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        list = JsonUtils.jsonToList(subCatStr, CategoryVO.class);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ServerResponse.success(list);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E6%8C%87%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E6%8C%87%E4%BB%A4/" itemprop="url">中间件-redis指令</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-03T16:32:25+08:00">
+                2021-04-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E6%8C%87%E4%BB%A4/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis指令</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="redis指令"><a href="#redis指令" class="headerlink" title="redis指令"></a>redis指令</h1><ul>
+<li>keys *：查看所有的key (不建议在生产上使用，有性能影响)</li>
+<li>type key：key的类型</li>
+<li>select index：切换数据库，总共默认16个</li>
+<li>flushdb：删除当前下边db中的数据</li>
+<li>flushall：删除所有db中的数据</li>
+</ul>
+<h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2><p>string: 最简单的字符串类型键值对缓存，也是最基本的</p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><ul>
+<li><p>get/set/del：查询/设置/删除</p>
+</li>
+<li><p>set rekey data：设置已经存在的key，会覆盖</p>
+</li>
+<li><p>setnx rekey data：设置已经存在的key，不会覆盖</p>
+</li>
+<li><p>set key value ex time：设置带过期时间的数据</p>
+</li>
+<li><p>expire key：设置过期时间</p>
+</li>
+<li><p>ttl：查看剩余时间，-1永不过期，-2过期</p>
+</li>
+<li><p>append key：合并字符串</p>
+</li>
+<li><p>strlen key：字符串长度</p>
+</li>
+<li><p>incr key：累加1</p>
+</li>
+<li><p>decr key：类减1</p>
+</li>
+<li><p>incrby key num：累加给定数值</p>
+</li>
+<li><p>decrby key num：累减给定数值</p>
+</li>
+<li><p>getrange key start end：截取数据，end=-1 代表到最后</p>
+</li>
+<li><p>setrange key start newdata：从start位置开始替换数据</p>
+</li>
+<li><p>mset：连续设值</p>
+</li>
+<li><p>mget：连续取值</p>
+</li>
+<li><p>msetnx：连续设置，如果存在则不设置</p>
+</li>
+</ul>
+<h2 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h2><h3 id="hash-1"><a href="#hash-1" class="headerlink" title="hash"></a>hash</h3><p>hash：类似map，存储结构化数据结构，比如存储一个对象（不能有嵌套对象）</p>
+<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><ul>
+<li>hset key property value：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-&gt; hset user name imooc</span><br><span class="line">-&gt; 创建一个user对象，这个对象中包含name属性，name值为imooc</span><br></pre></td></tr></table></figure></li>
+<li>hget user name：获得用户对象中name的值<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hmset：设置对象中的多个键值对</span><br><span class="line"> -&gt; hset user age 18 phone 139123123</span><br><span class="line"> hmsetnx：设置对象中的多个键值对，存在则不添加</span><br><span class="line"> -&gt; hset user age 18 phone 139123123</span><br></pre></td></tr></table></figure></li>
+<li>hmget：获得对象中的多个属性<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-&gt; hmget user age phone</span><br></pre></td></tr></table></figure></li>
+<li>hgetall user：获得整个对象的内容</li>
+<li>hincrby user age 2：累加属性</li>
+<li>hincrbyfloat user age 2.2：累加属性</li>
+<li>hlen user：有多少个属性</li>
+<li>hexists user age：判断属性是否存在</li>
+<li>hkeys user：获得所有属性</li>
+<li>hvals user：获得所有值</li>
+<li>hdel user：删除对象</li>
+</ul>
+<h2 id="list"><a href="#list" class="headerlink" title="list"></a>list</h2><h3 id="list-1"><a href="#list-1" class="headerlink" title="list"></a>list</h3><p>list：列表，[a, b, c, d, …]</p>
+<h3 id="使用-2"><a href="#使用-2" class="headerlink" title="使用"></a>使用</h3><ul>
+<li>lpush userList 1 2 3 4 5：构建一个list，从左边开始存入数据</li>
+<li>rpush userList 1 2 3 4 5：构建一个list，从右边开始存入数据</li>
+<li>lrange list start end：获得数据</li>
+<li>lpop：从左侧开始拿出一个数据</li>
+<li>rpop：从右侧开始拿出一个数据</li>
+<li>llen list：list长度</li>
+<li>lindex list index：获取list下标的值</li>
+<li>lset list index value：把某个下标的值替换</li>
+<li>linsert list before/after value：插入一个新的值</li>
+<li>lrem list num value：删除几个相同数据</li>
+<li>ltrim list start end：截取值，替换原来的list</li>
+</ul>
+<h2 id="zset"><a href="#zset" class="headerlink" title="zset"></a>zset</h2><h3 id="sorted-set："><a href="#sorted-set：" class="headerlink" title="sorted set："></a>sorted set：</h3><p>sorted set：排序的set，可以去重可以排序，比如可以根据用户积分做排名，积分作为set的一个数值，根据数值可以做排序。set中的每一个memeber都带有一个分数</p>
+<h3 id="使用-3"><a href="#使用-3" class="headerlink" title="使用"></a>使用</h3><ul>
+<li><p>zadd zset 10 value1 20 value2 30 value3：设置member和对应的分数</p>
+</li>
+<li><p>zrange zset 0 -1：查看所有zset中的内容</p>
+</li>
+<li><p>zrange zset 0 -1 withscores：带有分数</p>
+</li>
+<li><p>zrank zset value：获得对应的下标</p>
+</li>
+<li><p>zscore zset value：获得对应的分数</p>
+</li>
+<li><p>zcard zset：统计个数</p>
+</li>
+<li><p>zcount zset 分数1 分数2：统计个数</p>
+</li>
+<li><p>zrangebyscore zset 分数1 分数2：查询分数之间的member(包含分数1 分数2)</p>
+</li>
+<li><p>zrangebyscore zset (分数1 (分数2：查询分数之间的member（不包含分数1 和 分数2）</p>
+</li>
+<li><p>zrangebyscore zset 分数1 分数2 limit start end：查询分数之间的member(包含分数1 分数2)，获得的结果集再次根据下标区间做查询</p>
+</li>
+<li><p>zrem zset value：删除member</p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1229,6 +1765,12 @@
 <li>put 时，发现数组为空，进行初始化扩容，默认扩容大小为 16;</li>
 <li>put 成功后，当HashMap中的数组大小超过threshold **（数组大小(数组长度)*loadFactor(负载因子)）**时，就会进行数组扩容（resize () 操作）</li>
 </ol>
+<h3 id="HashMap扩容后需要rehash"><a href="#HashMap扩容后需要rehash" class="headerlink" title="HashMap扩容后需要rehash"></a>HashMap扩容后需要rehash</h3><p>JDK1.7的时候，是将数组扩容为两倍，然后<strong>将HashMap中所有的key重新进行hash寻址然后再放入到新的位置</strong></p>
+<p>JDK1.8HashMap在扩容时，需要县创建一个新数组，然后将旧数组的数据转移到新数组上来，此时旧数组上的数据就会根据（e.hash&amp;old.hash）是否等于0这个算法分为两类</p>
+<ul>
+<li></li>
+<li></li>
+</ul>
 <h3 id="拉链法导致的链表过深问题为什么不用二叉查找树代替-而选择红黑树-为什么不一直使用红黑树"><a href="#拉链法导致的链表过深问题为什么不用二叉查找树代替-而选择红黑树-为什么不一直使用红黑树" class="headerlink" title="拉链法导致的链表过深问题为什么不用二叉查找树代替,而选择红黑树?为什么不一直使用红黑树?"></a>拉链法导致的链表过深问题为什么不用二叉查找树代替,而选择红黑树?为什么不一直使用红黑树?</h3><p>红黑树是为了解决二叉查找树的缺陷,二叉查找树在特殊情况下会变成一条线性结构(这就跟原来使用链表结构一样了,造成很深的问题),遍历查找会非常慢。而红黑树在插入新数据后可能需要通过左旋,右旋、变色这些操作来保持平衡,引入红黑树就是为了查找数据快,解决链表查询深度的问题,</p>
 <h4 id="说说你对红黑树的见解"><a href="#说说你对红黑树的见解" class="headerlink" title="说说你对红黑树的见解"></a>说说你对红黑树的见解</h4><ul>
 <li>1、每个节点非红即黑</li>
@@ -2495,407 +3037,6 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/25/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E7%9F%A5%E8%AF%86%E7%82%B9/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/25/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url">中间件-redis知识点</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-25T22:32:27+08:00">
-                2021-03-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis-redis%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
-                    <span itemprop="name">redis - redis知识点</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="什么是-Redis"><a href="#什么是-Redis" class="headerlink" title="什么是 Redis?"></a>什么是 Redis?</h1><ul>
-<li>内存数据库，速度快，也支持数据的持久化</li>
-<li>Redis不仅仅支持简单的key-value类型的数据，同时还提供list，set，zset，hash等数据结构的存储。</li>
-<li>Redis支持数据的备份，即master-slave模式的数据备份。Redis 还支持事务 、持久化、Lua 脚本、多种集群方案</li>
-<li>Redis 除了做缓存之外，Redis也经常用来做分布式锁，甚至是消息队列。</li>
-</ul>
-<h1 id="Redis的key和value大小限制"><a href="#Redis的key和value大小限制" class="headerlink" title="Redis的key和value大小限制"></a>Redis的key和value大小限制</h1><p>redis的key和string类型value限制均为512MB。</p>
-<h1 id="Redis服务器和客户端的通信"><a href="#Redis服务器和客户端的通信" class="headerlink" title="Redis服务器和客户端的通信"></a>Redis服务器和客户端的通信</h1><p>Redis客户端使用RESP（Redis序列化协议）与Redis服务器进行通信</p>
-<h1 id="使用-Redis-有哪些好处？"><a href="#使用-Redis-有哪些好处？" class="headerlink" title="使用 Redis 有哪些好处？"></a>使用 Redis 有哪些好处？</h1><p>（1）速度快，因为数据存在内存中，类似于 HashMap，HashMap 的优势就是查找和操作的时间复杂度都是 O1)</p>
-<p>（2）支持丰富数据类型，支持 string，list，set，Zset，hash 等</p>
-<p>（3）支持事务，操作都是原子性，所谓的原子性就是对数据的更改要么全部执行，要么全部不执行</p>
-<p>（4）丰富的特性：可用于缓存，消息，按 key 设置过期时间，过期后将会自动删除</p>
-<h1 id="Redis如何解决key冲突？"><a href="#Redis如何解决key冲突？" class="headerlink" title="Redis如何解决key冲突？"></a>Redis如何解决key冲突？</h1><p>拉链法。这个问题可以考虑到另一个问题，HashMap是如何解决key冲突的，同样也是采用拉链地址法。如果被问到解决key值冲突还有什么方法？一般来说解决key值冲突的方法有俩种，一种是开放地址法，另一种就是拉链法。</p>
-<h1 id="缓存数据的处理流程是怎样的？"><a href="#缓存数据的处理流程是怎样的？" class="headerlink" title="缓存数据的处理流程是怎样的？"></a>缓存数据的处理流程是怎样的？</h1><ol>
-<li>如果用户请求的数据在缓存中就直接返回。</li>
-<li>缓存中不存在的话就看数据库中是否存在。</li>
-<li>数据库中存在的话就更新缓存中的数据。</li>
-<li>数据库中不存在的话就返回空数据。</li>
-</ol>
-<h1 id="为什么选择redis"><a href="#为什么选择redis" class="headerlink" title="为什么选择redis"></a>为什么选择redis</h1><p>磁盘IO及网络开销是直接请求内存IO千百上千倍，通过缓存技术，减少数据传输时间，提高处理效率</p>
-<ul>
-<li>首先 Redis 支持丰富的数据结构，新版本数据结构从最初的5种变成9种。</li>
-<li>其次 Redis 是读写单进程单线程，不用考虑并发读写的复杂场景，速度也快。</li>
-<li>Reids 功能完备，支持数据持久化，支持主从复制和集群。</li>
-<li>还有Lua脚本，事务，发布订阅模型，Reids 都支持。</li>
-</ul>
-<h1 id="Memcached-与-Redis-的区别都有哪些？"><a href="#Memcached-与-Redis-的区别都有哪些？" class="headerlink" title="Memcached 与 Redis 的区别都有哪些？"></a>Memcached 与 Redis 的区别都有哪些？</h1><ol>
-<li><strong>Redis 支持更丰富的数据类型（支持更复杂的应用场景）</strong>。Redis 不仅仅支持简单的 k/v 类型的数据，同时还提供 list，set，zset，hash 等数据结构的存储。Memcached 只支持最简单的 k/v 数据类型。</li>
-<li><strong>Redis 支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用,而 Memecache 把数据全部存在内存之中。</strong></li>
-<li><strong>Redis 有灾难恢复机制。</strong> 因为可以把缓存中的数据持久化到磁盘上。</li>
-<li><strong>Redis 在服务器内存使用完之后，可以将不用的数据放到磁盘上。但是，Memcached 在服务器内存使用完之后，就会直接报异常。</strong></li>
-<li><strong>Memcached 没有原生的集群模式，需要依靠客户端来实现往集群中分片写入数据；但是 Redis 目前是原生支持 cluster 模式的.</strong></li>
-<li><strong>Memcached 是多线程，非阻塞 IO 复用的网络模型；Redis 使用单线程的多路 IO 复用模型。</strong> （Redis 6.0 引入了多线程 IO ）</li>
-<li><strong>Redis 支持发布订阅模型、Lua 脚本、事务等功能，而 Memcached 不支持。并且，Redis 支持更多的编程语言。</strong></li>
-<li><strong>Memcached过期数据的删除策略只用了惰性删除，而 Redis 同时使用了惰性删除与定期删除。</strong></li>
-</ol>
-<h1 id="Redis相比Memcached有哪些优势"><a href="#Redis相比Memcached有哪些优势" class="headerlink" title="Redis相比Memcached有哪些优势"></a>Redis相比Memcached有哪些优势</h1><ol>
-<li>Memcached所有的值均是简单的字符串，redis作为其代替者，支持更为丰富的数据类型</li>
-<li>Redis的速度比Memcached快得多</li>
-<li>Redis可以持久化数据</li>
-</ol>
-<h1 id="Redis-常见性能问题和解决方案有哪些"><a href="#Redis-常见性能问题和解决方案有哪些" class="headerlink" title="Redis 常见性能问题和解决方案有哪些?"></a>Redis 常见性能问题和解决方案有哪些?</h1><p>（1）Master 最好不要写内存快照，如果 Master 写内存快照，save 命令调度 rdbSave函数，会阻塞主线程的工作，当快照比较大时对性能影响是非常大的，会间断性暂停服务；</p>
-<p>（2）如果数据比较重要，某个 Slave 开启 AOF 备份数据，策略设置为每秒同步一次；</p>
-<p>（3）为了主从复制的速度和连接的稳定性，Master 和 Slave 最好在同一个局域网；</p>
-<p>（4）尽量避免在压力很大的主库上增加从库；</p>
-<h1 id="为什么Redis-需要把所有数据放到内存中？"><a href="#为什么Redis-需要把所有数据放到内存中？" class="headerlink" title="为什么Redis 需要把所有数据放到内存中？"></a>为什么Redis 需要把所有数据放到内存中？</h1><p>Redis 为了达到最快的读写速度将数据都读到内存中，并通过异步的方式将数据写入磁盘。所以 redis 具有快速和数据持久化的特征。如果不将数据放在内存中，磁盘 I/O 速度为严重影响 redis 的性能。在内存越来越便宜的今天，redis 将会越来越受欢迎。如果设置了最大使用的内存，则数据已有记录数达到内存限值后不能继续插入新值。</p>
-<h1 id="Pipeline-有什么好处，为什么要用-Pipeline？"><a href="#Pipeline-有什么好处，为什么要用-Pipeline？" class="headerlink" title="Pipeline 有什么好处，为什么要用 Pipeline？"></a>Pipeline 有什么好处，为什么要用 Pipeline？</h1><p>多个指令之间没有依赖关系，可以使用 pipeline 一次性执行多个指令，减少 IO，缩减时间。</p>
-<h1 id="Jedis-与-Redisson-对比有什么优缺点？"><a href="#Jedis-与-Redisson-对比有什么优缺点？" class="headerlink" title="Jedis 与 Redisson 对比有什么优缺点？"></a>Jedis 与 Redisson 对比有什么优缺点？</h1><p>Jedis 是 Redis 的 Java 实现的客户端，其 API 提供了比较全面的 Redis 命令的支持；</p>
-<p>Redisson 实现了分布式和可扩展的 Java 数据结构，和 Jedis 相比，功能较为简单，不支持字符串操作，不支持排序、事务、管道、分区等 Redis 特性。</p>
-<p>Redisson 的宗旨是促进使用者对 Redis 的关注分离，从而让使用者能够将精力更集中地放在处理业务逻辑上。</p>
-<h1 id="Redis-如何设置密码及验证密码？"><a href="#Redis-如何设置密码及验证密码？" class="headerlink" title="Redis 如何设置密码及验证密码？"></a>Redis 如何设置密码及验证密码？</h1><p>设置密码： config set requirepass 123456<br>授权密码： auth 123456</p>
-<h1 id="Redis-集群如何选择数据库？"><a href="#Redis-集群如何选择数据库？" class="headerlink" title="Redis 集群如何选择数据库？"></a>Redis 集群如何选择数据库？</h1><p>目前无法做数据库选择，默认在0数据库，可以在application.yml中配置</p>
-<h1 id="怎么理解-Redis-事务？"><a href="#怎么理解-Redis-事务？" class="headerlink" title="怎么理解 Redis 事务？"></a>怎么理解 Redis 事务？</h1><p>1）事务是一个单独的隔离操作：事务中的所有命令都会序列化、按顺序地执行。事务在执行的过程中，不会被其他客户端发送来的命令请求所打断。</p>
-<p>2）事务是一个原子操作：事务中的命令要么全部被执行，要么全部都不执行。</p>
-<h1 id="Redis-事务相关的命令有哪几个？"><a href="#Redis-事务相关的命令有哪几个？" class="headerlink" title="Redis 事务相关的命令有哪几个？"></a>Redis 事务相关的命令有哪几个？</h1><ul>
-<li>MULTI</li>
-</ul>
-<p>使用该命令，标记一个事务块的开始，通常在执行之后会回复OK，（但不一定真的OK），这个时候用户可以输入多个操作来代替逐条操作，redis会将这些操作放入队列中。</p>
-<ul>
-<li>EXEC</li>
-</ul>
-<p>执行这个事务内的所有命令</p>
-<ul>
-<li>DISCARD</li>
-</ul>
-<p>放弃事务，即该事务内的所有命令都将取消</p>
-<ul>
-<li>WATCH</li>
-</ul>
-<p>监控一个或者多个key，如果这些key在提交事务（EXEC）之前被其他用户修改过，那么事务将执行失败，需要重新获取最新数据重头操作（类似于乐观锁）。</p>
-<h1 id="redis事务的性质"><a href="#redis事务的性质" class="headerlink" title="redis事务的性质"></a>redis事务的性质</h1><ol>
-<li>单独的隔离操作：事务中的所有命令会被序列化、按顺序执行，在执行的过程中不会被其他客户端发送来的命令打断</li>
-<li>没有隔离级别的概念：队列中的命令在事务没有被提交之前不会被实际执行</li>
-<li>不保证原子性：redis中的一个事务中如果存在命令执行失败，那么其他命令依然会被执行，没有回滚机制</li>
-</ol>
-<h1 id="Redis-key-的过期时间和永久有效分别怎么设置？"><a href="#Redis-key-的过期时间和永久有效分别怎么设置？" class="headerlink" title="Redis key 的过期时间和永久有效分别怎么设置？"></a>Redis key 的过期时间和永久有效分别怎么设置？</h1><p>EXPIRE 和 PERSIST 命令。</p>
-<h1 id="Redis-如何做内存优化？"><a href="#Redis-如何做内存优化？" class="headerlink" title="Redis 如何做内存优化？"></a>Redis 如何做内存优化？</h1><p>尽可能使用散列表（hashes），散列表（是说散列表里面存储的数少）使用的内存非常小，所以你应该尽可能的将你的数据模型抽象到一个散列表里面。比如你的 web 系统中有一个用户对象，不要为这个用户的名称，姓氏，邮箱，密码设置单独的 key,而是应该把这个用户的所有信息存储到一张散列表里面。</p>
-<h1 id="Redis-回收进程如何工作的？"><a href="#Redis-回收进程如何工作的？" class="headerlink" title="Redis 回收进程如何工作的？"></a>Redis 回收进程如何工作的？</h1><p>一个客户端运行了新的命令，添加了新的数据。Redi 检查内存使用情况，如<br>果大于 maxmemory 的限制, 则根据设定好的策略进行回收。一个新的命令被执<br>行，等等。所以我们不断地穿越内存限制的边界，通过不断达到边界然后不断地<br>回收回到边界以下。如果一个命令的结果导致大量内存被使用（例如很大的集合<br>的交集保存到一个新的键），不用多久内存限制就会被这个内存使用量超越。 </p>
-<h1 id="都有哪些办法可以降低-Redis-的内存使用情况呢？"><a href="#都有哪些办法可以降低-Redis-的内存使用情况呢？" class="headerlink" title="都有哪些办法可以降低 Redis 的内存使用情况呢？"></a>都有哪些办法可以降低 Redis 的内存使用情况呢？</h1><p>如果你使用的是 32 位的 Redis 实例，可以好好利用 Hash,list,sorted set,set等集合类型数据，因为通常情况下很多小的 Key-Value 可以用更紧凑的方式存放到一起。</p>
-<h1 id="Redis-的内存用完了会发生什么？"><a href="#Redis-的内存用完了会发生什么？" class="headerlink" title="Redis 的内存用完了会发生什么？"></a>Redis 的内存用完了会发生什么？</h1><p>如果达到设置的上限，Redis 的写命令会返回错误信息（但是读命令还可以正常返回。）</p>
-<p>或者你可以将 Redis 当缓存来使用配置淘汰机制，当 Redis 达到内存上限时会冲刷掉旧的内容。</p>
-<h1 id="一个-Redis-实例最多能存放多少的-keys？List、Set、Sorted-Set他们最多能存放多少元素？"><a href="#一个-Redis-实例最多能存放多少的-keys？List、Set、Sorted-Set他们最多能存放多少元素？" class="headerlink" title="一个 Redis 实例最多能存放多少的 keys？List、Set、Sorted Set他们最多能存放多少元素？"></a>一个 Redis 实例最多能存放多少的 keys？List、Set、Sorted Set他们最多能存放多少元素？</h1><p>理论上 Redis 可以处理多达 232 的 keys，每个实例至少存放了 2 亿 5 千万的 keys。任何 list、set、和 sorted set 都可以放 232 个元素。换句话说，Redis 的存储极限是系统中的可用内存值。</p>
-<h1 id="假如-Redis-里面有-1-亿个-key，其中有-10w-个-key-是以某个固定的已知的前缀开头的，如果将它们全部找出来？"><a href="#假如-Redis-里面有-1-亿个-key，其中有-10w-个-key-是以某个固定的已知的前缀开头的，如果将它们全部找出来？" class="headerlink" title="假如 Redis 里面有 1 亿个 key，其中有 10w 个 key 是以某个固定的已知的前缀开头的，如果将它们全部找出来？"></a>假如 Redis 里面有 1 亿个 key，其中有 10w 个 key 是以某个固定的已知的前缀开头的，如果将它们全部找出来？</h1><p>使用 keys 指令可以扫出指定模式的 key 列表。</p>
-<h2 id="如果这个-redis-正在给线上的业务提供服务，那使用-keys-指令会有什么问题？"><a href="#如果这个-redis-正在给线上的业务提供服务，那使用-keys-指令会有什么问题？" class="headerlink" title="如果这个 redis 正在给线上的业务提供服务，那使用 keys 指令会有什么问题？"></a>如果这个 redis 正在给线上的业务提供服务，那使用 keys 指令会有什么问题？</h2><blockquote>
-<p>这个时候你要回答 redis 关键的一个特性：redis 的单线程的。</p>
-</blockquote>
-<p>keys 指令会导致线程阻塞一段时间，线上服务会停顿，直到指令执行完毕，服务才能恢复。这个时候可以使用 scan 指令，scan 指令可以无阻塞的提取出指定模式的 key 列表，但是会有一定的重复概率，在客户端做一次去重就可以了，但是整体所花费的时间会比直接用 keys 指令长。</p>
-<h1 id="如果有大量的-key-需要设置同一时间过期，一般需要注意什么？"><a href="#如果有大量的-key-需要设置同一时间过期，一般需要注意什么？" class="headerlink" title="如果有大量的 key 需要设置同一时间过期，一般需要注意什么？"></a>如果有大量的 key 需要设置同一时间过期，一般需要注意什么？</h1><p>如果大量的 key 过期时间设置的过于集中，到过期的那个时间点，redis 可能会出现短暂的卡顿现象。一般需要在时间上加一个随机值，使得过期时间分散一些。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/25/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-redis%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/25/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-redis%E5%AE%89%E8%A3%85/" itemprop="url">软件安装-redis安装</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-25T22:19:07+08:00">
-                2021-03-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-redis%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
-                    <span itemprop="name">软件安装 - redis安装</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="安装Redis"><a href="#安装Redis" class="headerlink" title="安装Redis"></a>安装Redis</h1><h2 id="解压Redis"><a href="#解压Redis" class="headerlink" title="解压Redis"></a>解压Redis</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf redis-5.0.5.tar.gz</span><br></pre></td></tr></table></figure>
-
-<h2 id="安装gcc编译环境"><a href="#安装gcc编译环境" class="headerlink" title="安装gcc编译环境"></a>安装gcc编译环境</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc-c++ </span><br></pre></td></tr></table></figure>
-
-<h2 id="进入redis目录安装"><a href="#进入redis目录安装" class="headerlink" title="进入redis目录安装"></a>进入redis目录安装</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
-
-<h1 id="配置Reids"><a href="#配置Reids" class="headerlink" title="配置Reids"></a>配置Reids</h1><h2 id="在utils下，拷贝redis-init-script到、etc-init-d目录"><a href="#在utils下，拷贝redis-init-script到、etc-init-d目录" class="headerlink" title="在utils下，拷贝redis_init_script到、etc/init.d目录"></a>在utils下，拷贝redis_init_script到、etc/init.d目录</h2><blockquote>
-<p>目的要把redis作为开机自启</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp redis_init_script /etc/init.d/</span><br></pre></td></tr></table></figure>
-
-<h2 id="创建-usr-local-redis"><a href="#创建-usr-local-redis" class="headerlink" title="创建/usr/local/redis"></a>创建<code>/usr/local/redis</code></h2><blockquote>
-<p>用于存放配置文件</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /usr/<span class="built_in">local</span>/redis</span><br></pre></td></tr></table></figure>
-
-<h2 id="回redis解压文件拷贝配置文件"><a href="#回redis解压文件拷贝配置文件" class="headerlink" title="回redis解压文件拷贝配置文件"></a>回redis解压文件拷贝配置文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp redis.conf /usr/<span class="built_in">local</span>/redis</span><br></pre></td></tr></table></figure>
-
-<h2 id="修改核心配置文件redis-conf"><a href="#修改核心配置文件redis-conf" class="headerlink" title="修改核心配置文件redis.conf"></a>修改核心配置文件<code>redis.conf</code></h2><ol>
-<li><code>daeminize no</code> -&gt; <code>daeminize yes</code>  目的：为了让redis启动在linux后台运行</li>
-<li><code>dir ./</code>-&gt;<code>dir /usr/local/redis/working</code> 目的：修改redis工作目录</li>
-<li><code>bind 127.0.0.1 -::1</code>-&gt;<code>bind 0.0.0.0</code> 目的：可以让远程连接，不收IP限制</li>
-<li><code># requirepass foobared</code>-&gt;<code>requirepass myredis123</code></li>
-</ol>
-<h1 id="修改redis-init-script"><a href="#修改redis-init-script" class="headerlink" title="修改redis_init_script"></a>修改redis_init_script</h1><p><code>CONF=&quot;/etc/redis/$&#123;REDISPORT&#125;.conf&quot;</code>-&gt;<code>CONF=&quot;/usr/local/redis/redis.conf&quot;</code></p>
-<h1 id="为redis-init-script赋权"><a href="#为redis-init-script赋权" class="headerlink" title="为redis_init_script赋权"></a>为redis_init_script赋权</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 redis_init_script</span><br></pre></td></tr></table></figure>
-
-<h1 id="运行脚本启动redis"><a href="#运行脚本启动redis" class="headerlink" title="运行脚本启动redis"></a>运行脚本启动redis</h1><p><code>./redis_init_script start</code></p>
-<h1 id="设置redis开机自启"><a href="#设置redis开机自启" class="headerlink" title="设置redis开机自启"></a>设置redis开机自启</h1><p>在<code>redis_init_script start</code>中添加</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="comment">### END INIT INFO</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#chkconfig: 22345 10 90</span></span><br><span class="line"><span class="comment">#description: Start and Stop redis</span></span><br><span class="line"></span><br><span class="line">REDISPORT=6379</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<h1 id="开启开机自启"><a href="#开启开机自启" class="headerlink" title="开启开机自启"></a>开启开机自启</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chkconfig redis_init_script on</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2947,7 +3088,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-count">83</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2958,7 +3099,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

@@ -261,6 +261,407 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/25/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E7%9F%A5%E8%AF%86%E7%82%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/25/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url">中间件-redis知识点</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-25T22:32:27+08:00">
+                2021-03-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis知识点</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="什么是-Redis"><a href="#什么是-Redis" class="headerlink" title="什么是 Redis?"></a>什么是 Redis?</h1><ul>
+<li>内存数据库，速度快，也支持数据的持久化</li>
+<li>Redis不仅仅支持简单的key-value类型的数据，同时还提供list，set，zset，hash等数据结构的存储。</li>
+<li>Redis支持数据的备份，即master-slave模式的数据备份。Redis 还支持事务 、持久化、Lua 脚本、多种集群方案</li>
+<li>Redis 除了做缓存之外，Redis也经常用来做分布式锁，甚至是消息队列。</li>
+</ul>
+<h1 id="Redis的key和value大小限制"><a href="#Redis的key和value大小限制" class="headerlink" title="Redis的key和value大小限制"></a>Redis的key和value大小限制</h1><p>redis的key和string类型value限制均为512MB。</p>
+<h1 id="Redis服务器和客户端的通信"><a href="#Redis服务器和客户端的通信" class="headerlink" title="Redis服务器和客户端的通信"></a>Redis服务器和客户端的通信</h1><p>Redis客户端使用RESP（Redis序列化协议）与Redis服务器进行通信</p>
+<h1 id="使用-Redis-有哪些好处？"><a href="#使用-Redis-有哪些好处？" class="headerlink" title="使用 Redis 有哪些好处？"></a>使用 Redis 有哪些好处？</h1><p>（1）速度快，因为数据存在内存中，类似于 HashMap，HashMap 的优势就是查找和操作的时间复杂度都是 O1)</p>
+<p>（2）支持丰富数据类型，支持 string，list，set，Zset，hash 等</p>
+<p>（3）支持事务，操作都是原子性，所谓的原子性就是对数据的更改要么全部执行，要么全部不执行</p>
+<p>（4）丰富的特性：可用于缓存，消息，按 key 设置过期时间，过期后将会自动删除</p>
+<h1 id="Redis如何解决key冲突？"><a href="#Redis如何解决key冲突？" class="headerlink" title="Redis如何解决key冲突？"></a>Redis如何解决key冲突？</h1><p>拉链法。这个问题可以考虑到另一个问题，HashMap是如何解决key冲突的，同样也是采用拉链地址法。如果被问到解决key值冲突还有什么方法？一般来说解决key值冲突的方法有俩种，一种是开放地址法，另一种就是拉链法。</p>
+<h1 id="缓存数据的处理流程是怎样的？"><a href="#缓存数据的处理流程是怎样的？" class="headerlink" title="缓存数据的处理流程是怎样的？"></a>缓存数据的处理流程是怎样的？</h1><ol>
+<li>如果用户请求的数据在缓存中就直接返回。</li>
+<li>缓存中不存在的话就看数据库中是否存在。</li>
+<li>数据库中存在的话就更新缓存中的数据。</li>
+<li>数据库中不存在的话就返回空数据。</li>
+</ol>
+<h1 id="为什么选择redis"><a href="#为什么选择redis" class="headerlink" title="为什么选择redis"></a>为什么选择redis</h1><p>磁盘IO及网络开销是直接请求内存IO千百上千倍，通过缓存技术，减少数据传输时间，提高处理效率</p>
+<ul>
+<li>首先 Redis 支持丰富的数据结构，新版本数据结构从最初的5种变成9种。</li>
+<li>其次 Redis 是读写单进程单线程，不用考虑并发读写的复杂场景，速度也快。</li>
+<li>Reids 功能完备，支持数据持久化，支持主从复制和集群。</li>
+<li>还有Lua脚本，事务，发布订阅模型，Reids 都支持。</li>
+</ul>
+<h1 id="Memcached-与-Redis-的区别都有哪些？"><a href="#Memcached-与-Redis-的区别都有哪些？" class="headerlink" title="Memcached 与 Redis 的区别都有哪些？"></a>Memcached 与 Redis 的区别都有哪些？</h1><ol>
+<li><strong>Redis 支持更丰富的数据类型（支持更复杂的应用场景）</strong>。Redis 不仅仅支持简单的 k/v 类型的数据，同时还提供 list，set，zset，hash 等数据结构的存储。Memcached 只支持最简单的 k/v 数据类型。</li>
+<li><strong>Redis 支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用,而 Memecache 把数据全部存在内存之中。</strong></li>
+<li><strong>Redis 有灾难恢复机制。</strong> 因为可以把缓存中的数据持久化到磁盘上。</li>
+<li><strong>Redis 在服务器内存使用完之后，可以将不用的数据放到磁盘上。但是，Memcached 在服务器内存使用完之后，就会直接报异常。</strong></li>
+<li><strong>Memcached 没有原生的集群模式，需要依靠客户端来实现往集群中分片写入数据；但是 Redis 目前是原生支持 cluster 模式的.</strong></li>
+<li><strong>Memcached 是多线程，非阻塞 IO 复用的网络模型；Redis 使用单线程的多路 IO 复用模型。</strong> （Redis 6.0 引入了多线程 IO ）</li>
+<li><strong>Redis 支持发布订阅模型、Lua 脚本、事务等功能，而 Memcached 不支持。并且，Redis 支持更多的编程语言。</strong></li>
+<li><strong>Memcached过期数据的删除策略只用了惰性删除，而 Redis 同时使用了惰性删除与定期删除。</strong></li>
+</ol>
+<h1 id="Redis相比Memcached有哪些优势"><a href="#Redis相比Memcached有哪些优势" class="headerlink" title="Redis相比Memcached有哪些优势"></a>Redis相比Memcached有哪些优势</h1><ol>
+<li>Memcached所有的值均是简单的字符串，redis作为其代替者，支持更为丰富的数据类型</li>
+<li>Redis的速度比Memcached快得多</li>
+<li>Redis可以持久化数据</li>
+</ol>
+<h1 id="Redis-常见性能问题和解决方案有哪些"><a href="#Redis-常见性能问题和解决方案有哪些" class="headerlink" title="Redis 常见性能问题和解决方案有哪些?"></a>Redis 常见性能问题和解决方案有哪些?</h1><p>（1）Master 最好不要写内存快照，如果 Master 写内存快照，save 命令调度 rdbSave函数，会阻塞主线程的工作，当快照比较大时对性能影响是非常大的，会间断性暂停服务；</p>
+<p>（2）如果数据比较重要，某个 Slave 开启 AOF 备份数据，策略设置为每秒同步一次；</p>
+<p>（3）为了主从复制的速度和连接的稳定性，Master 和 Slave 最好在同一个局域网；</p>
+<p>（4）尽量避免在压力很大的主库上增加从库；</p>
+<h1 id="为什么Redis-需要把所有数据放到内存中？"><a href="#为什么Redis-需要把所有数据放到内存中？" class="headerlink" title="为什么Redis 需要把所有数据放到内存中？"></a>为什么Redis 需要把所有数据放到内存中？</h1><p>Redis 为了达到最快的读写速度将数据都读到内存中，并通过异步的方式将数据写入磁盘。所以 redis 具有快速和数据持久化的特征。如果不将数据放在内存中，磁盘 I/O 速度为严重影响 redis 的性能。在内存越来越便宜的今天，redis 将会越来越受欢迎。如果设置了最大使用的内存，则数据已有记录数达到内存限值后不能继续插入新值。</p>
+<h1 id="Pipeline-有什么好处，为什么要用-Pipeline？"><a href="#Pipeline-有什么好处，为什么要用-Pipeline？" class="headerlink" title="Pipeline 有什么好处，为什么要用 Pipeline？"></a>Pipeline 有什么好处，为什么要用 Pipeline？</h1><p>多个指令之间没有依赖关系，可以使用 pipeline 一次性执行多个指令，减少 IO，缩减时间。</p>
+<h1 id="Jedis-与-Redisson-对比有什么优缺点？"><a href="#Jedis-与-Redisson-对比有什么优缺点？" class="headerlink" title="Jedis 与 Redisson 对比有什么优缺点？"></a>Jedis 与 Redisson 对比有什么优缺点？</h1><p>Jedis 是 Redis 的 Java 实现的客户端，其 API 提供了比较全面的 Redis 命令的支持；</p>
+<p>Redisson 实现了分布式和可扩展的 Java 数据结构，和 Jedis 相比，功能较为简单，不支持字符串操作，不支持排序、事务、管道、分区等 Redis 特性。</p>
+<p>Redisson 的宗旨是促进使用者对 Redis 的关注分离，从而让使用者能够将精力更集中地放在处理业务逻辑上。</p>
+<h1 id="Redis-如何设置密码及验证密码？"><a href="#Redis-如何设置密码及验证密码？" class="headerlink" title="Redis 如何设置密码及验证密码？"></a>Redis 如何设置密码及验证密码？</h1><p>设置密码： config set requirepass 123456<br>授权密码： auth 123456</p>
+<h1 id="Redis-集群如何选择数据库？"><a href="#Redis-集群如何选择数据库？" class="headerlink" title="Redis 集群如何选择数据库？"></a>Redis 集群如何选择数据库？</h1><p>目前无法做数据库选择，默认在0数据库，可以在application.yml中配置</p>
+<h1 id="怎么理解-Redis-事务？"><a href="#怎么理解-Redis-事务？" class="headerlink" title="怎么理解 Redis 事务？"></a>怎么理解 Redis 事务？</h1><p>1）事务是一个单独的隔离操作：事务中的所有命令都会序列化、按顺序地执行。事务在执行的过程中，不会被其他客户端发送来的命令请求所打断。</p>
+<p>2）事务是一个原子操作：事务中的命令要么全部被执行，要么全部都不执行。</p>
+<h1 id="Redis-事务相关的命令有哪几个？"><a href="#Redis-事务相关的命令有哪几个？" class="headerlink" title="Redis 事务相关的命令有哪几个？"></a>Redis 事务相关的命令有哪几个？</h1><ul>
+<li>MULTI</li>
+</ul>
+<p>使用该命令，标记一个事务块的开始，通常在执行之后会回复OK，（但不一定真的OK），这个时候用户可以输入多个操作来代替逐条操作，redis会将这些操作放入队列中。</p>
+<ul>
+<li>EXEC</li>
+</ul>
+<p>执行这个事务内的所有命令</p>
+<ul>
+<li>DISCARD</li>
+</ul>
+<p>放弃事务，即该事务内的所有命令都将取消</p>
+<ul>
+<li>WATCH</li>
+</ul>
+<p>监控一个或者多个key，如果这些key在提交事务（EXEC）之前被其他用户修改过，那么事务将执行失败，需要重新获取最新数据重头操作（类似于乐观锁）。</p>
+<h1 id="redis事务的性质"><a href="#redis事务的性质" class="headerlink" title="redis事务的性质"></a>redis事务的性质</h1><ol>
+<li>单独的隔离操作：事务中的所有命令会被序列化、按顺序执行，在执行的过程中不会被其他客户端发送来的命令打断</li>
+<li>没有隔离级别的概念：队列中的命令在事务没有被提交之前不会被实际执行</li>
+<li>不保证原子性：redis中的一个事务中如果存在命令执行失败，那么其他命令依然会被执行，没有回滚机制</li>
+</ol>
+<h1 id="Redis-key-的过期时间和永久有效分别怎么设置？"><a href="#Redis-key-的过期时间和永久有效分别怎么设置？" class="headerlink" title="Redis key 的过期时间和永久有效分别怎么设置？"></a>Redis key 的过期时间和永久有效分别怎么设置？</h1><p>EXPIRE 和 PERSIST 命令。</p>
+<h1 id="Redis-如何做内存优化？"><a href="#Redis-如何做内存优化？" class="headerlink" title="Redis 如何做内存优化？"></a>Redis 如何做内存优化？</h1><p>尽可能使用散列表（hashes），散列表（是说散列表里面存储的数少）使用的内存非常小，所以你应该尽可能的将你的数据模型抽象到一个散列表里面。比如你的 web 系统中有一个用户对象，不要为这个用户的名称，姓氏，邮箱，密码设置单独的 key,而是应该把这个用户的所有信息存储到一张散列表里面。</p>
+<h1 id="Redis-回收进程如何工作的？"><a href="#Redis-回收进程如何工作的？" class="headerlink" title="Redis 回收进程如何工作的？"></a>Redis 回收进程如何工作的？</h1><p>一个客户端运行了新的命令，添加了新的数据。Redi 检查内存使用情况，如<br>果大于 maxmemory 的限制, 则根据设定好的策略进行回收。一个新的命令被执<br>行，等等。所以我们不断地穿越内存限制的边界，通过不断达到边界然后不断地<br>回收回到边界以下。如果一个命令的结果导致大量内存被使用（例如很大的集合<br>的交集保存到一个新的键），不用多久内存限制就会被这个内存使用量超越。 </p>
+<h1 id="都有哪些办法可以降低-Redis-的内存使用情况呢？"><a href="#都有哪些办法可以降低-Redis-的内存使用情况呢？" class="headerlink" title="都有哪些办法可以降低 Redis 的内存使用情况呢？"></a>都有哪些办法可以降低 Redis 的内存使用情况呢？</h1><p>如果你使用的是 32 位的 Redis 实例，可以好好利用 Hash,list,sorted set,set等集合类型数据，因为通常情况下很多小的 Key-Value 可以用更紧凑的方式存放到一起。</p>
+<h1 id="Redis-的内存用完了会发生什么？"><a href="#Redis-的内存用完了会发生什么？" class="headerlink" title="Redis 的内存用完了会发生什么？"></a>Redis 的内存用完了会发生什么？</h1><p>如果达到设置的上限，Redis 的写命令会返回错误信息（但是读命令还可以正常返回。）</p>
+<p>或者你可以将 Redis 当缓存来使用配置淘汰机制，当 Redis 达到内存上限时会冲刷掉旧的内容。</p>
+<h1 id="一个-Redis-实例最多能存放多少的-keys？List、Set、Sorted-Set他们最多能存放多少元素？"><a href="#一个-Redis-实例最多能存放多少的-keys？List、Set、Sorted-Set他们最多能存放多少元素？" class="headerlink" title="一个 Redis 实例最多能存放多少的 keys？List、Set、Sorted Set他们最多能存放多少元素？"></a>一个 Redis 实例最多能存放多少的 keys？List、Set、Sorted Set他们最多能存放多少元素？</h1><p>理论上 Redis 可以处理多达 232 的 keys，每个实例至少存放了 2 亿 5 千万的 keys。任何 list、set、和 sorted set 都可以放 232 个元素。换句话说，Redis 的存储极限是系统中的可用内存值。</p>
+<h1 id="假如-Redis-里面有-1-亿个-key，其中有-10w-个-key-是以某个固定的已知的前缀开头的，如果将它们全部找出来？"><a href="#假如-Redis-里面有-1-亿个-key，其中有-10w-个-key-是以某个固定的已知的前缀开头的，如果将它们全部找出来？" class="headerlink" title="假如 Redis 里面有 1 亿个 key，其中有 10w 个 key 是以某个固定的已知的前缀开头的，如果将它们全部找出来？"></a>假如 Redis 里面有 1 亿个 key，其中有 10w 个 key 是以某个固定的已知的前缀开头的，如果将它们全部找出来？</h1><p>使用 keys 指令可以扫出指定模式的 key 列表。</p>
+<h2 id="如果这个-redis-正在给线上的业务提供服务，那使用-keys-指令会有什么问题？"><a href="#如果这个-redis-正在给线上的业务提供服务，那使用-keys-指令会有什么问题？" class="headerlink" title="如果这个 redis 正在给线上的业务提供服务，那使用 keys 指令会有什么问题？"></a>如果这个 redis 正在给线上的业务提供服务，那使用 keys 指令会有什么问题？</h2><blockquote>
+<p>这个时候你要回答 redis 关键的一个特性：redis 的单线程的。</p>
+</blockquote>
+<p>keys 指令会导致线程阻塞一段时间，线上服务会停顿，直到指令执行完毕，服务才能恢复。这个时候可以使用 scan 指令，scan 指令可以无阻塞的提取出指定模式的 key 列表，但是会有一定的重复概率，在客户端做一次去重就可以了，但是整体所花费的时间会比直接用 keys 指令长。</p>
+<h1 id="如果有大量的-key-需要设置同一时间过期，一般需要注意什么？"><a href="#如果有大量的-key-需要设置同一时间过期，一般需要注意什么？" class="headerlink" title="如果有大量的 key 需要设置同一时间过期，一般需要注意什么？"></a>如果有大量的 key 需要设置同一时间过期，一般需要注意什么？</h1><p>如果大量的 key 过期时间设置的过于集中，到过期的那个时间点，redis 可能会出现短暂的卡顿现象。一般需要在时间上加一个随机值，使得过期时间分散一些。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/25/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-redis%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/25/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-redis%E5%AE%89%E8%A3%85/" itemprop="url">软件安装-redis安装</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-25T22:19:07+08:00">
+                2021-03-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-redis%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
+                    <span itemprop="name">软件安装 - redis安装</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="安装Redis"><a href="#安装Redis" class="headerlink" title="安装Redis"></a>安装Redis</h1><h2 id="解压Redis"><a href="#解压Redis" class="headerlink" title="解压Redis"></a>解压Redis</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf redis-5.0.5.tar.gz</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装gcc编译环境"><a href="#安装gcc编译环境" class="headerlink" title="安装gcc编译环境"></a>安装gcc编译环境</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc-c++ </span><br></pre></td></tr></table></figure>
+
+<h2 id="进入redis目录安装"><a href="#进入redis目录安装" class="headerlink" title="进入redis目录安装"></a>进入redis目录安装</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
+
+<h1 id="配置Reids"><a href="#配置Reids" class="headerlink" title="配置Reids"></a>配置Reids</h1><h2 id="在utils下，拷贝redis-init-script到、etc-init-d目录"><a href="#在utils下，拷贝redis-init-script到、etc-init-d目录" class="headerlink" title="在utils下，拷贝redis_init_script到、etc/init.d目录"></a>在utils下，拷贝redis_init_script到、etc/init.d目录</h2><blockquote>
+<p>目的要把redis作为开机自启</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp redis_init_script /etc/init.d/</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建-usr-local-redis"><a href="#创建-usr-local-redis" class="headerlink" title="创建/usr/local/redis"></a>创建<code>/usr/local/redis</code></h2><blockquote>
+<p>用于存放配置文件</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /usr/<span class="built_in">local</span>/redis</span><br></pre></td></tr></table></figure>
+
+<h2 id="回redis解压文件拷贝配置文件"><a href="#回redis解压文件拷贝配置文件" class="headerlink" title="回redis解压文件拷贝配置文件"></a>回redis解压文件拷贝配置文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp redis.conf /usr/<span class="built_in">local</span>/redis</span><br></pre></td></tr></table></figure>
+
+<h2 id="修改核心配置文件redis-conf"><a href="#修改核心配置文件redis-conf" class="headerlink" title="修改核心配置文件redis.conf"></a>修改核心配置文件<code>redis.conf</code></h2><ol>
+<li><code>daeminize no</code> -&gt; <code>daeminize yes</code>  目的：为了让redis启动在linux后台运行</li>
+<li><code>dir ./</code>-&gt;<code>dir /usr/local/redis/working</code> 目的：修改redis工作目录</li>
+<li><code>bind 127.0.0.1 -::1</code>-&gt;<code>bind 0.0.0.0</code> 目的：可以让远程连接，不收IP限制</li>
+<li><code># requirepass foobared</code>-&gt;<code>requirepass myredis123</code></li>
+</ol>
+<h1 id="修改redis-init-script"><a href="#修改redis-init-script" class="headerlink" title="修改redis_init_script"></a>修改redis_init_script</h1><p><code>CONF=&quot;/etc/redis/$&#123;REDISPORT&#125;.conf&quot;</code>-&gt;<code>CONF=&quot;/usr/local/redis/redis.conf&quot;</code></p>
+<h1 id="为redis-init-script赋权"><a href="#为redis-init-script赋权" class="headerlink" title="为redis_init_script赋权"></a>为redis_init_script赋权</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 redis_init_script</span><br></pre></td></tr></table></figure>
+
+<h1 id="运行脚本启动redis"><a href="#运行脚本启动redis" class="headerlink" title="运行脚本启动redis"></a>运行脚本启动redis</h1><p><code>./redis_init_script start</code></p>
+<h1 id="设置redis开机自启"><a href="#设置redis开机自启" class="headerlink" title="设置redis开机自启"></a>设置redis开机自启</h1><p>在<code>redis_init_script start</code>中添加</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="comment">### END INIT INFO</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#chkconfig: 22345 10 90</span></span><br><span class="line"><span class="comment">#description: Start and Stop redis</span></span><br><span class="line"></span><br><span class="line">REDISPORT=6379</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<h1 id="开启开机自启"><a href="#开启开机自启" class="headerlink" title="开启开机自启"></a>开启开机自启</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chkconfig redis_init_script on</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/24/Nginx-Keepalived%E9%85%8D%E7%BD%AE%E5%AE%9E%E7%8E%B0nginx%E9%AB%98%E5%8F%AF%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1729,750 +2130,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/Nginx-LVS%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/22/Nginx-LVS%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/" itemprop="url">Nginx-LVS理论知识</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T00:17:38+08:00">
-                2021-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/LVS-nginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4-LVS%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
-                    <span itemprop="name">LVS+nginx实现高可用集群 - LVS知识点</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="LVS负载均衡"><a href="#LVS负载均衡" class="headerlink" title="LVS负载均衡"></a>LVS负载均衡</h1><ul>
-<li>Linux Virtual Server</li>
-<li>章文嵩博士主导的开源的负载均衡项目</li>
-<li>LVS（ipvs）已被集成到linux内核中</li>
-<li>负载均衡调度器（4层）</li>
-</ul>
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/lvs%E7%BD%91%E7%BB%9C%E6%8B%93%E6%89%91%E5%9B%BE2.png" alt="LVS网络拓扑" style="zoom: 50%;" />
-
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx%E7%BD%91%E7%BB%9C%E6%8B%93%E6%89%91%E5%9B%BE.png"></p>
-<h1 id="为什么要使用LVS-Nginx"><a href="#为什么要使用LVS-Nginx" class="headerlink" title="为什么要使用LVS+Nginx"></a>为什么要使用LVS+Nginx</h1><ul>
-<li>LVS基于四层，工作效率高</li>
-<li>单个Nginx承受不了压力，需要集群</li>
-<li>LVS充当Nginx集群的调度者</li>
-<li>Nginx接受请求来回，LVS可以只接受不响应</li>
-</ul>
-<h1 id="LVS工作模式"><a href="#LVS工作模式" class="headerlink" title="LVS工作模式"></a>LVS工作模式</h1><h2 id="NAT模式——基于网络地址"><a href="#NAT模式——基于网络地址" class="headerlink" title="NAT模式——基于网络地址"></a>NAT模式——基于网络地址</h2><blockquote>
-<p>NAT模式请求和响应都需要经过LVS本质上合Nginx没有区别，LVS处于公网，Real Server处于内网</p>
-</blockquote>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/NAT%E6%A8%A1%E5%BC%8F.png"></p>
-<h2 id="TUN模式——IP隧道"><a href="#TUN模式——IP隧道" class="headerlink" title="TUN模式——IP隧道"></a>TUN模式——IP隧道</h2><blockquote>
-<p>请求和响应都不经过LVS，大大提高并发量，但每个节点都要配备网卡，Real Server处于公网</p>
-</blockquote>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/TUN%E6%A8%A1%E5%BC%8F2.png"></p>
-<h2 id="DR模式——直接路由"><a href="#DR模式——直接路由" class="headerlink" title="DR模式——直接路由"></a>DR模式——直接路由</h2><blockquote>
-<p>构建虚拟IP接受响应，避免Real Server处于公网</p>
-</blockquote>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/DR%E6%A8%A1%E5%BC%8F.png"></p>
-<h1 id="Keepalived实现高可用"><a href="#Keepalived实现高可用" class="headerlink" title="Keepalived实现高可用"></a>Keepalived实现高可用</h1><blockquote>
-<p>避免单节点LVS宕机导致服务不可用</p>
-</blockquote>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/LVS%E9%AB%98%E5%8F%AF%E7%94%A8.png"></p>
-<h1 id="LVS负载均衡算法"><a href="#LVS负载均衡算法" class="headerlink" title="LVS负载均衡算法"></a>LVS负载均衡算法</h1><h2 id="静态算法"><a href="#静态算法" class="headerlink" title="静态算法"></a>静态算法</h2><blockquote>
-<p>根据LVS本身自有的固定算法分发用户请求</p>
-</blockquote>
-<ol>
-<li>轮询（rr）:平均分配给各个服务器（同nginx的轮询）</li>
-<li>加权轮询（wrr）：按照权重分配用户请求。权重越高被分配到的请求越多（同nginx的权重）</li>
-<li>原地址散列（sh）：同一个用户ip的请求，会有同一个RS来处理（同nginx的ip_hash）</li>
-<li>目标地址（dh）：根据url的不同，请求到不同的RS（同nginx的url_hash）</li>
-</ol>
-<h2 id="动态算法"><a href="#动态算法" class="headerlink" title="动态算法"></a>动态算法</h2><blockquote>
-<p>根据流量的不同，或者服务器的压力不同来分配用户请求，这是动态计算的<br>使用较多的是wlc或wrr</p>
-</blockquote>
-<ol>
-<li><p>最小连接数（lc）：把新的连接请求分配到当前连接数最小的服务器</p>
-</li>
-<li><p>加权最小连接数（wlc）：服务器的处理性能用数值来表示，权重越大处理的请求越多。Real Server 有可能会存在性能上的差异，wlc动态回去不同的服务器的负载状况，把请求分发到性能好并且比较空闲的服务器</p>
-</li>
-<li><p>最短期望延迟（sed）：特殊的wlc算法。</p>
-<ol>
-<li><p>例如：假设有ABC三台服务器，权重分别为1、2、3。</p>
-<ul>
-<li><p>如果使用wlc算法的话，当一个新情求进来，它可能会分给ABC中任意的一个。</p>
-</li>
-<li><p>如果使用sed算法的话，会进行如下运算</p>
-<ul>
-<li>A：（1+1）/1=2</li>
-<li>B：（1+2）/2=3/2</li>
-<li>C：（1+3）/3=4/2</li>
-</ul>
-<p>最终结果，会把这个请求交给得出运算结果最小的服务器</p>
-</li>
-</ul>
-</li>
-</ol>
-</li>
-<li><p>最少队列调度（nq）：永不使用队列。如果有Real Server的连接数等于0，则直接把这个请求分配过去，不需要再排队等待运算</p>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/Nginx-nginx%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%862/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/22/Nginx-nginx%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%862/" itemprop="url">Nginx-nginx理论知识2</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T00:16:03+08:00">
-                2021-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/LVS-nginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4-nginx%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
-                    <span itemprop="name">LVS+nginx实现高可用集群 - nginx知识点</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="跨域"><a href="#跨域" class="headerlink" title="跨域"></a>跨域</h1><h2 id="为什么会出现跨域问题"><a href="#为什么会出现跨域问题" class="headerlink" title="为什么会出现跨域问题"></a>为什么会出现跨域问题</h2><p>出于浏览器的同源策略限制。</p>
-<p>同源策略（Sameoriginpolicy）是一种约定，它是浏览器最核心也最基本的安全功能，如果缺少了同源策略，则浏览器的正常功能可能都会受到影响。可以说Web是构建在同源策略基础之上的，浏览器只是针对同源策略的一种实现。</p>
-<p>同源策略会阻止一个域的javascript脚本和另外一个域的内容进行交互。所谓同源（即指在同一个域）就是两个页面具有相同的协议（protocol），主机（host）和端口号（port）</p>
-<h2 id="什么是跨域"><a href="#什么是跨域" class="headerlink" title="什么是跨域"></a>什么是跨域</h2><p>当一个请求url的协议、域名、端口三者之间任意一个与当前页面url不同即为跨域</p>
-<table>
-<thead>
-<tr>
-<th>当前页面url</th>
-<th>被请求页面url</th>
-<th>是否跨域</th>
-<th>原因</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a target="_blank" rel="noopener" href="http://www.test.com/">http://www.test.com/</a></td>
-<td><a target="_blank" rel="noopener" href="http://www.test.com/index.html">http://www.test.com/index.html</a></td>
-<td>否</td>
-<td>同源（协议、域名、端口号相同）</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="http://www.test.com/">http://www.test.com/</a></td>
-<td><a target="_blank" rel="noopener" href="https://www.test.com/index.html">https://www.test.com/index.html</a></td>
-<td>跨域</td>
-<td>协议不同（http/https）</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="http://www.test.com/">http://www.test.com/</a></td>
-<td><a target="_blank" rel="noopener" href="http://www.baidu.com/">http://www.baidu.com/</a></td>
-<td>跨域</td>
-<td>主域名不同（test/baidu）</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="http://www.test.com/">http://www.test.com/</a></td>
-<td><a target="_blank" rel="noopener" href="http://blog.test.com/">http://blog.test.com/</a></td>
-<td>跨域</td>
-<td>子域名不同（www/blog）</td>
-</tr>
-<tr>
-<td><a target="_blank" rel="noopener" href="http://www.test.com:8080/">http://www.test.com:8080/</a></td>
-<td><a target="_blank" rel="noopener" href="http://www.test.com:7001/">http://www.test.com:7001/</a></td>
-<td>跨域</td>
-<td>端口号不同（8080/7001）</td>
-</tr>
-</tbody></table>
-<h2 id="非同源限制"><a href="#非同源限制" class="headerlink" title="非同源限制"></a>非同源限制</h2><ol>
-<li><p>无法读取非同源网页的 Cookie、LocalStorage 和 IndexedDB</p>
-</li>
-<li><p>无法接触非同源网页的 DOM</p>
-</li>
-<li><p>无法向非同源地址发送 AJAX 请求</p>
-</li>
-</ol>
-<h2 id="常用的跨域方法"><a href="#常用的跨域方法" class="headerlink" title="常用的跨域方法"></a>常用的跨域方法</h2><h3 id="JSONP"><a href="#JSONP" class="headerlink" title="JSONP"></a>JSONP</h3><p>原理就是利用了script标签，在标签外套了一层壳，利用标签特性达到跨域加载资源的效果。</p>
-<h3 id="CORS-–-跨站资源共享"><a href="#CORS-–-跨站资源共享" class="headerlink" title="CORS – 跨站资源共享"></a>CORS – 跨站资源共享</h3><p>跨域的官方解决方案，升级版的JSONP。原理是使用自定义的HTTP头部让浏览器与服务器进行沟通，从而决定请求或响应是应该成功还是失败。请求和响应都不包含cookie信息。</p>
-<h3 id="webSockets-–-不受同源策略影响"><a href="#webSockets-–-不受同源策略影响" class="headerlink" title="webSockets – 不受同源策略影响"></a>webSockets – 不受同源策略影响</h3><p>原理是因为它不使用HTTP协议，而使用一种自定义的协议，专门为快速传输小数据设计。</p>
-<h3 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h3><p>代理跨域。反向代理跨域。</p>
-<h4 id="Nginx配置"><a href="#Nginx配置" class="headerlink" title="Nginx配置"></a>Nginx配置</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">server&#123;</span><br><span class="line">	...</span><br><span class="line">    #允许跨域请求的域，*代表所有</span><br><span class="line">    add_header &#39;Access-Control-Allow-Origin&#39; *;</span><br><span class="line">    #允许带上cookie请求</span><br><span class="line">    add_header &#39;Access-Control-Allow-Credentials&#39; &#39;true&#39;;</span><br><span class="line">    #允许请求的方法，比如 GET&#x2F;POST&#x2F;PUT&#x2F;DELETE</span><br><span class="line">    add_header &#39;Access-Control-Allow-Methods&#39; *;</span><br><span class="line">    #允许请求的header</span><br><span class="line">    add_header &#39;Access-Control-Allow-Headers&#39; *;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="Nginx-防盗链配置支持"><a href="#Nginx-防盗链配置支持" class="headerlink" title="Nginx 防盗链配置支持"></a>Nginx 防盗链配置支持</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">server&#123;</span><br><span class="line">	...</span><br><span class="line">    #对源站点验证</span><br><span class="line">    valid_referers *.test.com; </span><br><span class="line">    #非法引入会进入下方判断</span><br><span class="line">    if ($invalid_referer) &#123;</span><br><span class="line">        return 404;</span><br><span class="line">	&#125; </span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>配置完成如果不是以<code>.test.com</code>访问则会返回404</p>
-<h1 id="Nginx-为静态资源提供服务"><a href="#Nginx-为静态资源提供服务" class="headerlink" title="Nginx 为静态资源提供服务"></a>Nginx 为静态资源提供服务</h1><blockquote>
-<p>反向代理就是当请求访问你的代理服务器时，代理服务器会对你的请求进行转发，可以转发到静态的资源路径上去，也可以转发到动态的服务接口上去。下面我们以对域名进行代理为例，来讲讲如何进行静态代理和动态代理。</p>
-</blockquote>
-<h2 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h2><p>静态代理就是将请求代理到不同的静态资源路径上去</p>
-<h3 id="例子1"><a href="#例子1" class="headerlink" title="例子1"></a>例子1</h3><ul>
-<li><code>nginx.conf</code>中添加<code>include myconf/*.conf</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">    include       mime.types;</span><br><span class="line">    include       muconf&#x2F;*.conf</span><br><span class="line">    default_type  application&#x2F;octet-stream;</span><br><span class="line">	...</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>myconf</code>中添加<code>image.conf</code></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">server &#123; </span><br><span class="line">	listen 90;</span><br><span class="line">	autoindex off;</span><br><span class="line">    server_name image.hikari.com; </span><br><span class="line">    access_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log combined; </span><br><span class="line">    index index.html index.htm index.jsp index.php; </span><br><span class="line">    #error_page 404 &#x2F;404.html; </span><br><span class="line">    if ( $query_string ~* &quot;.*[\;&#39;\&lt;\&gt;].*&quot; )&#123; </span><br><span class="line">    	return 404; </span><br><span class="line">    &#125; </span><br><span class="line">    location &#x2F; &#123; </span><br><span class="line">    	root &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;share&#x2F;image&#x2F;mall&#x2F;product&#x2F;</span><br><span class="line">    	add_header Access-Control-Allow-Origin *; </span><br><span class="line">    &#125; </span><br><span class="line">    #写法2</span><br><span class="line">    #location &#x2F;static &#123;</span><br><span class="line">    #    alias &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;share&#x2F;image&#x2F;mall;</span><br><span class="line">    #&#125;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
-
-<h4 id="root和alias"><a href="#root和alias" class="headerlink" title="root和alias"></a>root和alias</h4><hr>
-<p>假如服务器路存储图片径为：/usr/local/nginx/share/image/mall/product/hello_world.jpg</p>
-<ul>
-<li>root 路径完全匹配访问<br>配置的时候为：</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location / &#123;</span><br><span class="line">  root /usr/local/nginx/share/image/mall/product/</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>用户访问的时候请求为：<code>url:port/hello_world.jpg</code></p>
-<ul>
-<li>alias 可以为你的路径做一个别名，对用户透明<br>配置的时候为：</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /static &#123;</span><br><span class="line">  alias /usr/local/nginx/share/image/mall/product</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>用户访问的时候请求为：<code>url:port/static/face.png</code>，如此相当于为目录<code>/usr/local/nginx/share/image/mall/product/</code>做一个自定义<code>static</code>的别名。</p>
-<h3 id="例子2"><a href="#例子2" class="headerlink" title="例子2"></a>例子2</h3><ul>
-<li>首先我们修改下本机的host文件：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">172.19.191.68   image.hikari.com</span><br><span class="line"></span><br><span class="line">172.19.191.68   pdf.hikari.com</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>然后将我们的图片和pdf上传至服务器：</li>
-</ul>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8.png" alt="img"><br><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/pdf%E4%B8%8A%E4%BC%A0%E8%87%B3%E6%9C%8D%E5%8A%A1%E5%99%A8.png"></p>
-<ul>
-<li>添加并编辑<code>/usr/local/nginx/conf/myconf/image.conf</code>对图片进行反向代理：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">         listen 90;</span><br><span class="line">         autoindex off;</span><br><span class="line">         server_name image.hikari.com;</span><br><span class="line">         access_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log combined;</span><br><span class="line">         index index.html index.htm index.jsp index.php;</span><br><span class="line">         #error_page 404 &#x2F;404.html;</span><br><span class="line">         if ( $query_string ~* &quot;.*[\;&#39;\&lt;\&gt;].*&quot; )&#123;</span><br><span class="line">                return 404;</span><br><span class="line">         &#125;</span><br><span class="line">         location &#x2F; &#123;</span><br><span class="line">                root &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;share&#x2F;image&#x2F;mall&#x2F;product&#x2F;;</span><br><span class="line">                add_header Access-Control-Allow-Origin *;</span><br><span class="line">         &#125;</span><br><span class="line">         #location &#x2F;static &#123;</span><br><span class="line">         #      alias &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;share&#x2F;image&#x2F;mall&#x2F;product;</span><br><span class="line">         #      add_header Access-Control-Allow-Origin *;</span><br><span class="line">         #&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>添加并编辑<code>/usr/local/nginx/conf/myconf/pdf.conf</code>对pdf进行反向代理：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">         listen 90;</span><br><span class="line">         autoindex off;</span><br><span class="line">         server_name pdf.hikari.com;</span><br><span class="line">         access_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log combined;</span><br><span class="line">         index index.html index.htm index.jsp index.php;</span><br><span class="line">         #error_page 404 &#x2F;404.html;</span><br><span class="line">         if ( $query_string ~* &quot;.*[\;&#39;\&lt;\&gt;].*&quot; )&#123;</span><br><span class="line">          return 404;</span><br><span class="line">         &#125;</span><br><span class="line">         location &#x2F; &#123;</span><br><span class="line">          root &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;share&#x2F;pdf;</span><br><span class="line">          add_header Access-Control-Allow-Origin *;</span><br><span class="line">         &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>重启nginx服务：</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./nginx -s reload</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>通过<code>http://image.hikari.com:90/hello_world.jpg</code>即可访问到我们的图片了：</li>
-</ul>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx%E8%AE%BF%E9%97%AE%E5%9B%BE%E7%89%87.png" alt="img"></p>
-<ul>
-<li>通过<code>http://pdf.hikari.com:90/test.pdf</code>即可访问到pdf了：</li>
-</ul>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx%E8%AE%BF%E9%97%AEpdf.png" alt="img"></p>
-<h2 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h2><blockquote>
-<p>动态代理就是把代理服务器的请求转发到另一个服务上去，这里我们将对<a target="_blank" rel="noopener" href="http://tomcat.hikari.com/%E7%9A%84%E8%AF%B7%E6%B1%82%E4%BB%A3%E7%90%86%E5%88%B0">http://tomcat.hikari.com/的请求代理到</a> Tomcat服务上去。</p>
-</blockquote>
-<ul>
-<li>首先我们修改下本机的host文件，添加如下规则：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">47.101.161.153   tomcat.hikari.com</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在/mydata/nginx/conf/conf.d文件夹中添加配置文件api.conf对将请求代理到远程的mall-admin服务上去：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       90;</span><br><span class="line">    server_name  tomcat.hikari.com; #修改域名</span><br><span class="line">    access_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;access.log combined;</span><br><span class="line">    index index.html index.htm index.jsp index.php;</span><br><span class="line">    #error_page 404 &#x2F;404.html;</span><br><span class="line">    if ( $query_string ~* &quot;.*[\;&#39;\&lt;\&gt;].*&quot; )&#123;</span><br><span class="line">        return 404;</span><br><span class="line">    &#125;</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        proxy_pass   http:&#x2F;&#x2F;127.0.0.1:8080; #修改为代理服务地址</span><br><span class="line">        add_header Access-Control-Allow-Origin *;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>重启动nginx服务后，通过<code>http://tomcat.hikari.com:90/</code>即可访问到tomcat主页了：</li>
-</ul>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86.png" alt="img"></p>
-<h1 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h1><h2 id="四层负载均衡"><a href="#四层负载均衡" class="headerlink" title="四层负载均衡"></a>四层负载均衡</h2><blockquote>
-<p>所谓四层就是基于IP+端口的负载均衡</p>
-</blockquote>
-<ul>
-<li>F5 硬负载均衡</li>
-<li>LVS四层负载均衡</li>
-<li>Haproxy四层负载均衡</li>
-<li>Nginx四层负载均衡</li>
-</ul>
-<h2 id="七层负载均衡"><a href="#七层负载均衡" class="headerlink" title="七层负载均衡"></a>七层负载均衡</h2><blockquote>
-<p>基于URL等应用层信息的负载均衡，可以处理诉求（特殊的要求，提供资源）</p>
-</blockquote>
-<ul>
-<li>Nginx 负载均衡</li>
-<li>Haproxy七层负载均衡</li>
-<li>apache七层负载均衡</li>
-</ul>
-<p>LVS 由于是基于四层的转发所以只能做端口的转发，而基于 URL 的、基于目录的这种转发 LVS 就做不了。</p>
-<p>HAproxy 和 Nginx 由于可以做七层的转发，所以 URL 和目录的转发都可以做，在很大并发量的时候我们就要选择 LVS ，像中小型公司的话并发量没那么大选择 HAproxy 或者 Nginx 足已。</p>
-<h2 id="DNS地域负载均衡"><a href="#DNS地域负载均衡" class="headerlink" title="DNS地域负载均衡"></a>DNS地域负载均衡</h2><blockquote>
-<p>DNS地域是基于地理的负载均衡 </p>
-</blockquote>
-<p>例子: 北方的用户访问北京的机房, 南方的用户访问深圳的机房,DNS负载均衡的本质是DNS解析同一个域名可以访问不同的IP地址 </p>
-<p>例如: 同样是<code>www.baidu.com</code>,北京用户解析后获取的地址是61.135.165.224(北京机房IP),南方用户解析后获取的地址是14.215.177.38(深圳机房IP)</p>
-<h1 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h1><h2 id="配置上游服务器"><a href="#配置上游服务器" class="headerlink" title="配置上游服务器"></a>配置上游服务器</h2><blockquote>
-<p>.conf中配置upstream</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#配置上游服务器</span><br><span class="line">upstream tomcats &#123;</span><br><span class="line">        server 192.168.113.131:8080;</span><br><span class="line">        server 192.168.113.129:8080;</span><br><span class="line">        server 192.168.113.130:8080;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">            listen     80;</span><br><span class="line">            server_name  www.tomcats.com;</span><br><span class="line"></span><br><span class="line">            location &#x2F;&#123;</span><br><span class="line">                proxy_pass http:&#x2F;&#x2F;tomcats;</span><br><span class="line">            &#125;</span><br><span class="line">       &#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="集群策略"><a href="#集群策略" class="headerlink" title="集群策略"></a>集群策略</h2><h4 id="轮询"><a href="#轮询" class="headerlink" title="轮询"></a>轮询</h4><h5 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h5><p>优点：实现简单</p>
-<p>缺点：不考虑每台服务器的处理能力</p>
-<h5 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">upstream www.happymmall.com&#123;</span><br><span class="line">	server www.happymmall.com:8080;</span><br><span class="line">	server www.happymmall.com:9080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="权重"><a href="#权重" class="headerlink" title="权重"></a>权重</h4><h5 id="优缺点-1"><a href="#优缺点-1" class="headerlink" title="优缺点"></a>优缺点</h5><p>优点：考虑每台服务器处理能力的不同</p>
-<h5 id="配置-1"><a href="#配置-1" class="headerlink" title="配置"></a>配置</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">upstream www.happymmall.com&#123;</span><br><span class="line">	server www.happymmall.com:8080 weight&#x3D;15;</span><br><span class="line">	server www.happymmall.com:9080 weight&#x3D;10;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p> <strong>注：</strong></p>
-<ul>
-<li><p>weight默认是1</p>
-</li>
-<li><p>如果多个配置权重的节点，比较相对值（访问8080是访问9080的1.5倍）</p>
-</li>
-</ul>
-<h4 id="Ip-hash"><a href="#Ip-hash" class="headerlink" title="Ip hash"></a>Ip hash</h4><p><code>hash（ip）%node_counts = index</code></p>
-<h5 id="Ip-hash-算法"><a href="#Ip-hash-算法" class="headerlink" title="Ip_hash 算法"></a>Ip_hash 算法</h5><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/ip_hash%E7%AE%97%E6%B3%95.png"></p>
-<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1_ip_hash.png"></p>
-<h5 id="优缺点-2"><a href="#优缺点-2" class="headerlink" title="优缺点"></a>优缺点</h5><p>优点：能实现同一个用户访问同一个服务器</p>
-<p>缺点：根据ip hash不一定平均m    </p>
-<h5 id="配置-2"><a href="#配置-2" class="headerlink" title="配置"></a>配置</h5><blockquote>
-<p>如果有一台服务器需临时移除需用<code>down</code></p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 集群一</span><br><span class="line">upstream www.happymmall.com&#123;</span><br><span class="line">	ip_hash;</span><br><span class="line">	server www.happymmall.com:8080;</span><br><span class="line">	server www.happymmall.com:9080;</span><br><span class="line">&#125;</span><br><span class="line"># 集群二</span><br><span class="line">upstream tomcats &#123;</span><br><span class="line">    ip_hash;</span><br><span class="line"></span><br><span class="line">    server 192.168.1.173:8080;</span><br><span class="line">    server 192.168.1.174:8080 down;</span><br><span class="line">    server 192.168.1.175:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="least-conn"><a href="#least-conn" class="headerlink" title="least_conn"></a>least_conn</h4><p>根据最少连接数请求</p>
-<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1_least_conn.png"></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcats &#123;</span><br><span class="line">    # 最少连接数</span><br><span class="line">    # least_conn</span><br><span class="line"></span><br><span class="line">    server 192.168.1.173:8080;</span><br><span class="line">    server 192.168.1.174:8080;</span><br><span class="line">    server 192.168.1.175:8080;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name www.tomcats.com;</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        proxy_pass  http:&#x2F;&#x2F;tomcats;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="url-hash-第三方"><a href="#url-hash-第三方" class="headerlink" title="url hash(第三方)"></a>url hash(第三方)</h4><p>根据每次请求的url地址，hash后访问到固定的服务器节点。</p>
-<h5 id="优缺点-3"><a href="#优缺点-3" class="headerlink" title="优缺点"></a>优缺点</h5><p>优点：能实现同一个服务访问同一个服务器</p>
-<p>缺点：根据url hash分配请求会不平均，请求频繁的url会请求到同一个服务器</p>
-<h5 id="配置-3"><a href="#配置-3" class="headerlink" title="配置"></a>配置</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcats &#123;</span><br><span class="line">    # url hash</span><br><span class="line">    hash $request_uri;</span><br><span class="line">    </span><br><span class="line">    server 192.168.1.173:8080;</span><br><span class="line">    server 192.168.1.174:8080;</span><br><span class="line">    server 192.168.1.175:8080;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name www.tomcats.com;</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        proxy_pass  http:&#x2F;&#x2F;tomcats;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="一致hash算法-没用过，只是了解"><a href="#一致hash算法-没用过，只是了解" class="headerlink" title="一致hash算法(没用过，只是了解)"></a>一致hash算法(没用过，只是了解)</h4><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95.png"><br><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95_%E5%87%8F%E5%B0%91%E6%9C%8D%E5%8A%A1%E5%99%A8.png"><br><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C%E7%AE%97%E6%B3%95_%E6%96%B0%E5%A2%9E%E6%9C%8D%E5%8A%A1%E5%99%A8.png"></p>
-<h4 id="fair"><a href="#fair" class="headerlink" title="fair"></a>fair</h4><p>特点：根据后端服务器的响应时间来分配请求，响应时间短的优先分配</p>
-<h5 id="配置-4"><a href="#配置-4" class="headerlink" title="配置"></a>配置</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">upstream www.happymmall.com&#123;</span><br><span class="line">	server www.happymmall.com:8080;</span><br><span class="line">	server www.happymmall.com:9080;</span><br><span class="line">	fair;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="集群upstream参数拓展"><a href="#集群upstream参数拓展" class="headerlink" title="集群upstream参数拓展"></a>集群<code>upstream</code>参数拓展</h2><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/upstream%E5%8F%82%E6%95%B0%E6%8B%93%E5%B1%95.png"></p>
-<h3 id="upstream-指令参数"><a href="#upstream-指令参数" class="headerlink" title="upstream 指令参数"></a>upstream 指令参数</h3><h4 id="max-conns-最大连接数"><a href="#max-conns-最大连接数" class="headerlink" title="max_conns 最大连接数"></a>max_conns 最大连接数</h4><p>限制每台server的连接数，用于保护避免过载，可起到限流作用。</p>
-<ul>
-<li>nginx.conf</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#不使用共享内存</span><br><span class="line">worker_processes  1</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>myconf.conf</li>
-</ul>
-<blockquote>
-<p>nginx.conf  include myconf.conf</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#配置上游服务器</span><br><span class="line">upstream tomcats &#123;</span><br><span class="line">        server 192.168.113.131:8080 max_conn&#x3D;2;</span><br><span class="line">        server 192.168.113.129:8080 max_conn&#x3D;2;</span><br><span class="line">        server 192.168.113.130:8080 max_conn&#x3D;2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">            listen     80;</span><br><span class="line">            server_name  www.tomcats.com;</span><br><span class="line"></span><br><span class="line">            location &#x2F;&#123;</span><br><span class="line">                proxy_pass http:&#x2F;&#x2F;tomcats;</span><br><span class="line">            &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="slow-start-缓慢开始，不会直接加入集群"><a href="#slow-start-缓慢开始，不会直接加入集群" class="headerlink" title="slow_start 缓慢开始，不会直接加入集群"></a>slow_start 缓慢开始，不会直接加入集群</h4><blockquote>
-<p>不适用单个服务器</p>
-<p><code>slow_start</code>=<code>time</code>  设置服务器权重从0恢复到标准值的时间，<br>默认值为0,缓慢的启动</p>
-</blockquote>
-<ul>
-<li><strong>该参数不能使用在<code>hash</code>和<code>random load balancing</code>中。</strong></li>
-<li><strong>如果在 upstream 中只有一台 server，则该参数失效。</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#配置上游服务器</span><br><span class="line">upstream tomcats &#123;</span><br><span class="line">        server 192.168.113.131:8080 weight&#x3D;6 slow_start&#x3D;60s;</span><br><span class="line">        server 192.168.113.129:8080 weight&#x3D;2;</span><br><span class="line">        server 192.168.113.130:8080 weight&#x3D;2;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">            listen     80;</span><br><span class="line">            server_name  www.tomcats.com;</span><br><span class="line"></span><br><span class="line">            location &#x2F;&#123;</span><br><span class="line">                proxy_pass http:&#x2F;&#x2F;tomcats;</span><br><span class="line">            &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="down-节点不可用"><a href="#down-节点不可用" class="headerlink" title="down 节点不可用"></a>down 节点不可用</h4><blockquote>
-<p>标记服务节点不可用</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcats &#123;</span><br><span class="line">        server 192.168.1.173:8080 down;</span><br><span class="line">#       server 192.168.1.190:8080;</span><br><span class="line">        server 192.168.1.174:8080 weight&#x3D;1;</span><br><span class="line">        server 192.168.1.175:8080 weight&#x3D;1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="backup-备用节点"><a href="#backup-备用节点" class="headerlink" title="backup 备用节点"></a>backup 备用节点</h4><blockquote>
-<p><code>backup</code>参数不能使用在<code>hash</code>和<code>random load balancing</code>中。</p>
-</blockquote>
-<p>表示当前服务器节点是备用机，只有在其他的服务器都宕机以后，自己才会加入到集群中，被用户访问到：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcats &#123;</span><br><span class="line">        server 192.168.1.173:8080 backup;</span><br><span class="line">#       server 192.168.1.190:8080;</span><br><span class="line">        server 192.168.1.174:8080 weight&#x3D;1;</span><br><span class="line">        server 192.168.1.175:8080 weight&#x3D;1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="max-fails"><a href="#max-fails" class="headerlink" title="max_fails"></a>max_fails</h4><p>最大失败次数</p>
-<p>表示失败几次，则标记server已宕机，剔出上游服务。</p>
-<h4 id="fail-timeout"><a href="#fail-timeout" class="headerlink" title="fail_timeout"></a>fail_timeout</h4><p>表示失败的重试时间。</p>
-<p>假设目前设置如下：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream tomcats &#123;</span><br><span class="line">        server 192.168.1.173:8080 max_fails=2 fail_timeout=15s ;</span><br><span class="line">#       server 192.168.1.190:8080;</span><br><span class="line">        server 192.168.1.174:8080 weight=1;</span><br><span class="line">        server 192.168.1.175:8080 weight=1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>则代表在15秒内请求某一server失败达到2次后，则认为该server已经挂了或者宕机了，随后再过15秒，这15秒内不会有新的请求到达刚刚挂掉的节点上，而是会请求到正常运作的server，15秒后会再有新请求尝试连接挂掉的server，如果还是失败，重复上一过程，直到恢复。</p>
-<h3 id="nginx配置Keeplive"><a href="#nginx配置Keeplive" class="headerlink" title="nginx配置Keeplive"></a>nginx配置Keeplive</h3><blockquote>
-<p>长连接 （提高吞吐量）</p>
-</blockquote>
-<p><code>keepalived</code>： 设置长连接处理的数量<br><code>proxy_http_version</code>：设置长连接http版本为1.1<br><code>proxy_set_header</code>：清除connection header 信息</p>
-<h1 id="nginx的缓存"><a href="#nginx的缓存" class="headerlink" title="nginx的缓存"></a>nginx的缓存</h1><h2 id="浏览器缓存-Nginx缓存"><a href="#浏览器缓存-Nginx缓存" class="headerlink" title="浏览器缓存|Nginx缓存"></a>浏览器缓存|Nginx缓存</h2><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E7%BC%93%E5%AD%98.png"></p>
-<ol>
-<li>浏览器缓存</li>
-</ol>
-<p>加速用户访问，提高单个用户（浏览器访问者）体验，缓存在本地</p>
-<ul>
-<li>expire指令</li>
-</ul>
-<p><code>expires[time|epoch|max|off]</code></p>
-<p><code>expires-[time] </code> 提前过期</p>
-<p><code>expires@[time]</code>  如 @22h30m —— 晚上10点半（指定时间到期）</p>
-<p>epoch 指定“Expires”的值为 1 January, 1970, 00:00:01 GMT。</p>
-<p>max 指定“Expires”的值为 31 December 2037 23:59:59 GMT，“Cache-Control”的值为10年。</p>
-<p>-1 指定“Expires”的值为服务器当前时间 -1s,即永远过期</p>
-<p>“off” 表示不修改“Expires”和“Cache-Control”的值</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen       88;</span><br><span class="line">        server_name  localhost;</span><br><span class="line"></span><br><span class="line">        location &#x2F;static &#123;</span><br><span class="line">            alias &#x2F;home&#x2F;shop;</span><br><span class="line">            expires 10s；</span><br><span class="line">        &#125;	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>Nginx缓存</li>
-</ol>
-<ul>
-<li>缓存在nginx端，提高所有访问到nginx这一端的用户</li>
-<li>提高访问上游（upstream）服务器的速度</li>
-<li>用户访问能然会产生请求流量</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"># 配置上游服务器</span><br><span class="line">upstream tomcats&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"># proxy_cache_path 设置缓存目录</span><br><span class="line">#       keys_zone 设置共享内存以及占用空间大小</span><br><span class="line">#       max_size 设置缓存大小</span><br><span class="line">#       inactive 超过此时间则被清理</span><br><span class="line">#       use_temp_path 临时目录，使用后会影响nginx性能</span><br><span class="line">proxy_cache_path &#x2F;usr&#x2F;local&#x2F;nginx&#x2F;upstream_cache </span><br><span class="line">keys_zone&#x3D;mycache:5m </span><br><span class="line">max_size&#x3D;1g </span><br><span class="line">inactive&#x3D;1m </span><br><span class="line">use_temp_path&#x3D;off;</span><br><span class="line"></span><br><span class="line">server&#123;</span><br><span class="line">	listen 80;</span><br><span class="line">	server_name www.tomcates.com;</span><br><span class="line">	</span><br><span class="line">	# 启用缓存，和keys_zone一致</span><br><span class="line">    proxy_cache mycache;</span><br><span class="line">    # 针对200和304状态码缓存时间为8小时</span><br><span class="line">    proxy_cache_valid   200 304 8h;</span><br><span class="line">	</span><br><span class="line">	location &#x2F; &#123;</span><br><span class="line">		proxy_pass http:&#x2F;&#x2F;tomcats</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>在nginx中配置proxy_pass代理转发时，如果在proxy_pass后面的url加/，表示绝对根路径；如果没有/，表示相对路径，把匹配的路径部分也给代理走。</p>
-</blockquote>
-<h1 id="Nginx日志"><a href="#Nginx日志" class="headerlink" title="Nginx日志"></a>Nginx日志</h1><h2 id="手动切割"><a href="#手动切割" class="headerlink" title="手动切割"></a>手动切割</h2><p>vim /usr/local/nginx/sbin/cut_my_log.sh </p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">LOG_PATH=&quot;/var/log/nginx/&quot;</span><br><span class="line">RECORD_TIME=$(date -d &quot;yesterday&quot; +%Y-%m-%d+%H:%M)</span><br><span class="line">PID=/var/run/nginx/nginx.pid</span><br><span class="line">mv $&#123;LOG_PATH&#125;/access.log $&#123;LOG_PATH&#125;/access.$&#123;RECORD_TIME&#125;.log</span><br><span class="line">mv $&#123;LOG_PATH&#125;/error.log $&#123;LOG_PATH&#125;/error.$&#123;RECORD_TIME&#125;.log</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">向Nginx主进程发送信号，用于重新打开日志文件</span></span><br><span class="line">kill -USR1 `cat $PID`</span><br></pre></td></tr></table></figure>
-
-<p>为<code>cut_my_log.sh</code>添加可执行的权限：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x cut_my_log.sh</span><br></pre></td></tr></table></figure>
-
-<p>日记存在目录：/var/log/nginx</p>
-<p>执行shell脚本：./usr/local/nginx/sbin/cut_my_log.sh</p>
-<p>查看日记情况：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-rw-r--r--. 1 root   root 1725 3月  22 11:36 access.2020-05-29+16:34.log</span><br><span class="line">-rw-r--r--. 1 nobody root    0 5月  30 16:34 access.2020-05-29+16:35.log</span><br><span class="line">-rw-r--r--. 1 root   root  407 5月  30 16:42 access.2020-05-29+16:49.log</span><br><span class="line">-rw-r--r--. 1 nobody root    0 5月  30 16:49 access.log</span><br><span class="line">-rw-r--r--. 1 root   root 2317 5月  30 15:34 error.2020-05-29+16:34.log</span><br><span class="line">-rw-r--r--. 1 nobody root    0 5月  30 16:34 error.2020-05-29+16:35.log</span><br><span class="line">-rw-r--r--. 1 root   root  915 5月  30 16:43 error.2020-05-29+16:49.log</span><br><span class="line">-rw-r--r--. 1 nobody root    0 5月  30 16:49 error.log</span><br></pre></td></tr></table></figure>
-
-<h2 id="定时切割"><a href="#定时切割" class="headerlink" title="定时切割"></a>定时切割</h2><ol>
-<li><p>安装定时任务：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install crontabs</span><br></pre></td></tr></table></figure></li>
-<li><p><code>crontab -e</code> 编辑并且添加一行新的任务：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*/1 * * * * /usr/local/nginx/sbin/cut_my_log.sh</span><br></pre></td></tr></table></figure></li>
-<li><p>重启定时任务：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service crond restart</span><br></pre></td></tr></table></figure></li>
-</ol>
-<ul>
-<li><p>附：常用定时任务命令：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">service crond start         //启动服务</span><br><span class="line">service crond stop          //关闭服务</span><br><span class="line">service crond restart       //重启服务</span><br><span class="line">service crond reload        //重新载入配置</span><br><span class="line">crontab -e                  // 编辑任务</span><br><span class="line">crontab -l                  // 查看任务列表</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h3 id="定时任务表达式："><a href="#定时任务表达式：" class="headerlink" title="定时任务表达式："></a>定时任务表达式：</h3><p>Cron表达式是，分为5或6个域，每个域代表一个含义，如下所示：</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>分</th>
-<th>时</th>
-<th>日</th>
-<th>月</th>
-<th>星期几</th>
-<th>年（可选）</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>取值范围</td>
-<td>0-59</td>
-<td>0-23</td>
-<td>1-31</td>
-<td>1-12</td>
-<td>1-7</td>
-<td>2019/2020/2021/…</td>
-</tr>
-</tbody></table>
-<h3 id="常用表达式："><a href="#常用表达式：" class="headerlink" title="常用表达式："></a>常用表达式：</h3><ul>
-<li><p>每分钟执行：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*/1 * * * *</span><br></pre></td></tr></table></figure></li>
-<li><p>每日凌晨（每天晚上23:59）执行：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">59 23 * * *</span><br></pre></td></tr></table></figure></li>
-<li><p>每日凌晨1点执行：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">0 1 * * *</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h1 id="使用Gzip压缩提高请求效率"><a href="#使用Gzip压缩提高请求效率" class="headerlink" title="使用Gzip压缩提高请求效率"></a>使用Gzip压缩提高请求效率</h1><p>nginx.conf中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">    #开启gzip压缩功能，目的：提高传输效率，节约带宽</span><br><span class="line">    gzip  on;</span><br><span class="line">    </span><br><span class="line">    #IE6不使用gzip</span><br><span class="line">    gzip_disable &quot;msie6&quot;; </span><br><span class="line">    </span><br><span class="line">    #设置为on会在Header里增加 &quot;Vary: Accept-Encoding&quot;</span><br><span class="line">    gzip_vary on; </span><br><span class="line">    </span><br><span class="line">    #代理结果数据的压缩</span><br><span class="line">    gzip_proxied any; </span><br><span class="line">    </span><br><span class="line">    #限制最小压缩，小于1字节文件不会压缩</span><br><span class="line">    gzip_min_length 1;</span><br><span class="line">    </span><br><span class="line">    #压缩比,定义压缩级别(文件越大，压缩越多，但是CPU使用越多)</span><br><span class="line">    gzip_comp_level 3;</span><br><span class="line">    </span><br><span class="line">    #获取多少内存用于缓存压缩结果</span><br><span class="line">    gzip_buffers 16 8k;</span><br><span class="line">    </span><br><span class="line">    #识别http协议的版本</span><br><span class="line">    gzip_http_version 1.1; </span><br><span class="line">    </span><br><span class="line">    #定义压缩文件的类型</span><br><span class="line">    gzip_types text&#x2F;plain application&#x2F;javascript application&#x2F;x-javascript text&#x2F;css application&#x2F;xml text&#x2F;javascript application&#x2F;x-httpd-php image&#x2F;gif image&#x2F;png application&#x2F;json;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="地址重写"><a href="#地址重写" class="headerlink" title="地址重写"></a>地址重写</h1><blockquote>
-<p>摘抄<a target="_blank" rel="noopener" href="http://www.macrozheng.com/#/reference/nginx">Nginx的这些妙用，你肯定有不知道的！</a> </p>
-</blockquote>
-<blockquote>
-<p>有的时候我们的网站更换了域名，但还有用户在使用老的域名访问，这时可以通过nginx的地址重写来让用户跳转到新的域名进行访问。</p>
-</blockquote>
-<ul>
-<li>比如说原来我们用的docs.macrozheng.com这个域名不用了，现在改成<a target="_blank" rel="noopener" href="http://www.macrozheng.com了来访问文档项目了;/">www.macrozheng.com了来访问文档项目了；</a></li>
-</ul>
-<p>修改docs.conf配置文件，将地址带参数重写到新地址：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    server_name  docs.macrozheng.com; </span><br><span class="line"></span><br><span class="line">    rewrite &quot;^&#x2F;(.*)$&quot; http:&#x2F;&#x2F;www.macrozheng.com&#x2F;$1; #地址重写到新地址</span><br><span class="line"></span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        root   &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html&#x2F;docs; </span><br><span class="line">        index  index.html index.htm;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    error_page   500 502 503 504  &#x2F;50x.html;</span><br><span class="line">    location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">        root   &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>此时访问旧域名docs.macrozheng.com会直接跳转到<a target="_blank" rel="noopener" href="http://www.macrozheng.com去./">www.macrozheng.com去。</a></p>
-<h1 id="location匹配规则"><a href="#location匹配规则" class="headerlink" title="location匹配规则"></a>location匹配规则</h1><ul>
-<li><p><code>空格</code>：默认匹配，普通匹配</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location / &#123;</span><br><span class="line">     root /home;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p><code>=</code>：精确匹配</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location = /imooc/img/face1.png &#123;</span><br><span class="line">    root /home;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p><code>~*</code>：匹配正则表达式，不区分大小写</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#符合图片的显示</span><br><span class="line">location ~* .(GIF|jpg|png|jpeg) &#123;</span><br><span class="line">    root /home;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p><code>~</code>：匹配正则表达式，区分大小写</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#GIF必须大写才能匹配到</span><br><span class="line">location ~ .(GIF|jpg|png|jpeg) &#123;</span><br><span class="line">    root /home;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p><code>^~</code>：以某个字符路径开头</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location ^~ /imooc/img &#123;</span><br><span class="line">    root /home;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-<h1 id="nginx-pid打开失败以及失效的解决方案"><a href="#nginx-pid打开失败以及失效的解决方案" class="headerlink" title="nginx.pid打开失败以及失效的解决方案"></a>nginx.pid打开失败以及失效的解决方案</h1><p>cd /var/run/nginx/nginx.pid 会出现 没有那个目录或文件</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx_pid%E6%89%93%E5%BC%80%E5%A4%B1%E8%B4%A5.png" alt="img"></p>
-<ol>
-<li><p>重新创建了这个文件，使用如下命令：mkdir /var/run/nginx/</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx_pid%E6%89%93%E5%BC%80%E5%A4%B1%E8%B4%A52.png" alt="img"></p>
-</li>
-<li><p>cd /var/run/nginx</p>
-</li>
-<li><p>cd /usr/local/nginx</p>
-</li>
-<li><p>cd sbin</p>
-</li>
-<li><p>./nginx -t</p>
-</li>
-<li><p>./nginx -s reload 会报PID错误，<strong>nginx.pid</strong>是无效的。</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/nginx_pid%E6%89%93%E5%BC%80%E5%A4%B1%E8%B4%A53.png" alt="img"></p>
-</li>
-<li><p>./nginx -c /usr/local/nginx/conf/nginx.conf 重新设置nginx.conf默认配置文件</p>
-</li>
-<li><p>./nginx -s reload 重启nginx</p>
-</li>
-</ol>
-<h1 id="Nginx-如何实现后端服务的健康检查？"><a href="#Nginx-如何实现后端服务的健康检查？" class="headerlink" title="Nginx 如何实现后端服务的健康检查？"></a>Nginx 如何实现后端服务的健康检查？</h1><p>方式一，利用 nginx 自带模块 ngx_http_proxy_module 和 ngx_http_upstream_module 对后端节点做健康检查。</p>
-<p>方式二，利用 nginx_upstream_check_module 模块对后端节点做健康检查。</p>
-<h1 id="请解释ngx-http-upstream-module的作用是什么"><a href="#请解释ngx-http-upstream-module的作用是什么" class="headerlink" title="请解释ngx_http_upstream_module的作用是什么?"></a>请解释<code>ngx_http_upstream_module</code>的作用是什么?</h1><p><code>ngx_http_upstream_module</code>用于定义可通过<code>fastcgi</code>传递、<code>proxy</code>传递、<code>uwsgi</code>传递、<code>memcached</code>传递和scgi传递指令来引用的服务器组。</p>
-<h1 id="请解释什么是C10K问题"><a href="#请解释什么是C10K问题" class="headerlink" title="请解释什么是C10K问题?"></a>请解释什么是<code>C10K</code>问题?</h1><p><code>C10K</code>问题是指无法同时处理大量客户端(10,000)的网络套接字。</p>
-<h1 id="解释Nginx是否支持将请求压缩到上游"><a href="#解释Nginx是否支持将请求压缩到上游" class="headerlink" title="解释Nginx是否支持将请求压缩到上游?"></a>解释Nginx是否支持将请求压缩到上游?</h1><p>您可以使用Nginx模块gunzip将请求压缩到上游。gunzip模块是一个过滤器，它可以对不支持“gzip”编码方法的客户机或服务器使用“内容编码:gzip”来解压缩响应。</p>
-<h1 id="解释如何在Nginx中获得当前的时间"><a href="#解释如何在Nginx中获得当前的时间" class="headerlink" title="解释如何在Nginx中获得当前的时间?"></a>解释如何在Nginx中获得当前的时间?</h1><p>要获得Nginx的当前时间，必须使用SSI模块、$date_gmt和$date_local的变量。</p>
-<p>Proxy_set_header THE-TIME $date_gmt;</p>
-<h1 id="用Nginx服务器解释-s的目的是什么"><a href="#用Nginx服务器解释-s的目的是什么" class="headerlink" title="用Nginx服务器解释-s的目的是什么?"></a>用<code>Nginx</code>服务器解释<code>-s</code>的目的是什么?</h1><p>用于运行<code>Nginx -s</code>参数的可执行文件。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2524,7 +2181,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-count">83</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2535,7 +2192,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

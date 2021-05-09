@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试,分布式,elasticsearch,搜索引擎," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="ES分页分页查询搜索分深浅，比如第一页，第二页，第十页是比较浅的分页，第200000页就比较深了 12345678GET &#x2F;bank&#x2F;_search&amp;#123;  &quot;query&quot;: &amp;#123;     &quot;match_all&quot;: &amp;#123;&amp;#125;   &amp;#125;,  &quot;from&quot;: 1,  &quot;size&quot;: 1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="中间件-Elasticsearch深度分页与批量操作">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/05/09/%E4%B8%AD%E9%97%B4%E4%BB%B6-Elasticsearch%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5%E4%B8%8E%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="ES分页分页查询搜索分深浅，比如第一页，第二页，第十页是比较浅的分页，第200000页就比较深了 12345678GET &#x2F;bank&#x2F;_search&amp;#123;  &quot;query&quot;: &amp;#123;     &quot;match_all&quot;: &amp;#123;&amp;#125;   &amp;#125;,  &quot;from&quot;: 1,  &quot;size&quot;: 1">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/es%E5%88%86%E9%A1%B5.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%BB%9A%E5%8A%A8%E6%90%9C%E7%B4%A2.png">
+<meta property="article:published_time" content="2021-05-09T02:50:40.000Z">
+<meta property="article:modified_time" content="2021-05-09T05:56:32.422Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="分布式">
+<meta property="article:tag" content="elasticsearch">
+<meta property="article:tag" content="搜索引擎">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/es%E5%88%86%E9%A1%B5.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/05/09/中间件-Elasticsearch深度分页与批量操作/"/>
+
+
+
+
+
+  <title>中间件-Elasticsearch深度分页与批量操作 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/09/%E4%B8%AD%E9%97%B4%E4%BB%B6-Elasticsearch%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5%E4%B8%8E%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">中间件-Elasticsearch深度分页与批量操作</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-09T10:50:40+08:00">
+                2021-05-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/elasticsearch-elasticsearch%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5%E4%B8%8E%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/" itemprop="url" rel="index">
+                    <span itemprop="name">elasticsearch - elasticsearch深度分页与批量操作</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="ES分页"><a href="#ES分页" class="headerlink" title="ES分页"></a>ES分页</h1><h2 id="分页查询"><a href="#分页查询" class="headerlink" title="分页查询"></a>分页查询</h2><p>搜索分深浅，比如第一页，第二页，第十页是比较浅的分页，第200000页就比较深了</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123; </span><br><span class="line">    <span class="attr">&quot;match_all&quot;</span>: &#123;&#125; </span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;from&quot;</span>: <span class="number">1</span>,</span><br><span class="line">  <span class="attr">&quot;size&quot;</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/es%E5%88%86%E9%A1%B5.png" style="zoom:50%;" />
+
+<h2 id="深度分页"><a href="#深度分页" class="headerlink" title="深度分页"></a>深度分页</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;match_all&quot;</span>: &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;from&quot;</span>: <span class="number">9999</span>,</span><br><span class="line">    <span class="attr">&quot;size&quot;</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5.png"></p>
+<p>在获取9999条到10009条时，其实每个分片都会拿到10009条数据，延后集合在一起，总共10009*3=30027条数据，针对这30027条数据在做排序处理，最终获得最后10条数据。</p>
+<p><strong>搜索的太深就会带来新能问题，消耗CPU和内存</strong>。es为了性能不支持一万条数据以上的分页。</p>
+<p>为了避免此问题，避免深度分页操作，比如限制分页页数，只支持100页展示。</p>
+<h3 id="解除分页限制"><a href="#解除分页限制" class="headerlink" title="解除分页限制"></a>解除分页限制</h3><blockquote>
+<p>企业内部有些业务需突破10000条限制</p>
+</blockquote>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">GET     /bank/_settings</span><br><span class="line"></span><br><span class="line">PUT     /bank/_settings</span><br><span class="line">&#123; </span><br><span class="line">    <span class="attr">&quot;index.max_result_window&quot;</span>: <span class="string">&quot;20000&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;bank&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;settings&quot;</span> : &#123;</span><br><span class="line">      <span class="attr">&quot;index&quot;</span> : &#123;</span><br><span class="line">        <span class="attr">&quot;routing&quot;</span> : &#123;</span><br><span class="line">          <span class="attr">&quot;allocation&quot;</span> : &#123;</span><br><span class="line">            <span class="attr">&quot;include&quot;</span> : &#123;</span><br><span class="line">              <span class="attr">&quot;_tier_preference&quot;</span> : <span class="string">&quot;data_content&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;number_of_shards&quot;</span> : <span class="string">&quot;1&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;provided_name&quot;</span> : <span class="string">&quot;bank&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;max_result_window&quot;</span> : <span class="string">&quot;20000&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;creation_date&quot;</span> : <span class="string">&quot;1619342566350&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;number_of_replicas&quot;</span> : <span class="string">&quot;0&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;uuid&quot;</span> : <span class="string">&quot;RpDsE2ncQ1qVZp4vPTvGdQ&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;version&quot;</span> : &#123;</span><br><span class="line">          <span class="attr">&quot;created&quot;</span> : <span class="string">&quot;7120099&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="滚动分页"><a href="#滚动分页" class="headerlink" title="滚动分页"></a>滚动分页</h2><p>一次性查询1万+的数据，会影响性能，可以采用滚动搜索。滚动搜索可以先查询出一些数据，然后在紧接着依次往下查询。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>第一次查询的时候会有一个滚动ID，相当于一个锚标记，随后再次滚动搜索时需要上一次的锚标记，根据这个进行下一次搜索请求。每次搜索都是基于一个历史的数据快照，查询数据期间，如果有数据变更，那么和搜索是没有关系的，搜索内容还是快照内的内容</p>
+<ul>
+<li>第一次搜索</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST    /bank/_search?scroll=1m</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123; </span><br><span class="line">    	<span class="attr">&quot;match_all&quot;</span>: &#123;</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;,  </span><br><span class="line">    <span class="attr">&quot;sort&quot;</span> : [<span class="string">&quot;_doc&quot;</span>], </span><br><span class="line">    <span class="attr">&quot;size&quot;</span>:  <span class="number">5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%BB%9A%E5%8A%A8%E6%90%9C%E7%B4%A2.png" style="zoom:50%;" />
+
+<ul>
+<li>第二次搜索</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST    /_search/scroll</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;scroll&quot;</span>: <span class="string">&quot;1m&quot;</span>, </span><br><span class="line">    <span class="attr">&quot;scroll_id&quot;</span> : <span class="string">&quot;FGluY2x1ZGVfY29udGV4dF91dWlkDXF1ZXJ5QW5kRmV0Y2gBFkM3RVpzczJfUi1hSGRwVjBoYlB4TkEAAAAAAAAYXhZhUHVyMVM0SlRHbVZLYXBUcFJYR21n&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="批量操作bulk"><a href="#批量操作bulk" class="headerlink" title="批量操作bulk"></a>批量操作bulk</h1><h2 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123; action: &#123; metadata &#125;&#125;\n</span><br><span class="line">&#123; request body        &#125;\n</span><br><span class="line">&#123; action: &#123; metadata &#125;&#125;\n</span><br><span class="line">&#123; request body        &#125;\n</span><br><span class="line">...</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>&#123; action: &#123; metadata &#125;&#125;</code>代表批量操作的类型，可以是新增、删除或修改</li>
+<li><code>\n</code>是每行结尾必须填写的一个规范，每一行包括最后一行都要写，用于es的解析</li>
+<li><code>&#123; request body &#125;</code>是请求body，增加和修改操作需要，删除操作则不需要</li>
+</ul>
+<h2 id="批量操作的类型"><a href="#批量操作的类型" class="headerlink" title="批量操作的类型"></a>批量操作的类型</h2><p>action 必须是以下选项之一:</p>
+<ul>
+<li>create：如果文档不存在，那么就创建它。存在会报错。发生异常报错不会影响其他操作。</li>
+<li>index：创建一个新文档或者替换一个现有的文档。</li>
+<li>update：部分更新一个文档。</li>
+<li>delete：删除一个文档。</li>
+</ul>
+<blockquote>
+<p>metadata中需要指定要操作的文档的_index、_type和_id,_index、_type也可以在url中指定</p>
+</blockquote>
+<h2 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h2><ul>
+<li><p>create新增文档数据，在metadata中指定index以及type</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST    /_bulk</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="attr">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2001&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2001&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="attr">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2002&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2002&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2002&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="attr">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2003&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2003&quot;</span>&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>create创建已有id文档，在url中指定index和type</p>
+</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2003&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2003&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2004&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2004&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2005&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2005&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2005&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>index创建，已有文档id会被覆盖，不存在的id则新增</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="attr">&quot;index&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2004&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;index2004&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;index&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2007&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2007&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;index&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2008&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2008&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2008&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>update跟新部分文档数据</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="attr">&quot;update&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;doc&quot;</span>:&#123; <span class="attr">&quot;id&quot;</span>: <span class="string">&quot;3004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;update&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;doc&quot;</span>:&#123; <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;nameupdate&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>delete批量删除</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="attr">&quot;delete&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;delete&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>综合批量各种操作</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;8001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;8001&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name8001&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;update&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;doc&quot;</span>:&#123; <span class="attr">&quot;id&quot;</span>: <span class="string">&quot;20010&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;delete&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;delete&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2005&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/" rel="tag"># 分布式</a>
+          
+            <a href="/tags/elasticsearch/" rel="tag"># elasticsearch</a>
+          
+            <a href="/tags/%E6%90%9C%E7%B4%A2%E5%BC%95%E6%93%8E/" rel="tag"># 搜索引擎</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/26/%E4%B8%AD%E9%97%B4%E4%BB%B6-ElasticsearchDSL%E6%90%9C%E7%B4%A2/" rel="next" title="中间件-ElasticsearchDSL搜索">
+                <i class="fa fa-chevron-left"></i> 中间件-ElasticsearchDSL搜索
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/05/09/%E4%B8%AD%E9%97%B4%E4%BB%B6-Elasticsearch%E9%9B%86%E7%BE%A4/" rel="prev" title="中间件-Elasticsearch集群">
+                中间件-Elasticsearch集群 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">83</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">42</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ES%E5%88%86%E9%A1%B5"><span class="nav-number">1.</span> <span class="nav-text">ES分页</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E9%A1%B5%E6%9F%A5%E8%AF%A2"><span class="nav-number">1.1.</span> <span class="nav-text">分页查询</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5"><span class="nav-number">1.2.</span> <span class="nav-text">深度分页</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E9%99%A4%E5%88%86%E9%A1%B5%E9%99%90%E5%88%B6"><span class="nav-number">1.2.1.</span> <span class="nav-text">解除分页限制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BB%9A%E5%8A%A8%E5%88%86%E9%A1%B5"><span class="nav-number">1.3.</span> <span class="nav-text">滚动分页</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">1.3.1.</span> <span class="nav-text">原理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9Cbulk"><span class="nav-number">2.</span> <span class="nav-text">批量操作bulk</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-number">2.1.</span> <span class="nav-text">基本语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.2.</span> <span class="nav-text">批量操作的类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E6%93%8D"><span class="nav-number">2.3.</span> <span class="nav-text">实操</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

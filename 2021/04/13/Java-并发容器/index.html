@@ -87,7 +87,7 @@
 <meta property="og:description" content="JDK 提供的并发容器总结JDK 提供的这些容器大部分在 java.util.concurrent 包中。  ConcurrentHashMap: 线程安全的 HashMap CopyOnWriteArrayList: 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector. ConcurrentLinkedQueue: 高效的并发队列，使用链表实现。可以看做一个线程安全的 Li">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-04-13T14:36:51.000Z">
-<meta property="article:modified_time" content="2021-05-08T09:00:55.319Z">
+<meta property="article:modified_time" content="2021-05-08T11:06:45.157Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="面试">
@@ -400,7 +400,7 @@
 <h1 id="ConcurrentLinkedQueue（非阻塞队列）"><a href="#ConcurrentLinkedQueue（非阻塞队列）" class="headerlink" title="ConcurrentLinkedQueue（非阻塞队列）"></a>ConcurrentLinkedQueue（非阻塞队列）</h1><ol>
 <li>主要使用 CAS 非阻塞算法来实现线程安全</li>
 <li>使用链表作为其数据结构</li>
-<li> 适合在对性能要求相对较高，同时对队列的读写存在多个线程同时进行的场景即如果对队列加锁的成本较高则适合使用无锁的 ConcurrentLinkedQueue 来替代</li>
+<li> 适合在对性能要求相对较高，同时对队列的读写存在多个线程同时进行的场景(即如果对队列加锁的成本较高则适合使用无锁的 ConcurrentLinkedQueue 来替代)</li>
 </ol>
 <h1 id="BlockingQueue（阻塞队列）"><a href="#BlockingQueue（阻塞队列）" class="headerlink" title="BlockingQueue（阻塞队列）"></a>BlockingQueue（阻塞队列）</h1><p>被广泛使用在“生产者-消费者”问题中，其原因是 BlockingQueue 提供了可阻塞的插入和移除的方法。当队列容器已满，生产者线程会被阻塞，直到队列未满；当队列容器为空时，消费者线程会被阻塞，直至队列非空时为止。</p>
 <p>BlockingQueue 是一个接口，继承自 Queue，所以其实现类也可以作为 Queue 的实现来使用，而 Queue 又继承自 Collection 接口，<strong>ArrayBlockingQueue、LinkedBlockingQueue、PriorityBlockingQueue，这三个 BlockingQueue 的实现类。</strong></p>
@@ -546,7 +546,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-count">83</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -557,7 +557,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
