@@ -87,8 +87,10 @@
 <meta property="og:description" content="核心术语核心概念 Near Realtime（近实时）：Elasticsearch是一个近乎实时的搜索平台，这意味着从索引文档到可搜索文档之间只有一个轻微的延迟(通常是一秒钟)。  Cluster（集群）：群集是一个或多个节点的集合，它们一起保存整个数据，并提供跨所有节点的联合索引和搜索功能。每个群集都有自己的唯一群集名称，节点通过名称加入群集。  Node（节点）：节点是指属于集群的单个Elas">
 <meta property="og:locale">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%951.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%96%87%E6%A1%A3%E5%86%99%E5%8E%9F%E7%90%86.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%96%87%E6%A1%A3%E8%AF%BB%E5%8E%9F%E7%90%86.png">
 <meta property="article:published_time" content="2021-04-16T08:04:12.000Z">
-<meta property="article:modified_time" content="2021-05-09T02:52:54.776Z">
+<meta property="article:modified_time" content="2021-05-10T07:43:46.759Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="面试">
 <meta property="article:tag" content="分布式">
@@ -537,6 +539,21 @@
 <li>seq_no: 文档版本号，作用同version（相当于学生编号，每个班级的班主任为学生分配编号，效率要比需校教务处分配来的更加高效，管理起来更加方便）</li>
 <li>primary_term: 文档所在位置（相当于班级）</li>
 </ul>
+<h1 id="集群文档读写原理"><a href="#集群文档读写原理" class="headerlink" title="集群文档读写原理"></a>集群文档读写原理</h1><h2 id="文档写原理"><a href="#文档写原理" class="headerlink" title="文档写原理"></a>文档写原理</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%96%87%E6%A1%A3%E5%86%99%E5%8E%9F%E7%90%86.png"></p>
+<ol>
+<li>客户端会选择某一个节点作为协调节点，负责接收用户请求</li>
+<li>协调节点会根据文档进行路由，数据要写到哪一个主分片里面（根据文档id进行hash算法）</li>
+<li>数据同步至副本分片</li>
+<li>请求返回协调节点</li>
+<li>告知客户端</li>
+</ol>
+<h2 id="文档读原理"><a href="#文档读原理" class="headerlink" title="文档读原理"></a>文档读原理</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%96%87%E6%A1%A3%E8%AF%BB%E5%8E%9F%E7%90%86.png"></p>
+<ol>
+<li>客户端会选择某一个节点作为协调节点，负责接收用户请求</li>
+<li>协调节点根据文档id进行hash算法，计算出文档在那个位置，<strong>读数据是从主分片和副本分片轮询读取</strong></li>
+<li>请求返回协调节点</li>
+<li>告知客户端</li>
+</ol>
 
       
     </div>
@@ -663,7 +680,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">83</span>
+                  <span class="site-state-item-count">90</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -674,7 +691,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">65</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -685,7 +702,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-count">46</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -734,7 +751,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%9C%AF%E8%AF%AD"><span class="nav-number">1.</span> <span class="nav-text">核心术语</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">核心概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E7%9B%B8%E5%85%B3"><span class="nav-number">1.2.</span> <span class="nav-text">集群相关</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%95"><span class="nav-number">2.</span> <span class="nav-text">倒排索引</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%EF%BC%88%E8%A1%A8%EF%BC%89%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">索引（表）操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%B4%A2%E5%BC%95"><span class="nav-number">3.1.</span> <span class="nav-text">创建索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E7%B4%A2%E5%BC%95"><span class="nav-number">3.2.</span> <span class="nav-text">查看索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E7%B4%A2%E5%BC%95"><span class="nav-number">3.3.</span> <span class="nav-text">删除索引</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mappings%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%9B%E5%BB%BA%E6%98%A0%E5%B0%84"><span class="nav-number">4.</span> <span class="nav-text">mappings自定义创建映射</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.0.1.</span> <span class="nav-text">主要数据类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%B4%A2%E5%BC%95%E5%90%8C%E6%97%B6%E5%88%9B%E5%BB%BAmappings"><span class="nav-number">4.1.</span> <span class="nav-text">创建索引同时创建mappings</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%88%86%E8%AF%8D%E6%95%88%E6%9E%9C"><span class="nav-number">4.2.</span> <span class="nav-text">查看分词效果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%9D%E8%AF%95%E4%BF%AE%E6%94%B9"><span class="nav-number">4.3.</span> <span class="nav-text">尝试修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E%E9%A2%9D%E5%A4%96%E5%B1%9E%E6%80%A7"><span class="nav-number">4.4.</span> <span class="nav-text">新增额外属性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E6%A1%A3%E6%93%8D%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text">文档操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0"><span class="nav-number">5.1.</span> <span class="nav-text">添加</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B"><span class="nav-number">5.2.</span> <span class="nav-text">查看</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E5%88%B6%E7%BB%93%E6%9E%9C%E9%9B%86"><span class="nav-number">5.2.1.</span> <span class="nav-text">定制结果集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E6%96%87%E6%A1%A3%E6%98%AF%E5%90%A6%E5%AD%98%E5%9C%A8"><span class="nav-number">5.2.2.</span> <span class="nav-text">判断文档是否存在</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E4%B8%8E%E5%88%A0%E9%99%A4"><span class="nav-number">5.3.</span> <span class="nav-text">修改与删除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%90%E8%A7%82%E9%94%81%E6%8E%A7%E5%88%B6"><span class="nav-number">5.4.</span> <span class="nav-text">乐观锁控制</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%9C%AF%E8%AF%AD"><span class="nav-number">1.</span> <span class="nav-text">核心术语</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">核心概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E7%9B%B8%E5%85%B3"><span class="nav-number">1.2.</span> <span class="nav-text">集群相关</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%80%92%E6%8E%92%E7%B4%A2%E5%BC%95"><span class="nav-number">2.</span> <span class="nav-text">倒排索引</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%EF%BC%88%E8%A1%A8%EF%BC%89%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">索引（表）操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%B4%A2%E5%BC%95"><span class="nav-number">3.1.</span> <span class="nav-text">创建索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E7%B4%A2%E5%BC%95"><span class="nav-number">3.2.</span> <span class="nav-text">查看索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E7%B4%A2%E5%BC%95"><span class="nav-number">3.3.</span> <span class="nav-text">删除索引</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#mappings%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%9B%E5%BB%BA%E6%98%A0%E5%B0%84"><span class="nav-number">4.</span> <span class="nav-text">mappings自定义创建映射</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.0.1.</span> <span class="nav-text">主要数据类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E7%B4%A2%E5%BC%95%E5%90%8C%E6%97%B6%E5%88%9B%E5%BB%BAmappings"><span class="nav-number">4.1.</span> <span class="nav-text">创建索引同时创建mappings</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%88%86%E8%AF%8D%E6%95%88%E6%9E%9C"><span class="nav-number">4.2.</span> <span class="nav-text">查看分词效果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%9D%E8%AF%95%E4%BF%AE%E6%94%B9"><span class="nav-number">4.3.</span> <span class="nav-text">尝试修改</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E%E9%A2%9D%E5%A4%96%E5%B1%9E%E6%80%A7"><span class="nav-number">4.4.</span> <span class="nav-text">新增额外属性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E6%A1%A3%E6%93%8D%E4%BD%9C"><span class="nav-number">5.</span> <span class="nav-text">文档操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0"><span class="nav-number">5.1.</span> <span class="nav-text">添加</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B"><span class="nav-number">5.2.</span> <span class="nav-text">查看</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E5%88%B6%E7%BB%93%E6%9E%9C%E9%9B%86"><span class="nav-number">5.2.1.</span> <span class="nav-text">定制结果集</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E6%96%87%E6%A1%A3%E6%98%AF%E5%90%A6%E5%AD%98%E5%9C%A8"><span class="nav-number">5.2.2.</span> <span class="nav-text">判断文档是否存在</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E4%B8%8E%E5%88%A0%E9%99%A4"><span class="nav-number">5.3.</span> <span class="nav-text">修改与删除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%90%E8%A7%82%E9%94%81%E6%8E%A7%E5%88%B6"><span class="nav-number">5.4.</span> <span class="nav-text">乐观锁控制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4%E6%96%87%E6%A1%A3%E8%AF%BB%E5%86%99%E5%8E%9F%E7%90%86"><span class="nav-number">6.</span> <span class="nav-text">集群文档读写原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E6%A1%A3%E5%86%99%E5%8E%9F%E7%90%86"><span class="nav-number">6.1.</span> <span class="nav-text">文档写原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E6%A1%A3%E8%AF%BB%E5%8E%9F%E7%90%86"><span class="nav-number">6.2.</span> <span class="nav-text">文档读原理</span></a></li></ol></li></ol></div>
             
 
           </div>

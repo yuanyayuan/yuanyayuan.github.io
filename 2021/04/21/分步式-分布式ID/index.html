@@ -79,15 +79,15 @@
 
 
 
-<meta name="description" content="UUID通用唯一标识码，保证每一条记录的id都是不同的 缺点：只是一个单纯的id，没有实际意义，长度32位，太长 MyCat不支持UUID，Sharding-Jdbc支持UUID的方式 MyCat全局Id（本地文件和数据库） ID的值统一的从一个集中的ID序列生成器中获取 MyCat支持ID序列生成器，Sharding-Jdbc不支持ID序列生成器  MyCat中有两种方式：本地文件方式和数据库方">
+<meta name="description" content="UUID通用唯一标识码，保证每一条记录的id都是不同的 缺点：只是一个单纯的id，没有实际意义，长度32位，太长 MyCat不支持UUID，Sharding-Jdbc支持UUID的方式 MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID）） ID的值统一的从一个集中的ID序列生成器中获取 MyCat支持ID序列生成器，Sharding-Jdbc不支持ID序列生成器  MyCat中有两种">
 <meta property="og:type" content="article">
 <meta property="og:title" content="分步式-分布式ID">
 <meta property="og:url" content="https://yuanyayuan.github.io/2021/04/21/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%B8%83%E5%BC%8FID/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="UUID通用唯一标识码，保证每一条记录的id都是不同的 缺点：只是一个单纯的id，没有实际意义，长度32位，太长 MyCat不支持UUID，Sharding-Jdbc支持UUID的方式 MyCat全局Id（本地文件和数据库） ID的值统一的从一个集中的ID序列生成器中获取 MyCat支持ID序列生成器，Sharding-Jdbc不支持ID序列生成器  MyCat中有两种方式：本地文件方式和数据库方">
+<meta property="og:description" content="UUID通用唯一标识码，保证每一条记录的id都是不同的 缺点：只是一个单纯的id，没有实际意义，长度32位，太长 MyCat不支持UUID，Sharding-Jdbc支持UUID的方式 MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID）） ID的值统一的从一个集中的ID序列生成器中获取 MyCat支持ID序列生成器，Sharding-Jdbc不支持ID序列生成器  MyCat中有两种">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-04-21T09:15:57.000Z">
-<meta property="article:modified_time" content="2021-04-21T10:43:35.537Z">
+<meta property="article:modified_time" content="2021-05-09T08:25:02.782Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="面试">
 <meta property="article:tag" content="分步式">
@@ -356,7 +356,7 @@
         <h1 id="UUID"><a href="#UUID" class="headerlink" title="UUID"></a>UUID</h1><p>通用唯一标识码，保证每一条记录的id都是不同的</p>
 <p>缺点：只是一个单纯的id，没有实际意义，长度32位，太长</p>
 <p><strong>MyCat不支持UUID</strong>，<strong>Sharding-Jdbc</strong>支持UUID的方式</p>
-<h1 id="MyCat全局Id（本地文件和数据库）"><a href="#MyCat全局Id（本地文件和数据库）" class="headerlink" title="MyCat全局Id（本地文件和数据库）"></a>MyCat全局Id（本地文件和数据库）</h1><ul>
+<h1 id="MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID））"><a href="#MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID））" class="headerlink" title="MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID））"></a>MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID））</h1><ul>
 <li><p>ID的值统一的从一个集中的ID序列生成器中获取</p>
 <p><strong>MyCat支持ID序列生成器</strong>，<strong>Sharding-Jdbc不支持ID序列生成器</strong></p>
 </li>
@@ -410,11 +410,11 @@
 
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> mall_order(id,total_amount,order_status)<span class="keyword">values</span>(<span class="number">88</span>, <span class="number">3</span>)</span><br></pre></td></tr></table></figure>
 
-<h1 id="雪花算法"><a href="#雪花算法" class="headerlink" title="雪花算法"></a>雪花算法</h1><ul>
+<h2 id="雪花算法"><a href="#雪花算法" class="headerlink" title="雪花算法"></a>雪花算法</h2><ul>
 <li>一个64bit的long型的数字</li>
 <li>引入时间戳，保持自增</li>
 </ul>
-<h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><p>0+41为时间戳+5位机房id+5位机器id+12位序列号</p>
+<h3 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h3><p>0+41为时间戳+5位机房id+5位机器id+12位序列号</p>
 <p>支持毫秒级的并发数位4096，但时间回调可能引起id重复，<strong>MyCat支持</strong>雪花算法，<strong>Sharding-Jdbc</strong>支持雪花算法的方式。<strong>Sharding-Jdbc</strong>可设置最大容忍回调时间</p>
 <p><strong>使用时注意</strong>：</p>
 <ol>
@@ -424,10 +424,15 @@
 </ol>
 <ul>
 <li><p>sequence_time_conf.properties</p>
-<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">  #sequence depend on TIME</span></span><br><span class="line"><span class="comment">  #mycat部署多台可以设置不同的值</span></span><br><span class="line"><span class="comment">  #机器</span></span><br><span class="line">  <span class="attr">WORKID</span>=<span class="string">01</span></span><br><span class="line"><span class="comment">  #机房</span></span><br><span class="line"><span class="attr">DATAACENTERID</span>=<span class="string">01</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#sequence depend on TIME</span></span><br><span class="line"><span class="comment">#mycat部署多台可以设置不同的值</span></span><br><span class="line"><span class="comment">#机器</span></span><br><span class="line"><span class="attr">WORKID</span>=<span class="string">01</span></span><br><span class="line"><span class="comment">#机房</span></span><br><span class="line"><span class="attr">DATAACENTERID</span>=<span class="string">01</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>WORKID和DATAACENTERID不能超过32，因为5bit是2的5次方=32</strong></p>
 </li>
+</ul>
+<h1 id="程序方式"><a href="#程序方式" class="headerlink" title="程序方式"></a>程序方式</h1><ul>
+<li>Snowflake</li>
+<li>UUID</li>
+<li>Redis</li>
 </ul>
 
       
@@ -461,8 +466,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/04/20/%E4%B8%AD%E9%97%B4%E4%BB%B6-RabbitMQ%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/" rel="next" title="中间件-RabbitMQ集群配置">
-                <i class="fa fa-chevron-left"></i> 中间件-RabbitMQ集群配置
+              <a href="/2021/04/20/%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE-RabbitMQ%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/" rel="next" title="高可用配置-RabbitMQ集群配置">
+                <i class="fa fa-chevron-left"></i> 高可用配置-RabbitMQ集群配置
               </a>
             
           </div>
@@ -551,7 +556,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">83</span>
+                  <span class="site-state-item-count">90</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -562,7 +567,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">65</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -573,7 +578,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-count">46</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -622,7 +627,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#UUID"><span class="nav-number">1.</span> <span class="nav-text">UUID</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MyCat%E5%85%A8%E5%B1%80Id%EF%BC%88%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E5%92%8C%E6%95%B0%E6%8D%AE%E5%BA%93%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">MyCat全局Id（本地文件和数据库）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE"><span class="nav-number">2.1.</span> <span class="nav-text">本地文件配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">数据库配置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">雪花算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">算法</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#UUID"><span class="nav-number">1.</span> <span class="nav-text">UUID</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MyCat%E5%85%A8%E5%B1%80Id%EF%BC%88%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%EF%BC%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E3%80%82%E6%9C%AC%E5%9C%B0%E6%97%B6%E9%97%B4%E6%88%B3%E6%96%B9%E5%BC%8F%EF%BC%88%E9%9B%AA%E8%8A%B1ID%EF%BC%89%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID））</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE"><span class="nav-number">2.1.</span> <span class="nav-text">本地文件配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">数据库配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95"><span class="nav-number">2.3.</span> <span class="nav-text">雪花算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-number">2.3.1.</span> <span class="nav-text">算法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">程序方式</span></a></li></ol></div>
             
 
           </div>

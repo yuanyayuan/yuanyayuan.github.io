@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ELK," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="架构   app.log——全量日志(info,warn,error) error.log——error日志（error等级以上的）  日志输出 日志等级可以分为5个，从低到高分别是: DEBUG&lt; INFO&lt;WARNING&lt; ERROR&lt; CRITICAL  日志格式1[%d&amp;#123;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSZZ&amp;#125;]">
+<meta property="og:type" content="article">
+<meta property="og:title" content="软件安装-ELK搭建">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/05/10/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-ELK%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="架构   app.log——全量日志(info,warn,error) error.log——error日志（error等级以上的）  日志输出 日志等级可以分为5个，从低到高分别是: DEBUG&lt; INFO&lt;WARNING&lt; ERROR&lt; CRITICAL  日志格式1[%d&amp;#123;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSZZ&amp;#125;]">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/ELK.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%861.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/kibana/kibana1.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/kibana/kibana2.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/kibana/es%E6%A8%A1%E6%9D%BF.png">
+<meta property="article:published_time" content="2021-05-10T08:54:20.000Z">
+<meta property="article:modified_time" content="2021-05-10T13:12:13.448Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="ELK">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/ELK.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/05/10/软件安装-ELK搭建/"/>
+
+
+
+
+
+  <title>软件安装-ELK搭建 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/10/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-ELK%E6%90%AD%E5%BB%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">软件安装-ELK搭建</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-10T16:54:20+08:00">
+                2021-05-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%86-ELK/" itemprop="url" rel="index">
+                    <span itemprop="name">日志收集 - ELK</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h1><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/ELK.png"></p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/%E6%97%A5%E5%BF%97%E6%94%B6%E9%9B%861.png"></p>
+<ul>
+<li>app.log——全量日志(info,warn,error)</li>
+<li>error.log——error日志（error等级以上的）</li>
+</ul>
+<h1 id="日志输出"><a href="#日志输出" class="headerlink" title="日志输出"></a>日志输出</h1><blockquote>
+<p>日志等级可以分为5个，从低到高分别是:</p>
+<p>DEBUG&lt; INFO&lt;WARNING&lt; ERROR&lt; CRITICAL</p>
+</blockquote>
+<h2 id="日志格式"><a href="#日志格式" class="headerlink" title="日志格式"></a>日志格式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[%d&#123;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSZZ&#125;] [%level&#123;length&#x3D;5&#125;] [%thread-%tid] [%logger] [%X&#123;hostName&#125;] [%X&#123;ip&#125;] [%X&#123;applicationName&#125;] [%F,%L,%C,%M] [%m] ## &#39;%ex&#39;%n</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[2021-05-10T17:43:17.117+08:00] [WARN] [http-nio-8001-exec-1-37] [com.bfxy.collector.web.IndexController] [DESKTOP-Q4PJJ2O] [192.168.1.4] [collector] [IndexController.java,56,com.bfxy.collector.web.IndexController,index] [我是一条warn日志] ## &#39;&#39;</span><br></pre></td></tr></table></figure>
+
+
+<ol>
+<li><p>[%d{yyyy-MM-dd’T’HH:mm:ss.SSSZZ}] ：时间——[2021-05-10T17:43:17.117+08:00]</p>
+</li>
+<li><p>[%level{length=5}]：日志级别——[WARN]</p>
+</li>
+<li><p>[%thread-%tid]：线程ID——[http-nio-8001-exec-1-37] </p>
+</li>
+<li><p>[%logger] ：执行类——[com.bfxy.collector.web.IndexController]</p>
+</li>
+<li><p>[%X{hostName}]：主机名：[DESKTOP-Q4PJJ2O]——自定义字段</p>
+</li>
+<li><p>[%X{ip}]：IP地址：[192.168.1.4]——自定义字段</p>
+</li>
+<li><p>[%X{applicationName}]：服务名：[collector]——自定义字段</p>
+</li>
+<li><p>[%F,%L,%C,%M]：F：当前执行的文件；L：行号；C：Calss；M:方法</p>
+<p>——[IndexController.java,56,com.bfxy.collector.web.IndexController,index]</p>
+</li>
+<li><p>[%m] ## ‘%ex’%n：m：日志信息；ex：异常堆栈信息</p>
+<p>——[我是一条warn日志] ## ‘’</p>
+</li>
+</ol>
+<p><strong>自定义字段使用MDC实现</strong>，MDC可理解为ThreadLocal+Map</p>
+<h2 id="日志分级输出"><a href="#日志分级输出" class="headerlink" title="日志分级输出"></a>日志分级输出</h2><ol>
+<li>CONSOLE</li>
+</ol>
+<p>  控制台输出</p>
+<ol start="2">
+<li>appAppender</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">RollingRandomAccessFile</span> <span class="attr">name</span>=<span class="string">&quot;appAppender&quot;</span> <span class="attr">fileName</span>=<span class="string">&quot;$&#123;LOG_HOME&#125;/app-$&#123;FILE_NAME&#125;.log&quot;</span> <span class="attr">filePattern</span>=<span class="string">&quot;$&#123;LOG_HOME&#125;/app-$&#123;FILE_NAME&#125;-%d&#123;yyyy-MM-dd&#125;-%i.log&quot;</span> &gt;</span></span><br><span class="line">	...</span><br><span class="line"><span class="tag">&lt;/<span class="name">RollingRandomAccessFile</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>errorAppender</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">RollingRandomAccessFile</span> <span class="attr">name</span>=<span class="string">&quot;errorAppender&quot;</span> <span class="attr">fileName</span>=<span class="string">&quot;$&#123;LOG_HOME&#125;/error-$&#123;FILE_NAME&#125;.log&quot;</span> <span class="attr">filePattern</span>=<span class="string">&quot;$&#123;LOG_HOME&#125;/error-$&#123;FILE_NAME&#125;-%d&#123;yyyy-MM-dd&#125;-%i.log&quot;</span> &gt;</span></span><br><span class="line">	...</span><br><span class="line">	<span class="tag">&lt;<span class="name">Filters</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">ThresholdFilter</span> <span class="attr">level</span>=<span class="string">&quot;warn&quot;</span> <span class="attr">onMatch</span>=<span class="string">&quot;ACCEPT&quot;</span> <span class="attr">onMismatch</span>=<span class="string">&quot;DENY&quot;</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">Filters</span>&gt;</span>   </span><br><span class="line">	...</span><br><span class="line"><span class="tag">&lt;/<span class="name">RollingRandomAccessFile</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="自定义字段实现"><a href="#自定义字段实现" class="headerlink" title="自定义字段实现"></a>自定义字段实现</h2><p>自定义字段使用MDC实现，MDC可理解为ThreadLocal+Map</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InputMDC</span> <span class="keyword">implements</span> <span class="title">EnvironmentAware</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">static</span> Environment environment;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEnvironment</span><span class="params">(Environment environment)</span> </span>&#123;</span><br><span class="line">		InputMDC.environment = environment;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">putMDC</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		MDC.put(<span class="string">&quot;hostName&quot;</span>, NetUtil.getLocalHostName());</span><br><span class="line">		MDC.put(<span class="string">&quot;ip&quot;</span>, NetUtil.getLocalIp());</span><br><span class="line">		MDC.put(<span class="string">&quot;applicationName&quot;</span>, environment.getProperty(<span class="string">&quot;spring.application.name&quot;</span>));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="filebeat安装"><a href="#filebeat安装" class="headerlink" title="filebeat安装"></a>filebeat安装</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">cd &#x2F;usr&#x2F;software&#x2F;elastic&#x2F;</span><br><span class="line">tar -zxvf filebeat-7.12.0-linux-x86_64.tar.gz -C &#x2F;usr&#x2F;local&#x2F;</span><br><span class="line">cd &#x2F;usr&#x2F;local</span><br><span class="line">mv filebeat-7.12.0-linux-x86_64&#x2F; filebeat-7.12.0</span><br><span class="line"></span><br><span class="line">## 配置filebeat，可以参考filebeat.full.yml中的配置。</span><br><span class="line">vim &#x2F;usr&#x2F;local&#x2F;filebeat-5.6.2&#x2F;filebeat.yml</span><br><span class="line"></span><br><span class="line">filebeat启动：</span><br><span class="line"></span><br><span class="line">## 检查配置是否正确</span><br><span class="line">cd &#x2F;usr&#x2F;local&#x2F;filebeat-7.12.0</span><br><span class="line">.&#x2F;filebeat test config</span><br><span class="line">## Config OK</span><br><span class="line"></span><br><span class="line">## 启动filebeat</span><br><span class="line">&#x2F;usr&#x2F;local&#x2F;filebeat-7.12.0&#x2F;filebeat &amp;</span><br><span class="line">ps -ef | grep filebeat</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="filebeat-yml"><a href="#filebeat-yml" class="headerlink" title="filebeat.yml"></a>filebeat.yml</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">###################### Filebeat Configuration Example #########################</span></span><br><span class="line"><span class="attr">filebeat.inputs:</span></span><br><span class="line"></span><br><span class="line"><span class="bullet">-</span> <span class="attr">input_type:</span> <span class="string">log</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">paths:</span></span><br><span class="line">    <span class="comment">## app-服务名称.log, 为什么写死，防止发生轮转抓取历史数据</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">/usr/local/logs/app-collector.log</span></span><br><span class="line">  <span class="comment">#定义写入 ES 时的 _type 值</span></span><br><span class="line">  <span class="attr">document_type:</span> <span class="string">&quot;app-log&quot;</span></span><br><span class="line">  <span class="attr">multiline:</span></span><br><span class="line">    <span class="comment">#pattern: &#x27;^\s*(\d&#123;4&#125;|\d&#123;2&#125;)\-(\d&#123;2&#125;|[a-zA-Z]&#123;3&#125;)\-(\d&#123;2&#125;|\d&#123;4&#125;)&#x27;   # 指定匹配的表达式（匹配以 2017-11-15 08:04:23:889 时间格式开头的字符串）</span></span><br><span class="line">    <span class="attr">pattern:</span> <span class="string">&#x27;^\[&#x27;</span>                              <span class="comment"># 指定匹配的表达式（匹配以 &quot;&#123; 开头的字符串）</span></span><br><span class="line">    <span class="attr">negate:</span> <span class="literal">true</span>                                <span class="comment"># 是否匹配到</span></span><br><span class="line">    <span class="attr">match:</span> <span class="string">after</span>                                <span class="comment"># 合并到上一行的末尾</span></span><br><span class="line">    <span class="attr">max_lines:</span> <span class="number">2000</span>                             <span class="comment"># 最大的行数</span></span><br><span class="line">    <span class="attr">timeout:</span> <span class="string">2s</span>                                 <span class="comment"># 如果在规定时间没有新的日志事件就不等待后面的日志</span></span><br><span class="line">  <span class="attr">fields:</span></span><br><span class="line">    <span class="attr">logbiz:</span> <span class="string">collector</span></span><br><span class="line">    <span class="attr">logtopic:</span> <span class="string">app-log-collector</span>   <span class="comment">## 按服务划分用作kafka topic</span></span><br><span class="line">    <span class="attr">evn:</span> <span class="string">dev</span></span><br><span class="line"></span><br><span class="line"><span class="bullet">-</span> <span class="attr">input_type:</span> <span class="string">log</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">paths:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">/usr/local/logs/error-collector.log</span></span><br><span class="line">  <span class="attr">document_type:</span> <span class="string">&quot;error-log&quot;</span></span><br><span class="line">  <span class="attr">multiline:</span></span><br><span class="line">    <span class="comment">#pattern: &#x27;^\s*(\d&#123;4&#125;|\d&#123;2&#125;)\-(\d&#123;2&#125;|[a-zA-Z]&#123;3&#125;)\-(\d&#123;2&#125;|\d&#123;4&#125;)&#x27;   # 指定匹配的表达式（匹配以 2017-11-15 08:04:23:889 时间格式开头的字符串）</span></span><br><span class="line">    <span class="attr">pattern:</span> <span class="string">&#x27;^\[&#x27;</span>                              <span class="comment"># 指定匹配的表达式（匹配以 &quot;&#123; 开头的字符串）</span></span><br><span class="line">    <span class="attr">negate:</span> <span class="literal">true</span>                                <span class="comment"># 是否匹配到</span></span><br><span class="line">    <span class="attr">match:</span> <span class="string">after</span>                                <span class="comment"># 合并到上一行的末尾</span></span><br><span class="line">    <span class="attr">max_lines:</span> <span class="number">2000</span>                             <span class="comment"># 最大的行数</span></span><br><span class="line">    <span class="attr">timeout:</span> <span class="string">2s</span>                                 <span class="comment"># 如果在规定时间没有新的日志事件就不等待后面的日志</span></span><br><span class="line">  <span class="attr">fields:</span></span><br><span class="line">    <span class="attr">logbiz:</span> <span class="string">collector</span></span><br><span class="line">    <span class="attr">logtopic:</span> <span class="string">error-log-collector</span>   <span class="comment">## 按服务划分用作kafka topic</span></span><br><span class="line">    <span class="attr">evn:</span> <span class="string">dev</span></span><br><span class="line">    </span><br><span class="line"><span class="attr">output.kafka:</span></span><br><span class="line">  <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">hosts:</span> [<span class="string">&quot;192.168.159.128:9092&quot;</span>]</span><br><span class="line">  <span class="attr">topic:</span> <span class="string">&#x27;<span class="template-variable">%&#123;[fields.logtopic]&#125;</span>&#x27;</span></span><br><span class="line">  <span class="attr">partition.hash:</span></span><br><span class="line">    <span class="attr">reachable_only:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">compression:</span> <span class="string">gzip</span></span><br><span class="line">  <span class="attr">max_message_bytes:</span> <span class="number">1000000</span></span><br><span class="line">  <span class="attr">required_acks:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">logging.to_files:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="启动Kafka"><a href="#启动Kafka" class="headerlink" title="启动Kafka"></a>启动Kafka</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">## 启动kafka：</span><br><span class="line">&#x2F;usr&#x2F;local&#x2F;kafka_2.12&#x2F;bin&#x2F;kafka-server-start.sh &#x2F;usr&#x2F;local&#x2F;kafka_2.12&#x2F;config&#x2F;server.properties &amp;</span><br><span class="line"></span><br><span class="line">## 查看topic列表：</span><br><span class="line">kafka-topics.sh --zookeeper 192.168.159.128:2181 --list</span><br><span class="line"></span><br><span class="line">## 创建topic</span><br><span class="line">kafka-topics.sh --zookeeper 192.168.159.128:2181 --create --topic app-log-collector --partitions 1  --replication-factor 1</span><br><span class="line">kafka-topics.sh --zookeeper 192.168.159.128:2181 --create --topic error-log-collector --partitions 1  --replication-factor 1  </span><br><span class="line"></span><br><span class="line">## 查看topic情况</span><br><span class="line">kafka-topics.sh --zookeeper 192.168.159.128:2181 --topic app-log-test --describe</span><br></pre></td></tr></table></figure>
+
+<h1 id="Logstash安装"><a href="#Logstash安装" class="headerlink" title="Logstash安装"></a>Logstash安装</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">## 解压安装</span><br><span class="line">tar -zxvf logstash-7.12.0-linux-x86_64.tar.gz -C &#x2F;usr&#x2F;local&#x2F;</span><br><span class="line"></span><br><span class="line">mkdir scrpit</span><br><span class="line"></span><br><span class="line">## conf下配置文件说明：</span><br><span class="line"># logstash配置文件：&#x2F;config&#x2F;logstash.yml</span><br><span class="line"># JVM参数文件：&#x2F;config&#x2F;jvm.options</span><br><span class="line"># 日志格式配置文件：log4j2.properties</span><br><span class="line"># 制作Linux服务参数：&#x2F;config&#x2F;startup.options</span><br><span class="line"></span><br><span class="line">## 配置文件说明：</span><br><span class="line">vim &#x2F;usr&#x2F;local&#x2F;logstash-7.12.0&#x2F;config&#x2F;logstash.yml</span><br><span class="line"></span><br><span class="line">--path.config 或 –f ：logstash启动时使用的配置文件</span><br><span class="line">--configtest 或 –t：测试 Logstash 读取到的配置文件语法是否能正常解析</span><br><span class="line">--log或-l：日志输出存储位置</span><br><span class="line">--pipeline.workers 或 –w：运行 filter 和 output 的 pipeline 线程数量。默认是 CPU 核数。</span><br><span class="line">## 增加workers工作线程数 可以有效的提升logstash性能</span><br><span class="line">pipeline.workers: 16</span><br><span class="line">--pipeline.batch.size 或 –b：每个 Logstash pipeline 线程，在执行具体的 filter 和 output 函数之前，最多能累积的日志条数。</span><br><span class="line">--pipeline.batch.delay 或 –u：每个 Logstash pipeline 线程，在打包批量日志的时候，最多等待几毫秒。</span><br><span class="line">--verbose：输出调试日志</span><br><span class="line">--debug：输出更多的调试日志</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## 启动logstash</span><br><span class="line">nohup &#x2F;usr&#x2F;local&#x2F;logstash-7.12.0&#x2F;bin&#x2F;logstash -f &#x2F;usr&#x2F;local&#x2F;logstash-7.12.0&#x2F;script&#x2F;logstash-script.conf &amp;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Logstash读取Kafka消息的脚本"><a href="#Logstash读取Kafka消息的脚本" class="headerlink" title="Logstash读取Kafka消息的脚本"></a>Logstash读取Kafka消息的脚本</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line">## multiline 插件也可以用于其他类似的堆栈式信息，比如 linux 的内核日志。</span><br><span class="line">input &#123;</span><br><span class="line">  kafka &#123;</span><br><span class="line">    ## app-log-服务名称</span><br><span class="line">    topics_pattern &#x3D;&gt; &quot;app-log-.*&quot;</span><br><span class="line">    bootstrap_servers &#x3D;&gt; &quot;192.168.159.128:9092&quot;</span><br><span class="line">        codec &#x3D;&gt; json</span><br><span class="line">        consumer_threads &#x3D;&gt; 1   ## 增加consumer的并行消费线程数</span><br><span class="line">        decorate_events &#x3D;&gt; true</span><br><span class="line">    #auto_offset_rest &#x3D;&gt; &quot;latest&quot;</span><br><span class="line">        group_id &#x3D;&gt; &quot;app-log-group&quot;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   kafka &#123;</span><br><span class="line">    ## error-log-服务名称</span><br><span class="line">    topics_pattern &#x3D;&gt; &quot;error-log-.*&quot;</span><br><span class="line">    bootstrap_servers &#x3D;&gt; &quot;192.168.159.128:9092&quot;</span><br><span class="line">        codec &#x3D;&gt; json</span><br><span class="line">        consumer_threads &#x3D;&gt; 1</span><br><span class="line">        decorate_events &#x3D;&gt; true</span><br><span class="line">    #auto_offset_rest &#x3D;&gt; &quot;latest&quot;</span><br><span class="line">        group_id &#x3D;&gt; &quot;error-log-group&quot;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">filter &#123;</span><br><span class="line"></span><br><span class="line">  ## 时区转换</span><br><span class="line">  ruby &#123;</span><br><span class="line">        code &#x3D;&gt; &quot;event.set(&#39;index_time&#39;,event.timestamp.time.localtime.strftime(&#39;%Y.%m.%d&#39;))&quot;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  if &quot;app-log&quot; in [fields][logtopic]&#123;</span><br><span class="line">    grok &#123;</span><br><span class="line">        ## 表达式</span><br><span class="line">        match &#x3D;&gt; [&quot;message&quot;, &quot;\[%&#123;NOTSPACE:currentDateTime&#125;\] \[%&#123;NOTSPACE:level&#125;\] \[%&#123;NOTSPACE:thread-id&#125;\] \[%&#123;NOTSPACE:class&#125;\] \[%&#123;DATA:hostName&#125;\] \[%&#123;DATA:ip&#125;\] \[%&#123;DATA:applicationName&#125;\] \[%&#123;DATA:location&#125;\] \[%&#123;DATA:messageInfo&#125;\] ## (\&#39;\&#39;|%&#123;QUOTEDSTRING:throwable&#125;)&quot;]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  if &quot;error-log&quot; in [fields][logtopic]&#123;</span><br><span class="line">    grok &#123;</span><br><span class="line">        ## 表达式</span><br><span class="line">        match &#x3D;&gt; [&quot;message&quot;, &quot;\[%&#123;NOTSPACE:currentDateTime&#125;\] \[%&#123;NOTSPACE:level&#125;\] \[%&#123;NOTSPACE:thread-id&#125;\] \[%&#123;NOTSPACE:class&#125;\] \[%&#123;DATA:hostName&#125;\] \[%&#123;DATA:ip&#125;\] \[%&#123;DATA:applicationName&#125;\] \[%&#123;DATA:location&#125;\] \[%&#123;DATA:messageInfo&#125;\] ## (\&#39;\&#39;|%&#123;QUOTEDSTRING:throwable&#125;)&quot;]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">## 测试输出到控制台：</span><br><span class="line">output &#123;</span><br><span class="line">  stdout &#123; codec &#x3D;&gt; rubydebug &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">## elasticsearch:</span><br><span class="line">output &#123;</span><br><span class="line">    if &quot;app-log&quot; in [fields][logtopic]&#123;</span><br><span class="line">        ## es插件</span><br><span class="line">        elasticsearch &#123;</span><br><span class="line">            # es服务地址</span><br><span class="line">            hosts &#x3D;&gt; [&quot;192.168.159.128:9200&quot;]</span><br><span class="line">            # 用户名密码</span><br><span class="line">            # user &#x3D;&gt; &quot;elastic&quot;</span><br><span class="line">            # password &#x3D;&gt; &quot;123456&quot;</span><br><span class="line">            ## 索引名，+ 号开头的，就会自动认为后面是时间格式：</span><br><span class="line">            ## javalog-app-service-2019.01.23 </span><br><span class="line">            index &#x3D;&gt; &quot;app-log-%&#123;[fields][logbiz]&#125;-%&#123;index_time&#125;&quot;</span><br><span class="line">            # 是否嗅探集群ip：一般设置true；http:&#x2F;&#x2F;192.168.11.35:9200&#x2F;_nodes&#x2F;http?pretty</span><br><span class="line">            # 通过嗅探机制进行es集群负载均衡发日志消息</span><br><span class="line">            sniffing &#x3D;&gt; true</span><br><span class="line">            # logstash默认自带一个mapping模板，进行模板覆盖</span><br><span class="line">            template_overwrite &#x3D;&gt; true</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    if &quot;error-log&quot; in [fields][logtopic]&#123;</span><br><span class="line">        elasticsearch &#123;</span><br><span class="line">            hosts &#x3D;&gt; [&quot;192.168.159.128:9200&quot;]</span><br><span class="line">            # user &#x3D;&gt; &quot;elastic&quot;</span><br><span class="line">            # password &#x3D;&gt; &quot;123456&quot;</span><br><span class="line">            index &#x3D;&gt; &quot;error-log-%&#123;[fields][logbiz]&#125;-%&#123;index_time&#125;&quot;</span><br><span class="line">            sniffing &#x3D;&gt; true</span><br><span class="line">            template_overwrite &#x3D;&gt; true</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Logstash语法与基本使用"><a href="#Logstash语法与基本使用" class="headerlink" title="Logstash语法与基本使用"></a>Logstash语法与基本使用</h2><ol>
+<li><p>Logstash设计了自己的DSL包括有区域，注释，数据类型(布尔值，字符串，数值，数组，哈希)，条件判断字段引用等。</p>
+</li>
+<li><p>Logstash用{}来定义区域。区域内可以包括插件区域定义，你可以在一个区域内定义多个插件。插件区域内则可以定义键值对设置。</p>
+</li>
+<li><p>格式、语法、使用方式：</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># 注释.</span><br><span class="line">input &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">filter &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">output &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">## 两个input设置：</span><br><span class="line">input &#123;</span><br><span class="line">  file &#123;</span><br><span class="line">    path &#x3D;&gt; &quot;&#x2F;var&#x2F;log&#x2F;messages&quot;</span><br><span class="line">    type &#x3D;&gt; &quot;syslog&quot;</span><br><span class="line">  &#125;</span><br><span class="line">  file &#123;</span><br><span class="line">    path &#x3D;&gt; &quot;&#x2F;var&#x2F;log&#x2F;apache&#x2F;access.log&quot;</span><br><span class="line">    type &#x3D;&gt; &quot;apache&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">## 数据类型：</span><br><span class="line">## bool类型</span><br><span class="line">debug &#x3D;&gt; true</span><br><span class="line">## string类型</span><br><span class="line">host &#x3D;&gt; &quot;hostname&quot;</span><br><span class="line">## number类型</span><br><span class="line">port &#x3D;&gt; 6789</span><br><span class="line">## array or list类型</span><br><span class="line">path &#x3D;&gt; [&quot;&#x2F;var&#x2F;log&#x2F;message&quot;,&quot;&#x2F;var&#x2F;log&#x2F;*.log&quot;]</span><br><span class="line">## hash类型</span><br><span class="line">match &#x3D;&gt; &#123;</span><br><span class="line">    &quot;field1&quot; &#x3D;&gt; &quot;value1&quot;</span><br><span class="line">    &quot;field2&quot; &#x3D;&gt; &quot;value2&quot;</span><br><span class="line">&#125;</span><br><span class="line">## codec类型</span><br><span class="line">codec &#x3D;&gt; &quot;json&quot;</span><br><span class="line"></span><br><span class="line">##字段引用方式：</span><br><span class="line">&#123;</span><br><span class="line">    &quot;agent&quot;:  &quot;Mozilla&#x2F;5.0  (compatible;  MSIE  9.0)&quot;,</span><br><span class="line">    &quot;ip&quot;:  &quot;192.168.24.44&quot;,</span><br><span class="line">    &quot;request&quot;:  &quot;&#x2F;index.html&quot;</span><br><span class="line">    &quot;response&quot;:  &#123;</span><br><span class="line">        &quot;status&quot;:  200,</span><br><span class="line">        &quot;bytes&quot;:  52353</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;ua&quot;:  &#123;</span><br><span class="line">        &quot;os&quot;:  &quot;Windows  7&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">##获取字段值：</span><br><span class="line">[response][status]</span><br><span class="line">[ua][os]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">## 条件判断condition：</span><br><span class="line">if EXPRESSION &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125; else if EXPRESSION &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125; else &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x3D;&#x3D;(等于), !&#x3D;(不等于), &lt;(小于), &gt;(大于), &lt;&#x3D;(小于等于), &gt;&#x3D;(大于等于), &#x3D;~(匹配正则), !~（不匹配正则）</span><br><span class="line">in(包含), not in(不包含), and(与), or(或), nand(非与), xor(非或)</span><br><span class="line">()(复合表达式), !()(对复合表达式结果取反)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">## 使用环境变量（缺失报错）:</span><br><span class="line">input &#123; </span><br><span class="line">	tcp &#123; </span><br><span class="line">		port &#x3D;&gt; &quot;$&#123;TCP_PORT&#125;&quot; </span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br><span class="line">## 使用环境变量（缺失使用默认值）：</span><br><span class="line">input &#123; </span><br><span class="line">	tcp &#123; </span><br><span class="line">		port &#x3D;&gt; &quot;$&#123;TCP_PORT:54321&#125;&quot; </span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>logstash例子</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">## input 从标准输入流：</span><br><span class="line">input &#123; stdin &#123; &#125; &#125;</span><br><span class="line"></span><br><span class="line">## 输入数据之后 如何进行处理：</span><br><span class="line">filter &#123;</span><br><span class="line">  ## grok：解析元数据插件,这里从input输入进来的所有数据默认都会存放到 &quot;message&quot; 字段中</span><br><span class="line">  ## grok提供很多正则表达式，地址为：http:&#x2F;&#x2F;grokdebug.herokuapp.com&#x2F;patterns</span><br><span class="line">  ## 比如：%&#123;COMBINEDAPACHELOG&#125; 表示其中一种正则表达式 Apache的表达式</span><br><span class="line">  grok &#123;</span><br><span class="line">    match &#x3D;&gt; &#123; &quot;message&quot; &#x3D;&gt; &quot;%&#123;COMBINEDAPACHELOG&#125;&quot; &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ## date：日期格式化</span><br><span class="line">  date &#123;</span><br><span class="line">    match &#x3D;&gt; [ &quot;timestamp&quot; , &quot;dd&#x2F;MMM&#x2F;yyyy:HH:mm:ss Z&quot; ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">## output 从标准输出流：</span><br><span class="line">output &#123;</span><br><span class="line">  elasticsearch &#123; hosts &#x3D;&gt; [&quot;192.168.11.35:9200&quot;] &#125;</span><br><span class="line">  stdout &#123; codec &#x3D;&gt; rubydebug &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>file插件使用</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">## file插件</span><br><span class="line">input &#123;</span><br><span class="line">    file &#123;</span><br><span class="line">        path &#x3D;&gt; [&quot;&#x2F;var&#x2F;log&#x2F;*.log&quot;, &quot;&#x2F;var&#x2F;log&#x2F;message&quot;]</span><br><span class="line">        type &#x3D;&gt; &quot;system&quot;</span><br><span class="line">        start_position &#x3D;&gt; &quot;beginning&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">## 其他参数：</span><br><span class="line">discover_interval ## 表示每隔多久检测一下文件，默认15秒</span><br><span class="line">exclude ## 表示排除那些文件</span><br><span class="line">close_older ## 文件超过多长时间没有更新，就关闭监听 默认3600s</span><br><span class="line">ignore_older ## 每次检查文件列表 如果有一个文件 最后修改时间超过这个值 那么就忽略文件 86400s</span><br><span class="line">sincedb_path ## sincedb保存文件的位置，默认存在home下（&#x2F;dev&#x2F;null）</span><br><span class="line">sincedb_write_interval ## 每隔多久去记录一次 默认15秒</span><br><span class="line">stat_interval ## 每隔多久查询一次文件状态 默认1秒</span><br><span class="line">start_position ## 从头开始读取或者从结尾开始读取</span><br></pre></td></tr></table></figure>
+
+<h1 id="ElasticSearch索引创建周期、命名规范选择"><a href="#ElasticSearch索引创建周期、命名规范选择" class="headerlink" title="ElasticSearch索引创建周期、命名规范选择"></a>ElasticSearch索引创建周期、命名规范选择</h1><ul>
+<li>每一天创建一个索引（ES中的时间是东八区的比北京时间慢8小时）（创建索引的时候将时间转换）</li>
+<li>日志类型为前缀+服务名（即Kafka的topic名）+时间为后缀</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">## 时区转换</span><br><span class="line">  ruby &#123;</span><br><span class="line">        code &#x3D;&gt; &quot;event.set(&#39;index_time&#39;,event.timestamp.time.localtime.strftime(&#39;%Y.%m.%d&#39;))&quot;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">index &#x3D;&gt; &quot;app-log-%&#123;[fields][logbiz]&#125;-%&#123;index_time&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="kibana控制台应用、可视化日志"><a href="#kibana控制台应用、可视化日志" class="headerlink" title="kibana控制台应用、可视化日志"></a>kibana控制台应用、可视化日志</h1><ul>
+<li>根据索引建立索引模式</li>
+</ul>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/kibana/kibana1.png"></p>
+<ul>
+<li>查看索引中文档统计结果</li>
+</ul>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/kibana/kibana2.png"></p>
+<h1 id="应用Watcher实现警报"><a href="#应用Watcher实现警报" class="headerlink" title="应用Watcher实现警报"></a>应用Watcher实现警报</h1><blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">提前建立 error-log 索引模板,指定level的type位keywords.避免搜索不到数据</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ol>
+<li><p>提前建立索引模板<br><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/kibana/es%E6%A8%A1%E6%9D%BF.png"></p>
+</li>
+<li><p>建立watcher</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line">## 创建一个watcher,比如定义一个trigger 每个5s钟看一下input里的数据</span><br><span class="line">PUT _xpack/watcher/watch/error_log_collector_watcher</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;trigger&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;schedule&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;interval&quot;</span>: <span class="string">&quot;5s&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;input&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;search&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;request&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;indices&quot;</span>: [<span class="string">&quot;&lt;error_log_collector-&#123;now+8h/d&#125;&gt;&quot;</span>],</span><br><span class="line">        <span class="attr">&quot;body&quot;</span>: &#123;</span><br><span class="line">          <span class="attr">&quot;size&quot;</span>: <span class="number">0</span>,</span><br><span class="line">          <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;bool&quot;</span>: &#123;</span><br><span class="line">              <span class="attr">&quot;must&quot;</span>: [</span><br><span class="line">                  &#123;</span><br><span class="line">                    <span class="attr">&quot;term&quot;</span>: &#123;<span class="attr">&quot;level&quot;</span>: <span class="string">&quot;ERROR&quot;</span>&#125;</span><br><span class="line">                  &#125;</span><br><span class="line">              ],</span><br><span class="line">              <span class="attr">&quot;filter&quot;</span>: &#123;</span><br><span class="line">                <span class="attr">&quot;range&quot;</span>: &#123;</span><br><span class="line">                    <span class="attr">&quot;currentDateTime&quot;</span>: &#123;</span><br><span class="line">                    <span class="attr">&quot;gt&quot;</span>: <span class="string">&quot;now-30s&quot;</span> , <span class="attr">&quot;lt&quot;</span>: <span class="string">&quot;now&quot;</span></span><br><span class="line">                  &#125;</span><br><span class="line">                &#125;</span><br><span class="line">              &#125; </span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  <span class="attr">&quot;condition&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;compare&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;ctx.payload.hits.total&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;gt&quot;</span>: <span class="number">0</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line"> </span><br><span class="line">  <span class="attr">&quot;transform&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;search&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;request&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;indices&quot;</span>: [<span class="string">&quot;&lt;error-log-collector-&#123;now+8h/d&#125;&gt;&quot;</span>],</span><br><span class="line">        <span class="attr">&quot;body&quot;</span>: &#123;</span><br><span class="line">          <span class="attr">&quot;size&quot;</span>: <span class="number">1</span>,</span><br><span class="line">          <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;bool&quot;</span>: &#123;</span><br><span class="line">              <span class="attr">&quot;must&quot;</span>: [</span><br><span class="line">                  &#123;</span><br><span class="line">                    <span class="attr">&quot;term&quot;</span>: &#123;<span class="attr">&quot;level&quot;</span>: <span class="string">&quot;ERROR&quot;</span>&#125;</span><br><span class="line">                  &#125;</span><br><span class="line">              ],</span><br><span class="line">              <span class="attr">&quot;filter&quot;</span>: &#123;</span><br><span class="line">                <span class="attr">&quot;range&quot;</span>: &#123;</span><br><span class="line">                    <span class="attr">&quot;currentDateTime&quot;</span>: &#123;</span><br><span class="line">                    <span class="attr">&quot;gt&quot;</span>: <span class="string">&quot;now-30s&quot;</span> , <span class="attr">&quot;lt&quot;</span>: <span class="string">&quot;now&quot;</span></span><br><span class="line">                  &#125;</span><br><span class="line">                &#125;</span><br><span class="line">              &#125; </span><br><span class="line">            &#125;</span><br><span class="line">          &#125;,</span><br><span class="line">          <span class="attr">&quot;sort&quot;</span>: [</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="attr">&quot;currentDateTime&quot;</span>: &#123;</span><br><span class="line">                    <span class="attr">&quot;order&quot;</span>: <span class="string">&quot;desc&quot;</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          ]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;actions&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;test_error&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;webhook&quot;</span> : &#123;</span><br><span class="line">        <span class="attr">&quot;method&quot;</span> : <span class="string">&quot;POST&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;url&quot;</span> : <span class="string">&quot;http://192.168.11.31:8001/accurateWatch&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;body&quot;</span> : <span class="string">&quot;&#123;\&quot;title\&quot;: \&quot;异常错误告警\&quot;, \&quot;applicationName\&quot;: \&quot;&#123;&#123;#ctx.payload.hits.hits&#125;&#125;&#123;&#123;_source.applicationName&#125;&#125;&#123;&#123;/ctx.payload.hits.hits&#125;&#125;\&quot;, \&quot;level\&quot;:\&quot;告警级别P1\&quot;, \&quot;body\&quot;: \&quot;&#123;&#123;#ctx.payload.hits.hits&#125;&#125;&#123;&#123;_source.messageInfo&#125;&#125;&#123;&#123;/ctx.payload.hits.hits&#125;&#125;\&quot;, \&quot;executionTime\&quot;: \&quot;&#123;&#123;#ctx.payload.hits.hits&#125;&#125;&#123;&#123;_source.currentDateTime&#125;&#125;&#123;&#123;/ctx.payload.hits.hits&#125;&#125;\&quot;&#125;&quot;</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="Xpack-Watchs基本使用："><a href="#Xpack-Watchs基本使用：" class="headerlink" title="Xpack-Watchs基本使用："></a>Xpack-Watchs基本使用：</h2><p>首先看一个watcher的例子：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 创建一个watcher,比如定义一个trigger 每个10s钟看一下input里的数据</span></span></span><br><span class="line">PUT _xpack/watcher/watch/school_watcher</span><br><span class="line">&#123;</span><br><span class="line">  &quot;trigger&quot;: &#123;</span><br><span class="line">    &quot;schedule&quot;: &#123;</span><br><span class="line">      &quot;interval&quot;: &quot;10s&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line"><span class="meta">  #</span><span class="bash"><span class="comment"># 查看任务信息</span></span></span><br><span class="line">  &quot;input&quot;: &#123;</span><br><span class="line">    &quot;search&quot;: &#123;</span><br><span class="line">      &quot;request&quot;: &#123;</span><br><span class="line">        ## 监控具体索引</span><br><span class="line">        &quot;indices&quot;: [&quot;school*&quot;],</span><br><span class="line">        ## body里面具体些搜索语句</span><br><span class="line">        &quot;body&quot;: &#123;</span><br><span class="line">          &quot;size&quot;: 0,</span><br><span class="line">          &quot;query&quot;: &#123;</span><br><span class="line">            &quot;match&quot;: &#123;</span><br><span class="line">              ## 比如索引里面name 有 hello 则进行报警</span><br><span class="line">              &quot;name&quot;: &quot;hello&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line"><span class="meta">  #</span><span class="bash"><span class="comment"># 对于上面的查询结果进行比较：</span></span></span><br><span class="line">  &quot;condition&quot;: &#123;</span><br><span class="line">    ## compare进行比较</span><br><span class="line">    &quot;compare&quot;: &#123;</span><br><span class="line">      ## 上面的query查询的结果会放入到ctx.payload中：</span><br><span class="line">      ## 比如获取 ctx.payload.hits.total  ctx.payload._shards.total 等等</span><br><span class="line">      &quot;ctx.payload.hits.total&quot;: &#123;</span><br><span class="line">        &quot;gt&quot;: 0</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line"><span class="meta">  #</span><span class="bash"><span class="comment"># transform作用：重新查询出文档内容赋值给ctx.payload</span></span></span><br><span class="line">  &quot;transform&quot;: &#123;</span><br><span class="line">    &quot;search&quot;: &#123;</span><br><span class="line">      &quot;request&quot;: &#123;</span><br><span class="line">        &quot;indices&quot;: [&quot;school*&quot;],</span><br><span class="line">        &quot;body&quot;: &#123;</span><br><span class="line">          &quot;size&quot;: 10,</span><br><span class="line">          &quot;query&quot;: &#123;</span><br><span class="line">            &quot;match&quot;: &#123;</span><br><span class="line">              &quot;name&quot;: &quot;hello&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line"><span class="meta">  #</span><span class="bash"><span class="comment"># 根据上面的查询、比较结果，执行actions里面定义的动作（定义多种报警类型）</span></span></span><br><span class="line">  &quot;actions&quot;: &#123;</span><br><span class="line">    ## 报警名字</span><br><span class="line">    &quot;log_hello&quot;: &#123;</span><br><span class="line">      ## 防止报警风暴： 设置阈值 15m内曾经报警过, 则不报警</span><br><span class="line">      &quot;throttle_period&quot;: &quot;15m&quot;,</span><br><span class="line">      ## 报警方式：logging、mail、http等</span><br><span class="line">      &quot;logging&quot;: &#123;</span><br><span class="line">        ## 报警具体内容：使用 &#123;&#123; 查询参数 &#125;&#125; 进行赋值：</span><br><span class="line">        &quot;text&quot;: &quot;Found &#123;&#123;ctx.payload.hits.total&#125;&#125; hello in the school&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ctx-payload取值规范："><a href="#ctx-payload取值规范：" class="headerlink" title="ctx.payload取值规范："></a>ctx.payload取值规范：</h3><p>比如我们进行search搜索school里面name=zhangsan的数据：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># payload取值规范：比如我们进行search搜索school：</span></span></span><br><span class="line">GET school/_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match&quot;: &#123;</span><br><span class="line">      &quot;name&quot;: &quot;zhangsan&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果如下</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;took&quot;</span>: <span class="number">14</span>,</span><br><span class="line">  <span class="attr">&quot;timed_out&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="attr">&quot;_shards&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;total&quot;</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="attr">&quot;successful&quot;</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="attr">&quot;skipped&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">&quot;failed&quot;</span>: <span class="number">0</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;hits&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;total&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;max_score&quot;</span>: <span class="number">1.5404451</span>,</span><br><span class="line">    <span class="attr">&quot;hits&quot;</span>: [</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">&quot;_index&quot;</span>: <span class="string">&quot;school&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_type&quot;</span>: <span class="string">&quot;student&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;1&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;_score&quot;</span>: <span class="number">1.5404451</span>,</span><br><span class="line">        <span class="attr">&quot;_source&quot;</span>: &#123;</span><br><span class="line">          <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;zhangsan&quot;</span>,</span><br><span class="line">          <span class="attr">&quot;age&quot;</span>: <span class="number">25</span>,</span><br><span class="line">          <span class="attr">&quot;course&quot;</span>: <span class="string">&quot;elasticsearch&quot;</span>,</span><br><span class="line">          <span class="attr">&quot;study_date&quot;</span>: <span class="string">&quot;2018-06-15T20:30:50&quot;</span>,</span><br><span class="line">          <span class="attr">&quot;mark&quot;</span>: <span class="string">&quot;today is a good day&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>表示查询：ctx.payload结果集：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 表示查询：ctx.payload结果集：</span></span></span><br><span class="line">&#123;&#123;#ctx.payload.hits.hits&#125;&#125; &#123;&#123;_source.name&#125;&#125; &#123;&#123;_source.course&#125;&#125; &#123;&#123;/ctx.payload.hits.hits&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>比如我们进行search搜索school并采用聚合的方式来查询terms course数据：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">GET school/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;size&quot;</span>: <span class="number">0</span>, </span><br><span class="line">  <span class="attr">&quot;aggs&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;myterms&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;terms&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;field&quot;</span>: <span class="string">&quot;course&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;size&quot;</span>: <span class="number">10</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查询结果：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;took&quot;</span>: <span class="number">11</span>,</span><br><span class="line">  <span class="attr">&quot;timed_out&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">  <span class="attr">&quot;_shards&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;total&quot;</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="attr">&quot;successful&quot;</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="attr">&quot;skipped&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">&quot;failed&quot;</span>: <span class="number">0</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;hits&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;total&quot;</span>: <span class="number">10</span>,</span><br><span class="line">    <span class="attr">&quot;max_score&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">&quot;hits&quot;</span>: []</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;aggregations&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;myterms&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;doc_count_error_upper_bound&quot;</span>: <span class="number">0</span>,</span><br><span class="line">      <span class="attr">&quot;sum_other_doc_count&quot;</span>: <span class="number">0</span>,</span><br><span class="line">      <span class="attr">&quot;buckets&quot;</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;key&quot;</span>: <span class="string">&quot;elasticsearch&quot;</span>,</span><br><span class="line">          <span class="attr">&quot;doc_count&quot;</span>: <span class="number">7</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;key&quot;</span>: <span class="string">&quot;good&quot;</span>,</span><br><span class="line">          <span class="attr">&quot;doc_count&quot;</span>: <span class="number">1</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;key&quot;</span>: <span class="string">&quot;spring&quot;</span>,</span><br><span class="line">          <span class="attr">&quot;doc_count&quot;</span>: <span class="number">1</span></span><br><span class="line">        &#125;,</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="attr">&quot;key&quot;</span>: <span class="string">&quot;spring elasticsearch&quot;</span>,</span><br><span class="line">          <span class="attr">&quot;doc_count&quot;</span>: <span class="number">1</span></span><br><span class="line">        &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>payload取值使用：现在想取得上面的hits.hits里面的数据内容，就可以使用如下方式：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 表示查询：ctx.payload结果集：</span></span></span><br><span class="line">&#123;&#123;#ctx.payload.aggregations.aggsname.buckets&#125;&#125; &#123;&#123;key&#125;&#125; &#123;&#123;doc_count&#125;&#125; &#123;&#123;/ctx.payload.aggregations.aggsname.buckets&#125;&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 针对这里内容就是：</span></span></span><br><span class="line">&#123;&#123;#ctx.payload.aggregations.myterms.buckets&#125;&#125; &#123;&#123;key&#125;&#125; &#123;&#123;doc_count&#125;&#125; &#123;&#123;/ctx.payload.aggregations.myterms.buckets&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="watcher-API使用："><a href="#watcher-API使用：" class="headerlink" title="watcher API使用："></a>watcher API使用：</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">#查看一个watcher</span><br><span class="line"># GET _xpack/watcher/watch/school_watcher</span><br><span class="line"></span><br><span class="line">#删除一个watcher</span><br><span class="line"># DELETE _xpack/watcher/watch/school_watcher</span><br><span class="line"></span><br><span class="line">#执行watcher</span><br><span class="line"># POST _xpack/watcher/watch/school_watcher/_execute</span><br><span class="line"></span><br><span class="line">#查看执行结果</span><br><span class="line">GET /.watcher-history*/_search?pretty</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;sort&quot;</span> : [</span><br><span class="line">    &#123; <span class="attr">&quot;result.execution_time&quot;</span> : <span class="string">&quot;desc&quot;</span> &#125;</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;match&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;watch_id&quot;</span>: <span class="string">&quot;school_watcher&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="triggers的几种类型"><a href="#triggers的几种类型" class="headerlink" title="triggers的几种类型"></a>triggers的几种类型</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br></pre></td><td class="code"><pre><span class="line">#--------------------triggers的几种类型--------------------</span><br><span class="line">#hourly、daily、weekly、monthly、yearly、cron、interval</span><br><span class="line"></span><br><span class="line">#hourly：每小时执行</span><br><span class="line">#例如：12:00, 12:15, 12:30, 12:45, 1:00, 1:15</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;trigger&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;schedule&quot;</span> : &#123;</span><br><span class="line">      <span class="attr">&quot;hourly&quot;</span> : &#123; <span class="attr">&quot;minute&quot;</span> : [ <span class="number">0</span>, <span class="number">15</span>, <span class="number">30</span>, <span class="number">45</span> ] &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#daily：每天执行</span><br><span class="line">#每天00:00, 12:00, and 17:00</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;trigger&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;schedule&quot;</span> : &#123;</span><br><span class="line">      <span class="attr">&quot;daily&quot;</span> : &#123; <span class="attr">&quot;at&quot;</span> : [ <span class="string">&quot;midnight&quot;</span>, <span class="string">&quot;noon&quot;</span>, <span class="string">&quot;17:00&quot;</span> ] &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">#每天00:00, 00:30, 12:00, 12:30, 17:00 and 17:30</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;trigger&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;schedule&quot;</span> : &#123;</span><br><span class="line">      <span class="attr">&quot;daily&quot;</span> : &#123;</span><br><span class="line">        &quot;at&quot; &#123;</span><br><span class="line">          &quot;hour&quot; : [ 0, 12, 17 ],</span><br><span class="line">          &quot;minute&quot; : [0, 30]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#weekly：指定星期几</span><br><span class="line">#周二12:00,周五17:00</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;trigger&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;schedule&quot;</span> : &#123;</span><br><span class="line">      <span class="attr">&quot;weekly&quot;</span> : [</span><br><span class="line">        &#123; <span class="attr">&quot;on&quot;</span> : <span class="string">&quot;tuesday&quot;</span>, <span class="attr">&quot;at&quot;</span> : <span class="string">&quot;noon&quot;</span> &#125;,</span><br><span class="line">        &#123; <span class="attr">&quot;on&quot;</span> : <span class="string">&quot;friday&quot;</span>, <span class="attr">&quot;at&quot;</span> : <span class="string">&quot;17:00&quot;</span> &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">#周二、周五的17：00</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;trigger&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;schedule&quot;</span> : &#123;</span><br><span class="line">      <span class="attr">&quot;weekly&quot;</span> : &#123;</span><br><span class="line">        <span class="attr">&quot;on&quot;</span> : [ <span class="string">&quot;tuesday&quot;</span>, <span class="string">&quot;friday&quot;</span> ],</span><br><span class="line">        <span class="attr">&quot;at&quot;</span> : [ <span class="string">&quot;noon&quot;</span>, <span class="string">&quot;17:00&quot;</span> ]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#monthly：指定每月哪天执行</span><br><span class="line">#每月10号中午、每月20号17:00</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;trigger&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;schedule&quot;</span> : &#123;</span><br><span class="line">      <span class="attr">&quot;monthly&quot;</span> : [</span><br><span class="line">        &#123; <span class="attr">&quot;on&quot;</span> : <span class="number">10</span>, <span class="attr">&quot;at&quot;</span> : <span class="string">&quot;noon&quot;</span> &#125;,</span><br><span class="line">        &#123; <span class="attr">&quot;on&quot;</span> : <span class="number">20</span>, <span class="attr">&quot;at&quot;</span> : <span class="string">&quot;17:00&quot;</span> &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">#每月10号、20号的00:00,12:00</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;trigger&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;schedule&quot;</span> : &#123;</span><br><span class="line">      <span class="attr">&quot;monthly&quot;</span> : &#123;</span><br><span class="line">        <span class="attr">&quot;on&quot;</span> : [ <span class="number">10</span>, <span class="number">20</span> ],</span><br><span class="line">        <span class="attr">&quot;at&quot;</span> : [ <span class="string">&quot;midnight&quot;</span>, <span class="string">&quot;noon&quot;</span> ]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">#yearly-指定月、日、时</span><br><span class="line">#每年的1月10日12:00,每年的7月20日17:00</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;trigger&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;schedule&quot;</span> : &#123;</span><br><span class="line">      <span class="attr">&quot;yearly&quot;</span> : [</span><br><span class="line">        &#123; <span class="attr">&quot;in&quot;</span> : <span class="string">&quot;january&quot;</span>, <span class="attr">&quot;on&quot;</span> : <span class="number">10</span>, <span class="attr">&quot;at&quot;</span> : <span class="string">&quot;noon&quot;</span> &#125;,</span><br><span class="line">        &#123; <span class="attr">&quot;in&quot;</span> : <span class="string">&quot;july&quot;</span>, <span class="attr">&quot;on&quot;</span> : <span class="number">20</span>, <span class="attr">&quot;at&quot;</span> : <span class="string">&quot;17:00&quot;</span> &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">#每年1月10日，1月20日，12月10日，12月20日的12:00,00:00</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;trigger&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;schedule&quot;</span> : &#123;</span><br><span class="line">      <span class="attr">&quot;yearly&quot;</span> : &#123;</span><br><span class="line">        <span class="attr">&quot;in&quot;</span> : [ <span class="string">&quot;jan&quot;</span>, <span class="string">&quot;dec&quot;</span> ],</span><br><span class="line">        <span class="attr">&quot;on&quot;</span> : [ <span class="number">10</span>, <span class="number">20</span> ],</span><br><span class="line">        <span class="attr">&quot;at&quot;</span> : [ <span class="string">&quot;midnight&quot;</span>, <span class="string">&quot;noon&quot;</span> ]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">#cron-表达式</span><br><span class="line">&lt;seconds&gt; &lt;minutes&gt; &lt;hours&gt; &lt;day_of_month&gt; &lt;month&gt; &lt;day_of_week&gt; [year]</span><br><span class="line">0 5 9 * * ?</span><br><span class="line">0 0-5 9 * * ?</span><br><span class="line">0 0/15 9 * * ?</span><br><span class="line"></span><br><span class="line">#interval-周期的</span><br><span class="line">#间隔单位：s:秒、m:分钟、h:小时、d:天、w:星期</span><br></pre></td></tr></table></figure>
+
+<h3 id="input的几种类型："><a href="#input的几种类型：" class="headerlink" title="input的几种类型："></a>input的几种类型：</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br></pre></td><td class="code"><pre><span class="line">   #--------------------Inputs的几种类型--------------------</span><br><span class="line">   #Simple、Search、HTTP、Chain</span><br><span class="line">   </span><br><span class="line">   #Simple Input-静态数据</span><br><span class="line">   #每天12点触发</span><br><span class="line">   &#123;</span><br><span class="line">     <span class="attr">&quot;trigger&quot;</span> : &#123;</span><br><span class="line">       <span class="attr">&quot;schedule&quot;</span> : &#123;</span><br><span class="line">         <span class="attr">&quot;daily&quot;</span> : &#123; <span class="attr">&quot;at&quot;</span> : <span class="string">&quot;noon&quot;</span> &#125;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;,</span><br><span class="line">     <span class="attr">&quot;input&quot;</span> : &#123;</span><br><span class="line">       <span class="attr">&quot;simple&quot;</span> : &#123;</span><br><span class="line">         <span class="attr">&quot;name&quot;</span> : <span class="string">&quot;John&quot;</span></span><br><span class="line">       &#125;</span><br><span class="line">     &#125;,</span><br><span class="line">     <span class="attr">&quot;actions&quot;</span> : &#123;</span><br><span class="line">       <span class="attr">&quot;reminder_email&quot;</span> : &#123;</span><br><span class="line">         <span class="attr">&quot;email&quot;</span> : &#123;</span><br><span class="line">           <span class="attr">&quot;to&quot;</span> : <span class="string">&quot;to@host.domain&quot;</span>,</span><br><span class="line">           <span class="attr">&quot;subject&quot;</span> : <span class="string">&quot;Reminder&quot;</span>,</span><br><span class="line">           <span class="attr">&quot;body&quot;</span> : <span class="string">&quot;Dear &#123;&#123;ctx.payload.name&#125;&#125;, by the time you read these lines, I&#x27;ll be gone&quot;</span></span><br><span class="line">         &#125;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">   </span><br><span class="line">   #Search-搜索</span><br><span class="line">   &#123;</span><br><span class="line">     <span class="attr">&quot;input&quot;</span> : &#123;</span><br><span class="line">       <span class="attr">&quot;search&quot;</span> : &#123;</span><br><span class="line">         <span class="attr">&quot;request&quot;</span> : &#123;</span><br><span class="line">           <span class="attr">&quot;indices&quot;</span> : [ <span class="string">&quot;logs&quot;</span> ],</span><br><span class="line">           <span class="attr">&quot;body&quot;</span> : &#123;</span><br><span class="line">             <span class="attr">&quot;query&quot;</span> : &#123; <span class="attr">&quot;match_all&quot;</span> : &#123;&#125; &#125;</span><br><span class="line">           &#125;</span><br><span class="line">         &#125;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;,</span><br><span class="line">     <span class="attr">&quot;condition&quot;</span> : &#123;</span><br><span class="line">       <span class="attr">&quot;compare&quot;</span> : &#123; <span class="attr">&quot;ctx.payload.hits.total&quot;</span> : &#123; <span class="attr">&quot;gt&quot;</span> : <span class="number">5</span> &#125;&#125;</span><br><span class="line">     &#125;</span><br><span class="line">     ...</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">#Http-请求</span><br><span class="line">#request.host</span><br><span class="line">#request.port</span><br><span class="line">#request.path</span><br><span class="line">#request.headers</span><br><span class="line">#request.params</span><br><span class="line">#request.url：request.scheme, request.host, request.port and request.params</span><br><span class="line">#request.method：head、get、post、put、delete</span><br><span class="line">#request.auth</span><br><span class="line">#request.body</span><br><span class="line">#request.proxy.host</span><br><span class="line">#request.proxy.port</span><br><span class="line">#request.connection_timeout</span><br><span class="line">#request.read_timeout</span><br><span class="line">#response_content_type：json, yaml and text</span><br><span class="line">#extract</span><br><span class="line">#get请求</span><br><span class="line">   &#123;</span><br><span class="line">   	<span class="attr">&quot;input&quot;</span> : &#123;</span><br><span class="line">   	  <span class="attr">&quot;http&quot;</span> : &#123;</span><br><span class="line">   	    <span class="attr">&quot;request&quot;</span> : &#123;</span><br><span class="line">   	      <span class="attr">&quot;host&quot;</span> : <span class="string">&quot;example.com&quot;</span>,</span><br><span class="line">   	      <span class="attr">&quot;port&quot;</span> : <span class="number">9200</span>,</span><br><span class="line">   	      <span class="attr">&quot;path&quot;</span> : <span class="string">&quot;/idx/_search&quot;</span></span><br><span class="line">   	    &#125;</span><br><span class="line">   	  &#125;</span><br><span class="line">   	&#125;</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">#含有body体内容</span><br><span class="line">   &#123;</span><br><span class="line">   	<span class="attr">&quot;input&quot;</span> : &#123;</span><br><span class="line">   		<span class="attr">&quot;http&quot;</span> : &#123;</span><br><span class="line">   			<span class="attr">&quot;request&quot;</span> : &#123;</span><br><span class="line">   			  <span class="attr">&quot;host&quot;</span> : <span class="string">&quot;host.domain&quot;</span>,</span><br><span class="line">   			  <span class="attr">&quot;port&quot;</span> : <span class="number">9200</span>,</span><br><span class="line">   			  <span class="attr">&quot;path&quot;</span> : <span class="string">&quot;/idx/_search&quot;</span>,</span><br><span class="line">   			  <span class="attr">&quot;body&quot;</span> :  <span class="string">&quot;&#123;\&quot;query\&quot; :  &#123;  \&quot;match\&quot; : &#123; \&quot;category\&quot; : \&quot;event\&quot;&#125;&#125;&#125;&quot;</span></span><br><span class="line">   			&#125;</span><br><span class="line">   		&#125;</span><br><span class="line">   	&#125;</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">#含有参数的</span><br><span class="line">   &#123;</span><br><span class="line">   	<span class="attr">&quot;input&quot;</span> : &#123;</span><br><span class="line">   	  <span class="attr">&quot;http&quot;</span> : &#123;</span><br><span class="line">   	    <span class="attr">&quot;request&quot;</span> : &#123;</span><br><span class="line">   	      <span class="attr">&quot;host&quot;</span> : <span class="string">&quot;host.domain&quot;</span>,</span><br><span class="line">   	      <span class="attr">&quot;port&quot;</span> : <span class="string">&quot;9200&quot;</span>,</span><br><span class="line">   	      <span class="attr">&quot;path&quot;</span> : <span class="string">&quot;/_cluster/stats&quot;</span>,</span><br><span class="line">   	      <span class="attr">&quot;params&quot;</span> : &#123;</span><br><span class="line">   	        <span class="attr">&quot;human&quot;</span> : <span class="string">&quot;true&quot;</span> </span><br><span class="line">   	      &#125;</span><br><span class="line">   	    &#125;</span><br><span class="line">   	  &#125;</span><br><span class="line">   	&#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">#含有用户密码</span><br><span class="line">   &#123;</span><br><span class="line">   	<span class="attr">&quot;input&quot;</span> : &#123;</span><br><span class="line">   	  <span class="attr">&quot;http&quot;</span> : &#123;</span><br><span class="line">   	    <span class="attr">&quot;request&quot;</span> : &#123;</span><br><span class="line">   	      <span class="attr">&quot;host&quot;</span> : <span class="string">&quot;host.domain&quot;</span>,</span><br><span class="line">   	      <span class="attr">&quot;port&quot;</span> : <span class="string">&quot;9200&quot;</span>,</span><br><span class="line">   	      <span class="attr">&quot;path&quot;</span> : <span class="string">&quot;/myservice&quot;</span>,</span><br><span class="line">   	      <span class="attr">&quot;auth&quot;</span> : &#123;</span><br><span class="line">   	        <span class="attr">&quot;basic&quot;</span> : &#123;</span><br><span class="line">   	          <span class="attr">&quot;username&quot;</span> : <span class="string">&quot;user&quot;</span>,</span><br><span class="line">   	          <span class="attr">&quot;password&quot;</span> : <span class="string">&quot;pass&quot;</span></span><br><span class="line">   	        &#125;</span><br><span class="line">   	      &#125;</span><br><span class="line">   	    &#125;</span><br><span class="line">   	  &#125;</span><br><span class="line">   	&#125;</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">#直接请求url的</span><br><span class="line">   &#123;</span><br><span class="line">   	<span class="attr">&quot;input&quot;</span> : &#123;</span><br><span class="line">   	  <span class="attr">&quot;http&quot;</span> : &#123;</span><br><span class="line">   	    <span class="attr">&quot;request&quot;</span> : &#123;</span><br><span class="line">   	      <span class="attr">&quot;url&quot;</span> : <span class="string">&quot;http://api.openweathermap.org/data/2.5/weather&quot;</span>,</span><br><span class="line">   	      <span class="attr">&quot;params&quot;</span> : &#123;</span><br><span class="line">   	        <span class="attr">&quot;lat&quot;</span> : <span class="string">&quot;52.374031&quot;</span>,</span><br><span class="line">   	        <span class="attr">&quot;lon&quot;</span> : <span class="string">&quot;4.88969&quot;</span>,</span><br><span class="line">   	        <span class="attr">&quot;appid&quot;</span> : <span class="string">&quot;&lt;your openweathermap appid&gt;&quot;</span></span><br><span class="line">   	      &#125;</span><br><span class="line">   	    &#125;</span><br><span class="line">   	  &#125;</span><br><span class="line">   	&#125;</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">#Chain-input-同时设置多个input，串行</span><br><span class="line">   &#123;</span><br><span class="line">   	<span class="attr">&quot;input&quot;</span> : &#123;</span><br><span class="line">   	  <span class="attr">&quot;chain&quot;</span> : &#123;</span><br><span class="line">   	    <span class="attr">&quot;inputs&quot;</span> : [ </span><br><span class="line">   	      ## 第一步input</span><br><span class="line">   	      &#123;</span><br><span class="line">   	        <span class="attr">&quot;first&quot;</span> : &#123;</span><br><span class="line">   	          <span class="attr">&quot;simple&quot;</span> : &#123; <span class="attr">&quot;path&quot;</span> : <span class="string">&quot;/_search&quot;</span> &#125;</span><br><span class="line">   	        &#125;</span><br><span class="line">   	      &#125;,</span><br><span class="line">   	      ## 第二步input （可以去使用第一步input返回的结果）</span><br><span class="line">   	      &#123;</span><br><span class="line">   	        <span class="attr">&quot;second&quot;</span> : &#123;</span><br><span class="line">   	          <span class="attr">&quot;http&quot;</span> : &#123;</span><br><span class="line">   	            <span class="attr">&quot;request&quot;</span> : &#123;</span><br><span class="line">   	              <span class="attr">&quot;host&quot;</span> : <span class="string">&quot;localhost&quot;</span>,</span><br><span class="line">   	              <span class="attr">&quot;port&quot;</span> : <span class="number">9200</span>,</span><br><span class="line">   	              <span class="attr">&quot;path&quot;</span> : <span class="string">&quot;&#123;&#123;ctx.payload.first.path&#125;&#125;&quot;</span> </span><br><span class="line">   	            &#125;</span><br><span class="line">   	          &#125;</span><br><span class="line">   	        &#125;</span><br><span class="line">   	      &#125;</span><br><span class="line">   	    ]</span><br><span class="line">   	  &#125;</span><br><span class="line">   	&#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="condition条件设置"><a href="#condition条件设置" class="headerlink" title="condition条件设置:"></a>condition条件设置:</h3><p>如果condition条件返回true 则会触发action 如果返回 false 则就停止，不执行action</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line">#--------------------条件设置--------------------</span><br><span class="line">#Always Condition</span><br><span class="line">&quot;condition&quot; : &#123;</span><br><span class="line">     &quot;always&quot; : &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line">#Never Condition</span><br><span class="line">   &quot;condition&quot; : &#123;</span><br><span class="line">     &quot;never&quot; : &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#Compare Condition （进行和查询的结果进行比较语法如下：）</span><br><span class="line"># eq:、not_eq、gt、gte、lt、lte</span><br><span class="line">## 比如错误条数超过了5条进行报警、响应长时间超过多少毫秒进行报警等</span><br><span class="line">&#123;</span><br><span class="line">     <span class="attr">&quot;condition&quot;</span> : &#123;</span><br><span class="line">       <span class="attr">&quot;compare&quot;</span> : &#123;</span><br><span class="line">         <span class="attr">&quot;ctx.payload.hits.total&quot;</span> : &#123; </span><br><span class="line">           <span class="attr">&quot;gte&quot;</span> : <span class="number">5</span> </span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#&lt;&#123;expression&#125;&gt; 正则表达式 使用 &lt;&gt; 中写正则表达式： 比如 当前时间 - 5分钟 进行比较，如下：</span><br><span class="line">&#123;</span><br><span class="line">     <span class="attr">&quot;condition&quot;</span> : &#123;</span><br><span class="line">       <span class="attr">&quot;compare&quot;</span> : &#123;</span><br><span class="line">         <span class="attr">&quot;ctx.execution_time&quot;</span> : &#123;</span><br><span class="line">           <span class="attr">&quot;gte&quot;</span> : <span class="string">&quot;&lt;&#123;now-5m&#125;&gt;&quot;</span></span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#&#123;&#123;path&#125;&#125; 比较，这个就是最开始的示例里面的获取参数方式，如下：</span><br><span class="line">&#123;</span><br><span class="line">     <span class="attr">&quot;condition&quot;</span> : &#123;</span><br><span class="line">       <span class="attr">&quot;compare&quot;</span> : &#123;</span><br><span class="line">         <span class="attr">&quot;ctx.payload.aggregations.status.buckets.error.doc_count&quot;</span> : &#123;</span><br><span class="line">           <span class="attr">&quot;not_eq&quot;</span> : <span class="string">&quot;&#123;&#123;ctx.payload.aggregations.handled.buckets.true.doc_count&#125;&#125;&quot;</span></span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line">   </span><br><span class="line">  </span><br><span class="line">#Array Compare Condition 数组比较： 比如当前的doc_count大于<span class="number">25</span> 就进行报警</span><br><span class="line">&#123;</span><br><span class="line">     <span class="attr">&quot;condition&quot;</span>: &#123;</span><br><span class="line">       <span class="attr">&quot;array_compare&quot;</span>: &#123;</span><br><span class="line">         <span class="attr">&quot;ctx.payload.aggregations.top_tweeters.buckets&quot;</span> : &#123; </span><br><span class="line">           <span class="attr">&quot;path&quot;</span>: <span class="string">&quot;doc_count&quot;</span> ,</span><br><span class="line">           <span class="attr">&quot;gte&quot;</span>: &#123; </span><br><span class="line">             <span class="attr">&quot;value&quot;</span>: <span class="number">25</span>, </span><br><span class="line">           &#125;</span><br><span class="line">         &#125;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line">   </span><br><span class="line">#Script Condition 脚本方式</span><br><span class="line">&#123;</span><br><span class="line">     <span class="attr">&quot;input&quot;</span> : &#123;</span><br><span class="line">       <span class="attr">&quot;search&quot;</span> : &#123;</span><br><span class="line">         <span class="attr">&quot;indices&quot;</span> : <span class="string">&quot;log-events&quot;</span>,</span><br><span class="line">         <span class="attr">&quot;body&quot;</span> : &#123;</span><br><span class="line">           <span class="attr">&quot;size&quot;</span> : <span class="number">0</span>,</span><br><span class="line">           <span class="attr">&quot;query&quot;</span> : &#123; <span class="attr">&quot;match&quot;</span> : &#123; <span class="attr">&quot;status&quot;</span> : <span class="string">&quot;error&quot;</span> &#125; &#125;</span><br><span class="line">         &#125;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;,</span><br><span class="line">     <span class="attr">&quot;condition&quot;</span> : &#123;</span><br><span class="line">       <span class="attr">&quot;script&quot;</span> : &#123;</span><br><span class="line">         ## 当前返回的条数是否大于阈值，进行报警</span><br><span class="line">         &quot;inline&quot; : &quot;return ctx.payload.hits.total &gt; threshold&quot;,</span><br><span class="line">         &quot;params&quot; : &#123;</span><br><span class="line">           &quot;threshold&quot; : 5</span><br><span class="line">         &#125;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Action-触发器"><a href="#Action-触发器" class="headerlink" title="Action 触发器"></a>Action 触发器</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br></pre></td><td class="code"><pre><span class="line">#--------------------Actions--------------------</span><br><span class="line">#Email Action--发送邮件 </span><br><span class="line"></span><br><span class="line">#如果使用发送邮件的报警，则需要在elasticsearch.yml中配置发送邮件服务的信息</span><br><span class="line">xpack.notification.email:</span><br><span class="line">   default_account: gmail_account</span><br><span class="line">   account:</span><br><span class="line">     gmail_account:</span><br><span class="line">         profile: gmail</span><br><span class="line">         smtp:</span><br><span class="line">             auth: true</span><br><span class="line">             starttls.enable: true</span><br><span class="line">             host: smtp.gmail.com</span><br><span class="line">             port: 587</span><br><span class="line">             user: &lt;username&gt;</span><br><span class="line">             password: &lt;password&gt;</span><br><span class="line">     outlook_account:</span><br><span class="line">         profile: outlook</span><br><span class="line">         smtp:</span><br><span class="line">             auth: true</span><br><span class="line">             starttls.enable: true</span><br><span class="line">             host: smtp-mail.outlook.com</span><br><span class="line">             port: 587</span><br><span class="line">             user: &lt;username&gt;</span><br><span class="line">             password: &lt;password&gt;:</span><br><span class="line">   	exchange_account:</span><br><span class="line">         profile: outlook</span><br><span class="line">         email_defaults:</span><br><span class="line">             from: &lt;email address of service account&gt; </span><br><span class="line">         smtp:</span><br><span class="line">             auth: true</span><br><span class="line">             starttls.enable: true</span><br><span class="line">             host: &lt;your exchange server&gt;</span><br><span class="line">             port: 587</span><br><span class="line">             user: &lt;email address of service account&gt; </span><br><span class="line">             password: &lt;password&gt;</span><br><span class="line">   </span><br><span class="line">#发送邮件</span><br><span class="line">&quot;actions&quot; : &#123;</span><br><span class="line">     ## actions名字</span><br><span class="line">     &quot;send_email&quot; : &#123; </span><br><span class="line">       &quot;email&quot; : &#123; </span><br><span class="line">         &quot;to&quot; : &quot;&#x27;Recipient Name &lt;recipient@example.com&gt;&#x27;&quot;, </span><br><span class="line">         #&quot;to&quot; : [&#x27;Personal Name &lt;user1@host.domain&gt;&#x27;, &#x27;user2@host.domain&#x27;], </span><br><span class="line">         &quot;subject&quot; : &quot;Watcher Notification&quot;, </span><br><span class="line">         &quot;body&quot; : &quot;&#123;&#123;ctx.payload.hits.total&#125;&#125; error logs found&quot; </span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#发送含有附件信息的邮件</span><br><span class="line">&quot;actions&quot; : &#123;</span><br><span class="line">     &quot;email_admin&quot; : &#123;</span><br><span class="line">       &quot;email&quot;: &#123;</span><br><span class="line">         &quot;to&quot;: &quot;&#x27;John Doe &lt;john.doe@example.com&gt;&#x27;&quot;,</span><br><span class="line">         &quot;attachments&quot; : &#123;</span><br><span class="line">           ## 附件方式</span><br><span class="line">           &quot;my_image.png&quot; : &#123; </span><br><span class="line">             &quot;http&quot; : &#123; </span><br><span class="line">               &quot;content_type&quot; : &quot;image.png&quot;,</span><br><span class="line">               &quot;request&quot; : &#123;</span><br><span class="line">                 &quot;url&quot;: &quot;http://example.org/foo/my-image.png&quot; </span><br><span class="line">               &#125;</span><br><span class="line">             &#125;</span><br><span class="line">           &#125;,</span><br><span class="line">           ## xpack reporting插件生成方式：</span><br><span class="line">           &quot;dashboard.pdf&quot; : &#123;</span><br><span class="line">             &quot;reporting&quot; : &#123;</span><br><span class="line">               &quot;url&quot;: &quot;http://example.org:5601/api/reporting/generate/dashboard/Error-Monitoring&quot;</span><br><span class="line">             &#125;</span><br><span class="line">           &#125;,</span><br><span class="line">           ## 自定义附件</span><br><span class="line">           &quot;data.yml&quot; : &#123;</span><br><span class="line">             &quot;data&quot; : &#123;</span><br><span class="line">               &quot;format&quot; : &quot;yaml&quot; </span><br><span class="line">             &#125;</span><br><span class="line">           &#125;</span><br><span class="line">         &#125;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#Webhook Action，发送一个http请求</span><br><span class="line">#发送github的issue</span><br><span class="line">&quot;actions&quot; : &#123;</span><br><span class="line">     &quot;create_github_issue&quot; : &#123;</span><br><span class="line">       ## 因为发邮件到达率不是特别高，所以可以使用外部的接口调用方式</span><br><span class="line">       ## 比如这里调用url为外部的手机短信接口进行发送 </span><br><span class="line">       &quot;webhook&quot; : &#123;</span><br><span class="line">         ## 请求方式</span><br><span class="line">         &quot;method&quot; : &quot;POST&quot;,</span><br><span class="line">         ## 外部请求地址</span><br><span class="line">         &quot;url&quot; : &quot;https://api.github.com/repos/&lt;owner&gt;/&lt;repo&gt;/issues&quot;,</span><br><span class="line">         ## 请求报文</span><br><span class="line">         &quot;body&quot; : &quot;&#123;</span><br><span class="line">           \&quot;title\&quot;: \&quot;Found errors in &#x27;contact.html&#x27;\&quot;,</span><br><span class="line">           \&quot;body\&quot;: \&quot;Found &#123;&#123;ctx.payload.hits.total&#125;&#125; errors in the last 5 minutes\&quot;,</span><br><span class="line">           \&quot;assignee\&quot;: \&quot;web-admin\&quot;,</span><br><span class="line">           \&quot;labels\&quot;: [ \&quot;bug\&quot;, \&quot;sev2\&quot; ]</span><br><span class="line">         &#125;&quot;,</span><br><span class="line">         ## 用户名密码</span><br><span class="line">         &quot;auth&quot; : &#123;</span><br><span class="line">           &quot;basic&quot; : &#123;</span><br><span class="line">             &quot;username&quot; : &quot;&lt;username&gt;&quot;, </span><br><span class="line">             &quot;password&quot; : &quot;&lt;password&gt;&quot;</span><br><span class="line">           &#125;</span><br><span class="line">         &#125;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#带有url参数的请求</span><br><span class="line">&quot;actions&quot; : &#123;</span><br><span class="line">     &quot;my_webhook&quot; : &#123;</span><br><span class="line">       &quot;webhook&quot; : &#123;</span><br><span class="line">         &quot;method&quot; : &quot;POST&quot;,</span><br><span class="line">         &quot;host&quot; : &quot;mylisteningserver&quot;,</span><br><span class="line">         &quot;port&quot; : 9200,</span><br><span class="line">         &quot;path&quot;: &quot;:/alert&quot;,</span><br><span class="line">         &quot;params&quot; : &#123;</span><br><span class="line">           &quot;watch_id&quot; : &quot;&#123;&#123;ctx.watch_id&#125;&#125;&quot; </span><br><span class="line">         &#125;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#自定义header</span><br><span class="line">&quot;actions&quot; : &#123;</span><br><span class="line">     &quot;my_webhook&quot; : &#123;</span><br><span class="line">       &quot;webhook&quot; : &#123;</span><br><span class="line">         &quot;method&quot; : &quot;POST&quot;,</span><br><span class="line">         &quot;host&quot; : &quot;mylisteningserver&quot;,</span><br><span class="line">         &quot;port&quot; : 9200,</span><br><span class="line">         &quot;path&quot;: &quot;:/alert/&#123;&#123;ctx.watch_id&#125;&#125;&quot;,</span><br><span class="line">         &quot;headers&quot; : &#123;</span><br><span class="line">           &quot;Content-Type&quot; : &quot;application/yaml&quot; </span><br><span class="line">         &#125;,</span><br><span class="line">         &quot;body&quot; : &quot;count: &#123;&#123;ctx.payload.hits.total&#125;&#125;&quot;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line">   </span><br><span class="line">#Index Action--创建索引文档</span><br><span class="line">&quot;actions&quot; : &#123;</span><br><span class="line">     &quot;index_payload&quot; : &#123; </span><br><span class="line">       &quot;index&quot; : &#123;</span><br><span class="line">         &quot;index&quot; : &quot;my-index&quot;, </span><br><span class="line">         &quot;doc_type&quot; : &quot;my-type&quot;, </span><br><span class="line">         &quot;doc_id&quot;: &quot;my-id&quot; </span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line">   </span><br><span class="line">#Logging Action--记录日志</span><br><span class="line">#level：error, warn, info, debug and trace</span><br><span class="line">## 日志种类：</span><br><span class="line">#category：xpack.watcher.actions.logging</span><br><span class="line">&quot;actions&quot; : &#123;</span><br><span class="line">     &quot;log&quot; : &#123; </span><br><span class="line">       &quot;transform&quot; : &#123; ... &#125;, </span><br><span class="line">       ## 日志报警</span><br><span class="line">       &quot;logging&quot; : &#123;</span><br><span class="line">         &quot;text&quot; : &quot;executed at &#123;&#123;ctx.execution_time&#125;&#125;&quot;,</span><br><span class="line">         ## 日志级别</span><br><span class="line">         &quot;level&quot;: &quot;info&quot;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#Jira Action 与jira集成</span><br><span class="line">#HipChat Action</span><br><span class="line">#Slack Action</span><br><span class="line">#PagerDuty Action</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用接口的形式创建一个watcher-进行模拟："><a href="#使用接口的形式创建一个watcher-进行模拟：" class="headerlink" title="使用接口的形式创建一个watcher, 进行模拟："></a>使用接口的形式创建一个watcher, 进行模拟：</h2><ol>
+<li><p>执watcher脚本：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 查询school</span></span></span><br><span class="line">GET school/student/_search</span><br><span class="line">&#123;</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match_all&quot;:&#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 创建school_watcher</span></span></span><br><span class="line">PUT _xpack/watcher/watch/school_watcher</span><br><span class="line">&#123;</span><br><span class="line">  &quot;trigger&quot;: &#123;</span><br><span class="line">    &quot;schedule&quot;: &#123;</span><br><span class="line">      &quot;interval&quot;: &quot;10s&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;input&quot;: &#123;</span><br><span class="line">    &quot;search&quot;: &#123;</span><br><span class="line">      &quot;request&quot;: &#123;</span><br><span class="line">        &quot;indices&quot;: [&quot;school*&quot;],</span><br><span class="line">        &quot;body&quot;: &#123;</span><br><span class="line">          &quot;size&quot;: 0,</span><br><span class="line">          &quot;query&quot;: &#123;</span><br><span class="line">            &quot;match&quot;: &#123;</span><br><span class="line">              &quot;name&quot;: &quot;hello&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;condition&quot;: &#123;</span><br><span class="line">    &quot;compare&quot;: &#123;</span><br><span class="line">      &quot;ctx.payload.hits.total&quot;: &#123;</span><br><span class="line">        &quot;gt&quot;: 0</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;transform&quot;: &#123;</span><br><span class="line">    &quot;search&quot;: &#123;</span><br><span class="line">      &quot;request&quot;: &#123;</span><br><span class="line">        &quot;indices&quot;: [&quot;school*&quot;],</span><br><span class="line">        &quot;body&quot;: &#123;</span><br><span class="line">          &quot;size&quot;: 10,</span><br><span class="line">          &quot;query&quot;: &#123;</span><br><span class="line">            &quot;match&quot;: &#123;</span><br><span class="line">              &quot;name&quot;: &quot;hello&quot;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;actions&quot;: &#123;</span><br><span class="line">    &quot;log_hello&quot;: &#123;</span><br><span class="line">      &quot;throttle_period&quot;: &quot;15m&quot;,</span><br><span class="line">      &quot;logging&quot;: &#123;</span><br><span class="line">        &quot;text&quot;: &quot;Found &#123;&#123;ctx.payload.hits.total&#125;&#125; hello in the school&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 查看watcher执行结果</span></span></span><br><span class="line">GET /.watcher-history*/_search?pretty</span><br><span class="line">&#123;</span><br><span class="line">  &quot;sort&quot; : [</span><br><span class="line">    &#123; &quot;result.execution_time&quot; : &quot;desc&quot; &#125;</span><br><span class="line">  ],</span><br><span class="line">  &quot;query&quot;: &#123;</span><br><span class="line">    &quot;match&quot;: &#123;</span><br><span class="line">      &quot;watch_id&quot;: &quot;school_watcher&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"><span class="comment"># 进行数据测试：</span></span></span><br><span class="line">POST /school/student</span><br><span class="line">&#123;</span><br><span class="line"> &quot;name&quot;: &quot;hello&quot;,</span><br><span class="line"> &quot;age&quot;: 18,</span><br><span class="line"> &quot;course&quot;: &quot;elasticsearch&quot;,</span><br><span class="line"> &quot;study_date&quot;: &quot;2018-08-20T20:30:50&quot;,</span><br><span class="line"> &quot;mark&quot;: &quot;take care day day&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ELK/" rel="tag"># ELK</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/10/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-kafka%E5%AE%89%E8%A3%85/" rel="next" title="软件安装-kafka安装">
+                <i class="fa fa-chevron-left"></i> 软件安装-kafka安装
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">65</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">架构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E8%BE%93%E5%87%BA"><span class="nav-number">2.</span> <span class="nav-text">日志输出</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.1.</span> <span class="nav-text">日志格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E5%BF%97%E5%88%86%E7%BA%A7%E8%BE%93%E5%87%BA"><span class="nav-number">2.2.</span> <span class="nav-text">日志分级输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AD%97%E6%AE%B5%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.3.</span> <span class="nav-text">自定义字段实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#filebeat%E5%AE%89%E8%A3%85"><span class="nav-number">3.</span> <span class="nav-text">filebeat安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#filebeat-yml"><span class="nav-number">3.1.</span> <span class="nav-text">filebeat.yml</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E5%8A%A8Kafka"><span class="nav-number">3.2.</span> <span class="nav-text">启动Kafka</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Logstash%E5%AE%89%E8%A3%85"><span class="nav-number">4.</span> <span class="nav-text">Logstash安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Logstash%E8%AF%BB%E5%8F%96Kafka%E6%B6%88%E6%81%AF%E7%9A%84%E8%84%9A%E6%9C%AC"><span class="nav-number">4.1.</span> <span class="nav-text">Logstash读取Kafka消息的脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Logstash%E8%AF%AD%E6%B3%95%E4%B8%8E%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">4.2.</span> <span class="nav-text">Logstash语法与基本使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ElasticSearch%E7%B4%A2%E5%BC%95%E5%88%9B%E5%BB%BA%E5%91%A8%E6%9C%9F%E3%80%81%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83%E9%80%89%E6%8B%A9"><span class="nav-number">5.</span> <span class="nav-text">ElasticSearch索引创建周期、命名规范选择</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#kibana%E6%8E%A7%E5%88%B6%E5%8F%B0%E5%BA%94%E7%94%A8%E3%80%81%E5%8F%AF%E8%A7%86%E5%8C%96%E6%97%A5%E5%BF%97"><span class="nav-number">6.</span> <span class="nav-text">kibana控制台应用、可视化日志</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%94%E7%94%A8Watcher%E5%AE%9E%E7%8E%B0%E8%AD%A6%E6%8A%A5"><span class="nav-number">7.</span> <span class="nav-text">应用Watcher实现警报</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Xpack-Watchs%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8%EF%BC%9A"><span class="nav-number">7.1.</span> <span class="nav-text">Xpack-Watchs基本使用：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ctx-payload%E5%8F%96%E5%80%BC%E8%A7%84%E8%8C%83%EF%BC%9A"><span class="nav-number">7.1.1.</span> <span class="nav-text">ctx.payload取值规范：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#watcher-API%E4%BD%BF%E7%94%A8%EF%BC%9A"><span class="nav-number">7.1.2.</span> <span class="nav-text">watcher API使用：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#triggers%E7%9A%84%E5%87%A0%E7%A7%8D%E7%B1%BB%E5%9E%8B"><span class="nav-number">7.1.3.</span> <span class="nav-text">triggers的几种类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#input%E7%9A%84%E5%87%A0%E7%A7%8D%E7%B1%BB%E5%9E%8B%EF%BC%9A"><span class="nav-number">7.1.4.</span> <span class="nav-text">input的几种类型：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#condition%E6%9D%A1%E4%BB%B6%E8%AE%BE%E7%BD%AE"><span class="nav-number">7.1.5.</span> <span class="nav-text">condition条件设置:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Action-%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">7.1.6.</span> <span class="nav-text">Action 触发器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%BD%A2%E5%BC%8F%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AAwatcher-%E8%BF%9B%E8%A1%8C%E6%A8%A1%E6%8B%9F%EF%BC%9A"><span class="nav-number">7.2.</span> <span class="nav-text">使用接口的形式创建一个watcher, 进行模拟：</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

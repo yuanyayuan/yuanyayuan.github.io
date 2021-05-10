@@ -89,7 +89,7 @@
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/%E7%BB%83%E4%B9%A02.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/%E7%BB%83%E4%B9%A0.png">
 <meta property="article:published_time" content="2021-04-17T15:39:30.000Z">
-<meta property="article:modified_time" content="2021-04-18T15:53:31.281Z">
+<meta property="article:modified_time" content="2021-05-09T14:01:58.637Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="数据库">
 <meta property="article:tag" content="MySQL">
@@ -395,6 +395,7 @@
 <p>写个sql，求取每个用户中，订单总金额最大的那笔订单（要求查询结果里面包含订单表order里面的所有字段：如图上面的六个字段）</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> a.<span class="operator">*</span> <span class="keyword">from</span> sys_order2 a <span class="keyword">inner</span> <span class="keyword">join</span> (<span class="keyword">select</span> user_id,<span class="built_in">max</span>(order_pay) <span class="keyword">as</span> ma <span class="keyword">from</span> sys_order2 <span class="keyword">GROUP</span> <span class="keyword">BY</span> user_id) b</span><br><span class="line"></span><br><span class="line"><span class="keyword">on</span> a.user_id <span class="operator">=</span> b.user_id <span class="keyword">and</span> a.order_pay <span class="operator">=</span> b.ma</span><br></pre></td></tr></table></figure>
 
+<h1 id="练习五"><a href="#练习五" class="headerlink" title="练习五"></a>练习五</h1><h2 id="MySQL当记录不存在时insert-当记录存在时update，语句怎么写？"><a href="#MySQL当记录不存在时insert-当记录存在时update，语句怎么写？" class="headerlink" title="MySQL当记录不存在时insert,当记录存在时update，语句怎么写？"></a>MySQL当记录不存在时insert,当记录存在时update，语句怎么写？</h2><p>INSERT INTO table (a,b,c) VALUES (1,2,3) ON DUPLICATE KEY UPDATE c=c+1;</p>
 
       
     </div>
@@ -517,7 +518,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">83</span>
+                  <span class="site-state-item-count">90</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -528,7 +529,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">65</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -539,7 +540,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">41</span>
+                  <span class="site-state-item-count">46</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -588,7 +589,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E8%A1%A8%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2"><span class="nav-number">1.</span> <span class="nav-text">三表连接查询</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E4%B8%80"><span class="nav-number">2.</span> <span class="nav-text">练习一</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E7%94%9F%E8%A1%A8student%EF%BC%88Sid%EF%BC%8CSname%EF%BC%8CSage%EF%BC%8CSex%EF%BC%89%EF%BC%8C%E8%AF%BE%E7%A8%8B%E8%A1%A8course%EF%BC%88Cid%EF%BC%8CCname%EF%BC%8CTid%EF%BC%89%EF%BC%8C%E6%88%90%E7%BB%A9%E8%A1%A8score%EF%BC%88Sid%EF%BC%8CCid%EF%BC%8CScore%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">学生表student（Sid，Sname，Sage，Sex），课程表course（Cid，Cname，Tid），成绩表score（Sid，Cid，Score）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E4%BA%8C"><span class="nav-number">3.</span> <span class="nav-text">练习二</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8student-id-name-department-age-%E5%88%86%E5%88%AB%E4%BB%A3%E8%A1%A8%E5%AD%A6%E5%91%98%E7%9A%84%E5%AD%A6%E5%8F%B7%EF%BC%8C%E5%A7%93%E5%90%8D%EF%BC%8C%E6%89%80%E5%B1%9E%E5%8D%95%E4%BD%8D%EF%BC%8C%E5%B9%B4%E9%BE%84"><span class="nav-number">3.1.</span> <span class="nav-text">表student(id,name,department,age)分别代表学员的学号，姓名，所属单位，年龄</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8course-id-name-%E5%88%86%E5%88%AB%E4%BB%A3%E8%A1%A8%E8%AF%BE%E7%A8%8B%E7%BC%96%E5%8F%B7%E8%AF%BE%E7%A8%8B%E5%90%8D%E7%A7%B0"><span class="nav-number">3.2.</span> <span class="nav-text">表course(id,name)分别代表课程编号课程名称</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8score-sid-cid-score-%E5%88%86%E5%88%AB%E4%BB%A3%E8%A1%A8%E5%AD%A6%E5%8F%B7%EF%BC%8C%E6%89%80%E9%80%89%E7%9A%84%E8%AF%BE%E7%A8%8B%E7%BC%96%E5%8F%B7%EF%BC%8C%E5%AD%A6%E4%B9%A0%E6%88%90%E7%BB%A9"><span class="nav-number">3.3.</span> <span class="nav-text">表score(sid,cid,score) 分别代表学号，所选的课程编号，学习成绩</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E4%B8%89"><span class="nav-number">4.</span> <span class="nav-text">练习三</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E5%9B%9B"><span class="nav-number">5.</span> <span class="nav-text">练习四</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E8%A1%A8%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2"><span class="nav-number">1.</span> <span class="nav-text">三表连接查询</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E4%B8%80"><span class="nav-number">2.</span> <span class="nav-text">练习一</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E7%94%9F%E8%A1%A8student%EF%BC%88Sid%EF%BC%8CSname%EF%BC%8CSage%EF%BC%8CSex%EF%BC%89%EF%BC%8C%E8%AF%BE%E7%A8%8B%E8%A1%A8course%EF%BC%88Cid%EF%BC%8CCname%EF%BC%8CTid%EF%BC%89%EF%BC%8C%E6%88%90%E7%BB%A9%E8%A1%A8score%EF%BC%88Sid%EF%BC%8CCid%EF%BC%8CScore%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">学生表student（Sid，Sname，Sage，Sex），课程表course（Cid，Cname，Tid），成绩表score（Sid，Cid，Score）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E4%BA%8C"><span class="nav-number">3.</span> <span class="nav-text">练习二</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8student-id-name-department-age-%E5%88%86%E5%88%AB%E4%BB%A3%E8%A1%A8%E5%AD%A6%E5%91%98%E7%9A%84%E5%AD%A6%E5%8F%B7%EF%BC%8C%E5%A7%93%E5%90%8D%EF%BC%8C%E6%89%80%E5%B1%9E%E5%8D%95%E4%BD%8D%EF%BC%8C%E5%B9%B4%E9%BE%84"><span class="nav-number">3.1.</span> <span class="nav-text">表student(id,name,department,age)分别代表学员的学号，姓名，所属单位，年龄</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8course-id-name-%E5%88%86%E5%88%AB%E4%BB%A3%E8%A1%A8%E8%AF%BE%E7%A8%8B%E7%BC%96%E5%8F%B7%E8%AF%BE%E7%A8%8B%E5%90%8D%E7%A7%B0"><span class="nav-number">3.2.</span> <span class="nav-text">表course(id,name)分别代表课程编号课程名称</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A8score-sid-cid-score-%E5%88%86%E5%88%AB%E4%BB%A3%E8%A1%A8%E5%AD%A6%E5%8F%B7%EF%BC%8C%E6%89%80%E9%80%89%E7%9A%84%E8%AF%BE%E7%A8%8B%E7%BC%96%E5%8F%B7%EF%BC%8C%E5%AD%A6%E4%B9%A0%E6%88%90%E7%BB%A9"><span class="nav-number">3.3.</span> <span class="nav-text">表score(sid,cid,score) 分别代表学号，所选的课程编号，学习成绩</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E4%B8%89"><span class="nav-number">4.</span> <span class="nav-text">练习三</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E5%9B%9B"><span class="nav-number">5.</span> <span class="nav-text">练习四</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E4%BA%94"><span class="nav-number">6.</span> <span class="nav-text">练习五</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL%E5%BD%93%E8%AE%B0%E5%BD%95%E4%B8%8D%E5%AD%98%E5%9C%A8%E6%97%B6insert-%E5%BD%93%E8%AE%B0%E5%BD%95%E5%AD%98%E5%9C%A8%E6%97%B6update%EF%BC%8C%E8%AF%AD%E5%8F%A5%E6%80%8E%E4%B9%88%E5%86%99%EF%BC%9F"><span class="nav-number">6.1.</span> <span class="nav-text">MySQL当记录不存在时insert,当记录存在时update，语句怎么写？</span></a></li></ol></li></ol></div>
             
 
           </div>
