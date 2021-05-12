@@ -261,6 +261,501 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E6%8C%87%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E6%8C%87%E4%BB%A4/" itemprop="url">中间件-redis指令</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-03T16:32:25+08:00">
+                2021-04-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E6%8C%87%E4%BB%A4/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis指令</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="redis指令"><a href="#redis指令" class="headerlink" title="redis指令"></a>redis指令</h1><ul>
+<li>keys *：查看所有的key (不建议在生产上使用，有性能影响)</li>
+<li>type key：key的类型</li>
+<li>select index：切换数据库，总共默认16个</li>
+<li>flushdb：删除当前下边db中的数据</li>
+<li>flushall：删除所有db中的数据</li>
+</ul>
+<h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2><p>string: 最简单的字符串类型键值对缓存，也是最基本的</p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><ul>
+<li><p>get/set/del：查询/设置/删除</p>
+</li>
+<li><p>set rekey data：设置已经存在的key，会覆盖</p>
+</li>
+<li><p>setnx rekey data：设置已经存在的key，不会覆盖</p>
+</li>
+<li><p>set key value ex time：设置带过期时间的数据</p>
+</li>
+<li><p>expire key：设置过期时间</p>
+</li>
+<li><p>ttl：查看剩余时间，-1永不过期，-2过期</p>
+</li>
+<li><p>append key：合并字符串</p>
+</li>
+<li><p>strlen key：字符串长度</p>
+</li>
+<li><p>incr key：累加1</p>
+</li>
+<li><p>decr key：类减1</p>
+</li>
+<li><p>incrby key num：累加给定数值</p>
+</li>
+<li><p>decrby key num：累减给定数值</p>
+</li>
+<li><p>getrange key start end：截取数据，end=-1 代表到最后</p>
+</li>
+<li><p>setrange key start newdata：从start位置开始替换数据</p>
+</li>
+<li><p>mset：连续设值</p>
+</li>
+<li><p>mget：连续取值</p>
+</li>
+<li><p>msetnx：连续设置，如果存在则不设置</p>
+</li>
+</ul>
+<h2 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h2><h3 id="hash-1"><a href="#hash-1" class="headerlink" title="hash"></a>hash</h3><p>hash：类似map，存储结构化数据结构，比如存储一个对象（不能有嵌套对象）</p>
+<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><ul>
+<li>hset key property value：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-&gt; hset user name imooc</span><br><span class="line">-&gt; 创建一个user对象，这个对象中包含name属性，name值为imooc</span><br></pre></td></tr></table></figure></li>
+<li>hget user name：获得用户对象中name的值<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hmset：设置对象中的多个键值对</span><br><span class="line"> -&gt; hset user age 18 phone 139123123</span><br><span class="line"> hmsetnx：设置对象中的多个键值对，存在则不添加</span><br><span class="line"> -&gt; hset user age 18 phone 139123123</span><br></pre></td></tr></table></figure></li>
+<li>hmget：获得对象中的多个属性<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-&gt; hmget user age phone</span><br></pre></td></tr></table></figure></li>
+<li>hgetall user：获得整个对象的内容</li>
+<li>hincrby user age 2：累加属性</li>
+<li>hincrbyfloat user age 2.2：累加属性</li>
+<li>hlen user：有多少个属性</li>
+<li>hexists user age：判断属性是否存在</li>
+<li>hkeys user：获得所有属性</li>
+<li>hvals user：获得所有值</li>
+<li>hdel user：删除对象</li>
+</ul>
+<h2 id="list"><a href="#list" class="headerlink" title="list"></a>list</h2><h3 id="list-1"><a href="#list-1" class="headerlink" title="list"></a>list</h3><p>list：列表，[a, b, c, d, …]</p>
+<h3 id="使用-2"><a href="#使用-2" class="headerlink" title="使用"></a>使用</h3><ul>
+<li>lpush userList 1 2 3 4 5：构建一个list，从左边开始存入数据</li>
+<li>rpush userList 1 2 3 4 5：构建一个list，从右边开始存入数据</li>
+<li>lrange list start end：获得数据</li>
+<li>lpop：从左侧开始拿出一个数据</li>
+<li>rpop：从右侧开始拿出一个数据</li>
+<li>llen list：list长度</li>
+<li>lindex list index：获取list下标的值</li>
+<li>lset list index value：把某个下标的值替换</li>
+<li>linsert list before/after value：插入一个新的值</li>
+<li>lrem list num value：删除几个相同数据</li>
+<li>ltrim list start end：截取值，替换原来的list</li>
+</ul>
+<h2 id="zset"><a href="#zset" class="headerlink" title="zset"></a>zset</h2><h3 id="sorted-set："><a href="#sorted-set：" class="headerlink" title="sorted set："></a>sorted set：</h3><p>sorted set：排序的set，可以去重可以排序，比如可以根据用户积分做排名，积分作为set的一个数值，根据数值可以做排序。set中的每一个memeber都带有一个分数</p>
+<h3 id="使用-3"><a href="#使用-3" class="headerlink" title="使用"></a>使用</h3><ul>
+<li><p>zadd zset 10 value1 20 value2 30 value3：设置member和对应的分数</p>
+</li>
+<li><p>zrange zset 0 -1：查看所有zset中的内容</p>
+</li>
+<li><p>zrange zset 0 -1 withscores：带有分数</p>
+</li>
+<li><p>zrank zset value：获得对应的下标</p>
+</li>
+<li><p>zscore zset value：获得对应的分数</p>
+</li>
+<li><p>zcard zset：统计个数</p>
+</li>
+<li><p>zcount zset 分数1 分数2：统计个数</p>
+</li>
+<li><p>zrangebyscore zset 分数1 分数2：查询分数之间的member(包含分数1 分数2)</p>
+</li>
+<li><p>zrangebyscore zset (分数1 (分数2：查询分数之间的member（不包含分数1 和 分数2）</p>
+</li>
+<li><p>zrangebyscore zset 分数1 分数2 limit start end：查询分数之间的member(包含分数1 分数2)，获得的结果集再次根据下标区间做查询</p>
+</li>
+<li><p>zrem zset value：删除member</p>
+</li>
+</ul>
+<h2 id="过期时间"><a href="#过期时间" class="headerlink" title="过期时间"></a>过期时间</h2><h3 id="EXPIRE-PEXPIRE"><a href="#EXPIRE-PEXPIRE" class="headerlink" title="EXPIRE/PEXPIRE"></a>EXPIRE/PEXPIRE</h3><ul>
+<li><strong>EXPIRE</strong> </li>
+</ul>
+<p>接口定义：EXPIRE key “seconds”</p>
+<p>接口描述：设置一个key在当前时间”seconds”(秒)之后过期。返回1代表设置成功，返回0代表key不存在或者无法设置过期时间。</p>
+<ul>
+<li><strong>PEXPIRE</strong></li>
+</ul>
+<p>接口定义：PEXPIRE key “milliseconds”<br>接口描述：设置一个key在当前时间”milliseconds”(毫秒)之后过期。返回1代表设置成功，返回0代表key不存在或者无法设置过期时间。</p>
+<h3 id="EXPIREAT-PEXPIREAT"><a href="#EXPIREAT-PEXPIREAT" class="headerlink" title="EXPIREAT/PEXPIREAT"></a>EXPIREAT/PEXPIREAT</h3><ul>
+<li><strong>EXPIREAT</strong> </li>
+</ul>
+<p>接口定义：EXPIREAT key “timestamp”</p>
+<p>接口描述：设置一个key在”timestamp”(时间戳(秒))之后过期。返回1代表设置成功，返回0代表key不存在或者无法设置过期时间</p>
+<ul>
+<li><strong>PEXPIREAT</strong> </li>
+</ul>
+<p>接口定义：PEXPIREAT key “milliseconds-timestamp”</p>
+<p>接口描述：设置一个key在”milliseconds-timestamp”(时间戳(毫秒))之后过期。返回1代表设置成功，返回0代表key不存在或者无法设置过期时间</p>
+<h3 id="TTL-PTTL"><a href="#TTL-PTTL" class="headerlink" title="TTL/PTTL"></a>TTL/PTTL</h3><ul>
+<li><strong>TTL</strong> </li>
+</ul>
+<p>接口定义：TTL key<br>接口描述：获取key的过期时间。如果key存在过期时间，返回剩余生存时间(秒)；如果key是永久的，返回-1；如果key不存在或者已过期，返回-2。</p>
+<ul>
+<li><strong>PTTL</strong> </li>
+</ul>
+<p>接口定义：PTTL key<br>接口描述：获取key的过期时间。如果key存在过期时间，返回剩余生存时间(毫秒)；如果key是永久的，返回-1；如果key不存在或者已过期，返回-2。</p>
+<h3 id="PERSIST"><a href="#PERSIST" class="headerlink" title="PERSIST"></a>PERSIST</h3><p>接口定义：PERSIST key<br>接口描述：移除key的过期时间，将其转换为永久状态。如果返回1，代表转换成功。如果返回0，代表key不存在或者之前就已经是永久状态。</p>
+<h3 id="SETEX"><a href="#SETEX" class="headerlink" title="SETEX"></a>SETEX</h3><p>接口定义：SETEX key “seconds” “value”<br>接口描述：SETEX在逻辑上等价于SET和EXPIRE合并的操作，区别之处在于SETEX是一条命令，而命令的执行是原子性的，所以不会出现并发问题。</p>
+<h2 id="扫描"><a href="#扫描" class="headerlink" title="扫描"></a>扫描</h2><h3 id="keys"><a href="#keys" class="headerlink" title="keys"></a>keys</h3><h3 id="scan"><a href="#scan" class="headerlink" title="scan"></a>scan</h3>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/" itemprop="url">中间件-redis内存淘汰机制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-03T12:46:31+08:00">
+                2021-04-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis内存淘汰机制</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Redis设置过期时间"><a href="#Redis设置过期时间" class="headerlink" title="Redis设置过期时间"></a>Redis设置过期时间</h1><ul>
+<li>expire key time(以秒为单位)–这是最常用的方式</li>
+<li>setex(String key, int seconds, String value)–字符串独有的方式</li>
+</ul>
+<p>注意：</p>
+<ul>
+<li>除了字符串自己独有设置过期时间的方法外，其他方法都需要依靠expire方法来设置时间</li>
+<li>如果没有设置时间，那缓存就是永不过期</li>
+<li>如果设置了过期时间，之后又想让缓存永不过期，使用persist key</li>
+</ul>
+<h1 id="Redis-给缓存数据设置过期时间有啥用？"><a href="#Redis-给缓存数据设置过期时间有啥用？" class="headerlink" title="Redis 给缓存数据设置过期时间有啥用？"></a>Redis 给缓存数据设置过期时间有啥用？</h1><p>一般情况下，我们设置保存的缓存数据的时候都会设置一个过期时间。为什么呢？</p>
+<p>因为内存是有限的，如果缓存中的所有数据都是一直保存的话，分分钟直接Out of memory。</p>
+<p><strong>过期时间除了有助于缓解内存的消耗，还有什么其他用么？</strong></p>
+<p>很多时候，我们的业务场景就是需要某个数据只在某一时间段内存在，比如我们的短信验证码可能只在1分钟内有效，用户登录的 token 可能只在 1 天内有效。</p>
+<p>如果使用传统的数据库来处理的话，一般都是自己判断过期，这样更麻烦并且性能要差很多。</p>
+<h1 id="Redis是如何判断数据是否过期的呢？"><a href="#Redis是如何判断数据是否过期的呢？" class="headerlink" title="Redis是如何判断数据是否过期的呢？"></a>Redis是如何判断数据是否过期的呢？</h1><p>Redis  通过一个叫做过期字典（可以看作是hash表）来保存数据过期的时间。过期字典的键指向Redis数据库中的某个key(键)，过期字典的值是一个long long类型的整数，这个整数保存了key所指向的数据库键的过期时间（毫秒精度的UNIX时间戳）。 </p>
+<h1 id="Redis-过期键的删除策略"><a href="#Redis-过期键的删除策略" class="headerlink" title="Redis 过期键的删除策略"></a>Redis 过期键的删除策略</h1><p>A、<strong>定期删除策略</strong>。用一个<strong>定时器</strong>来负责检查 key，过期则删除 key，注意这里并不是检查所有的 key 而是<strong>随机抽取进行检查</strong>。定期策略虽然让内存及时释放，但也会<strong>额外消耗 CPU 资源</strong>，通常 CPU 应该将时间尽量用于处理业务请求，而不是删除 key。</p>
+<p>B、<strong>惰性删除策略</strong>。在你<strong>获取</strong>某个 key 的时候，redis 会检查一下，这个 key <strong>如果设置了过期时间那么是否过期了</strong>，如果<strong>过期</strong>则删除该 key。</p>
+<hr>
+<h1 id="Redis-的回收策略（淘汰策略）"><a href="#Redis-的回收策略（淘汰策略）" class="headerlink" title="Redis 的回收策略（淘汰策略）"></a>Redis 的回收策略（淘汰策略）</h1><h2 id="内存淘汰机制"><a href="#内存淘汰机制" class="headerlink" title="内存淘汰机制"></a>内存淘汰机制</h2><p>如果<strong>定期删除没删除 key</strong>，然后也<strong>没及时去请求 key</strong>，即<strong>惰性删除也没生效</strong>，持续下去 redis 的内存会越来越高，当超过 redis 设置的内存最大使用量时，就会进行内存数据淘汰。redis 有 6 种淘汰策略：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>volatile-lru</td>
+<td>从已设置过期时间的数据集中挑选最近最少使用的数据淘汰</td>
+</tr>
+<tr>
+<td>volatile-ttl</td>
+<td>从已设置过期时间的数据集中挑选将要过期的数据淘汰</td>
+</tr>
+<tr>
+<td>volatile-random</td>
+<td>从已设置过期时间的数据集中任意选择数据淘汰</td>
+</tr>
+<tr>
+<td>allkeys-lru</td>
+<td>从所有数据集中挑选最近最少使用的数据淘汰</td>
+</tr>
+<tr>
+<td>allkeys-random</td>
+<td>从所有数据集中任意选择数据进行淘汰</td>
+</tr>
+<tr>
+<td>noeviction</td>
+<td>当内存不足以容纳新写入数据时，新写入操作会报错。很少使用</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>注意这里的 6 种机制，前缀 volatile 和 allkeys 用于区分淘汰数据的数据集是从已设置过期时间的数据集还是从全部数据集中选取，后面的 lru、ttl 以及 random 是三种不同的淘汰策略，再加上一种 no-enviction 永不回收的策略。其中最常使用的是 volatile-lru/allkeys-lru。</p>
+</blockquote>
+<ul>
+<li>allkeys-lru：如果期望用户请求呈现幂律分布(power-law distribution)，也就是，期望一部分子集元素被访问得远比其他元素多时，可以使用allkeys-lru策略。在你不确定时这是一个好的选择</li>
+<li>allkeys-random：如果期望是循环周期的访问，所有的键被连续扫描，或者期望请求符合平均分布(每个元素以相同的概率被访问)，可以使用allkeys-random策略。</li>
+<li>volatile-ttl：如果你期望能让 Redis 通过使用你创建缓存对象的时候设置的TTL值，确定哪些对象应该是较好的清除候选项，可以使用volatile-ttl策略。</li>
+</ul>
+<p>另外值得注意的是，为键设置过期时间需要消耗内存，所以使用像allkeys-lru这样的策略会更高效，因为在内存压力下没有必要为键的回收设置过期时间。</p>
+<h2 id="常用缓存数据淘汰策略"><a href="#常用缓存数据淘汰策略" class="headerlink" title="常用缓存数据淘汰策略"></a>常用缓存数据淘汰策略</h2><ul>
+<li>FIFO（First In First Out）： 先进先出算法，即先放入缓存的先被移除。</li>
+<li>LRU（Least Recently Used）： 最近最少使用算法，使用时间距离现在最久的那个被移除。</li>
+<li>LFU（Least Frequently Used）： 最不常用算法，一定时间段内使用次数（频率）最少的那个被移除。</li>
+</ul>
+<h1 id="Redis采用的过期策略"><a href="#Redis采用的过期策略" class="headerlink" title="Redis采用的过期策略"></a>Redis采用的过期策略</h1><p>惰性删除+定期删除</p>
+<ul>
+<li>惰性删除流程<ul>
+<li>在进行get或setnx等操作时，先检查key是否过期，</li>
+<li>若过期，删除key，然后执行相应操作；</li>
+<li>若没过期，直接执行相应操作</li>
+</ul>
+</li>
+<li>定期删除流程（简单而言，对指定个数个库的每一个库随机删除小于等于指定个数个过期key）<ul>
+<li>遍历每个数据库（就是redis.conf中配置的”database”数量，默认为16）<ul>
+<li>检查当前库中的指定个数个key（默认是每个库检查20个key，注意相当于该循环执行20次，循环体时下边的描述）<ul>
+<li>如果当前库中没有一个key设置了过期时间，直接执行下一个库的遍历</li>
+<li>随机获取一个设置了过期时间的key，检查该key是否过期，如果过期，删除key</li>
+<li>判断定期删除操作是否已经达到指定时长，若已经达到，直接退出定期删除。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -357,9 +852,6 @@
             <h1 id="Redis单线程原理"><a href="#Redis单线程原理" class="headerlink" title="Redis单线程原理"></a>Redis单线程原理</h1><p>Redis是单进程，Redis利用队列技术将并发访问变为串行访问，消除了传统数据库串行控制的开销。</p>
 <h1 id="Redis的线程模型"><a href="#Redis的线程模型" class="headerlink" title="Redis的线程模型"></a>Redis的线程模型</h1><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B.png" alt="image"></p>
 <p><strong>Redis 基于 Reactor 模式来设计开发了自己的一套高效的事件处理模型</strong>，Redis 通过<strong>IO 多路复用程序</strong> 来监听来自客户端的大量连接， <strong>I/O 多路复用技术的使用让 Redis 不需要额外创建多余的线程来监听客户端的大量连接，降低了资源的消耗</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">多个 socket（客户端连接）</span><br><span class="line">IO 多路复用程序（支持多个客户端连接的关键）</span><br><span class="line">文件事件分派器（将 socket 关联到相应的事件处理器）</span><br><span class="line">事件处理器（连接应答处理器、命令请求处理器、命令回复处理器）</span><br></pre></td></tr></table></figure>
-
-<h2 id="Redis-单线程模型详解"><a href="#Redis-单线程模型详解" class="headerlink" title="Redis 单线程模型详解"></a>Redis 单线程模型详解</h2><p><strong>Redis 基于 Reactor 模式来设计开发了自己的一套高效的事件处理模型</strong>，Redis 通过<strong>IO 多路复用程序</strong> 来监听来自客户端的大量连接， <strong>I/O 多路复用技术的使用让 Redis 不需要额外创建多余的线程来监听客户端的大量连接，降低了资源的消耗</strong></p>
 <p>主要是包含 4 个部分：</p>
 <ul>
 <li>多个 socket（客户端连接）</li>
@@ -367,12 +859,12 @@
 <li>文件事件分派器（将 socket 关联到相应的事件处理器）</li>
 <li>事件处理器（连接应答处理器、命令请求处理器、命令回复处理器）</li>
 </ul>
-<h1 id="Redis-是单进程单线程的吗？为何它那么快那么高效？"><a href="#Redis-是单进程单线程的吗？为何它那么快那么高效？" class="headerlink" title="Redis 是单进程单线程的吗？为何它那么快那么高效？"></a>Redis 是单进程单线程的吗？为何它那么快那么高效？</h1><h2 id="单线程"><a href="#单线程" class="headerlink" title="单线程"></a>单线程</h2><p>Redis是单线程的，redis 利用队列技术将并发访问变为串行访问，消除了传统数据库串行控制的开销。</p>
+<h1 id="Redis-是单进程的吗？为何它那么快那么高效？"><a href="#Redis-是单进程的吗？为何它那么快那么高效？" class="headerlink" title="Redis 是单进程的吗？为何它那么快那么高效？"></a>Redis 是单进程的吗？为何它那么快那么高效？</h1><h2 id="单线程"><a href="#单线程" class="headerlink" title="单线程"></a>单线程</h2><p>Redis是单线程的，redis 利用队列技术将并发访问变为串行访问，消除了传统数据库串行控制的开销。</p>
 <h2 id="速度快"><a href="#速度快" class="headerlink" title="速度快"></a>速度快</h2><p>1、完全基于内存，绝大部分请求是纯粹的内存操作，非常快速。数据存在内存中，类似于HashMap，HashMap的优势就是查找和操作的时间复杂度都是O(1)；</p>
 <p>2、数据结构简单，对数据操作也简单，Redis中的数据结构是专门进行设计的；</p>
 <p>3、采用单线程，避免了不必要的上下文切换和竞争条件，也不存在多进程或者多线程导致的切换而消耗 CPU，不用去考虑各种锁的问题，不存在加锁释放锁操作，没有因为可能出现死锁而导致的性能消耗；</p>
 <p>4、使用多路I/O复用模型，非阻塞IO；</p>
-<p>5、使用底层模型不同，它们之间底层实现方式以及与客户端之间通信的应用协议不一样，Redis直接自己构建了VM 机制 ，因为一般的系统调用系统函数的话，会浪费一定的时间去移动和请求；</p>
+<p>5、使用底层模型不同，Redis客户端使用RESP（Redis序列化协议）与Redis服务器进行通信；</p>
 <hr>
 <h1 id="redis为什么不采用多线程处理"><a href="#redis为什么不采用多线程处理" class="headerlink" title="redis为什么不采用多线程处理"></a>redis为什么不采用多线程处理</h1><ol>
 <li>单线程编程容易并且更容易维护；</li>
@@ -545,9 +1037,9 @@
 <p> 因此可以用string类型进行计数，如微博的评论数、点赞数、分享数，抖音作品的收藏数，京东商品的销售量、评价数等。</p>
 </li>
 <li><p>分布式锁 String类型的<code>setnx</code>的作用是<strong>当key不存在时，设值并返回1，当key已经存在时，不设值并返回0</strong>，<strong>判断key是否存在</strong>和<strong>设值</strong>两个操作是原子性地执行的，因此可以用string类型作为分布式锁，返回1表示获得锁，返回0表示没有获得锁。</p>
-<p> 例如，为了保证定时任务的高可用，往往会同时部署多个具备相同定时任务的服务，但是业务上只希望其中的某一台服务执行定时任务，当定时任务的时间点触发时，多个服务同时竞争一个分布式锁，获取到锁的执行定时任务，没获取到的放弃执行定时任务。</p>
-<p> 定时任务执行完时通过del命令删除key即释放锁，如果担心del命令操作失败而导致锁一直未释放，可以通过expire命令给锁设置一个合理的自动过期时间，确保即使del命令失败，锁也能被释放。不过expire命令同样存在失败的可能性，如果你用的是Java语言，建议使用JedisCommands接口提供的<code>String set(String key, String value, String nxxx, String expx, long time)</code>方法，这个方法可以将setnx和expire原子性地执行，具体使用方式如下（相信其它语言的Redis客户端也应当提供了类似的方法）。</p>
- <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jedisCommands.set(<span class="string">&quot;IAmAKey&quot;</span>, <span class="string">&quot;1&quot;</span>, <span class="string">&quot;NX&quot;</span>, <span class="string">&quot;EX&quot;</span>, <span class="number">60</span>);<span class="comment">//如果&quot;IAmAKey&quot;不存	 在，则将其设值为1，同时设置60秒的自动过期时间</span></span><br></pre></td></tr></table></figure></li>
+<p> 定时任务执行完时通过del命令删除key即释放锁，如果担心del命令操作失败而导致锁一直未释放，可以通过expire命令给锁设置一个合理的自动过期时间，确保即使del命令失败，锁也能被释放。</p>
+<p> 不过expire命令同样存在失败的可能性，使用SETEX，SETEX在逻辑上等价于SET和EXPIRE合并的操作</p>
+</li>
 <li><p>限流</p>
 </li>
 <li><p>分布式Session</p>
@@ -556,7 +1048,7 @@
 </li>
 </ol>
 <h2 id="列表-List"><a href="#列表-List" class="headerlink" title="列表(List)"></a>列表(List)</h2><h3 id="结构-1"><a href="#结构-1" class="headerlink" title="结构"></a>结构</h3><p>一个列表结构可以有序地存储多个字符串</p>
-<h4 id="链表数据结构，List-底层结构"><a href="#链表数据结构，List-底层结构" class="headerlink" title="链表数据结构，List 底层结构"></a>链表数据结构，List 底层结构</h4><p>链表还是常规的普通双端链表，可以支持反向查找和遍历，更方便操作，通过增删节点来灵活地调整链表的长度，双端链表在Redis内部也是被多次使用：</p>
+<h4 id="链表数据结构，List-底层结构"><a href="#链表数据结构，List-底层结构" class="headerlink" title="链表数据结构，List 底层结构"></a>链表数据结构，List 底层结构</h4><p>链表还是常规的普通双向链表，可以支持反向查找和遍历，更方便操作，通过增删节点来灵活地调整链表的长度，双端链表在Redis内部也是被多次使用：</p>
 <ol>
 <li>事务模块使用双端链表依序保存输入的命令。</li>
 <li>服务器模块使用双端链表来保存多个客户端。</li>
@@ -601,7 +1093,7 @@
 <h5 id="如何选用"><a href="#如何选用" class="headerlink" title="如何选用"></a>如何选用</h5><blockquote>
 <p>对于排行榜和最新列表两种应用场景，那为什么还要使用list类型去实现排行榜或最新列表呢，直接用sorted set类型不是更好吗？</p>
 </blockquote>
-<p>原因是sorted <strong>set类型占用的内存容量是list类型的数倍之多</strong>，对于<strong>列表数量不多</strong>的情况，可以用sorted set类型来实现，比如上文中举例的打擂金曲排行榜，每天全国只有一份，两种数据类型的内存容量差距可以忽略不计，但是如果要实现某首歌曲的翻唱作品地区排行榜，数百万的歌曲，300多个地区，会产生数量庞大的榜单，或者数量更加庞大的朋友圈点赞列表，就需要慎重地考虑容量的问题了</p>
+<p>原因是<strong>sorted set类型占用的内存容量是list类型的数倍之多</strong>，对于<strong>列表数量不多</strong>的情况，可以用sorted set类型来实现，比如上文中举例的打擂金曲排行榜，每天全国只有一份，两种数据类型的内存容量差距可以忽略不计，但是如果要实现某首歌曲的翻唱作品地区排行榜，数百万的歌曲，300多个地区，会产生数量庞大的榜单，或者数量更加庞大的朋友圈点赞列表，就需要慎重地考虑容量的问题了</p>
 <h2 id="hash类型"><a href="#hash类型" class="headerlink" title="hash类型"></a>hash类型</h2><h3 id="结构-2"><a href="#结构-2" class="headerlink" title="结构"></a>结构</h3><p>hash类型是一个string类型的field和value的映射表</p>
 <h3 id="命令-2"><a href="#命令-2" class="headerlink" title="命令"></a>命令</h3><ul>
 <li>hdel (HDEL key field1 [field2]) 删除一个或多个哈希表字段</li>
@@ -666,7 +1158,7 @@
 <p>如：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. sinter命令可以获得A和B两个用户的共同好友</span><br><span class="line">2. sismember命令可以判断A是否是B的好友</span><br><span class="line">3. scard命令可以获取好友数量</span><br><span class="line">4. 关注时，smove命令可以将B从A的粉丝集合转移到A的好友集合</span><br></pre></td></tr></table></figure>
 <p><strong>需要注意</strong>:</p>
-<p>如果你用的是<strong>Redis Cluster集群</strong>，对于<strong>sinter、smove这种操作     多个key的命令</strong>，要求这两个key必须存储在<strong>同一个slot（槽位）中</strong>，否则会报出<code>(error) CROSSSLOT Keys in request don&#39;t hash to the same slot </code>错误。</p>
+<p>如果你用的是<strong>Redis Cluster集群</strong>，对于<strong>sinter、smove这种操作多个key的命令</strong>，要求这两个key必须存储在<strong>同一个slot（槽位）中</strong>，否则会报出<code>(error) CROSSSLOT Keys in request don&#39;t hash to the same slot </code>错误。</p>
 <p>Redis Cluster一共有<strong>16384</strong>个slot，每个key都是通过哈希算法CRC16(key)获取数值哈希，再模16384来定位slot的。要使得两个key处于同一slot，除了两个key一模一样，还有没有别的方法呢？</p>
 <p>Redis提供了一种<strong>Hash Tag</strong>的功能，在key中使用<code>&#123;&#125;</code>括起key中的一部分，在进行<code>CRC16(key) mod 16384</code>的过程中，只会对<code>&#123;&#125;</code>内的字符串计算，例如<strong>friend_set:{123456}<strong>和</strong>fans_set:{123456}<strong>，分别表示</strong>用户123456</strong>的<strong>好友集合</strong>和<strong>粉丝集合</strong>，在定位slot时，只对<code>&#123;&#125;</code>内的<code>123456</code>进行计算，所以这两个集合肯定是在同一个slot内的，当用户123456关注某个粉丝时，就可以通过smove命令将这个粉丝从用户123456的粉丝集合移动到好友集合。</p>
 <p>相比于通过srem命令先将这个粉丝从粉丝集合中删除，再通过sadd命令将这个粉丝加到好友集合，smove命令的优势是它是<strong>原子性</strong>的，不会出现这个粉丝从粉丝集合中被删除，却没有加到好友集合的情况。</p>
@@ -694,12 +1186,12 @@
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZADD KEY_NAME SCORE1 VALUE1.. SCOREN VALUEN</span><br></pre></td></tr></table></figure>
 
-<ol>
+<ol start="2">
 <li>Zincrby 对有序集合中指定成员的分数加上增量 increment</li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZINCRBY key increment member</span><br></pre></td></tr></table></figure>
 
-<ol>
+<ol start="3">
 <li>Zrange 返回有序集中，指定区间内的成员</li>
 </ol>
 <p>其中成员的位置按分数值递增(从小到大)来排序。 具有相同分数值的成员按字典序(lexicographical order )来排列。</p>
@@ -707,41 +1199,42 @@
 <p>你也可以使用负数下标，以 -1 表示最后一个成员， -2 表示倒数第二个成员，以此类推。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZRANGE key start stop [WITHSCORES]</span><br></pre></td></tr></table></figure>
 
-<ol>
+<ol start="4">
 <li>Zrevrange 命令返回有序集中，指定区间内的成员。</li>
 </ol>
 <p><strong>下标参数</strong> start 和 stop 其中成员的位置按分数值递减(从大到小)来排列。 具有相同分数值的成员按字典序的逆序(reverse lexicographical order)排列。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZREVRANGE key start stop [WITHSCORES]</span><br></pre></td></tr></table></figure>
 
-<ol>
+<ol start="5">
 <li>Zrem 命令用于移除有序集中的一个或多个成员，不存在的成员将被忽略。 当 key 存在但不是有序集类型时，返回一个错误。</li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZREM key member [member ...]</span><br></pre></td></tr></table></figure>
 
-<ol>
+<ol start="6">
 <li>Zcard 命令用于计算集合中元素的数量。</li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZCARD KEY_NAME</span><br></pre></td></tr></table></figure>
 
-<ol>
-<li></li>
+<ol start="7">
+<li>Zrangebyscore 返回有序集合中指定分数区间的成员列表。有序集成员按分数值递增(从小到大)次序排列。</li>
 </ol>
-<p>Zrangebyscore 返回有序集合中指定分数区间的成员列表。有序集成员按分数值递增(从小到大)次序排列。</p>
 <p>具有相同分数值的成员按字典序来排列(该属性是有序集提供的，不需要额外的计算)。</p>
 <p>默认情况下，<strong>区间的取值使用闭区间 (小于等于或大于等于)，你也可以通过给参数前增加 ( 符号来使用可选的开区间 (小于或大于)。</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li>ZRANGEBYSCORE zset (1 5 == 1 &lt; score &lt;= 5</li>
-<li>ZRANGEBYSCORE zset (5 (10 == 5 &lt; score &lt; 10</li>
+<li>ZRANGEBYSCORE zset (1 5 == 1 &lt; score &lt;= 5）</li>
+<li>ZRANGEBYSCORE zset (5 (10 == 5 &lt; score &lt; 10）</li>
 <li>ZRANGEBYSCORE salary -inf +inf # 显示整个有序集</li>
 <li>ZRANGEBYSCORE salary -inf +inf WITHSCORES #显示整个有序集及成员的 score 值</li>
 <li>ZRANGEBYSCORE salary -inf 5000 WITHSCORES # 显示工资 &lt;=5000 的所有成员</li>
 <li>ZRANGEBYSCORE salary (5000 400000 # 显示工资大于 5000 小于等于 400000 的成员</li>
 </ul>
-<ol>
-<li>Zrevrangebyscore 返回有序集中指定分数区间内的所有的成员。有序集成员按分数值递减(从大到小)的次序排列。 具有相同分数值的成员按字典序的逆序(reverse lexicographical order )排列。</li>
-<li>Zcount 命令用于计算有序集合中指定分数区间的成员数量。</li>
+<ol start="8">
+<li><p>Zrevrangebyscore 返回有序集中指定分数区间内的所有的成员。有序集成员按分数值递减(从大到小)的次序排列。 具有相同分数值的成员按字典序的逆序(reverse lexicographical order )排列。</p>
+</li>
+<li><p>Zcount 命令用于计算有序集合中指定分数区间的成员数量。</p>
+</li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZCOUNT key min max</span><br></pre></td></tr></table></figure>
 
@@ -1309,7 +1802,7 @@
 <h2 id="AOF-的缺点："><a href="#AOF-的缺点：" class="headerlink" title="AOF 的缺点："></a>AOF 的缺点：</h2><ol>
 <li>相同的数据，同一份数据，AOF比RDB大</li>
 <li>针对不同的同步机制，AOF会比RDB慢，因为AOF每秒都会备份做写操作，这样相对与RDB来说就略低。 每秒备份fsync没毛病，但是如果客户端的每次写入就做一次备份fsync的话，那么redis的性能就会下降。</li>
-<li>AOF发生过bug，就是数据恢复的时候数据不完整，这样显得AOF会比较脆弱，容易出现bug，因为AOF没有RDB那么简单，但是呢为了防止bug的产生，AOF就不会根据旧的指令去重构，而是根据当时缓存中存在的数据指令去做重构，这样就更加健壮和可靠了。</li>
+<li>AOF发生过bug，就是数据恢复的时候数据不完整，这样显得AOF会比较脆弱，容易出现bug，因为AOF没有RDB那么简单，但是为了防止bug的产生，AOF就不会根据旧的指令去重构，而是根据当时缓存中存在的数据指令去做重构，这样就更加健壮和可靠了。</li>
 </ol>
 <h2 id="AOF对过期key的处理"><a href="#AOF对过期key的处理" class="headerlink" title="AOF对过期key的处理"></a>AOF对过期key的处理</h2><p>过期key对AOF没有任何影响</p>
 <ul>
@@ -1527,25 +2020,18 @@
 <p>完成上面几个步骤后就完成了从服务器数据初始化的所有操作，从服务器此时可以接收来自用户的读请求。</p>
 <h3 id="增量同步"><a href="#增量同步" class="headerlink" title="增量同步"></a>增量同步</h3><p>Redis增量复制是指Slave初始化后开始正常工作时主服务器发生的写操作同步到从服务器的过程。<br>增量复制的过程主要是主服务器每执行一个写命令就会向从服务器发送相同的写命令，从服务器接收并执行收到的写命令。</p>
 <h2 id="全量同步时需要注意："><a href="#全量同步时需要注意：" class="headerlink" title="全量同步时需要注意："></a>全量同步时需要注意：</h2><p>如果多个Slave断线了，需重启时，因为只要Slave启动，就会发送sync请求和主机全量同步，当多个同时出现的时候，可能会导致Master IO剧增宕机。</p>
-<h2 id="Redis主从复制重要内容"><a href="#Redis主从复制重要内容" class="headerlink" title="Redis主从复制重要内容"></a>Redis主从复制重要内容</h2><blockquote>
-<p>Redis主从复制的配置十分简单，它可以使从服务器是主服务器的完全拷贝。需要清楚知道Redis主从复制的几点重要内容：</p>
-</blockquote>
-<p>1）Redis使用异步复制。但从Redis 2.8开始，从服务器会周期性的应答从复制流中处理的数据量。</p>
-<p>2）一个主服务器可以有多个从服务器。</p>
-<p>3）从服务器也可以接受其他从服务器的连接。除了多个从服务器连接到一个主服务器之外，多个从服务器也可以连接到一个从服务器上，形成一个图状结构（级联）。</p>
-<p>4）Redis主从复制不阻塞主服务器端。也就是说当若干个从服务器在进行初始同步时，主服务器仍然可以处理请求。</p>
-<p>5）主从复制也不阻塞从服务器端。当从服务器进行初始同步时，它使用旧版本的数据来应对查询请求（假设你在redis.conf配置文件是这么配置的)。如果不想这样，你可以配置当复制流关闭时让从服务器给客户端返回一个错误。但是当初始同步完成后，需删除旧数据集和加载新的数据集，在这个短暂时间内，从服务器会阻塞连接进来的请求。</p>
-<p>6）主从复制可以用来增强扩展性，使用多个从服务器来处理只读的请求（比如，繁重的排序操作可以放到从服务器去做），也可以简单的用来做数据冗余。</p>
-<p>7）使用主从复制可以为主服务器免除把数据写入磁盘的消耗：在主服务器的redis.conf文件中配置“避免保存”（注释掉所有“保存“命令），然后连接一个配置为“进行保存”的从服务器即可。但是这个配置要确保主服务器不会自动重启，主redis服务器一旦重启，因为主redis服务器数据为空，这时候通过主从同步可能导致从redis服务器上的数据也被清空；</p>
-<h2 id="主从同步注意问题"><a href="#主从同步注意问题" class="headerlink" title="主从同步注意问题"></a>主从同步注意问题</h2><ul>
+<h2 id="Redis主从复制重要内容"><a href="#Redis主从复制重要内容" class="headerlink" title="Redis主从复制重要内容"></a>Redis主从复制重要内容</h2><ul>
+<li><p>Redis主从复制不阻塞主服务器端。也就是说当若干个从服务器在进行初始同步时，主服务器仍然可以处理请求。</p>
+</li>
+<li><p>主从复制也不阻塞从服务器端。当从服务器进行初始同步时，它使用旧版本的数据来应对查询请求（假设你在redis.conf配置文件是这么配置的)。如果不想这样，你可以配置当复制流关闭时让从服务器给客户端返回一个错误。但是当初始同步完成后，需删除旧数据集和加载新的数据集，在这个短暂时间内，从服务器会阻塞连接进来的请求。</p>
+</li>
 <li><p>主从服务器之间会定期进行通话，但是如果master上设置了密码，那么如果不给slave设置密码就会导致slave不能跟master进行任何操作</p>
 </li>
-<li><p>关于slave服务器上过期键的处理，由master服务器负责键的过期删除处理，然后将相关删除命令已数据同步的方式同步给slave服务器，slave服务器根据删除命令删除本地的key。</p>
+<li><p>在进行主从复制设置时，不能保证主节点不会重启的话，在主服务器上开启持久化。Redis具有自动重启系统，重启了进程，因为主节点关闭了持久化，节点重启后只有一个空的数据集，从节点会进行主从同步而清空自身数据。</p>
+</li>
+<li><p>使用Redis Sentinel（哨兵机制）同样，不能保证主节点不会重启的话，在主服务器上开启持久化。主服务器可能在很短的时间就完成了重启，以至于Sentinel都无法检测到这次失败</p>
 </li>
 </ul>
-<h2 id="当主服务器不进行持久化时复制的安全性"><a href="#当主服务器不进行持久化时复制的安全性" class="headerlink" title="当主服务器不进行持久化时复制的安全性"></a>当主服务器不进行持久化时复制的安全性</h2><p>在进行主从复制设置时，强烈建议在主服务器上开启持久化，当不能这么做时，比如考虑到延迟的问题，应该将实例配置为避免自动重启。</p>
-<h3 id="为什么不持久化的主服务器自动重启非常危险呢？"><a href="#为什么不持久化的主服务器自动重启非常危险呢？" class="headerlink" title="为什么不持久化的主服务器自动重启非常危险呢？"></a>为什么不持久化的主服务器自动重启非常危险呢？</h3><p>为了更好的理解这个问题，看下面这个失败的例子，其中主服务器和从服务器中数据库都被删除了</p>
-<p>设置节点A为主服务器，关闭持久化，节点B和C从节点A复制数据。这时出现了一个崩溃，但Redis具有自动重启系统，重启了进程，因为关闭了持久化，节点重启后只有一个空的数据集。节点B和C从节点A进行复制，现在节点A是空的，所以节点B和C上的复制数据也会被删除。当在高可用系统中使用Redis Sentinel，关闭了主服务器的持久化，并且允许自动重启，这种情况是很危险的。比如主服务器可能在很短的时间就完成了重启，以至于Sentinel都无法检测到这次失败，那么上面说的这种失败的情况就发生了。如果数据比较重要，并且在使用主从复制时关闭了主服务器持久化功能的场景中，都应该禁止实例自动重启。</p>
 <hr>
 <h1 id="Redis无磁盘化复制"><a href="#Redis无磁盘化复制" class="headerlink" title="Redis无磁盘化复制"></a>Redis无磁盘化复制</h1><p>通过内存之间的传输，通过socket实现。</p>
 <p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/Redis%E6%97%A0%E7%A3%81%E7%9B%98%E5%8C%96%E5%A4%8D%E5%88%B6.png" alt="image"></p>
@@ -1557,8 +2043,7 @@
 <li><p>开启式将<code>repl-diskless-sync no --&gt;repl-diskless-sync yes</code></p>
 </li>
 </ul>
-<h1 id="哨兵机制"><a href="#哨兵机制" class="headerlink" title="哨兵机制"></a>哨兵机制</h1><h2 id="为何要有哨兵模式"><a href="#为何要有哨兵模式" class="headerlink" title="为何要有哨兵模式"></a>为何要有哨兵模式</h2><p>主从模式下<br>Master挂了，如何保证可用性，实现继续读写</p>
-<h2 id="什么是哨兵"><a href="#什么是哨兵" class="headerlink" title="什么是哨兵"></a>什么是哨兵</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F.png"></p>
+<h1 id="哨兵机制"><a href="#哨兵机制" class="headerlink" title="哨兵机制"></a>哨兵机制</h1><h2 id="什么是哨兵"><a href="#什么是哨兵" class="headerlink" title="什么是哨兵"></a>什么是哨兵</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F.png"></p>
 <p>Sentinel(哨兵)是用于监控Redis集群中Master状态的工具，是 Redis 高可用解决方案，哨兵可以监视一个或者多个redis master服务，以及这些master服务的所有从服务；当某个master服务宕机后，会把这个master下的某个从服务升级为master来替代已宕机的master继续工作。</p>
 <h2 id="哨兵模式的作用"><a href="#哨兵模式的作用" class="headerlink" title="哨兵模式的作用"></a>哨兵模式的作用</h2><ul>
 <li>通过发送命令，让Redis服务器返回监控其运行状态，包括主服务器和从服务器；</li>
@@ -1604,6 +2089,7 @@
 <li>降低运维成本，提高系统的扩展性和可用性。</li>
 </ol>
 <p><strong>使用场景</strong>：数据量大，高并发场景</p>
+<h2 id="说说-Redis-哈希槽的概念？"><a href="#说说-Redis-哈希槽的概念？" class="headerlink" title="说说 Redis 哈希槽的概念？"></a>说说 Redis 哈希槽的概念？</h2><p>Redis 集群没有使用一致性 hash,而是引入了哈希槽的概念，Redis 集群有16384 个哈希槽，每个 key 通过 CRC16 校验后对 16384 取模来决定放置哪个槽，集群的每个节点负责一部分 hash 槽。</p>
 <h2 id="集群容错"><a href="#集群容错" class="headerlink" title="集群容错"></a>集群容错</h2><p>构建Redis集群，需要至少3个节点作为master，以此组成一个高可用的集群，此外每个master都需要配备一个slave，所以整个集群需要6个节点，这也是最经典的Redis集群，也可以称之为三主三从，容错性更佳。所以在搭建的时候需要有6台虚拟机。</p>
 <h2 id="Redis-Cluster-实现的功能："><a href="#Redis-Cluster-实现的功能：" class="headerlink" title="Redis Cluster 实现的功能："></a>Redis Cluster 实现的功能：</h2><ul>
 <li>将数据分片到多个实例 (按照 slot 存储)；</li>
@@ -1620,11 +2106,6 @@
 </ul>
 <hr>
 <h1 id="Redis-集群方案什么情况下会导致整个集群不可用？"><a href="#Redis-集群方案什么情况下会导致整个集群不可用？" class="headerlink" title="Redis 集群方案什么情况下会导致整个集群不可用？"></a>Redis 集群方案什么情况下会导致整个集群不可用？</h1><p>有 A，B，C 三个节点的集群,在没有复制模型的情况下,如果节点 B 失败了，那么整个集群就会以为缺少 5501-11000 这个范围的槽而不可用。</p>
-<h1 id="redis集群相关问题"><a href="#redis集群相关问题" class="headerlink" title="redis集群相关问题"></a>redis集群相关问题</h1><h2 id="说说-Redis-哈希槽的概念？"><a href="#说说-Redis-哈希槽的概念？" class="headerlink" title="说说 Redis 哈希槽的概念？"></a>说说 Redis 哈希槽的概念？</h2><p>Redis 集群没有使用一致性 hash,而是引入了哈希槽的概念，Redis 集群有16384 个哈希槽，每个 key 通过 CRC16 校验后对 16384 取模来决定放置哪个槽，集群的每个节点负责一部分 hash 槽。</p>
-<h2 id="Redis-集群的主从复制模型是怎样的？"><a href="#Redis-集群的主从复制模型是怎样的？" class="headerlink" title="Redis 集群的主从复制模型是怎样的？"></a>Redis 集群的主从复制模型是怎样的？</h2><p>为了是在部分节点失败或者大部分节点无法通信的的情况下集群仍然可用，所以集群使用了主从复制模型，<br>每个节点都会有N-1个复制品</p>
-<h2 id="Redis-集群会有写操作丢失吗？为什么？"><a href="#Redis-集群会有写操作丢失吗？为什么？" class="headerlink" title="Redis 集群会有写操作丢失吗？为什么？"></a>Redis 集群会有写操作丢失吗？为什么？</h2><p>Redis 并不能保证数据的强一致性，这意味这在实际中集群在特定的条件下可能会丢失写操作。</p>
-<h2 id="Redis-集群之间是如何复制的？"><a href="#Redis-集群之间是如何复制的？" class="headerlink" title="Redis 集群之间是如何复制的？"></a>Redis 集群之间是如何复制的？</h2><p>异步复制</p>
-<h2 id="Redis-集群最大节点个数是多少？"><a href="#Redis-集群最大节点个数是多少？" class="headerlink" title="Redis 集群最大节点个数是多少？"></a>Redis 集群最大节点个数是多少？</h2><p>16384 个。</p>
 
           
         
@@ -2374,7 +2855,15 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
       
         
           
-            <h1 id="什么是-Redis"><a href="#什么是-Redis" class="headerlink" title="什么是 Redis?"></a>什么是 Redis?</h1><ul>
+            <h1 id="使用缓存的好处"><a href="#使用缓存的好处" class="headerlink" title="使用缓存的好处"></a>使用缓存的好处</h1><ol>
+<li><p>性能</p>
+<p>在碰到需要执行耗时特别久，且结果不怎么变动的SQL，就特删适合将运行结果放入缓存。返样，后面请求就去缓存中读，使得请求能够迅速响应</p>
+</li>
+<li><p>并发</p>
+<p>在大并发情冴下，所有的请求直掍访问数据库，数据库会出现连接异常</p>
+</li>
+</ol>
+<h1 id="什么是-Redis"><a href="#什么是-Redis" class="headerlink" title="什么是 Redis?"></a>什么是 Redis?</h1><ul>
 <li>内存数据库，速度快，也支持数据的持久化</li>
 <li>Redis不仅仅支持简单的key-value类型的数据，同时还提供list，set，zset，hash等数据结构的存储。</li>
 <li>Redis支持数据的备份，即master-slave模式的数据备份。Redis 还支持事务 、持久化、Lua 脚本、多种集群方案</li>
@@ -2382,29 +2871,29 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
 </ul>
 <h1 id="Redis的key和value大小限制"><a href="#Redis的key和value大小限制" class="headerlink" title="Redis的key和value大小限制"></a>Redis的key和value大小限制</h1><p>redis的key和string类型value限制均为512MB。</p>
 <h1 id="Redis服务器和客户端的通信"><a href="#Redis服务器和客户端的通信" class="headerlink" title="Redis服务器和客户端的通信"></a>Redis服务器和客户端的通信</h1><p>Redis客户端使用RESP（Redis序列化协议）与Redis服务器进行通信</p>
-<h1 id="使用-Redis-有哪些好处？"><a href="#使用-Redis-有哪些好处？" class="headerlink" title="使用 Redis 有哪些好处？"></a>使用 Redis 有哪些好处？</h1><p>（1）速度快，因为数据存在内存中，类似于 HashMap，HashMap 的优势就是查找和操作的时间复杂度都是 O1)</p>
+<h1 id="使用-Redis-有哪些好处？"><a href="#使用-Redis-有哪些好处？" class="headerlink" title="使用 Redis 有哪些好处？"></a>使用 Redis 有哪些好处？</h1><p>（1）速度快，因为数据存在内存中，类似于 HashMap，HashMap 的优势就是查找和操作的时间复杂度都是 O(1)</p>
+<p><strong>redis为什么这么快</strong>：</p>
+<p>1、完全基于内存，绝大部分请求是纯粹的内存操作，非常快速。数据存在内存中，类似于HashMap，HashMap的优势就是查找和操作的时间复杂度都是O(1)；</p>
+<p>2、数据结构简单，对数据操作也简单，Redis中的数据结构是专门进行设计的；</p>
+<p>3、采用单线程，避免了不必要的上下文切换和竞争条件，也不存在多进程或者多线程导致的切换而消耗 CPU，不用去考虑各种锁的问题，不存在加锁释放锁操作，没有因为可能出现死锁而导致的性能消耗；</p>
+<p>4、使用多路I/O复用模型，非阻塞IO；</p>
+<p>5、使用底层模型不同，它们之间底层实现方式以及与客户端之间通信的应用协议不一样，Redis直接自己构建了VM 机制 ，因为一般的系统调用系统函数的话，会浪费一定的时间去移动和请求；</p>
 <p>（2）支持丰富数据类型，支持 string，list，set，Zset，hash 等</p>
 <p>（3）支持事务，操作都是原子性，所谓的原子性就是对数据的更改要么全部执行，要么全部不执行</p>
 <p>（4）丰富的特性：可用于缓存，消息，按 key 设置过期时间，过期后将会自动删除</p>
-<h1 id="Redis如何解决key冲突？"><a href="#Redis如何解决key冲突？" class="headerlink" title="Redis如何解决key冲突？"></a>Redis如何解决key冲突？</h1><p>拉链法。这个问题可以考虑到另一个问题，HashMap是如何解决key冲突的，同样也是采用拉链地址法。如果被问到解决key值冲突还有什么方法？一般来说解决key值冲突的方法有俩种，一种是开放地址法，另一种就是拉链法。</p>
+<h1 id="Redis如何解决key冲突？"><a href="#Redis如何解决key冲突？" class="headerlink" title="Redis如何解决key冲突？"></a>Redis如何解决key冲突？</h1><p>拉链法。</p>
+<p>这个问题可以考虑到另一个问题，HashMap是如何解决key冲突的，同样也是采用拉链地址法。</p>
+<p>如果被问到解决key值冲突还有什么方法？一般来说解决key值冲突的方法有俩种，一种是开放地址法，另一种就是拉链法。</p>
 <h1 id="缓存数据的处理流程是怎样的？"><a href="#缓存数据的处理流程是怎样的？" class="headerlink" title="缓存数据的处理流程是怎样的？"></a>缓存数据的处理流程是怎样的？</h1><ol>
 <li>如果用户请求的数据在缓存中就直接返回。</li>
 <li>缓存中不存在的话就看数据库中是否存在。</li>
 <li>数据库中存在的话就更新缓存中的数据。</li>
 <li>数据库中不存在的话就返回空数据。</li>
 </ol>
-<h1 id="为什么选择redis"><a href="#为什么选择redis" class="headerlink" title="为什么选择redis"></a>为什么选择redis</h1><p>磁盘IO及网络开销是直接请求内存IO千百上千倍，通过缓存技术，减少数据传输时间，提高处理效率</p>
-<ul>
-<li>首先 Redis 支持丰富的数据结构，新版本数据结构从最初的5种变成9种。</li>
-<li>其次 Redis 是读写单进程单线程，不用考虑并发读写的复杂场景，速度也快。</li>
-<li>Reids 功能完备，支持数据持久化，支持主从复制和集群。</li>
-<li>还有Lua脚本，事务，发布订阅模型，Reids 都支持。</li>
-</ul>
 <h1 id="Memcached-与-Redis-的区别都有哪些？"><a href="#Memcached-与-Redis-的区别都有哪些？" class="headerlink" title="Memcached 与 Redis 的区别都有哪些？"></a>Memcached 与 Redis 的区别都有哪些？</h1><ol>
 <li><strong>Redis 支持更丰富的数据类型（支持更复杂的应用场景）</strong>。Redis 不仅仅支持简单的 k/v 类型的数据，同时还提供 list，set，zset，hash 等数据结构的存储。Memcached 只支持最简单的 k/v 数据类型。</li>
 <li><strong>Redis 支持数据的持久化，可以将内存中的数据保持在磁盘中，重启的时候可以再次加载进行使用,而 Memecache 把数据全部存在内存之中。</strong></li>
 <li><strong>Redis 有灾难恢复机制。</strong> 因为可以把缓存中的数据持久化到磁盘上。</li>
-<li><strong>Redis 在服务器内存使用完之后，可以将不用的数据放到磁盘上。但是，Memcached 在服务器内存使用完之后，就会直接报异常。</strong></li>
 <li><strong>Memcached 没有原生的集群模式，需要依靠客户端来实现往集群中分片写入数据；但是 Redis 目前是原生支持 cluster 模式的.</strong></li>
 <li><strong>Memcached 是多线程，非阻塞 IO 复用的网络模型；Redis 使用单线程的多路 IO 复用模型。</strong> （Redis 6.0 引入了多线程 IO ）</li>
 <li><strong>Redis 支持发布订阅模型、Lua 脚本、事务等功能，而 Memcached 不支持。并且，Redis 支持更多的编程语言。</strong></li>
@@ -2415,17 +2904,25 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
 <li>Redis的速度比Memcached快得多</li>
 <li>Redis可以持久化数据</li>
 </ol>
-<h1 id="Redis-常见性能问题和解决方案有哪些"><a href="#Redis-常见性能问题和解决方案有哪些" class="headerlink" title="Redis 常见性能问题和解决方案有哪些?"></a>Redis 常见性能问题和解决方案有哪些?</h1><p>（1）Master 最好不要写内存快照，如果 Master 写内存快照，save 命令调度 rdbSave函数，会阻塞主线程的工作，当快照比较大时对性能影响是非常大的，会间断性暂停服务；</p>
-<p>（2）如果数据比较重要，某个 Slave 开启 AOF 备份数据，策略设置为每秒同步一次；</p>
-<p>（3）为了主从复制的速度和连接的稳定性，Master 和 Slave 最好在同一个局域网；</p>
-<p>（4）尽量避免在压力很大的主库上增加从库；</p>
-<h1 id="为什么Redis-需要把所有数据放到内存中？"><a href="#为什么Redis-需要把所有数据放到内存中？" class="headerlink" title="为什么Redis 需要把所有数据放到内存中？"></a>为什么Redis 需要把所有数据放到内存中？</h1><p>Redis 为了达到最快的读写速度将数据都读到内存中，并通过异步的方式将数据写入磁盘。所以 redis 具有快速和数据持久化的特征。如果不将数据放在内存中，磁盘 I/O 速度为严重影响 redis 的性能。在内存越来越便宜的今天，redis 将会越来越受欢迎。如果设置了最大使用的内存，则数据已有记录数达到内存限值后不能继续插入新值。</p>
+<h1 id="Redis-常见性能问题和解决方案有哪些"><a href="#Redis-常见性能问题和解决方案有哪些" class="headerlink" title="Redis 常见性能问题和解决方案有哪些?"></a>Redis 常见性能问题和解决方案有哪些?</h1><p>（1）Master 最好不要写内存快照</p>
+<p>如果 Master 写内存快照，save 命令调度 rdbSave函数，会阻塞主线程的工作，当快照比较大时对性能影响是非常大的，会间断性暂停服务；</p>
+<p>（2）如果数据比较重要，某个 Slave 开启 AOF 备份数据，策略设置为每秒同步一次</p>
+<p>主线程（master）做AOF持久化操作，有时AOF文件过大会影响主线程重启的恢复速度。</p>
+<p>（4）尽量避免在压力很大的主库上增加从库；<br>如果Master快照文件比较大，那么dump会耗费比较长的时间，这个过程中Master可能无法响应请求</p>
+<p>（5）为了Master的稳定性，主从复制不要用图状结构，用单向链表结构更稳定，即主从关系为：Master&lt;–Slave1&lt;–Slave2&lt;–Slave3…….</p>
+<h1 id="为什么Redis-需要把所有数据放到内存中？"><a href="#为什么Redis-需要把所有数据放到内存中？" class="headerlink" title="为什么Redis 需要把所有数据放到内存中？"></a>为什么Redis 需要把所有数据放到内存中？</h1><ul>
+<li><p>达到最快的读写速度</p>
+</li>
+<li><p>磁盘 I/O 速度为严重影响 redis 的性能。</p>
+</li>
+</ul>
 <h1 id="Pipeline-有什么好处，为什么要用-Pipeline？"><a href="#Pipeline-有什么好处，为什么要用-Pipeline？" class="headerlink" title="Pipeline 有什么好处，为什么要用 Pipeline？"></a>Pipeline 有什么好处，为什么要用 Pipeline？</h1><p>多个指令之间没有依赖关系，可以使用 pipeline 一次性执行多个指令，减少 IO，缩减时间。</p>
-<h1 id="Jedis-与-Redisson-对比有什么优缺点？"><a href="#Jedis-与-Redisson-对比有什么优缺点？" class="headerlink" title="Jedis 与 Redisson 对比有什么优缺点？"></a>Jedis 与 Redisson 对比有什么优缺点？</h1><p>Jedis 是 Redis 的 Java 实现的客户端，其 API 提供了比较全面的 Redis 命令的支持；</p>
-<p>Redisson 实现了分布式和可扩展的 Java 数据结构，和 Jedis 相比，功能较为简单，不支持字符串操作，不支持排序、事务、管道、分区等 Redis 特性。</p>
-<p>Redisson 的宗旨是促进使用者对 Redis 的关注分离，从而让使用者能够将精力更集中地放在处理业务逻辑上。</p>
-<h1 id="Redis-如何设置密码及验证密码？"><a href="#Redis-如何设置密码及验证密码？" class="headerlink" title="Redis 如何设置密码及验证密码？"></a>Redis 如何设置密码及验证密码？</h1><p>设置密码： config set requirepass 123456<br>授权密码： auth 123456</p>
-<h1 id="Redis-集群如何选择数据库？"><a href="#Redis-集群如何选择数据库？" class="headerlink" title="Redis 集群如何选择数据库？"></a>Redis 集群如何选择数据库？</h1><p>目前无法做数据库选择，默认在0数据库，可以在application.yml中配置</p>
+<h1 id="Jedis-与-Redisson-对比有什么优缺点？"><a href="#Jedis-与-Redisson-对比有什么优缺点？" class="headerlink" title="Jedis 与 Redisson 对比有什么优缺点？"></a>Jedis 与 Redisson 对比有什么优缺点？</h1><ul>
+<li>数据量大小，缓存的数据超过100M，优先选择Jedis</li>
+<li>聚合计算比较多，Redisson可能更方便点</li>
+<li>数据增长比较快，同时还有很多查询，优先使用Redisson</li>
+<li>需要使用本地缓存，Jedis 不支持本地缓存，优先使用Redisson</li>
+</ul>
 <h1 id="怎么理解-Redis-事务？"><a href="#怎么理解-Redis-事务？" class="headerlink" title="怎么理解 Redis 事务？"></a>怎么理解 Redis 事务？</h1><p>1）事务是一个单独的隔离操作：事务中的所有命令都会序列化、按顺序地执行。事务在执行的过程中，不会被其他客户端发送来的命令请求所打断。</p>
 <p>2）事务是一个原子操作：事务中的命令要么全部被执行，要么全部都不执行。</p>
 <h1 id="Redis-事务相关的命令有哪几个？"><a href="#Redis-事务相关的命令有哪几个？" class="headerlink" title="Redis 事务相关的命令有哪几个？"></a>Redis 事务相关的命令有哪几个？</h1><ul>
@@ -2449,12 +2946,16 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
 <li>没有隔离级别的概念：队列中的命令在事务没有被提交之前不会被实际执行</li>
 <li>不保证原子性：redis中的一个事务中如果存在命令执行失败，那么其他命令依然会被执行，没有回滚机制</li>
 </ol>
-<h1 id="Redis-key-的过期时间和永久有效分别怎么设置？"><a href="#Redis-key-的过期时间和永久有效分别怎么设置？" class="headerlink" title="Redis key 的过期时间和永久有效分别怎么设置？"></a>Redis key 的过期时间和永久有效分别怎么设置？</h1><p>EXPIRE 和 PERSIST 命令。</p>
-<h1 id="Redis-如何做内存优化？"><a href="#Redis-如何做内存优化？" class="headerlink" title="Redis 如何做内存优化？"></a>Redis 如何做内存优化？</h1><p>尽可能使用散列表（hashes），散列表（是说散列表里面存储的数少）使用的内存非常小，所以你应该尽可能的将你的数据模型抽象到一个散列表里面。比如你的 web 系统中有一个用户对象，不要为这个用户的名称，姓氏，邮箱，密码设置单独的 key,而是应该把这个用户的所有信息存储到一张散列表里面。</p>
-<h1 id="Redis-回收进程如何工作的？"><a href="#Redis-回收进程如何工作的？" class="headerlink" title="Redis 回收进程如何工作的？"></a>Redis 回收进程如何工作的？</h1><p>一个客户端运行了新的命令，添加了新的数据。Redi 检查内存使用情况，如<br>果大于 maxmemory 的限制, 则根据设定好的策略进行回收。一个新的命令被执<br>行，等等。所以我们不断地穿越内存限制的边界，通过不断达到边界然后不断地<br>回收回到边界以下。如果一个命令的结果导致大量内存被使用（例如很大的集合<br>的交集保存到一个新的键），不用多久内存限制就会被这个内存使用量超越。 </p>
-<h1 id="都有哪些办法可以降低-Redis-的内存使用情况呢？"><a href="#都有哪些办法可以降低-Redis-的内存使用情况呢？" class="headerlink" title="都有哪些办法可以降低 Redis 的内存使用情况呢？"></a>都有哪些办法可以降低 Redis 的内存使用情况呢？</h1><p>如果你使用的是 32 位的 Redis 实例，可以好好利用 Hash,list,sorted set,set等集合类型数据，因为通常情况下很多小的 Key-Value 可以用更紧凑的方式存放到一起。</p>
+<h1 id="Redis-如何做内存优化？"><a href="#Redis-如何做内存优化？" class="headerlink" title="Redis 如何做内存优化？"></a>Redis 如何做内存优化？</h1><ul>
+<li>尽可能使用散列表（hashes），散列表（是说散列表里面存储的数少）使用的内存非常小</li>
+</ul>
+<p>比如你的 web 系统中有一个用户对象，不要为这个用户的名称，姓氏，邮箱，密码设置单独的 key,而是应该把这个用户的所有信息存储到一张散列表里面。</p>
+<ul>
+<li>利用 Hash,list,sorted set,set等集合类型数据，因为通常情况下很多小的 Key-Value 可以用更紧凑的方式存放到一起</li>
+</ul>
+<h1 id="Redis-回收进程如何工作的？"><a href="#Redis-回收进程如何工作的？" class="headerlink" title="Redis 回收进程如何工作的？"></a>Redis 回收进程如何工作的？</h1><p>一个客户端运行了新的命令，添加了新的数据。Redi 检查内存使用情况，如果大于最大内存的限制, 则根据设定好的策略进行回收。</p>
 <h1 id="Redis-的内存用完了会发生什么？"><a href="#Redis-的内存用完了会发生什么？" class="headerlink" title="Redis 的内存用完了会发生什么？"></a>Redis 的内存用完了会发生什么？</h1><p>如果达到设置的上限，Redis 的写命令会返回错误信息（但是读命令还可以正常返回。）</p>
-<p>或者你可以将 Redis 当缓存来使用配置淘汰机制，当 Redis 达到内存上限时会冲刷掉旧的内容。</p>
+<p>配置淘汰机制，当 Redis 达到内存上限时会冲刷掉旧的内容</p>
 <h1 id="一个-Redis-实例最多能存放多少的-keys？List、Set、Sorted-Set他们最多能存放多少元素？"><a href="#一个-Redis-实例最多能存放多少的-keys？List、Set、Sorted-Set他们最多能存放多少元素？" class="headerlink" title="一个 Redis 实例最多能存放多少的 keys？List、Set、Sorted Set他们最多能存放多少元素？"></a>一个 Redis 实例最多能存放多少的 keys？List、Set、Sorted Set他们最多能存放多少元素？</h1><p>理论上 Redis 可以处理多达 232 的 keys，每个实例至少存放了 2 亿 5 千万的 keys。任何 list、set、和 sorted set 都可以放 232 个元素。换句话说，Redis 的存储极限是系统中的可用内存值。</p>
 <h1 id="假如-Redis-里面有-1-亿个-key，其中有-10w-个-key-是以某个固定的已知的前缀开头的，如果将它们全部找出来？"><a href="#假如-Redis-里面有-1-亿个-key，其中有-10w-个-key-是以某个固定的已知的前缀开头的，如果将它们全部找出来？" class="headerlink" title="假如 Redis 里面有 1 亿个 key，其中有 10w 个 key 是以某个固定的已知的前缀开头的，如果将它们全部找出来？"></a>假如 Redis 里面有 1 亿个 key，其中有 10w 个 key 是以某个固定的已知的前缀开头的，如果将它们全部找出来？</h1><p>使用 keys 指令可以扫出指定模式的 key 列表。</p>
 <h2 id="如果这个-redis-正在给线上的业务提供服务，那使用-keys-指令会有什么问题？"><a href="#如果这个-redis-正在给线上的业务提供服务，那使用-keys-指令会有什么问题？" class="headerlink" title="如果这个 redis 正在给线上的业务提供服务，那使用 keys 指令会有什么问题？"></a>如果这个 redis 正在给线上的业务提供服务，那使用 keys 指令会有什么问题？</h2><blockquote>
@@ -2497,404 +2998,11 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/25/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-redis%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/25/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-redis%E5%AE%89%E8%A3%85/" itemprop="url">软件安装-redis安装</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-25T22:19:07+08:00">
-                2021-03-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-redis%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
-                    <span itemprop="name">软件安装 - redis安装</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="安装Redis"><a href="#安装Redis" class="headerlink" title="安装Redis"></a>安装Redis</h1><h2 id="解压Redis"><a href="#解压Redis" class="headerlink" title="解压Redis"></a>解压Redis</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf redis-5.0.5.tar.gz</span><br></pre></td></tr></table></figure>
-
-<h2 id="安装gcc编译环境"><a href="#安装gcc编译环境" class="headerlink" title="安装gcc编译环境"></a>安装gcc编译环境</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install gcc-c++ </span><br></pre></td></tr></table></figure>
-
-<h2 id="进入redis目录安装"><a href="#进入redis目录安装" class="headerlink" title="进入redis目录安装"></a>进入redis目录安装</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make &amp;&amp; make install</span><br></pre></td></tr></table></figure>
-
-<h1 id="配置Reids"><a href="#配置Reids" class="headerlink" title="配置Reids"></a>配置Reids</h1><h2 id="在utils下，拷贝redis-init-script到、etc-init-d目录"><a href="#在utils下，拷贝redis-init-script到、etc-init-d目录" class="headerlink" title="在utils下，拷贝redis_init_script到、etc/init.d目录"></a>在utils下，拷贝redis_init_script到、etc/init.d目录</h2><blockquote>
-<p>目的要把redis作为开机自启</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp redis_init_script /etc/init.d/</span><br></pre></td></tr></table></figure>
-
-<h2 id="创建-usr-local-redis"><a href="#创建-usr-local-redis" class="headerlink" title="创建/usr/local/redis"></a>创建<code>/usr/local/redis</code></h2><blockquote>
-<p>用于存放配置文件</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir /usr/<span class="built_in">local</span>/redis</span><br></pre></td></tr></table></figure>
-
-<h2 id="回redis解压文件拷贝配置文件"><a href="#回redis解压文件拷贝配置文件" class="headerlink" title="回redis解压文件拷贝配置文件"></a>回redis解压文件拷贝配置文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp redis.conf /usr/<span class="built_in">local</span>/redis</span><br></pre></td></tr></table></figure>
-
-<h2 id="修改核心配置文件redis-conf"><a href="#修改核心配置文件redis-conf" class="headerlink" title="修改核心配置文件redis.conf"></a>修改核心配置文件<code>redis.conf</code></h2><ol>
-<li><code>daeminize no</code> -&gt; <code>daeminize yes</code>  目的：为了让redis启动在linux后台运行</li>
-<li><code>dir ./</code>-&gt;<code>dir /usr/local/redis/working</code> 目的：修改redis工作目录</li>
-<li><code>bind 127.0.0.1 -::1</code>-&gt;<code>bind 0.0.0.0</code> 目的：可以让远程连接，不收IP限制</li>
-<li><code># requirepass foobared</code>-&gt;<code>requirepass myredis123</code></li>
-</ol>
-<h1 id="修改redis-init-script"><a href="#修改redis-init-script" class="headerlink" title="修改redis_init_script"></a>修改redis_init_script</h1><p><code>CONF=&quot;/etc/redis/$&#123;REDISPORT&#125;.conf&quot;</code>-&gt;<code>CONF=&quot;/usr/local/redis/redis.conf&quot;</code></p>
-<h1 id="为redis-init-script赋权"><a href="#为redis-init-script赋权" class="headerlink" title="为redis_init_script赋权"></a>为redis_init_script赋权</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod 777 redis_init_script</span><br></pre></td></tr></table></figure>
-
-<h1 id="运行脚本启动redis"><a href="#运行脚本启动redis" class="headerlink" title="运行脚本启动redis"></a>运行脚本启动redis</h1><p><code>./redis_init_script start</code></p>
-<h1 id="设置redis开机自启"><a href="#设置redis开机自启" class="headerlink" title="设置redis开机自启"></a>设置redis开机自启</h1><p>在<code>redis_init_script start</code>中添加</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line"><span class="comment">### END INIT INFO</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#chkconfig: 22345 10 90</span></span><br><span class="line"><span class="comment">#description: Start and Stop redis</span></span><br><span class="line"></span><br><span class="line">REDISPORT=6379</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<h1 id="开启开机自启"><a href="#开启开机自启" class="headerlink" title="开启开机自启"></a>开启开机自启</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chkconfig redis_init_script on</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/24/%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE-Keepalived%E9%85%8D%E7%BD%AE%E5%AE%9E%E7%8E%B0nginx%E9%AB%98%E5%8F%AF%E7%94%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/24/%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE-Keepalived%E9%85%8D%E7%BD%AE%E5%AE%9E%E7%8E%B0nginx%E9%AB%98%E5%8F%AF%E7%94%A8/" itemprop="url">高可用配置-Keepalived配置实现nginx高可用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-24T01:53:30+08:00">
-                2021-03-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/LVS-nginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4-keepalived%E4%BD%BF%E7%94%A8%E9%85%8D%E7%BD%AE%E9%85%8D%E7%BD%AE/" itemprop="url" rel="index">
-                    <span itemprop="name">LVS+nginx实现高可用集群 - keepalived使用配置配置</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="启动nginx"><a href="#启动nginx" class="headerlink" title="启动nginx"></a>启动nginx</h1><p>启动两台服务器的nginx</p>
-<ul>
-<li>192.168.159.128</li>
-<li>192.168.159.129</li>
-</ul>
-<h1 id="配置Keepalived-主"><a href="#配置Keepalived-主" class="headerlink" title="配置Keepalived-主"></a>配置Keepalived-主</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">global_defs &#123;</span><br><span class="line">   <span class="comment">#配置节点挂掉后通知的邮箱</span></span><br><span class="line">   <span class="comment">#notification_email &#123;</span></span><br><span class="line">     <span class="comment">#acassen@firewall.loc</span></span><br><span class="line">     <span class="comment">#failover@firewall.loc</span></span><br><span class="line">     <span class="comment">#sysadmin@firewall.loc</span></span><br><span class="line">   <span class="comment">#&#125;</span></span><br><span class="line">   <span class="comment">#notification_email_from Alexandre.Cassen@firewall.loc</span></span><br><span class="line">   <span class="comment">#smtp_server 192.168.200.1</span></span><br><span class="line">   <span class="comment">#smtp_connect_timeout 30</span></span><br><span class="line">   <span class="comment">#配置节点挂掉后通知的邮箱</span></span><br><span class="line">   router_id keep_128 <span class="comment"># 路由id ：当前安装keepalived节点主机的标识符,全局唯一</span></span><br><span class="line">   <span class="comment">#vrrp_skip_check_adv_addr # 暂用不到</span></span><br><span class="line">   <span class="comment">#vrrp_strict # 暂用不到</span></span><br><span class="line">   <span class="comment">#vrrp_garp_interval 0 # 暂用不到</span></span><br><span class="line">   <span class="comment">#vrrp_gna_interval 0 # 暂用不到</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment"># 计算机节点</span></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">	<span class="comment"># 表示的状态，当前nginx的主节点，MASTER/BACKUP</span></span><br><span class="line">    state MASTER</span><br><span class="line">    <span class="comment"># 当前实例绑定的网卡</span></span><br><span class="line">    interface ens33</span><br><span class="line">    <span class="comment"># 保证主备节点一致</span></span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    <span class="comment"># 优先级/权重 谁的优先级高，在MASTER挂掉后，就能成为MASTER</span></span><br><span class="line">    priority 100</span><br><span class="line">    <span class="comment"># 主备之间同步检查的时间间隔，默认1s</span></span><br><span class="line">    advert_int 2</span><br><span class="line">    <span class="comment"># 认证和授权的密码，防止非法节点的进入</span></span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment"># VIP</span></span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        <span class="comment">#192.168.200.16</span></span><br><span class="line">        192.168.159.118</span><br><span class="line">        <span class="comment">#192.168.200.18</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="启动Keepalived"><a href="#启动Keepalived" class="headerlink" title="启动Keepalived"></a>启动Keepalived</h2><ul>
-<li><code>cd /usr/local/keepalived/sbin/</code></li>
-<li><code>./keepalived</code></li>
-</ul>
-<p>通过<code>ip addr</code>查看虚拟IP</p>
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6.png" style="zoom: 50%;" />
-
-<p>ens33下出现<code>192.168.1.161</code>的虚拟IP</p>
-<h2 id="停止Keepalived"><a href="#停止Keepalived" class="headerlink" title="停止Keepalived"></a>停止Keepalived</h2><p><code>ps -ef|grep Keepalived</code></p>
-<p><code>kill -9 ...</code></p>
-<h2 id="把Keepalived注册为系统服务"><a href="#把Keepalived注册为系统服务" class="headerlink" title="把Keepalived注册为系统服务"></a>把Keepalived注册为系统服务</h2><p><code>cd /usr/software/keepalived/keepalived-2.2.2/keepalived/etc</code></p>
-<p><code>cp init.d/keepalived /etc/init.d/</code></p>
-<p><code>cp sysconfig/keepalived /etc/sysconfig/</code></p>
-<p><code>systemctl daemon-reload</code></p>
-<p><code>systemctl start keepalived.service</code></p>
-<h1 id="配置Host"><a href="#配置Host" class="headerlink" title="配置Host"></a>配置Host</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># keepalived</span></span><br><span class="line">192.168.159.128 www.128.com</span><br><span class="line">192.168.159.129 www.129.com</span><br><span class="line"></span><br><span class="line">192.168.159.118 www.118.com</span><br></pre></td></tr></table></figure>
-
-<h1 id="验证keepalived生效"><a href="#验证keepalived生效" class="headerlink" title="验证keepalived生效"></a>验证keepalived生效</h1><p>访问虚拟ip可以访问到192.168.159.128的nginx主页</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/%E9%AA%8C%E8%AF%81keepalived%E7%94%9F%E6%95%88.png"></p>
-<h1 id="配置Keepalived-备"><a href="#配置Keepalived-备" class="headerlink" title="配置Keepalived-备"></a>配置Keepalived-备</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">global_defs &#123;</span><br><span class="line">   <span class="comment"># 路由id：当前安装keepalived的节点主机标识符，保证全局唯一</span></span><br><span class="line">   router_id keep_129</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    <span class="comment"># 备用机设置为BACKUP</span></span><br><span class="line">    state BACKUP</span><br><span class="line">    interface ens33</span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    <span class="comment"># 权重低于MASTER</span></span><br><span class="line">    priority 80</span><br><span class="line">    advert_int 2</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        <span class="comment"># 注意：主备两台的vip都是一样的，绑定到同一个vip</span></span><br><span class="line">        192.168.159.118</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="检验主备节点是否生效"><a href="#检验主备节点是否生效" class="headerlink" title="检验主备节点是否生效"></a>检验主备节点是否生效</h1><ul>
-<li>停止192.168.159.128的keepalived</li>
-</ul>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E5%81%9C%E6%AD%A2.png"></p>
-<ul>
-<li>查看192.168.159.129的ip</li>
-</ul>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E4%BB%8E%E8%8A%82%E7%82%B9.png"></p>
-<p>keepalived从节点的ip出现<code>192.168.159.118</code></p>
-<ul>
-<li><a target="_blank" rel="noopener" href="http://www.118.com仍可以访问/">www.118.com仍可以访问</a></li>
-</ul>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/keepalived%E4%BB%8E%E8%8A%82%E7%82%B9%E6%9B%BF%E4%BB%A3.png"></p>
-<ul>
-<li>重启192.168.159.128的keepalived</li>
-</ul>
-<p>访问<a target="_blank" rel="noopener" href="http://www.118.com/">www.118.com</a></p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/%E9%AA%8C%E8%AF%81keepalived%E7%94%9F%E6%95%88.png"></p>
-<h1 id="Keepalived配置Nginx自动重启"><a href="#Keepalived配置Nginx自动重启" class="headerlink" title="Keepalived配置Nginx自动重启"></a>Keepalived配置Nginx自动重启</h1><blockquote>
-<p> 上述主备情况实在Keepalived失效情况下出现，即服务器宕机。如果仅仅是主节点的nginx挂掉，那整个主备服务会处于不可用状态。</p>
-</blockquote>
-<ul>
-<li>增加Nginx重启检测脚本</li>
-</ul>
-<p><code>vim /etc/keepalived/check_nginx_alive_or_not.sh</code></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"></span><br><span class="line">A=`ps -C nginx --no-header |wc -l`</span><br><span class="line"><span class="meta">#</span><span class="bash"> 判断nginx是否宕机，如果宕机了，尝试重启</span></span><br><span class="line">if [ $A -eq 0 ];then</span><br><span class="line">    /usr/local/nginx/sbin/nginx</span><br><span class="line">    # 等待一小会再次检查nginx，如果没有启动成功，则停止keepalived，使其启动备用机</span><br><span class="line">    sleep 3</span><br><span class="line">    if [ `ps -C nginx --no-header |wc -l` -eq 0 ];then</span><br><span class="line">        killall keepalived</span><br><span class="line">    fi</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>增加运行权限</li>
-</ul>
-<p><code>chmod +x /etc/keepalived/check_nginx_alive_or_not.sh</code></p>
-<ul>
-<li>配置Keepalived监听nginx脚本(写在Keepalived核心配置文件中)</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">vrrp_script check_nginx_alive &#123;</span><br><span class="line">    script &quot;/etc/keepalived/check_nginx_alive_or_not.sh&quot;</span><br><span class="line">    interval 2 # 每隔两秒运行上一行脚本</span><br><span class="line">    weight 10 # 如果脚本运行成功，则升级权重+10</span><br><span class="line">    # weight -10 # 如果脚本运行失败，则升级权重-10</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>在vrrp_instance中新增监控的脚本（写在Keepalived核心配置文件中）</li>
-</ul>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">track_script &#123;</span><br><span class="line">    check_nginx_alive   # 追踪 nginx 脚本</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li> 重启Keepalived使配置文件生效</li>
-</ul>
-<p><code>systemctl restart keepalived</code></p>
-<h1 id="高可用集群架构Keepalived双主热备"><a href="#高可用集群架构Keepalived双主热备" class="headerlink" title="高可用集群架构Keepalived双主热备"></a>高可用集群架构Keepalived双主热备</h1><p>两台服务器的keepalived实现互为主备，实现双主热备，不浪费性能</p>
-<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><h3 id="在原先主节点的配置文件中添加新备节点配置"><a href="#在原先主节点的配置文件中添加新备节点配置" class="headerlink" title="在原先主节点的配置文件中添加新备节点配置"></a>在原先主节点的配置文件中添加新备节点配置</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">! Configuration File <span class="keyword">for</span> keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">   router_id keep_128</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_script check_nginx_alive &#123;</span><br><span class="line">    script <span class="string">&quot;/etc/keepalived/check_nginx_alive_or_not.sh&quot;</span></span><br><span class="line">    interval 2 <span class="comment"># 每隔两秒运行上一行脚本</span></span><br><span class="line">    weight 10 <span class="comment"># 如果脚本运行成功，则升级权重+10</span></span><br><span class="line">    <span class="comment"># weight -10 # 如果脚本运行失败，则升级权重-10</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state MASTER</span><br><span class="line">    interface ens33</span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    priority 100</span><br><span class="line">    advert_int 2</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    track_script &#123;</span><br><span class="line">        check_nginx_alive   <span class="comment"># 追踪 nginx 脚本</span></span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.159.118</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_2 &#123;</span><br><span class="line">    state BACKUP</span><br><span class="line">    interface ens33</span><br><span class="line">    virtual_router_id 52</span><br><span class="line">    priority 80</span><br><span class="line">    advert_int 2</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.159.117</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="在原先备节点的配置文件中添加新主节点配置"><a href="#在原先备节点的配置文件中添加新主节点配置" class="headerlink" title="在原先备节点的配置文件中添加新主节点配置"></a>在原先备节点的配置文件中添加新主节点配置</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">! Configuration File <span class="keyword">for</span> keepalived</span><br><span class="line">  </span><br><span class="line">global_defs &#123;</span><br><span class="line">   router_id keep_129</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_script check_nginx_alive &#123;</span><br><span class="line">    script <span class="string">&quot;/etc/keepalived/check_nginx_alive_or_not.sh&quot;</span></span><br><span class="line">    interval 2 <span class="comment"># 每隔两秒运行上一行脚本</span></span><br><span class="line">    weight 10 <span class="comment"># 如果脚本运行成功，则升级权重+10</span></span><br><span class="line">    <span class="comment"># weight -10 # 如果脚本运行失败，则升级权重-10</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state BACKUP</span><br><span class="line">    interface eth33</span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    priority 80</span><br><span class="line">    advert_int 2</span><br><span class="line">     authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    track_script &#123;</span><br><span class="line">        check_nginx_alive   <span class="comment"># 追踪 nginx 脚本</span></span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.159.118</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_2 &#123;</span><br><span class="line">    state MASTER</span><br><span class="line">    interface eth0</span><br><span class="line">    virtual_router_id 52</span><br><span class="line">    priority 100</span><br><span class="line">    advert_int 2</span><br><span class="line">     authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass 1111</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.159.117</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/9/">&gt;</a>
+    <a class="extend prev" rel="prev" href="/page/7/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/9/">&gt;</a>
   </nav>
 
 
@@ -2941,7 +3049,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">92</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2952,7 +3060,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">65</span>
+                  <span class="site-state-item-count">66</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2963,7 +3071,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-count">50</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

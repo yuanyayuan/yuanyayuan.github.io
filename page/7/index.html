@@ -261,6 +261,700 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/13/%E7%BD%91%E7%BB%9C-%E7%BD%91%E7%BB%9C%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/" itemprop="url">网络相关知识</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T16:30:02+08:00">
+                2021-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C%E9%83%A8%E5%88%86/" itemprop="url" rel="index">
+                    <span itemprop="name">网络部分</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="网络相关"><a href="#网络相关" class="headerlink" title="网络相关"></a>网络相关</h1><h1 id="OSI与TCP-IP各层的结构与功能-都有哪些协议"><a href="#OSI与TCP-IP各层的结构与功能-都有哪些协议" class="headerlink" title="OSI与TCP/IP各层的结构与功能,都有哪些协议?"></a>OSI与TCP/IP各层的结构与功能,都有哪些协议?</h1><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE.png"></p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE2.png"></p>
+<h1 id="TCP三次握手和四次挥手"><a href="#TCP三次握手和四次挥手" class="headerlink" title="TCP三次握手和四次挥手"></a>TCP三次握手和四次挥手</h1><h2 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B.png" alt="image" style="zoom:50%;" />
+
+<ul>
+<li>客户端–发送带有 SYN 标志的数据包–一次握手–服务端 C进入SYN_SENT状态</li>
+<li>服务端–发送带有 SYN/ACK 标志的数据包–二次握手–客户端 S进入SYN_RCVD状态</li>
+<li>客户端–发送带有带有 ACK 标志的数据包–三次握手–服务端 C进入Established状态。S收到后也随即进入Established状态</li>
+</ul>
+<h2 id="为什么要三次握手"><a href="#为什么要三次握手" class="headerlink" title="为什么要三次握手"></a>为什么要三次握手</h2><p><strong>三次握手的目的是建立可靠的通信信道，三次握手最主要的目的就是双方确认自己与对方的发送与接收是正常的。</strong></p>
+<p>第一次握手：Client 什么都不能确认；Server 确认了对方发送正常，自己接收正常。</p>
+<p>第二次握手：Client 确认了：自己发送、接收正常，对方发送、接收正常；Server 确认了：自己接收正常，对方发送正常</p>
+<p>第三次握手：Client 确认了：自己发送、接收正常，对方发送、接收正常；Server 确认了：自己发送、接收正常，对方发送接收正常</p>
+<p>所以三次握手就能确认<strong>双发收发</strong>功能都正常，缺一不可。</p>
+<h2 id="第二次握手回传SYN和ACK的意义分别是什么"><a href="#第二次握手回传SYN和ACK的意义分别是什么" class="headerlink" title="第二次握手回传SYN和ACK的意义分别是什么"></a>第二次握手回传SYN和ACK的意义分别是什么</h2><ul>
+<li><p>接收方传回发送端所发送的SYN是为了告诉客户端，我接收到的信息确实就是你所发送的信号了，这表明从客户端到服务端的通信是正常的。</p>
+</li>
+<li><p>回传ACK则是为了建立并确认从服务端到客户端的通信。</p>
+</li>
+</ul>
+<h2 id="四次挥手"><a href="#四次挥手" class="headerlink" title="四次挥手"></a>四次挥手</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B.png" alt="image" style="zoom:50%;" />
+
+<ul>
+<li>客户端-发送一个FIN，用来关闭客户端到服务器的数据传送</li>
+<li>服务器-收到这个FIN，它发回一个ACK，确认序号为收到的序号加1 。和SYN一样，一个FIN将占用一个序号</li>
+<li>服务器-关闭与客户端的连接，发送一个FIN给客户端</li>
+<li>客户端-发回ACK报文确认，并将确认序号设置为收到序号加1</li>
+</ul>
+<h2 id="为什么要四次挥手"><a href="#为什么要四次挥手" class="headerlink" title="为什么要四次挥手"></a>为什么要四次挥手</h2><p>任何一方都可以在数据传送结束后发出连接释放的通知，待对方确认后进入半关闭状态。当另一方也没有数据再发送的时候，则发出连接释放通知，对方确认后就完全关闭了TCP连接。</p>
+<h1 id="在浏览器中输入URL地址-gt-gt-显示主页的过程，整个过程会使用那些协议"><a href="#在浏览器中输入URL地址-gt-gt-显示主页的过程，整个过程会使用那些协议" class="headerlink" title="在浏览器中输入URL地址-&gt;&gt;显示主页的过程，整个过程会使用那些协议"></a>在浏览器中输入URL地址-&gt;&gt;显示主页的过程，整个过程会使用那些协议</h1><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/%E5%8D%8F%E8%AE%AE.png" style="zoom: 50%;" />
+
+<h2 id="浏览器地址栏输入-URL-到页面展示，这中间发生了什么？越详细越好。"><a href="#浏览器地址栏输入-URL-到页面展示，这中间发生了什么？越详细越好。" class="headerlink" title="浏览器地址栏输入 URL 到页面展示，这中间发生了什么？越详细越好。"></a>浏览器地址栏输入 URL 到页面展示，这中间发生了什么？越详细越好。</h2><p>(1). 浏览器处理 URL。</p>
+<p>A. 浏览器进程检查 URL，组装协议，构成完整的 URL；</p>
+<p>B. 浏览器进程通过进程间通信把 URL 请求发送给网络进程；</p>
+<ul>
+<li>传输层会把 http 请求加上 TCP 头部 —— 包括源端口号、目标程序端口号和用于校验数据完整性的序号，然后向下传输到网络层；</li>
+<li>网络层在数据包上加上 IP 头部 —— 包括源 IP 地址和目标 IP 地址，继续向下传输到底层；</li>
+<li>层通过物理网络传输给目标服务器主机；</li>
+<li>目标服务器网络层接收到数据包，解析出 IP 头部，识别出数据部分，将解开的数据包向上传输到传输层；</li>
+<li>目标服务器传输层获取到数据包，解析出 TCP 头部，识别端口，将解开的数据包向上传输到应用层</li>
+</ul>
+<blockquote>
+<p>就是：TCP/IP 链路：源应用层 —&gt; 源传输层 —&gt; 源网络层 —&gt; 目标网络层 —&gt; 目标传输层 —&gt; 目标应用层。</p>
+</blockquote>
+<p>C. 网络进程获取到 URL，先去本地缓存中查找是否有缓存文件，如果有，拦截请求，直接 200 返回；否则，进入网络请求过程；</p>
+<p>(2). 建立网络连接</p>
+<p>A. 网络进程请求 DNS 返回域名对应的 IP 和端口号，如果之前 DNS 数据缓存服务缓存过当前域名信息，就会直接返回缓存信息；否则，请求将使用域名解析得到的 IP 和端口号。如果没有端口号，http 默认 80，https 默认 443。如果是 https 请求，还需要建立 TLS 连接。</p>
+<p>B. TCP 通过三次握手同服务端建立起链接；</p>
+<p>(3). 服务端处理数据流程 服务端由于规模不同架构不同，通常处理流程有一些差异。大体上可以分为：</p>
+<p>A 网络接入层处理请求 URL，并路由给真正的应用服务器集群。网络接入层一般是 nginx/apache 服务器，进行请求转发、负载均衡等；</p>
+<p>B 应用服务器处理真正的业务逻辑。通常会通过 SOA、微服务等方式调用下游的业务服务，通常还包括缓存读写逻辑等；</p>
+<p>C 业务逻辑最终会和数据库结合起来，在进行一系列的数据增删查改后，通过 SOA、微服务等方式返回给调用方具有业务语义的数据。</p>
+<p>(4). 浏览器解析渲染过程 A 网络进程将获取到的数据包进行解析，根据响应头中的 Content-type 来判断响应数据的类型，如果是字节流类型，就将该请求交给下载管理器，流程结束；如果是 text/html 类型，就通知浏览器进程获取文档准备渲染；</p>
+<p>B 浏览器进程获取到通知，根据当前页面 B 是否是从页面 A 打开的并且和页面 A 是否是同一个站点（根域名和协议一样就被认为是同一个站点），如果满足上述条件，就复用之前网页的进程，否则，新创建一个单独的渲染进程；</p>
+<p>C 渲染进程对文档进行页面解析和子资源加载，HTML 通过 HTM 解析器转成 DOM Tree，CSS 按照 CSS 规则和 CSS 解释器转成 CSSOM TREE，两个 tree 结合，形成 render tree（不包含 HTML 的具体元素和元素要画的具体位置），通过 Layout 可以计算出每个元素具体的宽高颜色位置，结合起来，开始绘制，最后显示在屏幕中新页面显示出来。</p>
+<p><strong>总结</strong></p>
+<ol>
+<li>DNS解析</li>
+<li>TCP连接</li>
+<li>发送HTTP请求</li>
+<li>服务器处理请求并返回HTTP报文</li>
+<li>浏览器解析渲染页面</li>
+<li>连接结束</li>
+</ol>
+<h1 id="UDP-TCP区别"><a href="#UDP-TCP区别" class="headerlink" title="UDP/TCP区别"></a>UDP/TCP区别</h1><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/TCP_UDP.png" alt="image"></p>
+<ul>
+<li><p>UDP在传送数据之前不需要先建立连接，远地主机在收到UDP报文后，不需要给出任何确认。虽然UDP不提供可靠交付，但在某些情况下UDP确是一种最有效的工作方式（一般用于即时通信），比如： QQ语音 QQ视频 、直播等等</p>
+</li>
+<li><p>TCP提供面向连接的服务。在传送数据之前必须先建立连接，数据传送结束后要释放连接。TCP不提供广播或多播服务。TCP一般用于文件传输、发送和接收邮件、远程登录等场景。</p>
+</li>
+</ul>
+<h1 id="TCP的滑动窗口作用"><a href="#TCP的滑动窗口作用" class="headerlink" title="TCP的滑动窗口作用"></a>TCP的滑动窗口作用</h1><p>使用滑动窗口做流量控制，乱序重排</p>
+<p>作用：1、保证TCP的可靠性，2、保证TCP的流控特性</p>
+<h1 id="TCP-协议如何保证可靠传输？"><a href="#TCP-协议如何保证可靠传输？" class="headerlink" title="TCP 协议如何保证可靠传输？"></a>TCP 协议如何保证可靠传输？</h1><ol>
+<li>应用数据被分割成 TCP 认为最适合发送的数据块。</li>
+<li>TCP 给发送的每一个包进行编号，接收方对数据包进行排序，把有序数据传送给应用层。</li>
+<li><strong>校验和：</strong> TCP 将保持它首部和数据的检验和。这是一个端到端的检验和，目的是检测数据在传输过程中的任何变化。如果收到段的检验和有差错，TCP 将丢弃这个报文段和不确认收到此报文段。</li>
+<li>TCP 的接收端会丢弃重复的数据。</li>
+<li><strong>流量控制：</strong> TCP连接的每一方都有固定大小的缓冲空间，TCP的接收端只允许发送端发送接收端缓冲区能接纳的数据。当接收方来不及处理发送方的数据，能提示发送方降低发送的速率，防止包丢失。TCP 使用的流量控制协议是可变大小的滑动窗口协议。 （TCP 利用滑动窗口实现流量控制）</li>
+<li>拥塞控制： 当网络拥塞时，减少数据的发送。</li>
+<li>ARQ协议： 也是为了实现可靠传输的，它的基本原理就是每发完一个分组就停止发送，等待对方确认。在收到确认后再发下一个分组。</li>
+<li>超时重传： 当 TCP 发出一个段后，它启动一个定时器，等待目的端确认收到这个报文段。如果不能及时收到一个确认，将重发这个报文段。</li>
+</ol>
+<h1 id="Http与Https的区别："><a href="#Http与Https的区别：" class="headerlink" title="Http与Https的区别："></a>Http与Https的区别：</h1><ol>
+<li>HTTP 的URL 以http:// 开头，而HTTPS 的URL 以https:// 开头</li>
+<li>HTTP 是不安全的，而 HTTPS 是安全的</li>
+<li>HTTP 标准端口是80 ，而 HTTPS 的标准端口是443</li>
+<li>在OSI 网络模型中，HTTP工作于应用层，而HTTPS 的安全传输机制工作在传输层</li>
+<li>HTTP 无法加密，而HTTPS 对传输的数据进行加密</li>
+<li>HTTP无需证书，而HTTPS 需要CA机构wosign的颁发的SSL证书</li>
+</ol>
+<h1 id="常用的HTTP方法有哪些"><a href="#常用的HTTP方法有哪些" class="headerlink" title="常用的HTTP方法有哪些?"></a>常用的HTTP方法有哪些?</h1><ul>
+<li>GET： 用于请求访问已经被URI（统一资源标识符）识别的资源，可以通过URL传参给服务器</li>
+<li>POST：用于传输信息给服务器，主要功能与GET方法类似，但一般推荐使用POST方式。</li>
+<li>PUT： 传输文件，报文主体中包含文件内容，保存到对应URI位置。</li>
+<li>HEAD： 获得报文首部，与GET方法类似，只是不返回报文主体，一般用于验证URI是否有效。</li>
+<li>DELETE：删除文件，与PUT方法相反，删除对应URI位置的文件。</li>
+<li>OPTIONS：查询相应URI支持的HTTP方法。</li>
+</ul>
+<h1 id="常见的HTTP相应状态码"><a href="#常见的HTTP相应状态码" class="headerlink" title="常见的HTTP相应状态码"></a>常见的HTTP相应状态码</h1><p>（1）信息性状态码（Informational），表示请求已被接受，需要继续处理。码值范围：1xx。</p>
+<p>（2）成功状态码（Success），表示请求已成功被服务器接收、理解、并接受。码值范围：2xx。</p>
+<p>（3）重定向状态码 （Redirection） 。表示需要客户端采取进一步的操作才能完成请求。码值范围：3xx。</p>
+<p>（4） 客户端错误状态码 （Client Error）。表示请求语法错误或者请求无法完成。码值范围：4xx。</p>
+<p>（5） 服务器端错误状态码（Server Error）。表示服务器在处理请求的过程中发生了错误或者无法执行请求。码值范围：5xx。</p>
+<blockquote>
+<p>其中。<strong>302</strong>表示暂时性重定向。可以简单的理解为该资源原本确实存在，但已经被<strong>临时</strong>改变了位置；换而言之，就是请求的资源暂时驻留在不同的URI下。</p>
+</blockquote>
+<blockquote>
+<p>304 表示资源在由请求头中的 If-Modified-Since 或 If-None-Match 参数指定的这一版本之后，未曾被修改。表示客户端不用请求该资源，直接使用本地的资源即可。</p>
+</blockquote>
+<h2 id="常见的状态码"><a href="#常见的状态码" class="headerlink" title="常见的状态码"></a>常见的状态码</h2><table>
+<thead>
+<tr>
+<th>状态码</th>
+<th>英文名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>200</td>
+<td>OK</td>
+<td>请求已成功，请求所希望的响应头或数据体将随此响应返回</td>
+</tr>
+<tr>
+<td>400</td>
+<td>BadRequest</td>
+<td>通常有两种情况：一是语义有误，当前请求无法被服务器理解；二是请求参数有误</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Forbidden</td>
+<td>服务器已经理解请求，但是拒绝执行它</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Not Found</td>
+<td>服务器找不到请求的资源</td>
+</tr>
+<tr>
+<td>500</td>
+<td>Internal Server Error</td>
+<td>服务器内部错误，不知道如何处理</td>
+</tr>
+</tbody></table>
+<h1 id="说说HTTP长连接和短连接。"><a href="#说说HTTP长连接和短连接。" class="headerlink" title="说说HTTP长连接和短连接。"></a>说说HTTP长连接和短连接。</h1><p>在HTTP/1.0中默认使用短连接。也就是说，客户端和服务器每进行一次HTTP操作，就建立一次连接，任务结束就中断连接。当客户端浏览器访问的某个HTML或其他类型的Web页中包含有其他的Web资源（如JavaScript文件、图像文件、CSS文件等），每遇到这样一个Web资源，浏览器就会重新建立一个HTTP会话。</p>
+<p>而从HTTP/1.1起，默认使用长连接，用以保持连接特性。使用长连接的HTTP协议，会在响应头加入这行代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Connection:keep-alive</span><br></pre></td></tr></table></figure>
+
+<p>在使用长连接的情况下，当一个网页打开完成后，客户端和服务器之间用于传输HTTP数据的TCP连接不会关闭，客户端再次访问这个服务器时，会继续使用这一条已经建立的连接。Keep-Alive不会永久保持连接，它有一个保持时间，可以在不同的服务器软件（如Apache）中设定这个时间。实现长连接需要客户端和服务端都支持长连接。</p>
+<h1 id="HTTP-1-0和HTTP-1-1的主要区别是什么"><a href="#HTTP-1-0和HTTP-1-1的主要区别是什么" class="headerlink" title="HTTP 1.0和HTTP 1.1的主要区别是什么"></a>HTTP 1.0和HTTP 1.1的主要区别是什么</h1><p>HTTP1.0最早在网页中使用是在1996年，那个时候只是使用一些较为简单的网页上和网络请求上，而HTTP1.1则在1999年才开始广泛应用于现在的各大浏览器网络请求中，同时HTTP1.1也是当前使用最为广泛的HTTP协议。 主要区别主要体现在：</p>
+<ol>
+<li>长连接 : 在HTTP/1.0中，默认使用的是短连接，也就是说每次请求都要重新建立一次连接。HTTP 是基于TCP/IP协议的,每一次建立或者断开连接都需要三次握手四次挥手的开销，如果每次请求都要这样的话，开销会比较大。因此最好能维持一个长连接，可以用个长连接来发多个请求。HTTP 1.1起，默认使用长连接 ,默认开启Connection： keep-alive。 HTTP/1.1的持续连接有非流水线方式和流水线方式 。流水线方式是客户在收到HTTP的响应报文之前就能接着发送新的请求报文。与之相对应的非流水线方式是客户在收到前一个响应后才能发送下一个请求。</li>
+<li>错误状态响应码 :在HTTP1.1中新增了24个错误状态响应码，如409（Conflict）表示请求的资源与资源的当前状态发生冲突；410（Gone）表示服务器上的某个资源被永久性的删除。</li>
+<li>缓存处理 :在HTTP1.0中主要使用header里的If-Modified-Since,Expires来做为缓存判断的标准，HTTP1.1则引入了更多的缓存控制策略例如Entity tag，If-Unmodified-Since, If-Match, If-None-Match等更多可供选择的缓存头来控制缓存策略。</li>
+<li>带宽优化及网络连接的使用 :HTTP1.0中，存在一些浪费带宽的现象，例如客户端只是需要某个对象的一部分，而服务器却将整个对象送过来了，并且不支持断点续传功能，HTTP1.1则在请求头引入了range头域，它允许只请求资源的某个部分，即返回码是206（Partial Content），这样就方便了开发者自由的选择以便于充分利用带宽和连接。</li>
+</ol>
+<h1 id="URI和URL的区别是什么"><a href="#URI和URL的区别是什么" class="headerlink" title="URI和URL的区别是什么?"></a>URI和URL的区别是什么?</h1><ul>
+<li>URI(Uniform Resource Identifier) 是同一资源标志符，可以唯一标识一个资源。</li>
+<li>URL(Uniform Resource Location) 是同一资源定位符，可以提供该资源的路径。它是一种具体的 URI，即 URL 可以用来标识一个资源，而且还指明了如何 locate 这个资源。</li>
+</ul>
+<p>URI的作用像身份证号一样，URL的作用更像家庭住址一样。URL是一种具体的URI，它不仅唯一标识资源，而且还提供了定位该资源的信息。</p>
+<h1 id="Socket"><a href="#Socket" class="headerlink" title="Socket"></a>Socket</h1><p>Socket是对TCp/IP协议的抽象，是操作系统对外开放的接口</p>
+<h2 id="Socket通信流程"><a href="#Socket通信流程" class="headerlink" title="Socket通信流程"></a>Socket通信流程</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/Socket.png"></p>
+<h1 id="HTTP是不保存状态的协议-如何保存用户状态"><a href="#HTTP是不保存状态的协议-如何保存用户状态" class="headerlink" title="HTTP是不保存状态的协议,如何保存用户状态?"></a>HTTP是不保存状态的协议,如何保存用户状态?</h1><p>HTTP 是一种不保存状态，即无状态（stateless）协议。也就是说 HTTP 协议自身不对请求和响应之间的通信状态进行保存。那么我们保存用户状态呢？Session 机制的存在就是为了解决这个问题，Session 的主要作用就是通过服务端记录用户的状态。典型的场景是购物车，当你要添加商品到购物车的时候，系统不知道是哪个用户操作的，因为 HTTP 协议是无状态的。服务端给特定的用户创建特定的 Session 之后就可以标识这个用户并且跟踪这个用户了（一般情况下，服务器会在一定时间内保存这个 Session，过了时间限制，就会销毁这个Session）。在服务端保存 Session 的方法很多，最常用的就是内存和数据库(比如是使用内存数据库redis保存)。既然 Session 存放在服务器端。</p>
+<p>那么我们如何实现 Session 跟踪呢？大部分情况下，我们都是通过在 Cookie 中附加一个 Session ID 来方式来跟踪。Cookie 被禁用怎么办?最常用的就是利用 URL 重写把 Session ID 直接附加在URL路径的后面。</p>
+<h1 id="Cookie和Session"><a href="#Cookie和Session" class="headerlink" title="Cookie和Session"></a>Cookie和Session</h1><h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>HTTP 协议是一种无状态协议，即每次服务端接收到客户端的请求时，都是一个全新的请求，服务器并不知道客户端的历史请求记录；Session 和 Cookie 的主要目的就是为了弥补 HTTP 的无状态特性。</p>
+<h2 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h2><p>客户端请求服务端，服务端会为这次请求开辟一块内存空间，这个对象便是 Session 对象，存储结构为 ConcurrentHashMap。Session 弥补了 HTTP 无状态特性，服务器可以利用 Session 存储客户端在同一个会话期间的一些操作记录。</p>
+<h2 id="Session-如何判断是否是同一会话"><a href="#Session-如何判断是否是同一会话" class="headerlink" title="Session 如何判断是否是同一会话"></a>Session 如何判断是否是同一会话</h2><p>服务器第一次接收到请求时，开辟了一块 Session 空间（创建了Session对象），同时生成一个 sessionId ，并通过响应头的 Set-Cookie：JSESSIONID=XXXXXXX 命令，向客户端发送要求设置 Cookie 的响应；客户端收到响应后，在本机客户端设置了一个 JSESSIONID=XXXXXXX 的 Cookie 信息，该 Cookie 的过期时间为浏览器会话结束。</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/session.png"></p>
+<p>接下来客户端每次向同一个网站发送请求时，请求头都会带上该 Cookie 信息（包含 sessionId ）， 然后，服务器通过读取请求头中的 Cookie 信息，获取名称为 JSESSIONID 的值，得到此次请求的 sessionId。</p>
+<h2 id="Session-的缺点"><a href="#Session-的缺点" class="headerlink" title="Session 的缺点"></a>Session 的缺点</h2><p>Session 机制有个缺点，比如 A 服务器存储了 Session，就是做了负载均衡后，假如一段时间内 A 的访问量激增，会转发到 B 进行访问，但是 B 服务器并没有存储 A 的 Session，会导致 Session 的失效。</p>
+<h2 id="Cookie"><a href="#Cookie" class="headerlink" title="Cookie"></a>Cookie</h2><p>HTTP 协议中的 Cookie 包括 Web Cookie 和浏览器 Cookie，它是服务器发送到 Web 浏览器的一小块数据。服务器发送到浏览器的 Cookie，浏览器会进行存储，并与下一个请求一起发送到服务器。通常，它用于判断两个请求是否来自于同一个浏览器，例如用户保持登录状态。</p>
+<blockquote>
+<p>HTTP Cookie 机制是 HTTP 协议无状态的一种补充和改良</p>
+</blockquote>
+<h3 id="Cookie-主要使用目的"><a href="#Cookie-主要使用目的" class="headerlink" title="Cookie 主要使用目的"></a>Cookie 主要使用目的</h3><ul>
+<li>会话管理 登陆、购物车、游戏得分或者服务器应该记住的其他内容</li>
+<li>个性化 用户偏好、主题或者其他设置</li>
+<li>追踪 记录和分析用户行为</li>
+</ul>
+<h3 id="cookie分类"><a href="#cookie分类" class="headerlink" title="cookie分类"></a>cookie分类</h3><h4 id="会话-Cookies（Session-Cookies）"><a href="#会话-Cookies（Session-Cookies）" class="headerlink" title="会话 Cookies（Session Cookies）"></a>会话 Cookies（Session Cookies）</h4><p>如果 Cookie 不包含到期日期，则将其视为会话 Cookie。会话 Cookie 存储在内存中，永远不会写入磁盘，当浏览器关闭时，此后 Cookie 将永久丢失</p>
+<h4 id="永久性-Cookies（Persistent-Cookies）"><a href="#永久性-Cookies（Persistent-Cookies）" class="headerlink" title="永久性 Cookies（Persistent Cookies）"></a>永久性 Cookies（Persistent Cookies）</h4><p>Cookie 包含有效期 ，则将其视为持久性 Cookie。在到期指定的日期，Cookie 将从磁盘中删除。</p>
+<h2 id="Session和Cookie的区别"><a href="#Session和Cookie的区别" class="headerlink" title="Session和Cookie的区别"></a>Session和Cookie的区别</h2><p>1、cookie数据存放在客户的浏览器上，session数据放在服务器上。</p>
+<p>2、cookie不是很安全，别人可以分析存放在本地的COOKIE并进行COOKIE欺骗，考虑到安全应当使用session。</p>
+<p>3、session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能，考虑到减轻服务器性能方面，应当使用COOKIE。</p>
+<p>4、单个cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。</p>
+<h1 id="什么是Json-Web-Tokens"><a href="#什么是Json-Web-Tokens" class="headerlink" title="什么是Json Web Tokens"></a>什么是Json Web Tokens</h1><p>Json Web Token 的简称就是 JWT，通常可以称为 Json 令牌。JWT 中存储的信息是经过数字签名的，因此可以被信任和理解</p>
+<h2 id="使用-JWT-主要用来下面两点"><a href="#使用-JWT-主要用来下面两点" class="headerlink" title="使用 JWT 主要用来下面两点"></a>使用 JWT 主要用来下面两点</h2><ul>
+<li>认证(Authorization)：这是使用 JWT 最常见的一种情况，一旦用户登录，后面每个请求都会包含 JWT，从而允许用户访问该令牌所允许的路由、服务和资源。单点登录是当今广泛使用 JWT 的一项功能，因为它的开销很小。</li>
+<li>信息交换(Information Exchange)：JWT 是能够安全传输信息的一种方式。通过使用公钥/私钥对 JWT 进行签名认证。此外，由于签名是使用 head 和 payload 计算的，因此你还可以验证内容是否遭到篡改。</li>
+</ul>
+<h2 id="JWT格式"><a href="#JWT格式" class="headerlink" title="JWT格式"></a>JWT格式</h2><p>JWT 主要由三部分组成，每个部分用 . 进行分割，各个部分分别是</p>
+<ul>
+<li>Header header的格式（算法、token的类型）：</li>
+<li>Payload payload的格式（用户名、创建时间、生成时间）：</li>
+<li>Signature 生成算法：HMACSHA512(base64UrlEncode(header) + “.” +base64UrlEncode(payload),secret)</li>
+</ul>
+<h1 id="JSON-Web-Token-和-Session-Cookies-的对比"><a href="#JSON-Web-Token-和-Session-Cookies-的对比" class="headerlink" title="JSON Web Token 和 Session Cookies 的对比"></a>JSON Web Token 和 Session Cookies 的对比</h1><h2 id="相同作用"><a href="#相同作用" class="headerlink" title="相同作用"></a>相同作用</h2><ul>
+<li>jwt 和 Session都可以为网站提供用户的身份认证</li>
+<li>JWT 和 Session Cookies 用来处理在不同页面之间切换，保存用户登录信息的机制。</li>
+<li>能够支持你在发送不同请求之间，记录并验证你的登录状态</li>
+</ul>
+<h2 id="不同点"><a href="#不同点" class="headerlink" title="不同点"></a>不同点</h2><ul>
+<li>密码签名</li>
+</ul>
+<p>JWT 具有加密签名，而 Session Cookies 则没有。</p>
+<ul>
+<li>JSON 是无状态的</li>
+</ul>
+<p>JWT 是无状态的，因为声明被存储在客户端，而不是服务端内存中。</p>
+<p>身份验证可以在本地进行，而不是在请求必须通过服务器数据库或类似位置中进行。这意味着可以对用户进行多次身份验证，而无需与站点或应用程序的数据库进行通信，也无需在此过程中消耗大量资源。</p>
+<ul>
+<li>可扩展性</li>
+</ul>
+<p>Session Cookies 是存储在服务器内存中，这就意味着如果网站或者应用很大的情况下会耗费大量的资源。由于 JWT 是无状态的，在许多情况下，它们可以节省服务器资源。因此 JWT 要比 Session Cookies 具有更强的可扩展性。</p>
+<ul>
+<li>JWT 支持跨域认证</li>
+</ul>
+<p>Session Cookies 只能用在单个节点的域或者它的子域中有效。如果它们尝试通过第三个节点访问，就会被禁止。如果你希望自己的网站和其他站点建立安全连接时，这是一个问题。</p>
+<p>使用 JWT 可以解决这个问题，使用 JWT 能够通过多个节点进行用户认证，也就是我们常说的跨域认证。</p>
+<h1 id="JWT-和-Session-Cookies-的选型"><a href="#JWT-和-Session-Cookies-的选型" class="headerlink" title="JWT 和 Session Cookies 的选型"></a>JWT 和 Session Cookies 的选型</h1><p>对于只需要登录用户并访问存储在站点数据库中的一些信息的中小型网站来说，Session Cookies 通常就能满足。</p>
+<p>如果你有企业级站点，应用程序或附近的站点，并且需要处理大量的请求，尤其是第三方或很多第三方（包括位于不同域的API），则 JWT 显然更适合。</p>
+<h1 id="post和get请求"><a href="#post和get请求" class="headerlink" title="post和get请求"></a>post和get请求</h1><h2 id="直观："><a href="#直观：" class="headerlink" title="直观："></a>直观：</h2><ul>
+<li>GET把参数包含在URL中，POST通过request body传递参数。</li>
+<li>GET请求会被浏览器主动cache，而POST不会，除非手动设置。</li>
+<li>GET请求只能进行url编码，而POST支持多种编码方式。</li>
+<li>GET请求参数会被完整保留在浏览器历史记录里，而POST中的参数不会被保留。</li>
+<li>GET请求在URL中传送的参数是有长度限制的，而POST么有。</li>
+<li>GET比POST更不安全，因为参数直接暴露在URL上，所以不能用来传递敏感信息。</li>
+</ul>
+<h2 id="进阶"><a href="#进阶" class="headerlink" title="进阶"></a>进阶</h2><p>GET和POST本质上就是TCP链接，并无差别。但是由于HTTP的规定和浏览器/服务器的限制，导致他们在应用过程中体现出一些不同。</p>
+<p>都是通过TCP进行数据运输服务，HTTP划分服务类型（GET、POST、DELETE、PUT）</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/Java-%E5%8F%8D%E5%B0%84%E5%92%8C%E5%BC%82%E5%B8%B8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/13/Java-%E5%8F%8D%E5%B0%84%E5%92%8C%E5%BC%82%E5%B8%B8/" itemprop="url">Java-反射和异常</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T01:14:56+08:00">
+                2021-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java知识点</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="反射机制"><a href="#反射机制" class="headerlink" title="反射机制"></a>反射机制</h1><p>JAVA 反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法；对于任意一个对象，都能够调用它的任意一个方法和属性；这种动态获取的信息以及动态调用对象的方法的功能称为 java 语言的反射机制。</p>
+<h2 id="静态编译和动态编译"><a href="#静态编译和动态编译" class="headerlink" title="静态编译和动态编译"></a>静态编译和动态编译</h2><ul>
+<li><strong>静态编译：</strong> 在编译时确定类型，绑定对象</li>
+<li><strong>动态编译：</strong> 运行时确定类型，绑定对象</li>
+</ul>
+<h2 id="反射机制优缺点"><a href="#反射机制优缺点" class="headerlink" title="反射机制优缺点"></a>反射机制优缺点</h2><ul>
+<li><strong>优点：</strong> 运行期类型的判断，动态加载类，提高代码灵活度。</li>
+<li><strong>缺点：</strong> 1,性能瓶颈：反射相当于一系列解释操作，通知 JVM 要做的事情，性能比直接的 java 代码要慢很多。2,安全问题，让我们可以动态操作改变类的属性同时也增加了类的安全隐患。</li>
+</ul>
+<h2 id="反射的应用场景"><a href="#反射的应用场景" class="headerlink" title="反射的应用场景"></a>反射的应用场景</h2><p><strong>反射是框架设计的灵魂。</strong></p>
+<p>在我们平时的项目开发过程中，基本上很少会直接使用到反射机制，但这不能说明反射机制没有用，实际上有很多设计、开发都与反射机制有关，例如模块化的开发，通过反射去调用对应的字节码；动态代理设计模式也采用了反射机制，还有我们日常使用的 Spring／Hibernate 等框架也大量使用到了反射机制。</p>
+<p>举例：</p>
+<ol>
+<li>我们在使用 JDBC 连接数据库时使用 <code>Class.forName()</code>通过反射加载数据库的驱动程序；</li>
+<li>Spring 框架的 IOC（动态加载管理 Bean）创建对象以及 AOP（动态代理）功能都和反射有联系；</li>
+<li>动态配置实例的属性；</li>
+</ol>
+<h2 id="获取-Class-对象的四种方式"><a href="#获取-Class-对象的四种方式" class="headerlink" title="获取 Class 对象的四种方式"></a>获取 Class 对象的四种方式</h2><p>如果我们动态获取到这些信息，我们需要依靠 Class 对象。Class 类对象将一个类的方法、变量等信息告诉运行的程序。Java 提供了四种方式获取 Class 对象:</p>
+<p>1.知道具体类的情况下可以使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Class alunbarClass &#x3D; TargetObject.class;</span><br></pre></td></tr></table></figure>
+
+<p>但是我们一般是不知道具体类的，基本都是通过遍历包下面的类来获取 Class 对象，通过此方式获取Class对象不会进行初始化</p>
+<p>2.通过 <code>Class.forName()</code>传入类的路径获取：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Class alunbarClass1 &#x3D; Class.forName(&quot;cn.javaguide.TargetObject&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>Class.forName(className)方法，内部实际调用的是一个native方法 forName0(className, true, ClassLoader.getClassLoader(caller), caller);</p>
+<p>第2个boolean参数表示类是否需要初始化，Class.forName(className)默认是需要初始化。</p>
+<p>一旦初始化，就会触发目标对象的 static块代码执行，static参数也会被再次初始化。</p>
+<p>3.通过对象实例<code>instance.getClass()</code>获取：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Employee e &#x3D; new Employee();</span><br><span class="line">Class alunbarClass2 &#x3D; e.getClass();</span><br></pre></td></tr></table></figure>
+
+<p>4.通过类加载器<code>xxxClassLoader.loadClass()</code>传入类路径获取</p>
+<p>通过类加载器获取Class对象不会进行初始化，意味着不进行包括初始化等一些列步骤，静态块和静态对象不会得到执行</p>
+<h2 id="动态代理是指什么？它有哪几种实现方法"><a href="#动态代理是指什么？它有哪几种实现方法" class="headerlink" title="动态代理是指什么？它有哪几种实现方法"></a>动态代理是指什么？它有哪几种实现方法</h2><ul>
+<li>动态代理是指在程序运行时生成代理类。</li>
+<li>有两种实现方式：<ul>
+<li>JDK 动态代理，被代理对象必须实现接口，利用反射机制生成一个实现代理接口的匿名类，在调用具体方法前调用InvokeHandler来处理；</li>
+<li>字节码实现（比如说cglib/asm等），得用ASM开源包，将代理对象类的class文件加载进来，通过修改其字节码生成子类来处理。</li>
+</ul>
+</li>
+</ul>
+<p>动态代理是和反射机制一脉相承的，其核心也就是两个：动态+代理。动态是指在在运行时生成的代理类，与此对应的就是静态代理，代理类在程序编译时就实现。现在很多框架都是利用类似机制来提供灵活性的扩展性，比如用来包装 RPC 调用，面向切面编程（AOP）等。</p>
+<h3 id="通常使用JDK的动态代理可以分为以下两步："><a href="#通常使用JDK的动态代理可以分为以下两步：" class="headerlink" title="通常使用JDK的动态代理可以分为以下两步："></a>通常使用JDK的动态代理可以分为以下两步：</h3><p>（1）定义一个接口，该接口里有需要实现的方法，并且编写实际的实现类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//用户管理接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserManager</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">addUser</span><span class="params">(String userName,String password)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//用户管理实现类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserManagerImpl</span> <span class="keyword">implements</span> <span class="title">UserManager</span></span>&#123;</span><br><span class="line"> <span class="meta">@Override</span></span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addUser</span><span class="params">(String userName, String password)</span> </span>&#123;</span><br><span class="line">     System.out.println(<span class="string">&quot;传入参数为 userName: &quot;</span>+userName+<span class="string">&quot; password: &quot;</span>+password);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（2）定义一个实现InvocationHandler接口的代理类，重写invoke()方法，且添加getProxy()方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JdkProxy</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> Object target ;<span class="comment">//需要代理的目标对象</span></span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> </span></span><br><span class="line"><span class="function">Throwable </span>&#123;</span><br><span class="line">     System.out.println(<span class="string">&quot;JDK动态代理，监听开始！&quot;</span>);</span><br><span class="line">     Object result = method.invoke(target, args);</span><br><span class="line">     System.out.println(<span class="string">&quot;JDK动态代理，监听结束！&quot;</span>);</span><br><span class="line">     <span class="keyword">return</span> result;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">//定义获取代理对象方法</span></span><br><span class="line"> <span class="function"><span class="keyword">private</span> Object <span class="title">getProxy</span><span class="params">(Object targetObject)</span></span>&#123;</span><br><span class="line">     <span class="comment">//为目标对象target赋值</span></span><br><span class="line">     <span class="keyword">this</span>.target = targetObject;</span><br><span class="line">     <span class="comment">//JDK动态代理只能针对实现了接口的类进行代理，newProxyInstance 函数所需参数就可看出</span></span><br><span class="line">     <span class="keyword">return</span> Proxy.newProxyInstance(targetObject.getClass().getClassLoader(), </span><br><span class="line">targetObject.getClass().getInterfaces(), <span class="keyword">this</span>);</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">     JdkProxy jdkProxy = <span class="keyword">new</span> JdkProxy();<span class="comment">//实例化JDKProxy对象</span></span><br><span class="line">     UserManager user = (UserManager) jdkProxy.getProxy(<span class="keyword">new</span> UserManagerImpl</span><br><span class="line">());<span class="comment">//获取代理对象</span></span><br><span class="line">     user.addUser(<span class="string">&quot;admin&quot;</span>, <span class="string">&quot;123&quot;</span>);<span class="comment">//执行新增方法</span></span><br><span class="line"> &#125;    </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="而cglibf动态代理的步骤也是类似，但是相对来说要简单一些："><a href="#而cglibf动态代理的步骤也是类似，但是相对来说要简单一些：" class="headerlink" title="而cglibf动态代理的步骤也是类似，但是相对来说要简单一些："></a>而cglibf动态代理的步骤也是类似，但是相对来说要简单一些：</h3><p>（1）定义一个实现类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserCglibServiceImpl</span> </span>&#123;</span><br><span class="line"> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hobby</span><span class="params">()</span> </span>&#123;</span><br><span class="line">     System.out.println(<span class="string">&quot;跳舞&quot;</span>);</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（2）定义一个实现MethodInterceptor接口的代理类，重写intercept()方法，且添加getProxy()方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserCglibServiceProxy</span> <span class="keyword">implements</span> <span class="title">MethodInterceptor</span> </span>&#123;</span><br><span class="line"><span class="comment">// 维护目标对象    </span></span><br><span class="line"><span class="keyword">private</span> Object target; </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">UserCglibServiceProxy</span><span class="params">(Object target)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">this</span>.target = target;  </span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 给目标对象创建一个代理对象    </span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getProxyInstance</span><span class="params">()</span></span>&#123;</span><br><span class="line"> <span class="comment">//1.工具类        </span></span><br><span class="line"> Enhancer en = <span class="keyword">new</span> Enhancer();        </span><br><span class="line"> <span class="comment">//2.设置父类        </span></span><br><span class="line"> en.setSuperclass(target.getClass());        </span><br><span class="line"> <span class="comment">//3.设置回调函数        </span></span><br><span class="line"> en.setCallback(<span class="keyword">this</span>);        </span><br><span class="line"> <span class="comment">//4.创建子类(代理对象)        </span></span><br><span class="line"> <span class="keyword">return</span> en.create();    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span>     </span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Object obj, Method method, Object[] args, MethodProxy proxy)</span> <span class="keyword">throws</span> Throwable </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"> System.out.println(<span class="string">&quot;唱歌&quot;</span>);        </span><br><span class="line"> <span class="comment">//执行目标对象的方法        </span></span><br><span class="line"> Object returnValue = method.invoke(target, args);        </span><br><span class="line"> System.out.println(<span class="string">&quot;RAP&quot;</span>);        </span><br><span class="line"> <span class="keyword">return</span> returnValue;    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"> <span class="comment">//目标对象        </span></span><br><span class="line"> UserCglibServiceImpl target = <span class="keyword">new</span> UserCglibServiceImpl();        </span><br><span class="line"> <span class="comment">//代理对象        </span></span><br><span class="line"> UserCglibServiceImpl proxy = (UserCglibServiceImpl)<span class="keyword">new</span> UserCglibServiceProxy(target).getProxyInstance();     </span><br><span class="line"> <span class="comment">//执行代理对象的方法       </span></span><br><span class="line"> proxy.hobby();    </span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>代理方式</th>
+<th>实现</th>
+<th>优点</th>
+<th>缺点</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JDK静态代理</td>
+<td>代理类与委托类实现同一接口，并且在代理类中需要硬编码接口</td>
+<td>简单粗暴</td>
+<td>代理类需要硬编码接口，在实际应用中可能会导致重复编码，浪费存储空间并且效率很低</td>
+<td></td>
+</tr>
+<tr>
+<td>JDK动态代理</td>
+<td>代理类与委托类实现同一接口，主要是通过代理类实现InvocationHandler并重写invoke方法来进行动态代理的，在invoke方法中将对方法进行增强处理</td>
+<td>不需要硬编码接口，代码复用率高</td>
+<td>只能够代理实现了接口的委托类</td>
+<td>底层使用反射机制进行方法的调用</td>
+</tr>
+<tr>
+<td>CGLIB动态代理</td>
+<td>代理类将委托类作为自己的父类并为其中的非final委托方法创建两个方法，一个是与委托方法签名相同的方法，它在方法中会通过super调用委托方法；另一个是代理类独有的方法。在代理方法中，它会判断是否存在实现了MethodInterceptor接口的对象，若存在则将调用intercept方法对委托方法进行代理</td>
+<td>可以在运行时对类或者是接口进行增强操作，且被代理的类无需实现接口</td>
+<td>不能对final类以及final方法进行代理</td>
+<td>底层将方法全部存入一个数组中，通过数组索引直接进行方法调用</td>
+</tr>
+</tbody></table>
+<h2 id="为什么反射的性能较差？有没有什么方法可以让他变快"><a href="#为什么反射的性能较差？有没有什么方法可以让他变快" class="headerlink" title="为什么反射的性能较差？有没有什么方法可以让他变快"></a>为什么反射的性能较差？有没有什么方法可以让他变快</h2><p>java反射要解析字节码，将内存中的对象进行解析，包括了一些动态类型，JVM难以优化，而且在调用时还需要拼接参数，执行步骤也更多。因此，反射操作的效率要更低</p>
+<p>常用的改进性能方法主要有：</p>
+<ul>
+<li>m.setAccessible(true);</li>
+</ul>
+<p>由于JDK的安全检查耗时较多.所以通过setAccessible(true)的方式关闭安全检查就可以达到提升反射速度的目的;</p>
+<ul>
+<li>用缓存将反射得到的元数据保存起来；</li>
+<li>利用一些高性能的反射库，如ReflectASM ReflectASM 使用字节码生成的方式实现了更为高效的反射机制。执行时会生成一个存取类来 set/get 字段，访问方法或创建实例。一看到 ASM 就能领悟到 ReflectASM 会用字节码生成的方式，而不是依赖于 Java 本身的反射机制来实现的，所以它更快，并且避免了访问原始类型因自动装箱而产生的问题。</li>
+</ul>
+<h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><h2 id="Java-异常类层次结构图"><a href="#Java-异常类层次结构图" class="headerlink" title="Java 异常类层次结构图"></a>Java 异常类层次结构图</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/java%E5%BC%82%E5%B8%B8.png" alt="img"></p>
+<p>在 Java 中，所有的异常都有一个共同的祖先 <code>java.lang</code> 包中的 <code>Throwable</code> 类。<code>Throwable</code> 类有两个重要的子类 <code>Exception</code>（异常）和 <code>Error</code>（错误）。<code>Exception</code> 能被程序本身处理(<code>try-catch</code>)， <code>Error</code> 是无法处理的(只能尽量避免)。</p>
+<p><code>Exception</code> 和 <code>Error</code> 二者都是 Java 异常处理的重要子类，各自都包含大量子类。</p>
+<ul>
+<li><strong><code>Exception</code></strong> :程序本身可以处理的异常，可以通过 <code>catch</code> 来进行捕获。<code>Exception</code> 又可以分为 受检查异常(必须处理) 和 不受检查异常(可以不处理)。</li>
+<li><strong><code>Error</code></strong> ：<code>Error</code> 属于程序无法处理的错误 ，我们没办法通过 <code>catch</code> 来进行捕获 。例如，Java 虚拟机运行错误（<code>Virtual MachineError</code>）、虚拟机内存不够错误(<code>OutOfMemoryError</code>)、类定义错误（<code>NoClassDefFoundError</code>）等 。这些异常发生时，Java 虚拟机（JVM）一般会选择线程终止。</li>
+</ul>
+<p><strong>运行时异常（不受检查异常）与受检异常有何异同</strong></p>
+<p>运行时异常表示虚拟机的通常操作中可能遇到的异常，是一种常见运行错误，只要程序设计得没有问题通常就不会发生；<code>RuntimeException</code> 及其子类都统称为非受检查异常</p>
+<p>受检异常跟程序运行的上下文环境有关，即使程序设计无误，仍然可能因使用的问题而引发。</p>
+<p>Java编译器要求方法必须声明抛出可能发生的受检异常，但是并不要求必须声明抛出未被捕获的运行时异常。</p>
+<p><strong>列出一些你常见的（不受检查异常）运行时异常</strong></p>
+<ul>
+<li>ArithmeticException（算术异常）</li>
+<li>ClassCastException （类转换异常）</li>
+<li>IllegalArgumentException （非法参数异常）</li>
+<li>IndexOutOfBoundsException （下标越界异常）</li>
+<li>NullPointerException （空指针异常）</li>
+<li>SecurityException （安全异常）</li>
+</ul>
+<p><strong>受检查异常</strong></p>
+<p>Java 代码在编译过程中，如果受检查异常没有被 <code>catch</code>/<code>throw</code> 处理的话，就没办法通过编译 。比如下面这段 IO 操作的代码。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Example</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span> <span class="keyword">throws</span> IOException</span>&#123;</span><br><span class="line">        FileInputStream fis = <span class="keyword">null</span>;</span><br><span class="line">        fis = <span class="keyword">new</span> FileInputStream(<span class="string">&quot;C/myFile.txt&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> k;</span><br><span class="line">        <span class="keyword">while</span>((k = fis.read()) != -<span class="number">1</span>)&#123;</span><br><span class="line">            System.out.print((<span class="keyword">char</span>)k);</span><br><span class="line">        &#125;</span><br><span class="line">        fis.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>除了<code>RuntimeException</code>及其子类以外，其他的<code>Exception</code>类及其子类都属于检查异常 。常见的受检查异常有： IO 相关的异常、<code>ClassNotFoundException</code> 、<code>SQLException</code>…。</p>
+<h2 id="Throwable-类常用方法"><a href="#Throwable-类常用方法" class="headerlink" title="Throwable 类常用方法"></a>Throwable 类常用方法</h2><ul>
+<li><strong><code>public string getMessage()</code></strong>:返回异常发生时的简要描述</li>
+<li><strong><code>public string toString()</code></strong>:返回异常发生时的详细信息</li>
+<li><strong><code>public string getLocalizedMessage()</code></strong>:返回异常对象的本地化信息。使用 <code>Throwable</code> 的子类覆盖这个方法，可以生成本地化信息。如果子类没有覆盖该方法，则该方法返回的信息与 <code>getMessage（）</code>返回的结果相同</li>
+<li><strong><code>public void printStackTrace()</code></strong>:在控制台上打印 <code>Throwable</code> 对象封装的异常信息</li>
+</ul>
+<h2 id="try-catch-finally"><a href="#try-catch-finally" class="headerlink" title="try-catch-finally"></a>try-catch-finally</h2><ul>
+<li><strong><code>try</code>块：</strong> 用于捕获异常。其后可接零个或多个 <code>catch</code> 块，如果没有 <code>catch</code> 块，则必须跟一个 <code>finally</code> 块。</li>
+<li><strong><code>catch</code>块：</strong> 用于处理 try 捕获到的异常。</li>
+<li><strong><code>finally</code> 块：</strong> 无论是否捕获或处理异常，<code>finally</code> 块里的语句都会被执行。当在 <code>try</code> 块或 <code>catch</code> 块中遇到 <code>return</code> 语句时，<code>finally</code> 语句块将在方法返回之前被执行。</li>
+</ul>
+<p><strong>在以下 3 种特殊情况下，<code>finally</code> 块不会被执行：</strong></p>
+<ol>
+<li>在 <code>try</code> 或 <code>finally</code>块中用了 <code>System.exit(int)</code>退出程序。但是，如果 <code>System.exit(int)</code> 在异常语句之后，<code>finally</code> 还是会被执行</li>
+<li>程序所在的线程死亡。</li>
+<li>关闭 CPU。</li>
+</ol>
+<p><strong>注意：</strong> 当 try 语句和 finally 语句中都有 return 语句时，在方法返回之前，finally 语句的内容将被执行，并且 finally 语句的返回值将会覆盖原始的返回值。如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">f</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> value * value;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (value == <span class="number">2</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果调用 <code>f(2)</code>，返回值将是 0，因为 finally 语句的返回值覆盖了 try 语句块的返回值。</p>
+<h3 id="try、catch、finally执行顺序"><a href="#try、catch、finally执行顺序" class="headerlink" title="try、catch、finally执行顺序"></a>try、catch、finally执行顺序</h3><p>这三个关键字常用于我们捕捉异常的一整套流程，try 用来确定代码执行的范围，catch 捕捉可能会发生的异常，finally 用来执行一定要执行的代码块，除了这些，我们还需要清楚，每个地方如果发生异常会怎么办，我们举一个例子来演示一下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testCatchFinally</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;try is run&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;try exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    log.info(<span class="string">&quot;catch is run&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;catch exception&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;finally is run&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个代码演示了在 try、catch 中都遇到了异常，代码的执行顺序为：try -&gt; catch -&gt; finally，输出的结果如下：</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/Java%E5%BC%82%E5%B8%B8%E9%A1%BA%E5%BA%8F.png" alt="图片描述"></p>
+<p>可以看到两点：</p>
+<p>1、不管有没有出现异常，finally块中代码都会执行； 2、当try和catch中有return时，finally仍然会执行； 3、finally是在return后面的表达式运算后执行的（此时并没有返回运算后的值，而是先把要返回的值保存起来，不管finally中的代码怎么样，返回的值都不会改变，任然是之前保存的值），所以函数返回值是在finally执行前确定的； 4、finally中最好不要包含return，否则程序会提前退出，返回值不是try或catch中保存的返回值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">catch</span>()&#123;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">finally</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125; </span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">显然程序按顺序执行。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123; </span><br><span class="line">	<span class="keyword">return</span>; </span><br><span class="line">&#125;<span class="keyword">catch</span>()&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">finally</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">程序执行<span class="keyword">try</span>块中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码；</span><br><span class="line">再执行<span class="keyword">finally</span>块，最后执行<span class="keyword">try</span>中<span class="keyword">return</span>;</span><br><span class="line"><span class="keyword">finally</span>块之后的语句<span class="keyword">return</span>，因为程序在<span class="keyword">try</span>中已经<span class="keyword">return</span>所以不再执行。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;<span class="keyword">catch</span>()&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125; <span class="keyword">finally</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125; </span><br><span class="line"><span class="keyword">return</span>;</span><br><span class="line">程序先执行<span class="keyword">try</span>，如果遇到异常执行<span class="keyword">catch</span>块，</span><br><span class="line">有异常：</span><br><span class="line">则执行<span class="keyword">catch</span>中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码，再执行<span class="keyword">finally</span>语句中全部代码，最后执行<span class="keyword">catch</span>块中return. <span class="keyword">finally</span>之后的代码不再执行。</span><br><span class="line">无异常：执行完<span class="keyword">try</span>再<span class="keyword">finally</span>再return.</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123; </span><br><span class="line">	<span class="keyword">return</span>; </span><br><span class="line">&#125;<span class="keyword">catch</span>()&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">finally</span>&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">程序执行<span class="keyword">try</span>块中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码；</span><br><span class="line">再执行<span class="keyword">finally</span>块，因为<span class="keyword">finally</span>块中有<span class="keyword">return</span>所以提前退出。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123;</span><br><span class="line"></span><br><span class="line">&#125; <span class="keyword">catch</span>()&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;<span class="keyword">finally</span>&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">程序执行<span class="keyword">catch</span>块中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码；</span><br><span class="line">再执行<span class="keyword">finally</span>块，因为<span class="keyword">finally</span>块中有<span class="keyword">return</span>所以提前退出。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>&#123; </span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;<span class="keyword">catch</span>()&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125; <span class="keyword">finally</span>&#123;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line">程序执行<span class="keyword">try</span>块中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码；</span><br><span class="line">有异常：</span><br><span class="line">执行<span class="keyword">catch</span>块中<span class="keyword">return</span>之前（包括<span class="keyword">return</span>语句中的表达式运算）代码；</span><br><span class="line">则再执行<span class="keyword">finally</span>块，因为<span class="keyword">finally</span>块中有<span class="keyword">return</span>所以提前退出。</span><br><span class="line">无异常：</span><br><span class="line">则再执行<span class="keyword">finally</span>块，因为<span class="keyword">finally</span>块中有<span class="keyword">return</span>所以提前退出。</span><br></pre></td></tr></table></figure>
+
+<p><strong>最终结论</strong>：任何执行try 或者catch中的return语句之前，都会先执行finally语句，如果finally存在的话。如果finally中有return语句，那么程序就return了，所以finally中的return是一定会被return的，编译器把finally中的return实现为一个warning。</p>
+<h3 id="catch-中发生了未知异常，finally-还会执行么？"><a href="#catch-中发生了未知异常，finally-还会执行么？" class="headerlink" title="catch 中发生了未知异常，finally 还会执行么？"></a>catch 中发生了未知异常，finally 还会执行么？</h3><p>会的，catch 发生了异常，finally 还会执行的，并且是 finally 执行完成之后，才会抛出 catch 中的异常。</p>
+<p>不过 catch 会吃掉 try 中抛出的异常，为了避免这种情况，在一些可以预见 catch 中会发生异常的地方，先把 try 抛出的异常打印出来，这样从日志中就可以看到完整的异常了。</p>
+<h2 id="使用-try-with-resources-来代替try-catch-finally"><a href="#使用-try-with-resources-来代替try-catch-finally" class="headerlink" title="使用 try-with-resources 来代替try-catch-finally"></a>使用 <code>try-with-resources</code> 来代替<code>try-catch-finally</code></h2><ol>
+<li><strong>适用范围（资源的定义）：</strong> 任何实现 <code>java.lang.AutoCloseable</code>或者``java.io.Closeable` 的对象</li>
+<li><strong>关闭资源和 final 的执行顺序：</strong> 在 <code>try-with-resources</code> 语句中，任何 catch 或 finally 块在声明的资源关闭后运行</li>
+</ol>
+<p>《Effecitve Java》中明确指出：</p>
+<blockquote>
+<p>面对必须要关闭的资源，我们总是应该优先使用 <code>try-with-resources</code> 而不是<code>try-finally</code>。随之产生的代码更简短，更清晰，产生的异常对我们也更有用。<code>try-with-resources</code>语句让我们更容易编写必须要关闭的资源的代码，若采用<code>try-finally</code>则几乎做不到这点。</p>
+</blockquote>
+<p>Java 中类似于<code>InputStream</code>、<code>OutputStream</code> 、<code>Scanner</code> 、<code>PrintWriter</code>等的资源都需要我们调用<code>close()</code>方法来手动关闭，一般情况下我们都是通过<code>try-catch-finally</code>语句来实现这个需求，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//读取文本文件的内容</span></span><br><span class="line">Scanner scanner = <span class="keyword">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	scanner = <span class="keyword">new</span> Scanner(<span class="keyword">new</span> File(<span class="string">&quot;D://read.txt&quot;</span>));</span><br><span class="line">	<span class="keyword">while</span> (scanner.hasNext()) &#123;</span><br><span class="line">		System.out.println(scanner.nextLine());</span><br><span class="line">	&#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">	e.printStackTrace();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> (scanner != <span class="keyword">null</span>) &#123;</span><br><span class="line">		scanner.close();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用 Java 7 之后的 <code>try-with-resources</code> 语句改造上面的代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (Scanner scanner = <span class="keyword">new</span> Scanner(<span class="keyword">new</span> File(<span class="string">&quot;test.txt&quot;</span>))) &#123;</span><br><span class="line">    <span class="keyword">while</span> (scanner.hasNext()) &#123;</span><br><span class="line">        System.out.println(scanner.nextLine());</span><br><span class="line">    &#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException fnfe) &#123;</span><br><span class="line">    fnfe.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当然多个资源需要关闭的时候，使用 <code>try-with-resources</code> 实现起来也非常简单，如果你还是用<code>try-catch-finally</code>可能会带来很多问题。</p>
+<p>通过使用分号分隔，可以在<code>try-with-resources</code>块中声明多个资源。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> (BufferedInputStream bin = <span class="keyword">new</span> BufferedInputStream(<span class="keyword">new</span> FileInputStream(<span class="keyword">new</span> File(<span class="string">&quot;test.txt&quot;</span>)));</span><br><span class="line">     BufferedOutputStream bout = <span class="keyword">new</span> BufferedOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="keyword">new</span> File(<span class="string">&quot;out.txt&quot;</span>)))) &#123;</span><br><span class="line">    <span class="keyword">int</span> b;</span><br><span class="line">    <span class="keyword">while</span> ((b = bin.read()) != -<span class="number">1</span>) &#123;</span><br><span class="line">        bout.write(b);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/Java-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1823,65 +2517,45 @@
         
           
             <p><strong>参考：</strong><a target="_blank" rel="noopener" href="https://snailclimb.gitee.io/javaguide/#/docs/system-design/framework/spring/Spring%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93?id=_91-%e5%a6%82%e4%bd%95%e4%bd%bf%e7%94%a8jpa%e5%9c%a8%e6%95%b0%e6%8d%ae%e5%ba%93%e4%b8%ad%e9%9d%9e%e6%8c%81%e4%b9%85%e5%8c%96%e4%b8%80%e4%b8%aa%e5%ad%97%e6%ae%b5%ef%bc%9f">Spring 常见问题总结</a></p>
-<h1 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h1><h2 id="什么是-Spring-框架"><a href="#什么是-Spring-框架" class="headerlink" title="什么是 Spring 框架?"></a>什么是 Spring 框架?</h2><p>我们一般说 Spring 框架指的都是 Spring  Framework，它是很多模块的集合，使用这些模块可以很方便地协助我们进行开发。这些模块是：核心容器、数据访问/集成,、Web、AOP（面向切面编程）、工具、消息和测试模块。比如：Core Container 中的 Core 组件是Spring 所有组件的核心，Beans 组件和 Context  组件是实现IOC和依赖注入的基础，AOP组件用来实现面向切面编程。</p>
-<p>Spring 官网列出的 Spring 的 6 个特征:</p>
-<ul>
-<li><strong>核心技术</strong> ：依赖注入(DI)，AOP，事件(events)，资源，i18n，验证，数据绑定，类型转换，SpEL。</li>
-<li><strong>测试</strong> ：模拟对象，TestContext框架，Spring MVC 测试，WebTestClient。</li>
-<li><strong>数据访问</strong> ：事务，DAO支持，JDBC，ORM，编组XML。</li>
-<li><strong>Web支持</strong> : Spring MVC和Spring WebFlux Web框架。</li>
-<li><strong>集成</strong> ：远程处理，JMS，JCA，JMX，电子邮件，任务，调度，缓存。</li>
-<li><strong>语言</strong> ：Kotlin，Groovy，动态语言。</li>
-</ul>
-<h2 id="列举一些重要的Spring模块？"><a href="#列举一些重要的Spring模块？" class="headerlink" title="列举一些重要的Spring模块？"></a>列举一些重要的Spring模块？</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/Spring%E6%A8%A1%E5%9D%97.png" alt="Spring主要模块"></p>
-<ul>
-<li><strong>Spring Core：</strong> 基础,可以说 Spring 其他所有的功能都需要依赖于该类库。主要提供 IoC 依赖注入功能。</li>
-<li><strong>Spring  Aspects</strong> ： 该模块为与AspectJ的集成提供支持。</li>
-<li><strong>Spring AOP</strong> ：提供了面向切面的编程实现。</li>
-<li><strong>Spring JDBC</strong> : Java数据库连接。</li>
-<li><strong>Spring JMS</strong> ：Java消息服务。</li>
-<li><strong>Spring ORM</strong> : 用于支持Hibernate等ORM工具。</li>
-<li><strong>Spring Web</strong> : 为创建Web应用程序提供支持。</li>
-<li><strong>Spring Test</strong> : 提供了对 JUnit 和 TestNG 测试的支持。</li>
-</ul>
-<h2 id="RestController-vs-Controller"><a href="#RestController-vs-Controller" class="headerlink" title="@RestController vs @Controller"></a>@RestController vs @Controller</h2><p><strong><code>Controller</code> 返回一个页面</strong></p>
-<p>单独使用 <code>@Controller</code> 不加 <code>@ResponseBody</code>的话一般使用在要返回一个视图的情况，这种情况属于比较传统的Spring MVC 的应用，对应于前后端不分离的情况。</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/%40RestController%20vs%20%40Controller1.png" alt="SpringMVC 传统工作流程"></p>
-<p><strong><code>@RestController</code> 返回JSON 或 XML 形式数据</strong></p>
-<p>但<code>@RestController</code>只返回对象，对象数据直接以 JSON 或 XML 形式写入 HTTP 响应(Response)中，这种情况属于 RESTful Web服务，这也是目前日常开发所接触的最常用的情况（前后端分离）。</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/%40RestController%20vs%20%40Controller2.png" alt="SpringMVC+RestController"></p>
-<p><strong><code>@Controller +@ResponseBody</code> 返回JSON 或 XML 形式数据</strong></p>
-<p>如果你需要在Spring4之前开发 RESTful Web服务的话，你需要使用<code>@Controller</code> 并结合<code>@ResponseBody</code>注解，也就是说<code>@Controller</code> +<code>@ResponseBody</code>= <code>@RestController</code>（Spring 4 之后新加的注解）。</p>
-<blockquote>
-<p><code>@ResponseBody</code> 注解的作用是将 <code>Controller</code> 的方法返回的对象通过适当的转换器转换为指定的格式之后，写入到HTTP 响应(Response)对象的 body 中，通常用来返回 JSON 或者 XML 数据，返回 JSON 数据的情况比较多。</p>
-</blockquote>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/%40RestController%20vs%20%40Controller3.png" alt="Spring3.xMVC RESTfulWeb服务工作流程"></p>
-<h2 id="Spring-IOC-amp-AOP"><a href="#Spring-IOC-amp-AOP" class="headerlink" title="Spring IOC &amp; AOP"></a>Spring IOC &amp; AOP</h2><h3 id="谈谈自己对于-Spring-IoC-和-AOP-的理解"><a href="#谈谈自己对于-Spring-IoC-和-AOP-的理解" class="headerlink" title="谈谈自己对于 Spring IoC 和 AOP 的理解"></a>谈谈自己对于 Spring IoC 和 AOP 的理解</h3><h4 id="IoC"><a href="#IoC" class="headerlink" title="IoC"></a>IoC</h4><p>IoC（Inverse of Control:控制反转）是一种<strong>设计思想</strong>，就是 <strong>将原本在程序中手动创建对象的控制权，交由Spring框架来管理。</strong>  IoC 在其他语言中也有应用，并非 Spring 特有。 <strong>IoC 容器是 Spring 用来实现 IoC 的载体，  IoC 容器实际上就是个Map（key，value）,Map 中存放的是各种对象。</strong></p>
+<h1 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h1><h2 id="IoC"><a href="#IoC" class="headerlink" title="IoC"></a>IoC</h2><p>IoC（Inverse of Control:控制反转）是一种<strong>设计思想</strong>，就是 <strong>将原本在程序中手动创建对象的控制权，交由Spring框架来管理。</strong>  IoC 在其他语言中也有应用，并非 Spring 特有。 <strong>IoC 容器是 Spring 用来实现 IoC 的载体，  IoC 容器实际上就是个Map（key，value）,Map 中存放的是各种对象。</strong></p>
 <p>将对象之间的相互依赖关系交给 IoC 容器来管理，并由 IoC 容器完成对象的注入。这样可以很大程度上简化应用的开发，把应用从复杂的依赖关系中解放出来。  <strong>IoC 容器就像是一个工厂一样，当我们需要创建一个对象的时候，只需要配置好配置文件/注解即可，完全不用考虑对象是如何被创建出来的。</strong> </p>
-<p>在实际项目中一个 Service 类可能有几百甚至上千个类作为它的底层，假如我们需要实例化这个 Service，你可能要每次都要搞清这个  Service 所有底层类的构造函数，这可能会把人逼疯。如果利用 IoC  的话，你只需要配置好，然后在需要的地方引用就行了，这大大增加了项目的可维护性且降低了开发难度。</p>
-<p>Spring 时代我们一般通过 XML 文件来配置 Bean，后来开发人员觉得 XML 文件来配置不太好，于是 SpringBoot 注解配置就慢慢开始流行起来。</p>
 <p><strong>Spring IoC的初始化过程：</strong> </p>
 <p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/Spring%20IoC%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%E8%BF%87%E7%A8%8B.png" alt="Spring IoC的初始化过程"></p>
-<h4 id="AOP"><a href="#AOP" class="headerlink" title="AOP"></a>AOP</h4><p>AOP(Aspect-Oriented Programming:面向切面编程)能够将那些与业务无关，<strong>却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来</strong>，便于<strong>减少系统的重复代码</strong>，<strong>降低模块间的耦合度</strong>，并<strong>有利于未来的可拓展性和可维护性</strong>。</p>
-<p><strong>Spring AOP就是基于动态代理的</strong>，如果要代理的对象，实现了某个接口，那么Spring AOP会使用<strong>JDK Proxy</strong>，去创建代理对象，而对于没有实现接口的对象，就无法使用 JDK Proxy 去进行代理了，这时候Spring AOP会使用<strong>Cglib</strong> ，这时候Spring AOP会使用 <strong>Cglib</strong> 生成一个被代理对象的子类来作为代理，如下图所示：</p>
+<h3 id="spring-中有多少种-IOC-容器？"><a href="#spring-中有多少种-IOC-容器？" class="headerlink" title="spring 中有多少种 IOC 容器？"></a>spring 中有多少种 IOC 容器？</h3><ul>
+<li><p>BeanFactory - BeanFactory 就像一个包含 bean 集合的工厂类。它会在客户端要求时实例化 bean</p>
+<ul>
+<li>懒加载</li>
+<li>使用语法显式提供资源对象</li>
+</ul>
+</li>
+<li><p>ApplicationContext - ApplicationContext 接口扩展了 BeanFactory 接口。</p>
+<ul>
+<li>及时加载</li>
+<li>自己创建和管理对象</li>
+<li>支持国际化</li>
+<li>支持基于依赖的注解</li>
+</ul>
+</li>
+</ul>
+<h2 id="AOP"><a href="#AOP" class="headerlink" title="AOP"></a>AOP</h2><p>能够将那些与业务无关，<strong>却为业务模块所共同调用的逻辑或责任（例如事务处理、日志管理、权限控制等）封装起来</strong>，便于<strong>减少系统的重复代码</strong>，<strong>降低模块间的耦合度</strong>，并<strong>有利于未来的可拓展性和可维护性</strong>。</p>
+<p><strong>Spring AOP就是基于动态代理的</strong>，</p>
+<p>如果要代理的对象，实现了某个接口，那么Spring AOP会使用<strong>JDK Proxy</strong>，去创建代理对象，</p>
+<p>如果要代理的对象，是没有实现接口的对象，这时候Spring AOP会使用<strong>Cglib</strong> ，生成一个被代理对象的子类来作为代理，如下图所示：</p>
 <p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/SpringAOP.png" alt="SpringAOPProcess"></p>
-<p>当然你也可以使用 AspectJ ,Spring AOP 已经集成了AspectJ  ，AspectJ  应该算的上是 Java 生态系统中最完整的 AOP 框架了。</p>
-<p>使用 AOP 之后我们可以把一些通用功能抽象出来，在需要用到的地方直接使用即可，这样大大简化了代码量。我们需要增加新功能时也方便，这样也提高了系统扩展性。日志功能、事务管理等等场景都用到了 AOP 。</p>
-<h5 id="Spring-中，优先使用哪种-AOP-呢"><a href="#Spring-中，优先使用哪种-AOP-呢" class="headerlink" title="Spring 中，优先使用哪种 AOP 呢"></a>Spring 中，优先使用哪种 AOP 呢</h5><p>（1）如果目标对象实现了接口，默认会采用 JDK 的动态代理，但也可以强制使用 CGLIB；</p>
+<h3 id="Spring-中，优先使用哪种-AOP-呢"><a href="#Spring-中，优先使用哪种-AOP-呢" class="headerlink" title="Spring 中，优先使用哪种 AOP 呢"></a>Spring 中，优先使用哪种 AOP 呢</h3><p>（1）如果目标对象实现了接口，默认会采用 JDK 的动态代理，但也可以强制使用 CGLIB；</p>
 <p>（2）如果目标对象没有实现了接口，则必须采用 CGLIB 库。</p>
 <p>Spring 会自动在 JDK 动态代理和 CGLIB 之间转换。</p>
-<h3 id="Spring-AOP-和-AspectJ-AOP-有什么区别？"><a href="#Spring-AOP-和-AspectJ-AOP-有什么区别？" class="headerlink" title="Spring AOP 和 AspectJ AOP 有什么区别？"></a>Spring AOP 和 AspectJ AOP 有什么区别？</h3><p><strong>Spring AOP 属于运行时增强，而 AspectJ 是编译时增强。</strong> Spring AOP 基于代理(Proxying)，而 AspectJ 基于字节码操作(Bytecode Manipulation)。</p>
-<p> Spring AOP 已经集成了 AspectJ  ，AspectJ  应该算的上是 Java 生态系统中最完整的 AOP 框架了。AspectJ  相比于 Spring AOP 功能更加强大，但是 Spring AOP 相对来说更简单，</p>
-<p>如果我们的切面比较少，那么两者性能差异不大。但是，当切面太多的话，最好选择 AspectJ ，它比Spring AOP 快很多。</p>
-<h3 id="说说-Spring-的-AOP-的原理是什么？实现-AOP-有哪些方式？"><a href="#说说-Spring-的-AOP-的原理是什么？实现-AOP-有哪些方式？" class="headerlink" title="说说 Spring 的 AOP 的原理是什么？实现 AOP 有哪些方式？"></a>说说 Spring 的 AOP 的原理是什么？实现 AOP 有哪些方式？</h3><p>Spring AOP 的底层使用的是<strong>动态代理</strong>，有两种实现方式：</p>
-<p><strong>JDK 动态代理</strong>：利用反射机制生成一个实现代理接口的匿名类，在调用具体方法前调用 InvokeHandler 来处理。</p>
-<p><strong>CGlib 动态代理</strong>：以 CGLIB（Code Generation Library）的方式进行代理，它采用底层字节码技术，将代理对象类的 class 文件加载进来，通过修改其字节码生成子类来处理。</p>
-<p><strong>区别:</strong></p>
-<p>JDK 代理只能对实现接口的类生成代理；</p>
-<p>CGLIB 是针对类实现代理，继承指定类并生成一个子类，因此不能代理 final 修饰的类。</p>
-<h3 id="Spring-中，优先使用哪种-AOP-呢-1"><a href="#Spring-中，优先使用哪种-AOP-呢-1" class="headerlink" title="Spring 中，优先使用哪种 AOP 呢"></a>Spring 中，优先使用哪种 AOP 呢</h3><p>（1）如果目标对象实现了接口，默认会采用 JDK 的动态代理，但也可以强制使用 CGLIB；</p>
-<p>（2）如果目标对象没有实现了接口，则必须采用 CGLIB 库。</p>
-<p>Spring 会自动在 JDK 动态代理和 CGLIB 之间转换。</p>
+<h3 id="Spring-AOP-和-AspectJ-AOP-有什么区别？"><a href="#Spring-AOP-和-AspectJ-AOP-有什么区别？" class="headerlink" title="Spring AOP 和 AspectJ AOP 有什么区别？"></a>Spring AOP 和 AspectJ AOP 有什么区别？</h3><ul>
+<li><p>Spring AOP 属于运行时增强，基于代理(Proxying)</p>
+</li>
+<li><p>AspectJ 是编译时增强。基于字节码操作(Bytecode Manipulation)</p>
+</li>
+</ul>
+<h3 id="Aspect，JoinPoint，Advice"><a href="#Aspect，JoinPoint，Advice" class="headerlink" title="Aspect，JoinPoint，Advice"></a>Aspect，JoinPoint，Advice</h3><ul>
+<li>Aspect——切面</li>
+<li>JoinPoint——切点，（@Pointcut（）内的内容，可以是方法可以是注解）</li>
+<li><h2 id="Advice通知"><a href="#Advice通知" class="headerlink" title="Advice通知"></a>Advice通知</h2></li>
+</ul>
 <h2 id="Spring-bean"><a href="#Spring-bean" class="headerlink" title="Spring bean"></a>Spring bean</h2><h3 id="Spring-中的-bean-的作用域有哪些"><a href="#Spring-中的-bean-的作用域有哪些" class="headerlink" title="Spring 中的 bean 的作用域有哪些?"></a>Spring 中的 bean 的作用域有哪些?</h3><ul>
 <li>singleton : 唯一 bean 实例，Spring 中的 bean 默认都是单例的。</li>
 <li>prototype : 每次请求都会创建一个新的 bean 实例。</li>
@@ -1938,12 +2612,6 @@
 <li>Setter注入：调用Setter的方法注入依赖</li>
 <li>字段注入：在字段上使用@Autowired/Resource注解</li>
 </ul>
-<h4 id="Autowired-VS-Resource"><a href="#Autowired-VS-Resource" class="headerlink" title="@Autowired VS @Resource"></a>@Autowired VS @Resource</h4><p>事实上，他们的基本功能都是通过注解实现依赖注入，只不过@Autowired是Spring定义的，而@Resource是JSR-250定义的。大致功能基本相同，但是还有一些细节不同：</p>
-<ul>
-<li>依赖识别方式：@Autowired默认是byType可以使用@Qualifier指定Name，@Resource默认ByName如果找不到则ByType</li>
-<li>适用对象：@Autowired可以对构造器、方法、参数、字段使用，@Resource只能对方法、字段使用</li>
-<li>提供方：@Autowired是Spring提供的，@Resource是JSR-250提供的</li>
-</ul>
 <h4 id="各种依赖注入方式的优缺点"><a href="#各种依赖注入方式的优缺点" class="headerlink" title="各种依赖注入方式的优缺点"></a>各种依赖注入方式的优缺点</h4><ul>
 <li>构造器注入：强依赖性（即必须使用此依赖），不变性（各依赖不会经常变动）</li>
 <li>Setter注入：可选（没有此依赖也可以工作），可变（依赖会经常变动）</li>
@@ -1954,22 +2622,16 @@
 <li>依赖对外部不可见，外界可以看到构造器和setter，但无法看到私有字段，自然无法了解所需依赖</li>
 <li>会导致组件与IoC容器紧耦合（这是最重要的原因，离开了IoC容器去使用组件，在注入依赖时就会十分困难）</li>
 <li>导致单元测试也必须使用IoC容器，原因同上</li>
-<li>依赖过多时不够明显，比如我需要10个依赖，用构造器注入就会显得庞大，这时候应该考虑一下此组件是不是违反了单一职责原则<br>为什么IDEA只对@Autowired警告</li>
+<li>依赖过多时不够明显，比如我需要10个依赖，用构造器注入就会显得庞大，这时候应该考虑一下此组件是不是违反了单一职责原则</li>
 </ul>
-<h4 id="为什么IDEA只对-Autowired警告"><a href="#为什么IDEA只对-Autowired警告" class="headerlink" title="为什么IDEA只对@Autowired警告"></a>为什么IDEA只对@Autowired警告</h4><p>Field注入虽然有很多缺点，但它的好处也不可忽略：那就是太方便了。</p>
-<p>使用构造器或者setter注入需要写更多业务无关的代码，十分麻烦，而字段注入大幅简化了它们。并且绝大多数情况下业务代码和框架就是强绑定的，完全松耦合只是一件理想上的事，牺牲了敏捷度去过度追求松耦合反而得不偿失。</p>
-<p>为什么IDEA只对@Autowired警告，却对@Resource视而不见呢？</p>
-<p>@Autowired是Spring提供的，它是特定IoC提供的特定注解，这就导致了应用与框架的强绑定，一旦换用了其他的IoC框架，是不能够支持注入的。</p>
-<p>@Resource是JSR-250提供的，它是Java标准，我们使用的IoC容器应当去兼容它，这样即使更换容器，也可以正常工作。</p>
-<h5 id="工作中的使用"><a href="#工作中的使用" class="headerlink" title="工作中的使用"></a>工作中的使用</h5><p>给类加<code>@RequiredArgsConstructor</code>注解，使用<code>private final</code>修饰注入对象</p>
 <h3 id="我们在Service层能不能注入Controller的Bean？"><a href="#我们在Service层能不能注入Controller的Bean？" class="headerlink" title="我们在Service层能不能注入Controller的Bean？"></a>我们在Service层能不能注入Controller的Bean？</h3><blockquote>
 <p>一般我们使用Spring的时候可以注入并正常使用的，但是使用SpringMVC+Spring的时候不能</p>
 </blockquote>
 <p>Spring和SpringMVC都会根据自己的配置文件去生成各自的容器，那Spring的叫做父容器，SpringMVC的叫做子容器。但是其主要区别在于：子容器可以访问父容器中的Bean，而父容器不能访问子容器中的Bean，所说我们可以在Controller中注入@Service，@Component，@Repository等Bean，但如果想要在Service中注入@Controller Bean是不可以的 ，因为父容器不能访问子容器中的Bean，实际我们也不会这样用。</p>
 <h3 id="为什么要分两个容器来存放Bean呢，我使用Spring扫描全部的Bean有没有问题？"><a href="#为什么要分两个容器来存放Bean呢，我使用Spring扫描全部的Bean有没有问题？" class="headerlink" title="为什么要分两个容器来存放Bean呢，我使用Spring扫描全部的Bean有没有问题？"></a>为什么要分两个容器来存放Bean呢，我使用Spring扫描全部的Bean有没有问题？</h3><p>如果我们使用Spring扫描所有的Bean，那说明所有的Bean都在父容器中，那SpringMVC会找不到Controller对象的，因为HandleMapping在找Controller时默认是不会去父容器中找的（HandleMapping处理器映射器）。如果你真的想把Controller的Bean存入父容器中，可以通过手动配置让它从父容器中找。但是这样会对HandlerMapping的配置不太好，约定大于配置嘛！（另外，如果所有Bean都在父容器中时，Controller的Bean是可以注入到Service的，因为两者都在Spring容器中）</p>
-<h2 id="Spring-MVC"><a href="#Spring-MVC" class="headerlink" title="Spring MVC"></a>Spring MVC</h2><h3 id="说说自己对于-Spring-MVC-了解"><a href="#说说自己对于-Spring-MVC-了解" class="headerlink" title="说说自己对于 Spring MVC 了解?"></a>说说自己对于 Spring MVC 了解?</h3><p>MVC 是一种设计模式。Spring MVC 可以帮助我们进行更简洁的Web层的开发，并且它天生与 Spring 框架集成。Spring  MVC 下我们一般把后端项目分为  Service层（处理业务）、Dao层（数据库操作）、Entity层（实体类）、Controller层(控制层，返回数据给前台页面)。</p>
+<h1 id="Spring-MVC"><a href="#Spring-MVC" class="headerlink" title="Spring MVC"></a>Spring MVC</h1><h2 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h2><p>MVC 是一种设计模式。Spring MVC 可以帮助我们进行更简洁的Web层的开发，并且它天生与 Spring 框架集成。Spring  MVC 下我们一般把后端项目分为  Service层（处理业务）、Dao层（数据库操作）、Entity层（实体类）、Controller层(控制层，返回数据给前台页面)。</p>
 <p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Springboot/Spring%20MVC.png" alt="img"></p>
-<h3 id="SpringMVC-工作原理了解吗"><a href="#SpringMVC-工作原理了解吗" class="headerlink" title="SpringMVC 工作原理了解吗?"></a>SpringMVC 工作原理了解吗?</h3><p><strong>原理如下图所示：</strong></p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p><strong>原理如下图所示：</strong></p>
 <blockquote>
 <p>笔误的：Spring MVC 的入口函数也就是前端控制器 <code>DispatcherServlet</code> 的作用是接收请求，响应结果。</p>
 </blockquote>
@@ -1983,59 +2645,8 @@
 <li>处理器处理完业务后，会返回一个 <code>ModelAndView</code> 对象，<code>Model</code> 是返回的数据对象，<code>View</code> 是个逻辑上的 <code>View</code>。</li>
 <li><code>ViewResolver</code> 会根据逻辑 <code>View</code> 查找实际的 <code>View</code>。</li>
 <li><code>DispaterServlet</code> 把返回的 <code>Model</code> 传给 <code>View</code>（视图渲染）。</li>
-<li>把 <code>View</code> 返回给请求者（浏览器）<h2 id="Spring-框架中用到了哪些设计模式？"><a href="#Spring-框架中用到了哪些设计模式？" class="headerlink" title="Spring 框架中用到了哪些设计模式？"></a>Spring 框架中用到了哪些设计模式？</h2></li>
+<li>把 <code>View</code> 返回给请求者（浏览器）</li>
 </ol>
-<ul>
-<li><strong>工厂设计模式</strong> : Spring使用工厂模式通过 <code>BeanFactory</code>、<code>ApplicationContext</code> 创建 bean 对象。</li>
-<li><strong>代理设计模式</strong> : Spring AOP 功能的实现。</li>
-<li><strong>单例设计模式</strong> : Spring 中的 Bean 默认都是单例的。</li>
-<li><strong>模板方法模式</strong> : Spring 中 <code>jdbcTemplate</code>、<code>hibernateTemplate</code> 等以 Template 结尾的对数据库操作的类，它们就使用到了模板模式。</li>
-<li><strong>包装器设计模式</strong> : 我们的项目需要连接多个数据库，而且不同的客户在每次访问中根据需要会去访问不同的数据库。这种模式让我们可以根据客户的需求能够动态切换不同的数据源。</li>
-<li><strong>观察者模式:</strong> Spring 事件驱动模型就是观察者模式很经典的一个应用。</li>
-<li><strong>适配器模式</strong> :Spring AOP 的增强或通知(Advice)使用到了适配器模式、spring MVC 中也是用到了适配器模式适配<code>Controller</code>。</li>
-</ul>
-<h2 id="Spring-事务"><a href="#Spring-事务" class="headerlink" title="Spring 事务"></a>Spring 事务</h2><h3 id="Spring-管理事务的方式有几种？"><a href="#Spring-管理事务的方式有几种？" class="headerlink" title="Spring 管理事务的方式有几种？"></a>Spring 管理事务的方式有几种？</h3><ol>
-<li>编程式事务，在代码中硬编码。(不推荐使用)</li>
-<li>声明式事务，在配置文件中配置（推荐使用）</li>
-</ol>
-<p><strong>声明式事务又分为两种：</strong></p>
-<ol>
-<li>基于XML的声明式事务</li>
-<li>基于注解的声明式事务</li>
-</ol>
-<h3 id="Spring-事务中的隔离级别有哪几种"><a href="#Spring-事务中的隔离级别有哪几种" class="headerlink" title="Spring 事务中的隔离级别有哪几种?"></a>Spring 事务中的隔离级别有哪几种?</h3><p><strong>TransactionDefinition 接口中定义了五个表示隔离级别的常量：</strong></p>
-<ul>
-<li><strong>TransactionDefinition.ISOLATION_DEFAULT:</strong>  使用后端数据库默认的隔离级别，Mysql 默认采用的 REPEATABLE_READ隔离级别 Oracle 默认采用的 READ_COMMITTED隔离级别.</li>
-<li><strong>TransactionDefinition.ISOLATION_READ_UNCOMMITTED:</strong> 最低的隔离级别，允许读取尚未提交的数据变更，<strong>可能会导致脏读、幻读或不可重复读</strong></li>
-<li><strong>TransactionDefinition.ISOLATION_READ_COMMITTED:</strong>   允许读取并发事务已经提交的数据，<strong>可以阻止脏读，但是幻读或不可重复读仍有可能发生</strong></li>
-<li><strong>TransactionDefinition.ISOLATION_REPEATABLE_READ:</strong>  对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，<strong>可以阻止脏读和不可重复读，但幻读仍有可能发生。</strong></li>
-<li><strong>TransactionDefinition.ISOLATION_SERIALIZABLE:</strong>   最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，<strong>该级别可以防止脏读、不可重复读以及幻读</strong>。但是这将严重影响程序的性能。通常情况下也不会用到该级别。</li>
-</ul>
-<h3 id="Spring-事务中哪几种事务传播行为"><a href="#Spring-事务中哪几种事务传播行为" class="headerlink" title="Spring 事务中哪几种事务传播行为?"></a>Spring 事务中哪几种事务传播行为?</h3><p><strong>支持当前事务的情况：</strong></p>
-<ul>
-<li><strong>TransactionDefinition.PROPAGATION_REQUIRED：</strong> 如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务。</li>
-<li><strong>TransactionDefinition.PROPAGATION_SUPPORTS：</strong> 如果当前存在事务，则加入该事务；如果当前没有事务，则以非事务的方式继续运行。</li>
-<li><strong>TransactionDefinition.PROPAGATION_MANDATORY：</strong> 如果当前存在事务，则加入该事务；如果当前没有事务，则抛出异常。（mandatory：强制性）</li>
-</ul>
-<p><strong>不支持当前事务的情况：</strong></p>
-<ul>
-<li><strong>TransactionDefinition.PROPAGATION_REQUIRES_NEW：</strong> 创建一个新的事务，如果当前存在事务，则把当前事务挂起。</li>
-<li><strong>TransactionDefinition.PROPAGATION_NOT_SUPPORTED：</strong> 以非事务方式运行，如果当前存在事务，则把当前事务挂起。</li>
-<li><strong>TransactionDefinition.PROPAGATION_NEVER：</strong> 以非事务方式运行，如果当前存在事务，则抛出异常。</li>
-</ul>
-<p><strong>其他情况：</strong></p>
-<ul>
-<li><strong>TransactionDefinition.PROPAGATION_NESTED：</strong> 如果当前存在事务，则创建一个事务作为当前事务的嵌套事务来运行；如果当前没有事务，则该取值等价于TransactionDefinition.PROPAGATION_REQUIRED。</li>
-</ul>
-<h3 id="Transactional-rollbackFor-Exception-class-注解了解吗？"><a href="#Transactional-rollbackFor-Exception-class-注解了解吗？" class="headerlink" title="@Transactional(rollbackFor = Exception.class)注解了解吗？"></a>@Transactional(rollbackFor = Exception.class)注解了解吗？</h3><p>我们知道：Exception分为运行时异常RuntimeException和非运行时异常。事务管理对于企业应用来说是至关重要的，即使出现异常情况，它也可以保证数据的一致性。</p>
-<p>当<code>@Transactional</code>注解作用于类上时，该类的所有 public 方法将都具有该类型的事务属性，同时，我们也可以在方法级别使用该标注来覆盖类级别的定义。如果类或者方法加了这个注解，那么这个类里面的方法抛出异常，就会回滚，数据库里面的数据也会回滚。</p>
-<p>在<code>@Transactional</code>注解中如果不配置<code>rollbackFor</code>属性,那么事务只会在遇到<code>RuntimeException</code>的时候才会回滚,加上<code>rollbackFor=Exception.class</code>,可以让事务在遇到非运行时异常时也回滚。</p>
-<h2 id="JPA"><a href="#JPA" class="headerlink" title="JPA"></a>JPA</h2><h3 id="如何使用JPA在数据库中非持久化一个字段？"><a href="#如何使用JPA在数据库中非持久化一个字段？" class="headerlink" title="如何使用JPA在数据库中非持久化一个字段？"></a>如何使用JPA在数据库中非持久化一个字段？</h3><p>假如我们有有下面一个类：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Entity(name=<span class="string">&quot;USER&quot;</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="meta">@GeneratedValue(strategy = GenerationType.AUTO)</span></span><br><span class="line">    <span class="meta">@Column(name = &quot;ID&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Column(name=&quot;USER_NAME&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String userName;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Column(name=&quot;PASSWORD&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> String secrect;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果我们想让<code>secrect</code> 这个字段不被持久化，也就是不被数据库存储怎么办？我们可以采用下面几种方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> String transient1; <span class="comment">// not persistent because of static</span></span><br><span class="line"><span class="keyword">final</span> String transient2 = “Satish”; <span class="comment">// not persistent because of final</span></span><br><span class="line"><span class="keyword">transient</span> String transient3; <span class="comment">// not persistent because of transient</span></span><br><span class="line"><span class="meta">@Transient</span></span><br><span class="line">String transient4; <span class="comment">// not persistent because of @Transient</span></span><br></pre></td></tr></table></figure>
-
 
           
         
@@ -2532,7 +3143,7 @@
 <p><img src="https://img-blog.csdnimg.cn/img_convert/9ada757c78614934aca11306f334638d.png?ynotemdtimestamp=1617437153078" alt="img"></p>
 <p>Read-Through Pattern 实际只是在 Cache-Aside Pattern 之上进行了封装。在 Cache-Aside Pattern 下，发生读请求的时候，如果 cache 中不存在对应的数据，是由客户端自己负责把数据写入 cache，而 Read Through Pattern 则是 cache 服务自己来写入缓存的，这对客户端是透明的。</p>
 <p>和 Cache Aside Pattern 一样， Read-Through Pattern 也有首次请求数据一定不再 cache 的问题，对于热点数据可以提前放入缓存中。</p>
-<h1 id="Write-Behind-Pattern（异步缓存写入）"><a href="#Write-Behind-Pattern（异步缓存写入）" class="headerlink" title="Write Behind Pattern（异步缓存写入）"></a>Write Behind Pattern（异步缓存写入）</h1><p>Write Behind Pattern 和 Read/Write Through Pattern 很相似，两者都是由 cache 服务来负责 cache 和 DB 的读写。</p>
+<h2 id="Write-Behind-Pattern（异步缓存写入）"><a href="#Write-Behind-Pattern（异步缓存写入）" class="headerlink" title="Write Behind Pattern（异步缓存写入）"></a>Write Behind Pattern（异步缓存写入）</h2><p>Write Behind Pattern 和 Read/Write Through Pattern 很相似，两者都是由 cache 服务来负责 cache 和 DB 的读写。</p>
 <p>但是，两个又有很大的不同：<strong>Read/Write Through 是同步更新 cache 和 DB，而 Write Behind Caching 则是只更新缓存，不直接更新 DB，而是改为异步批量的方式来更新 DB。</strong></p>
 <p>很明显，这种方式对数据一致性带来了更大的挑战，比如cache数据可能还没异步更新DB的话，cache服务可能就就挂掉了。</p>
 <p>这种策略在我们平时开发过程中也非常非常少见，但是不代表它的应用场景少，比如消息队列中消息的异步写入磁盘、MySQL 的 InnoDB Buffer Pool 机制都用到了这种策略。</p>
@@ -2692,7 +3303,7 @@
 <h2 id="可不可以不用-sleep-呢？"><a href="#可不可以不用-sleep-呢？" class="headerlink" title="可不可以不用 sleep 呢？"></a>可不可以不用 sleep 呢？</h2><p>list 还有个指令叫 blpop，在没有消息的时候，它会阻塞住直到消息到来。</p>
 <h2 id="能不能生产一次消费多次呢？"><a href="#能不能生产一次消费多次呢？" class="headerlink" title="能不能生产一次消费多次呢？"></a>能不能生产一次消费多次呢？</h2><p>使用 pub/sub 主题订阅者模式，可以实现1:N 的消息队列。</p>
 <h2 id="pub-sub-有什么缺点？"><a href="#pub-sub-有什么缺点？" class="headerlink" title="pub/sub 有什么缺点？"></a>pub/sub 有什么缺点？</h2><p>在消费者下线的情况下，生产的消息会丢失，得使用专业的消息队列如 RabbitMQ等。</p>
-<h2 id="redis-如何实现延时队列？"><a href="#redis-如何实现延时队列？" class="headerlink" title="redis 如何实现延时队列？"></a>redis 如何实现延时队列？</h2><p>使用 sortedset，拿时间戳作为score，消息内容作为 key 调用 zadd 来生产消息，消费者用 zrangebyscore 指令获取 N 秒之前的数据轮询进行处理。<br>40.使用过 Redis 分布式锁么，它是什么回事？</p>
+<h2 id="redis-如何实现延时队列？"><a href="#redis-如何实现延时队列？" class="headerlink" title="redis 如何实现延时队列？"></a>redis 如何实现延时队列？</h2><p>使用 sortedset，拿时间戳作为score，消息内容作为 key 调用 zadd 来生产消息，消费者用 zrangebyscore 指令获取 N 秒之前的数据轮询进行处理。</p>
 <h1 id="Redis分布式锁"><a href="#Redis分布式锁" class="headerlink" title="Redis分布式锁"></a>Redis分布式锁</h1><p>先拿setnx来争抢锁，抢到之后，再用expire给锁加一个过期时间防止忘记释放</p>
 <h1 id="Redis-Cookie分布式会话"><a href="#Redis-Cookie分布式会话" class="headerlink" title="Redis+Cookie分布式会话"></a>Redis+Cookie分布式会话</h1><h2 id="如果在setnx之后执行expire之前进程意外crash或者重启维护了，怎么办？"><a href="#如果在setnx之后执行expire之前进程意外crash或者重启维护了，怎么办？" class="headerlink" title="如果在setnx之后执行expire之前进程意外crash或者重启维护了，怎么办？"></a>如果在setnx之后执行expire之前进程意外crash或者重启维护了，怎么办？</h2><p>setnx和expire合成一条指令</p>
 <h1 id="redis批量查询优化"><a href="#redis批量查询优化" class="headerlink" title="redis批量查询优化"></a>redis批量查询优化</h1><h2 id="优化前"><a href="#优化前" class="headerlink" title="优化前"></a>优化前</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 大量key查询</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> keys</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/getALot&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getALot</span><span class="params">(String... keys)</span> </span>&#123;</span><br><span class="line">    List&lt;String&gt; resutl = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (String k:keys) &#123;</span><br><span class="line">        resutl.add(redisOperator.get(k));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> resutl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -2755,16 +3366,16 @@
 </blockquote>
 <h4 id="redis使用的数据类型"><a href="#redis使用的数据类型" class="headerlink" title="redis使用的数据类型"></a>redis使用的数据类型</h4><ol>
 <li> 使用hash数据类型</li>
-<li>Hash的key应该是用户id。Hash中的field是商品id，value可以是把商品信息转换成json</li>
+<li>Hash的key应该是用户id。Hash中的field是商品id，value可以是把商品数量</li>
 </ol>
-<h4 id="实现方式：-1"><a href="#实现方式：-1" class="headerlink" title="实现方式："></a>实现方式：</h4><p>把购物车数据保存到redis(<em>数据类型是hash  key:用户id   field:商品id  value:商品信息</em>)</p>
+<h4 id="实现方式：-1"><a href="#实现方式：-1" class="headerlink" title="实现方式："></a>实现方式：</h4><p>把购物车数据保存到redis(<em>数据类型是hash  key:用户id   field:商品id  value:商品数量</em>)</p>
 <ul>
 <li>购物车新增商品分析</li>
 </ul>
 <ol>
-<li>判断商品是否存在</li>
+<li>判断商品是否存在    </li>
 <li>如果存在,把 value中的json转换成购物车对象，增加数量，写回redis</li>
-<li>如果存在，根据商品id取商品信息，设置购物车数量，添加到购物车列表</li>
+<li>如果不存在，根据商品id取商品信息，设置购物车数量，添加到购物车列表</li>
 </ol>
 <ul>
 <li><p>修改购物车商品数量</p>
@@ -2783,12 +3394,12 @@
 <li><p>用户登录，购物车同步</p>
 <ol>
 <li>redis中无数据，<pre><code>     - 如果cookie中的购物车为空，那么这个时候不做任何处理
-     - 如果cookie中的购物车不为空，此时直接放入redis中
+         - 如果cookie中的购物车不为空，此时直接放入redis中
 </code></pre>
 </li>
 <li>redis中有数据，<ul>
 <li>如果cookie中的购物车为空，那么直接把redis的购物车覆盖本地cookie</li>
-<li>如果cookie中的购物车不为空，如果cookie中的某个商品在redis中存在，则以cookie为主，删除redis中的，把cookie中的商品直接覆盖redis中（参考京东）</li>
+<li>如果cookie中的购物车不为空，如果cookie中的某个商品在redis中存在，则进行合并</li>
 </ul>
 </li>
 <li>同步到redis中去了以后，覆盖本地cookie购物车的数据，保证本地购物车的数据是同步最新的</li>
@@ -2803,7 +3414,7 @@
 <h3 id="使用redis作为缓存"><a href="#使用redis作为缓存" class="headerlink" title="使用redis作为缓存"></a>使用redis作为缓存</h3><blockquote>
 <p>主要是获取用户信息和获取用户的资源信息这两个操作。当查询数据时，先去Redis缓存中查询，如果Redis中没有，再从数据库查询，查询到以后在把数据存储到Redis中去。</p>
 </blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * UmsAdminService实现类</span></span><br><span class="line"><span class="comment"> * Created by macro on 2018/4/26.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UmsAdminServiceImpl</span> <span class="keyword">implements</span> <span class="title">UmsAdminService</span> </span>&#123;</span><br><span class="line">    <span class="comment">//专门用来操作Redis缓存的业务类</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UmsAdminCacheService adminCacheService;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> UmsAdmin <span class="title">getAdminByUsername</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//先从缓存中获取数据</span></span><br><span class="line">        BackendAdmin admin = adminCacheService.getAdmin(username);</span><br><span class="line">        <span class="keyword">if</span>(admin!=<span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>  admin;</span><br><span class="line">        &#125;</span><br><span class="line">        Example example = <span class="keyword">new</span> Example(BackendAdmin.class);</span><br><span class="line">        Example.Criteria criteria = example.createCriteria();</span><br><span class="line">        criteria.andEqualTo(<span class="string">&quot;username&quot;</span>,username);</span><br><span class="line">        List&lt;BackendAdmin&gt; adminList = adminMapper.selectByExample(example);</span><br><span class="line">        <span class="keyword">if</span> (adminList != <span class="keyword">null</span> &amp;&amp; adminList.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            admin = adminList.get(<span class="number">0</span>);</span><br><span class="line">            <span class="comment">//将数据库中的数据存入缓存中</span></span><br><span class="line">            adminCacheService.setAdmin(admin);</span><br><span class="line">            <span class="keyword">return</span> admin;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;UmsResource&gt; <span class="title">getResourceList</span><span class="params">(Long adminId)</span> </span>&#123;</span><br><span class="line">       <span class="comment">//先从缓存中获取数据</span></span><br><span class="line">        List&lt;BackendResource&gt; resourceList = adminCacheService.getResourceList(adminId);</span><br><span class="line">        <span class="keyword">if</span>(CollUtil.isNotEmpty(resourceList))&#123;</span><br><span class="line">            <span class="keyword">return</span>  resourceList;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//缓存中没有从数据库中获取</span></span><br><span class="line">        resourceList = adminRoleRelationMapperCustom.getResourceList(adminId);</span><br><span class="line">        <span class="keyword">if</span>(CollUtil.isNotEmpty(resourceList))&#123;</span><br><span class="line">            <span class="comment">//将数据库中的数据存入缓存中</span></span><br><span class="line">            adminCacheService.setResourceList(adminId,resourceList);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> resourceList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * UmsAdminService实现类</span></span><br><span class="line"><span class="comment"> * Created by macro on 2018/4/26.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UmsAdminServiceImpl</span> <span class="keyword">implements</span> <span class="title">UmsAdminService</span> </span>&#123;</span><br><span class="line">    <span class="comment">//专门用来操作Redis缓存的业务类</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> UmsAdminCacheService adminCacheService;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> UserDetails <span class="title">loadUserByUsername</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        BackendAdmin admin = getAdminByUsername(username);</span><br><span class="line">        <span class="keyword">if</span> (admin != <span class="keyword">null</span>) &#123;</span><br><span class="line">            List&lt;BackendResource&gt; resourceList = getResourceList(admin.getId());</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> AdminUserDetails(admin, resourceList);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span>  <span class="keyword">new</span> UsernameNotFoundException(<span class="string">&quot;用户名或密码错误&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> UmsAdmin <span class="title">getAdminByUsername</span><span class="params">(String username)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//先从缓存中获取数据</span></span><br><span class="line">        BackendAdmin admin = adminCacheService.getAdmin(username);</span><br><span class="line">        <span class="keyword">if</span>(admin!=<span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>  admin;</span><br><span class="line">        &#125;</span><br><span class="line">        Example example = <span class="keyword">new</span> Example(BackendAdmin.class);</span><br><span class="line">        Example.Criteria criteria = example.createCriteria();</span><br><span class="line">        criteria.andEqualTo(<span class="string">&quot;username&quot;</span>,username);</span><br><span class="line">        List&lt;BackendAdmin&gt; adminList = adminMapper.selectByExample(example);</span><br><span class="line">        <span class="keyword">if</span> (adminList != <span class="keyword">null</span> &amp;&amp; adminList.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            admin = adminList.get(<span class="number">0</span>);</span><br><span class="line">            <span class="comment">//将数据库中的数据存入缓存中</span></span><br><span class="line">            adminCacheService.setAdmin(admin);</span><br><span class="line">            <span class="keyword">return</span> admin;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;UmsResource&gt; <span class="title">getResourceList</span><span class="params">(Long adminId)</span> </span>&#123;</span><br><span class="line">       <span class="comment">//先从缓存中获取数据</span></span><br><span class="line">        List&lt;BackendResource&gt; resourceList = adminCacheService.getResourceList(adminId);</span><br><span class="line">        <span class="keyword">if</span>(CollUtil.isNotEmpty(resourceList))&#123;</span><br><span class="line">            <span class="keyword">return</span>  resourceList;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//缓存中没有从数据库中获取</span></span><br><span class="line">        resourceList = adminRoleRelationMapperCustom.getResourceList(adminId);</span><br><span class="line">        <span class="keyword">if</span>(CollUtil.isNotEmpty(resourceList))&#123;</span><br><span class="line">            <span class="comment">//将数据库中的数据存入缓存中</span></span><br><span class="line">            adminCacheService.setResourceList(adminId,resourceList);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> resourceList;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><a target="_blank" rel="noopener" href="https://github.com/yuanyayuan/yymall/blob/master/mall_backend_service/src/main/java/com/nexus/mall/service/backend/BackendAdminCacheService.java">后台用户缓存操作类</a></p>
 <h3 id="使用AOP处理缓存操作异常"><a href="#使用AOP处理缓存操作异常" class="headerlink" title="使用AOP处理缓存操作异常"></a>使用AOP处理缓存操作异常</h3><blockquote>
@@ -2870,482 +3481,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E6%8C%87%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E6%8C%87%E4%BB%A4/" itemprop="url">中间件-redis指令</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-03T16:32:25+08:00">
-                2021-04-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis-redis%E6%8C%87%E4%BB%A4/" itemprop="url" rel="index">
-                    <span itemprop="name">redis - redis指令</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="redis指令"><a href="#redis指令" class="headerlink" title="redis指令"></a>redis指令</h1><ul>
-<li>keys *：查看所有的key (不建议在生产上使用，有性能影响)</li>
-<li>type key：key的类型</li>
-<li>select index：切换数据库，总共默认16个</li>
-<li>flushdb：删除当前下边db中的数据</li>
-<li>flushall：删除所有db中的数据</li>
-</ul>
-<h2 id="String"><a href="#String" class="headerlink" title="String"></a>String</h2><p>string: 最简单的字符串类型键值对缓存，也是最基本的</p>
-<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><ul>
-<li><p>get/set/del：查询/设置/删除</p>
-</li>
-<li><p>set rekey data：设置已经存在的key，会覆盖</p>
-</li>
-<li><p>setnx rekey data：设置已经存在的key，不会覆盖</p>
-</li>
-<li><p>set key value ex time：设置带过期时间的数据</p>
-</li>
-<li><p>expire key：设置过期时间</p>
-</li>
-<li><p>ttl：查看剩余时间，-1永不过期，-2过期</p>
-</li>
-<li><p>append key：合并字符串</p>
-</li>
-<li><p>strlen key：字符串长度</p>
-</li>
-<li><p>incr key：累加1</p>
-</li>
-<li><p>decr key：类减1</p>
-</li>
-<li><p>incrby key num：累加给定数值</p>
-</li>
-<li><p>decrby key num：累减给定数值</p>
-</li>
-<li><p>getrange key start end：截取数据，end=-1 代表到最后</p>
-</li>
-<li><p>setrange key start newdata：从start位置开始替换数据</p>
-</li>
-<li><p>mset：连续设值</p>
-</li>
-<li><p>mget：连续取值</p>
-</li>
-<li><p>msetnx：连续设置，如果存在则不设置</p>
-</li>
-</ul>
-<h2 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h2><h3 id="hash-1"><a href="#hash-1" class="headerlink" title="hash"></a>hash</h3><p>hash：类似map，存储结构化数据结构，比如存储一个对象（不能有嵌套对象）</p>
-<h3 id="使用-1"><a href="#使用-1" class="headerlink" title="使用"></a>使用</h3><ul>
-<li>hset key property value：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-&gt; hset user name imooc</span><br><span class="line">-&gt; 创建一个user对象，这个对象中包含name属性，name值为imooc</span><br></pre></td></tr></table></figure></li>
-<li>hget user name：获得用户对象中name的值<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hmset：设置对象中的多个键值对</span><br><span class="line"> -&gt; hset user age 18 phone 139123123</span><br><span class="line"> hmsetnx：设置对象中的多个键值对，存在则不添加</span><br><span class="line"> -&gt; hset user age 18 phone 139123123</span><br></pre></td></tr></table></figure></li>
-<li>hmget：获得对象中的多个属性<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-&gt; hmget user age phone</span><br></pre></td></tr></table></figure></li>
-<li>hgetall user：获得整个对象的内容</li>
-<li>hincrby user age 2：累加属性</li>
-<li>hincrbyfloat user age 2.2：累加属性</li>
-<li>hlen user：有多少个属性</li>
-<li>hexists user age：判断属性是否存在</li>
-<li>hkeys user：获得所有属性</li>
-<li>hvals user：获得所有值</li>
-<li>hdel user：删除对象</li>
-</ul>
-<h2 id="list"><a href="#list" class="headerlink" title="list"></a>list</h2><h3 id="list-1"><a href="#list-1" class="headerlink" title="list"></a>list</h3><p>list：列表，[a, b, c, d, …]</p>
-<h3 id="使用-2"><a href="#使用-2" class="headerlink" title="使用"></a>使用</h3><ul>
-<li>lpush userList 1 2 3 4 5：构建一个list，从左边开始存入数据</li>
-<li>rpush userList 1 2 3 4 5：构建一个list，从右边开始存入数据</li>
-<li>lrange list start end：获得数据</li>
-<li>lpop：从左侧开始拿出一个数据</li>
-<li>rpop：从右侧开始拿出一个数据</li>
-<li>llen list：list长度</li>
-<li>lindex list index：获取list下标的值</li>
-<li>lset list index value：把某个下标的值替换</li>
-<li>linsert list before/after value：插入一个新的值</li>
-<li>lrem list num value：删除几个相同数据</li>
-<li>ltrim list start end：截取值，替换原来的list</li>
-</ul>
-<h2 id="zset"><a href="#zset" class="headerlink" title="zset"></a>zset</h2><h3 id="sorted-set："><a href="#sorted-set：" class="headerlink" title="sorted set："></a>sorted set：</h3><p>sorted set：排序的set，可以去重可以排序，比如可以根据用户积分做排名，积分作为set的一个数值，根据数值可以做排序。set中的每一个memeber都带有一个分数</p>
-<h3 id="使用-3"><a href="#使用-3" class="headerlink" title="使用"></a>使用</h3><ul>
-<li><p>zadd zset 10 value1 20 value2 30 value3：设置member和对应的分数</p>
-</li>
-<li><p>zrange zset 0 -1：查看所有zset中的内容</p>
-</li>
-<li><p>zrange zset 0 -1 withscores：带有分数</p>
-</li>
-<li><p>zrank zset value：获得对应的下标</p>
-</li>
-<li><p>zscore zset value：获得对应的分数</p>
-</li>
-<li><p>zcard zset：统计个数</p>
-</li>
-<li><p>zcount zset 分数1 分数2：统计个数</p>
-</li>
-<li><p>zrangebyscore zset 分数1 分数2：查询分数之间的member(包含分数1 分数2)</p>
-</li>
-<li><p>zrangebyscore zset (分数1 (分数2：查询分数之间的member（不包含分数1 和 分数2）</p>
-</li>
-<li><p>zrangebyscore zset 分数1 分数2 limit start end：查询分数之间的member(包含分数1 分数2)，获得的结果集再次根据下标区间做查询</p>
-</li>
-<li><p>zrem zset value：删除member</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/03/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/" itemprop="url">中间件-redis内存淘汰机制</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-03T12:46:31+08:00">
-                2021-04-03
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/redis-redis%E5%86%85%E5%AD%98%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6/" itemprop="url" rel="index">
-                    <span itemprop="name">redis - redis内存淘汰机制</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Redis设置过期时间"><a href="#Redis设置过期时间" class="headerlink" title="Redis设置过期时间"></a>Redis设置过期时间</h1><ul>
-<li>expire key time(以秒为单位)–这是最常用的方式</li>
-<li>setex(String key, int seconds, String value)–字符串独有的方式</li>
-</ul>
-<p>注意：</p>
-<ul>
-<li>除了字符串自己独有设置过期时间的方法外，其他方法都需要依靠expire方法来设置时间</li>
-<li>如果没有设置时间，那缓存就是永不过期</li>
-<li>如果设置了过期时间，之后又想让缓存永不过期，使用persist key</li>
-</ul>
-<h1 id="Redis-给缓存数据设置过期时间有啥用？"><a href="#Redis-给缓存数据设置过期时间有啥用？" class="headerlink" title="Redis 给缓存数据设置过期时间有啥用？"></a>Redis 给缓存数据设置过期时间有啥用？</h1><p>一般情况下，我们设置保存的缓存数据的时候都会设置一个过期时间。为什么呢？</p>
-<p>因为内存是有限的，如果缓存中的所有数据都是一直保存的话，分分钟直接Out of memory。</p>
-<p><strong>过期时间除了有助于缓解内存的消耗，还有什么其他用么？</strong></p>
-<p>很多时候，我们的业务场景就是需要某个数据只在某一时间段内存在，比如我们的短信验证码可能只在1分钟内有效，用户登录的 token 可能只在 1 天内有效。</p>
-<p>如果使用传统的数据库来处理的话，一般都是自己判断过期，这样更麻烦并且性能要差很多。</p>
-<h1 id="Redis是如何判断数据是否过期的呢？"><a href="#Redis是如何判断数据是否过期的呢？" class="headerlink" title="Redis是如何判断数据是否过期的呢？"></a>Redis是如何判断数据是否过期的呢？</h1><p>Redis  通过一个叫做过期字典（可以看作是hash表）来保存数据过期的时间。过期字典的键指向Redis数据库中的某个key(键)，过期字典的值是一个long long类型的整数，这个整数保存了key所指向的数据库键的过期时间（毫秒精度的UNIX时间戳）。 </p>
-<h1 id="Redis-过期键的删除策略"><a href="#Redis-过期键的删除策略" class="headerlink" title="Redis 过期键的删除策略"></a>Redis 过期键的删除策略</h1><p>A、<strong>定期删除策略</strong>。用一个<strong>定时器</strong>来负责检查 key，过期则删除 key，注意这里并不是检查所有的 key 而是<strong>随机抽取进行检查</strong>。定期策略虽然让内存及时释放，但也会<strong>额外消耗 CPU 资源</strong>，通常 CPU 应该将时间尽量用于处理业务请求，而不是删除 key。</p>
-<p>B、<strong>惰性删除策略</strong>。在你<strong>获取</strong>某个 key 的时候，redis 会检查一下，这个 key <strong>如果设置了过期时间那么是否过期了</strong>，如果<strong>过期</strong>则删除该 key。</p>
-<hr>
-<h1 id="Redis-的回收策略（淘汰策略）"><a href="#Redis-的回收策略（淘汰策略）" class="headerlink" title="Redis 的回收策略（淘汰策略）"></a>Redis 的回收策略（淘汰策略）</h1><h2 id="内存淘汰机制"><a href="#内存淘汰机制" class="headerlink" title="内存淘汰机制"></a>内存淘汰机制</h2><p>如果<strong>定期删除没删除 key</strong>，然后也<strong>没及时去请求 key</strong>，即<strong>惰性删除也没生效</strong>，持续下去 redis 的内存会越来越高，当超过 redis 设置的内存最大使用量时，就会进行内存数据淘汰。redis 有 6 种淘汰策略：</p>
-<table>
-<thead>
-<tr>
-<th>策略</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>volatile-lru</td>
-<td>从已设置过期时间的数据集中挑选最近最少使用的数据淘汰</td>
-</tr>
-<tr>
-<td>volatile-ttl</td>
-<td>从已设置过期时间的数据集中挑选将要过期的数据淘汰</td>
-</tr>
-<tr>
-<td>volatile-random</td>
-<td>从已设置过期时间的数据集中任意选择数据淘汰</td>
-</tr>
-<tr>
-<td>allkeys-lru</td>
-<td>从所有数据集中挑选最近最少使用的数据淘汰</td>
-</tr>
-<tr>
-<td>allkeys-random</td>
-<td>从所有数据集中任意选择数据进行淘汰</td>
-</tr>
-<tr>
-<td>noeviction</td>
-<td>当内存不足以容纳新写入数据时，新写入操作会报错。很少使用</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p>注意这里的 6 种机制，前缀 volatile 和 allkeys 用于区分淘汰数据的数据集是从已设置过期时间的数据集还是从全部数据集中选取，后面的 lru、ttl 以及 random 是三种不同的淘汰策略，再加上一种 no-enviction 永不回收的策略。其中最常使用的是 volatile-lru/allkeys-lru。</p>
-</blockquote>
-<ul>
-<li>allkeys-lru：如果期望用户请求呈现幂律分布(power-law distribution)，也就是，期望一部分子集元素被访问得远比其他元素多时，可以使用allkeys-lru策略。在你不确定时这是一个好的选择</li>
-<li>allkeys-random：如果期望是循环周期的访问，所有的键被连续扫描，或者期望请求符合平均分布(每个元素以相同的概率被访问)，可以使用allkeys-random策略。</li>
-<li>volatile-ttl：如果你期望能让 Redis 通过使用你创建缓存对象的时候设置的TTL值，确定哪些对象应该是较好的清除候选项，可以使用volatile-ttl策略。</li>
-</ul>
-<p>另外值得注意的是，为键设置过期时间需要消耗内存，所以使用像allkeys-lru这样的策略会更高效，因为在内存压力下没有必要为键的回收设置过期时间。</p>
-<h2 id="常用缓存数据淘汰策略"><a href="#常用缓存数据淘汰策略" class="headerlink" title="常用缓存数据淘汰策略"></a>常用缓存数据淘汰策略</h2><ul>
-<li>FIFO（First In First Out）： 先进先出算法，即先放入缓存的先被移除。</li>
-<li>LRU（Least Recently Used）： 最近最少使用算法，使用时间距离现在最久的那个被移除。</li>
-<li>LFU（Least Frequently Used）： 最不常用算法，一定时间段内使用次数（频率）最少的那个被移除。</li>
-</ul>
-<h2 id="缓存数据更新策略"><a href="#缓存数据更新策略" class="headerlink" title="缓存数据更新策略"></a>缓存数据更新策略</h2><ul>
-<li>定时任务从数据库直接更新缓存：适用于对时间不敏感的数据。</li>
-<li>查询时写缓存，即查询优先查询缓存，若缓存未命中，查询数据库，将返回结果写入缓存，数据更新时先 delete缓存，再更新缓存。</li>
-<li>MQ 消息异步更新缓存。</li>
-</ul>
-<h1 id="Redis采用的过期策略"><a href="#Redis采用的过期策略" class="headerlink" title="Redis采用的过期策略"></a>Redis采用的过期策略</h1><p>惰性删除+定期删除</p>
-<ul>
-<li>惰性删除流程<ul>
-<li>在进行get或setnx等操作时，先检查key是否过期，</li>
-<li>若过期，删除key，然后执行相应操作；</li>
-<li>若没过期，直接执行相应操作</li>
-</ul>
-</li>
-<li>定期删除流程（简单而言，对指定个数个库的每一个库随机删除小于等于指定个数个过期key）<ul>
-<li>遍历每个数据库（就是redis.conf中配置的”database”数量，默认为16）<ul>
-<li>检查当前库中的指定个数个key（默认是每个库检查20个key，注意相当于该循环执行20次，循环体时下边的描述）<ul>
-<li>如果当前库中没有一个key设置了过期时间，直接执行下一个库的遍历</li>
-<li>随机获取一个设置了过期时间的key，检查该key是否过期，如果过期，删除key</li>
-<li>判断定期删除操作是否已经达到指定时长，若已经达到，直接退出定期删除。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/8/">&gt;</a>
+    <a class="extend prev" rel="prev" href="/page/6/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/8/">&gt;</a>
   </nav>
 
 
@@ -3392,7 +3532,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">92</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -3403,7 +3543,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">65</span>
+                  <span class="site-state-item-count">66</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -3414,7 +3554,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-count">50</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

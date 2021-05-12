@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试,SpringCloud,Eureka,微服务," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="微服务环境下面临的问题1、服务治理与负载均衡 2、服务容错 3、配置管理 4、服务网关 5、调用链路追踪 6、消息驱动 7、限流 什么是SpringCloud是一套目前完整的微服务框架，它是是一系列框架的有序集合，将各服务组件组合起来，通过SpringBoot风格进行再封装屏蔽掉了复杂的配置和实现原理，最终实现一套简单易懂、易部署和易维护的分布式系统开发工具包  服务治理服务治理目标 高可用性 服">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring-SpringCloud(Eureka)学习">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/05/12/Spring-SpringCloud(Eureka)%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="微服务环境下面临的问题1、服务治理与负载均衡 2、服务容错 3、配置管理 4、服务网关 5、调用链路追踪 6、消息驱动 7、限流 什么是SpringCloud是一套目前完整的微服务框架，它是是一系列框架的有序集合，将各服务组件组合起来，通过SpringBoot风格进行再封装屏蔽掉了复杂的配置和实现原理，最终实现一套简单易懂、易部署和易维护的分布式系统开发工具包  服务治理服务治理目标 高可用性 服">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%A0%B8%E5%BF%83%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%9F%BA%E4%BA%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%9F%BA%E4%BA%8E%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%9C%8D%E5%8A%A1%E5%89%94%E9%99%A4.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%90%8C%E6%AD%A5%E6%AD%BB%E5%BE%AA%E7%8E%AF.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5.png">
+<meta property="article:published_time" content="2021-05-12T10:41:28.000Z">
+<meta property="article:modified_time" content="2021-05-12T16:20:55.794Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="SpringCloud">
+<meta property="article:tag" content="Eureka">
+<meta property="article:tag" content="微服务">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/05/12/Spring-SpringCloud(Eureka)学习/"/>
+
+
+
+
+
+  <title>Spring-SpringCloud(Eureka)学习 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/12/Spring-SpringCloud(Eureka)%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring-SpringCloud(Eureka)学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-12T18:41:28+08:00">
+                2021-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringCloud%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - SpringCloud学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="微服务环境下面临的问题"><a href="#微服务环境下面临的问题" class="headerlink" title="微服务环境下面临的问题"></a>微服务环境下面临的问题</h1><p>1、服务治理与负载均衡</p>
+<p>2、服务容错</p>
+<p>3、配置管理</p>
+<p>4、服务网关</p>
+<p>5、调用链路追踪</p>
+<p>6、消息驱动</p>
+<p>7、限流</p>
+<h1 id="什么是SpringCloud"><a href="#什么是SpringCloud" class="headerlink" title="什么是SpringCloud"></a>什么是SpringCloud</h1><p>是一套目前完整的微服务框架，它是是一系列框架的有序集合，将各服务组件组合起来，通过SpringBoot风格进行再封装屏蔽掉了复杂的配置和实现原理，最终实现一套简单易懂、易部署和易维护的分布式系统开发工具包</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84.png"></p>
+<h1 id="服务治理"><a href="#服务治理" class="headerlink" title="服务治理"></a>服务治理</h1><h3 id="服务治理目标"><a href="#服务治理目标" class="headerlink" title="服务治理目标"></a>服务治理目标</h3><ul>
+<li><p>高可用性</p>
+<p>服务不能轻易就不可用，即使只存活最后一个节点，服务治理框架也要保证服务的可用性</p>
+</li>
+<li><p>分布式调用</p>
+<p>微服务的节点通常散落在不同的网络环境中，甚至会使用两地三机房或跨洲际机房做异地容灾，    这就要求服务治理框架具备在复杂网络环境下准确获知服务节点网络地址（IP，端口以及服务名称）的能力</p>
+</li>
+<li><p>生命周期管理</p>
+<p>从服务上线、持续运行直到服务终止，服务治理始终贯穿整个微服务生命周期</p>
+</li>
+<li><p>健康度检查<br>如果一个节点因各种原因不可用，服务治理框架要精准识别这些节点，将其剔除</p>
+<h3 id="服务治理面临的问题及解决方案"><a href="#服务治理面临的问题及解决方案" class="headerlink" title="服务治理面临的问题及解决方案"></a>服务治理面临的问题及解决方案</h3></li>
+</ul>
+<ol>
+<li>服务治理框架如何识别服务（ip，端口，服务名，健康状况）——服务注册</li>
+<li>服务调用方如何获取服务——服务发现</li>
+<li>服务治理框如何管理服务——心跳检测，服务续约，服务剔除</li>
+<li>服务治理框如何应对服务主动退出——服务下线</li>
+</ol>
+<h1 id="服务治理技术选型"><a href="#服务治理技术选型" class="headerlink" title="服务治理技术选型"></a>服务治理技术选型</h1><ul>
+<li><p>Consul（AP）</p>
+<ul>
+<li>性能慢（RAFT协议Leader选举，过半数节点都写入成功才行）</li>
+<li>HTTP&amp;DNS协议</li>
+</ul>
+</li>
+<li><p>Eureka（AP），eureka就是注册中心而创建，节点都是相对独立，不需要考虑数据一致性的问题，为了保证高可用存在某一个瞬间可能导致某些ip节点被调用数多，某些ip节点调用数少的问题。也有可能存在一些本应该被删除而没被删除的脏数据，但是有服务容错来进行兜底。</p>
+<p>Eureka还有自我保护机制（应对因网络故障导致部分节点失去联系的情况），如果在15分钟内超过85%的节点没有正常的心跳，那么Eureka就认为客户端与注册中心发生了网络故障（Eureka不在从注册列表中移除因为长时间没有收到心跳而应该过期的服务）（Eureka仍然能够接受新服务的注册和查询请求，但是不会被同步到其他节点上）（当网络稳定时，当前实例新的注册信息会被同步到其他节点）</p>
+<ul>
+<li>性能快</li>
+<li>HTTP协议</li>
+<li>2.0暂停开源计划</li>
+</ul>
+</li>
+<li><p>Nacos（AP，CP）</p>
+<ul>
+<li>性能块</li>
+<li>HTTP&amp;DNS&amp;UDP</li>
+</ul>
+</li>
+<li><p>Zookeeper（CP），zk更多是作为分布式协调服务的存在，只不过因为它的特性被dubbo赋予了注册中心，它的职责更多是保证数据（配置数据，状态数据）在管辖下的所有服务之间保持一致。zk最核心的算法ZAB，就是为了解决分布式系统下数据在多个服务之间一致同步的问题。为了保证一致性存在选主期间，服务不可用的情况。</p>
+<ul>
+<li>性能慢（ZAB算法Leader选举）</li>
+<li>Dubbo</li>
+</ul>
+</li>
+</ul>
+<h1 id="注册中心-Eureka"><a href="#注册中心-Eureka" class="headerlink" title="注册中心-Eureka"></a>注册中心-Eureka</h1><h2 id="注册中心核心工作流程"><a href="#注册中心核心工作流程" class="headerlink" title="注册中心核心工作流程"></a>注册中心核心工作流程</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%A0%B8%E5%BF%83%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png"></p>
+<h2 id="服务注册"><a href="#服务注册" class="headerlink" title="服务注册"></a>服务注册</h2><h3 id="两种服务注册解决方案"><a href="#两种服务注册解决方案" class="headerlink" title="两种服务注册解决方案"></a>两种服务注册解决方案</h3><p>1、由注册中心主动访问网络节点中的所有机器<br>2、注册中心等待服务节点自己注册</p>
+<h3 id="Eureka的注册模式"><a href="#Eureka的注册模式" class="headerlink" title="Eureka的注册模式"></a>Eureka的注册模式</h3><p>选择等待服务节点自己注册</p>
+<h4 id="好处"><a href="#好处" class="headerlink" title="好处"></a>好处</h4><p>1、对于网络中其他非服务节点不会产生任何无效请求<br>2、省去了广播环节，使注册效率大大提高<br>3、节省了大量网络请求的开销</p>
+<h3 id="服务节点注册包含的主要内容"><a href="#服务节点注册包含的主要内容" class="headerlink" title="服务节点注册包含的主要内容"></a>服务节点注册包含的主要内容</h3><ul>
+<li>服务节点所提供的微服务是什么</li>
+<li>服务节点的IP+端口号</li>
+<li>服务节点的状态</li>
+</ul>
+<h3 id="Eureka在等待服务节点注册期间还需要做什么"><a href="#Eureka在等待服务节点注册期间还需要做什么" class="headerlink" title="Eureka在等待服务节点注册期间还需要做什么"></a>Eureka在等待服务节点注册期间还需要做什么</h3><ul>
+<li>心跳检测和服务剔除——对于已注册的节点进行心跳检测，如果节点没有回应则进行服务剔除</li>
+<li>注册信息同步——注册中心集群状态下进行信息同步</li>
+</ul>
+<h3 id="服务注册基本流程"><a href="#服务注册基本流程" class="headerlink" title="服务注册基本流程"></a>服务注册基本流程</h3><ol>
+<li><p><strong>扫描注解</strong>：</p>
+<p><code>@EnableDiscoveryClient</code>开启作为Eureka Server的客户端的支持**(作为客户端)**</p>
+<blockquote>
+<p><code>@EnableEurekaServer</code>开启对EurekaServer服务端的支持**(作为服务端)**</p>
+<p>搭建注册中心或集群时用到</p>
+</blockquote>
+</li>
+<li><p><strong>发起注册</strong></p>
+</li>
+<li><p>使用<strong>装饰器+代理</strong>模式构建组件（装饰器模式实现失败重试功能）</p>
+</li>
+<li><p><strong>获取HttpClient</strong></p>
+</li>
+<li><p><strong>获取Server列表</strong></p>
+<ul>
+<li>有——发送注册请求<ul>
+<li>注册成功或换另一台Server注册</li>
+</ul>
+</li>
+<li>没有——抛出异常</li>
+</ul>
+</li>
+</ol>
+<h2 id="服务发现"><a href="#服务发现" class="headerlink" title="服务发现"></a>服务发现</h2><h3 id="两种服务发现解决方案"><a href="#两种服务发现解决方案" class="headerlink" title="两种服务发现解决方案"></a>两种服务发现解决方案</h3><ul>
+<li>基于客户端的服务发现</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%9F%BA%E4%BA%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.png" style="zoom:50%;" />
+
+<p>网络服务节点将自己的服务信息以及IP地址发送给注册中心，调用方从注册中心后去所有的可用服务列表，然后从中选择一个访问。</p>
+<p><strong>应用</strong>：Eureka定时拉取，Dubbo订阅模式</p>
+<ul>
+<li>基于服务端的服务发现</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%9F%BA%E4%BA%8E%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.png" style="zoom:50%;" />
+
+<p>网络服务节点将自己的服务信息以及IP地址发送给注册中心，调用方访问的时服务端的代理Router，这个Router既是服务端负载均衡器，也可以是网关层，负载均衡策略在服务端执行。</p>
+<p><strong>应用</strong>：K8s代理，LVS</p>
+<h2 id="心跳检测"><a href="#心跳检测" class="headerlink" title="心跳检测"></a>心跳检测</h2><h3 id="服务心跳特点"><a href="#服务心跳特点" class="headerlink" title="服务心跳特点"></a>服务心跳特点</h3><ul>
+<li>客户端发起：心跳服务是由一个个服务节点根据配置的时间主动发起的</li>
+<li>同步状态 ：心跳服务中还要通知客户端状态，out_of_service还是up</li>
+<li>服务剔除 ： 对于一段时间无响应的服务，注册中心从注册列表剔除</li>
+<li>服务续约 ：底层也是心跳服务</li>
+</ul>
+<h3 id="心跳传输的信息"><a href="#心跳传输的信息" class="headerlink" title="心跳传输的信息"></a>心跳传输的信息</h3><ul>
+<li><p>访问地址：Eureka注册中心的地址</p>
+</li>
+<li><p>访问地址：节点的个人信息——<code>instance-id: $&#123;spring.application.name&#125;:$&#123;spring.cloud.client.ip-address&#125;:$&#123;server.port&#125;</code></p>
+</li>
+<li><p>服务状态：反应节点状态<code>UP</code>,<code>DOWN</code>,<code>STARTING</code>,<code>out_of_service</code>,<code>UNKNOWN</code></p>
+</li>
+<li><p>最后一次同步注册的时间(<code>lastdirtytimestamp</code>)：当前服务节点最后一次与服务中心失去同步时的时间</p>
+</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">配置心跳指标</span></span><br><span class="line"><span class="comment">#每隔多久向服务器发送一次心跳包</span></span><br><span class="line"><span class="meta">eureka.instance.lease-renewal-intercal-in-seconds</span>=<span class="string">10</span></span><br><span class="line"><span class="comment">#如果在x秒内都没心跳，代表挂掉了</span></span><br><span class="line"><span class="meta">eureka.instance.lease-expiration-duration-in-seconds</span>=<span class="string">20</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="服务剔除"><a href="#服务剔除" class="headerlink" title="服务剔除"></a>服务剔除</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%9C%8D%E5%8A%A1%E5%89%94%E9%99%A4.png" style="zoom:50%;" />
+
+<ol>
+<li>启动定时任务：注册中心在启动时会开启一个后台任务，默认每隔60s触发服务剔除任务，可使用<code>eureka.server.eviction-interval-timer-in-ms=30000</code>配置。</li>
+<li>调用服务提出方法<ul>
+<li>自保开启（Eureka不在从注册列表中移除因为长时间没有收到心跳而应该过期的服务）</li>
+</ul>
+</li>
+<li>遍历过期服务，满足条件的当作过期<ul>
+<li>已被标记为过期（evictionTimestamp&gt;0）</li>
+<li>最后一次心跳时间+服务端配置的心跳间隔时间&lt;当前时间</li>
+</ul>
+</li>
+<li>计算可提出的服务总个数：注册中心设置一个系数（默认0.85），可剔除的服务个数，不能大于已注册服务的总数量*系数，超过则进入自保模式</li>
+<li>乱序提出服务：随机剔除过期服务</li>
+</ol>
+<h2 id="服务续约"><a href="#服务续约" class="headerlink" title="服务续约"></a>服务续约</h2><p>第一步：服务节点的状态同步至注册中心，告知注册中心该服务节点还存活，这一步由客户端的心跳完成</p>
+<p>第二步：当心跳包到达注册中心的时候，那就要看注册中心的判别机制来判定当前的续约心跳是否合理，并根据结果修改当前节点在注册中心记录的同步时间</p>
+<h3 id="服务节点向注册中心发送续约请求"><a href="#服务节点向注册中心发送续约请求" class="headerlink" title="服务节点向注册中心发送续约请求"></a>服务节点向注册中心发送续约请求</h3><ul>
+<li><p>服务节点向注册中心发送心跳，返回200就续约成功，如果续约不成功返回404（<strong>返回404不是注册中心挂了而是注册中心认为服务节点不存在</strong>，这时客户端就要触发一次重新注册操作，就要将服务节点重新注册到服务中心）</p>
+</li>
+<li><p>在重新注册之前，客户端先进行两个操作</p>
+<ul>
+<li><p><code>isInstanceinfoDirty=true</code>,标记自己为脏节点。</p>
+</li>
+<li><p>重新设置<code>lastdirtytimestamp</code>(当前服务节点最后一次与服务中心失去同步时的时间)为系统时间</p>
+</li>
+</ul>
+</li>
+<li><p>重新注册成功清楚脏节点标记，但是不清除<code>lastDirtytimestamp</code>这个参数，将会在后面的服务续约中作为参数发送给注册中心，以便注册中心判断节点的同步状态</p>
+</li>
+</ul>
+<h3 id="注册中心续约校验"><a href="#注册中心续约校验" class="headerlink" title="注册中心续约校验"></a>注册中心续约校验</h3><ul>
+<li>接受请求</li>
+<li>尝试续约，没有注册和UnKnown状态，续约失败，需要重新注册</li>
+<li>脏数据校验 ，如果注册中心的<code>lastDirtytimestamp</code>大于节点的<code>lastDirtytimestamp</code>，说明从服务节点上次注册到这次注册之间，发生了数据不同步，续约不通过，返回404</li>
+</ul>
+<h2 id="服务自保"><a href="#服务自保" class="headerlink" title="服务自保"></a>服务自保</h2><p>Eureka还有自我保护机制（应对因网络故障导致部分节点失去联系的情况），如果在15分钟内超过85%的节点没有正常的心跳，那么Eureka就认为客户端与注册中心发生了网络故障，自我保护期间：</p>
+<ul>
+<li><p>Eureka不在从注册列表中移除因为长时间没有收到心跳而应该过期的服务</p>
+</li>
+<li><p>Eureka仍然能够接受新服务的注册和查询请求，但是不会被同步到其他节点上</p>
+</li>
+<li><p>当网络稳定时，当前实例新的注册信息会被同步到其他节点</p>
+</li>
+</ul>
+<p><strong>手动开关</strong>：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">eureka.server.enable-self-preservation</span>=<span class="string">false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="服务下线"><a href="#服务下线" class="headerlink" title="服务下线"></a>服务下线</h2><p>1、标记服务状态DOWN<br>2、获取系统锁（CAS机制）   </p>
+<blockquote>
+<p>Java线程安全的方法：synchronize，concurrent包下的一些线程安全类，Thread的wait和notify方法</p>
+<p>还有CAS（Compare and swap）机制——比较和替换，使用一个期望值和一个变量的当前值进行比较，如果当前变量的值与我们期望的值相等，就使用一个新值替换当前变量的值<br>操作系统的CAS操作会将内存值和期望值进行比较，如果相等就将参数更新到内存并返回成功，如果不相等就返回失败。操作系统层面这个比较-替换操作是原子性的，所以线程安全。类似乐观锁</p>
+<p>CAS的ABA问题，内存值从A变到B，然后再变回A，假设期望值是A，尽管中途发生了A-&gt;B的变化，但是最终还是变回A，因此CAS操作依然认为没有变化</p>
+<p>解决方法：添加版本号，使用前查询版本号，比对时同时验证版本号，修改后版本号+1</p>
+</blockquote>
+<p>3、释放自身资源<br>4、关闭状态监听器、状态同步任务、心跳任务<br>5、发送下线指令，delete请求到注册中心</p>
+<h1 id="注册中心集群"><a href="#注册中心集群" class="headerlink" title="注册中心集群"></a>注册中心集群</h1><h2 id="Eureka-的数据同步方式"><a href="#Eureka-的数据同步方式" class="headerlink" title="Eureka 的数据同步方式"></a>Eureka 的数据同步方式</h2><p>对等复制——副本间不分主从，任何副本都可以接收写操作，然后每个副本间互相进行数据更新</p>
+<h2 id="同步过程"><a href="#同步过程" class="headerlink" title="同步过程"></a>同步过程</h2><p>Eureka Server 每当自己的信息变更后，例如 Client 向自己发起<em>注册、续约、注销</em>请求， 就会把自己的最新信息通知给其他 Eureka Server，保持数据同步。</p>
+<h3 id="数据同步死循环"><a href="#数据同步死循环" class="headerlink" title="数据同步死循环"></a>数据同步死循环</h3><p>如果自己的信息变更是另一个Eureka Server同步过来</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%90%8C%E6%AD%A5%E6%AD%BB%E5%BE%AA%E7%8E%AF.png" style="zoom: 50%;" />
+
+<p><strong>解决方式</strong>：Eureka Server 在执行复制操作的时候，使用 <code>HEADER_REPLICATION</code> 这个 http header 来区分普通应用实例的正常请求，说明这是一个复制请求，这样其他 peer 节点收到请求时，就不会再对其进行复制操作，从而避免死循环</p>
+<h3 id="数据冲突"><a href="#数据冲突" class="headerlink" title="数据冲突"></a>数据冲突</h3><p>server A 向 server B 发起同步请求，如果 A 的数据比 B 的还旧，B 不可能接受 A 的数据</p>
+<p><strong>解决方式</strong>：数据的新旧一般是通过<em>版本号</em>来定义的，Eureka 是通过 <code>lastDirtyTimestamp</code> （当前服务节点最后一次与服务中心失去同步时的时间）这个类似版本号的属性来实现的</p>
+<p> Eureka Server A 向 Eureka Server B 复制数据，数据冲突有2种情况：</p>
+<p>（1）A 的数据比 B 的新，B 返回 404，A 重新把这个应用实例注册到 B。</p>
+<p>（2）A 的数据比 B 的旧，B 返回 409，要求 A 同步 B 的数据。</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5.png" style="zoom:50%;" />
+
+<h1 id="Eureka集群挂掉后消费者和提供者之间关系"><a href="#Eureka集群挂掉后消费者和提供者之间关系" class="headerlink" title="Eureka集群挂掉后消费者和提供者之间关系"></a>Eureka集群挂掉后消费者和提供者之间关系</h1><h2 id="如果eureka集群突然宕机的情况下，会出现什么情况呢，服务之间还能不能正常访问"><a href="#如果eureka集群突然宕机的情况下，会出现什么情况呢，服务之间还能不能正常访问" class="headerlink" title="如果eureka集群突然宕机的情况下，会出现什么情况呢，服务之间还能不能正常访问"></a>如果eureka集群突然宕机的情况下，会出现什么情况呢，服务之间还能不能正常访问</h2><p><strong>可以</strong></p>
+<p>在启动消费者和提供者的时候，eureka注册中心是正常运行的，因此可以将各个消费者和提供者可以正常订阅。当eureka突然宕机的时候，<strong>各个提供者和消费者都已经保存有相互间的服务名称与ip映射</strong>，所以相互访问没有问题</p>
+<h2 id="在eureka集群宕机的情况下，消费者或者提供者服务重启后，消费者是否可以继续访问提供者"><a href="#在eureka集群宕机的情况下，消费者或者提供者服务重启后，消费者是否可以继续访问提供者" class="headerlink" title="在eureka集群宕机的情况下，消费者或者提供者服务重启后，消费者是否可以继续访问提供者"></a>在eureka集群宕机的情况下，消费者或者提供者服务重启后，消费者是否可以继续访问提供者</h2><p> 在eureka宕机未启动的情况下，</p>
+<ul>
+<li>当消费者重新启动后，<strong>无法从eureka中拉取其他服务的映射信息</strong>，因此消费者是<strong>无法再访问</strong>提供者的</li>
+<li>当提供者重新启动后，由于<strong>消费者还继续保存着与提供者之间的映射信息，而且提供者的信息并未发生改变</strong>，因此消费者<strong>还是可以继续访问提供者</strong>的。</li>
+</ul>
+<h2 id="在eureka集群宕机的情况下，服务之间在何种情况下无法继续进行相互访问"><a href="#在eureka集群宕机的情况下，服务之间在何种情况下无法继续进行相互访问" class="headerlink" title="在eureka集群宕机的情况下，服务之间在何种情况下无法继续进行相互访问"></a>在eureka集群宕机的情况下，服务之间在何种情况下无法继续进行相互访问</h2><ul>
+<li>所有服务全部停止，再重新启动除eureka之外的服务</li>
+<li>修改消费者或提供者IP，端口，服务名称等映射信息的情况下</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/SpringCloud/" rel="tag"># SpringCloud</a>
+          
+            <a href="/tags/Eureka/" rel="tag"># Eureka</a>
+          
+            <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag"># 微服务</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/10/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-ELK%E6%90%AD%E5%BB%BA/" rel="next" title="软件安装-ELK搭建">
+                <i class="fa fa-chevron-left"></i> 软件安装-ELK搭建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/05/13/Spring-SpringCloud(Eureka)%E7%BB%83%E4%B9%A0/" rel="prev" title="Spring-SpringCloud(Eureka)练习">
+                Spring-SpringCloud(Eureka)练习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">92</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">50</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BE%AE%E6%9C%8D%E5%8A%A1%E7%8E%AF%E5%A2%83%E4%B8%8B%E9%9D%A2%E4%B8%B4%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">微服务环境下面临的问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFSpringCloud"><span class="nav-number">2.</span> <span class="nav-text">什么是SpringCloud</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">服务治理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E7%9B%AE%E6%A0%87"><span class="nav-number">3.0.1.</span> <span class="nav-text">服务治理目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E9%9D%A2%E4%B8%B4%E7%9A%84%E9%97%AE%E9%A2%98%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">3.0.2.</span> <span class="nav-text">服务治理面临的问题及解决方案</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E6%8A%80%E6%9C%AF%E9%80%89%E5%9E%8B"><span class="nav-number">4.</span> <span class="nav-text">服务治理技术选型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83-Eureka"><span class="nav-number">5.</span> <span class="nav-text">注册中心-Eureka</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E6%A0%B8%E5%BF%83%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">5.1.</span> <span class="nav-text">注册中心核心工作流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C"><span class="nav-number">5.2.</span> <span class="nav-text">服务注册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">5.2.1.</span> <span class="nav-text">两种服务注册解决方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Eureka%E7%9A%84%E6%B3%A8%E5%86%8C%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.2.2.</span> <span class="nav-text">Eureka的注册模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A5%BD%E5%A4%84"><span class="nav-number">5.2.2.1.</span> <span class="nav-text">好处</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E8%8A%82%E7%82%B9%E6%B3%A8%E5%86%8C%E5%8C%85%E5%90%AB%E7%9A%84%E4%B8%BB%E8%A6%81%E5%86%85%E5%AE%B9"><span class="nav-number">5.2.3.</span> <span class="nav-text">服务节点注册包含的主要内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Eureka%E5%9C%A8%E7%AD%89%E5%BE%85%E6%9C%8D%E5%8A%A1%E8%8A%82%E7%82%B9%E6%B3%A8%E5%86%8C%E6%9C%9F%E9%97%B4%E8%BF%98%E9%9C%80%E8%A6%81%E5%81%9A%E4%BB%80%E4%B9%88"><span class="nav-number">5.2.4.</span> <span class="nav-text">Eureka在等待服务节点注册期间还需要做什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B"><span class="nav-number">5.2.5.</span> <span class="nav-text">服务注册基本流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0"><span class="nav-number">5.3.</span> <span class="nav-text">服务发现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">5.3.1.</span> <span class="nav-text">两种服务发现解决方案</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BF%83%E8%B7%B3%E6%A3%80%E6%B5%8B"><span class="nav-number">5.4.</span> <span class="nav-text">心跳检测</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%BF%83%E8%B7%B3%E7%89%B9%E7%82%B9"><span class="nav-number">5.4.1.</span> <span class="nav-text">服务心跳特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BF%83%E8%B7%B3%E4%BC%A0%E8%BE%93%E7%9A%84%E4%BF%A1%E6%81%AF"><span class="nav-number">5.4.2.</span> <span class="nav-text">心跳传输的信息</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%89%94%E9%99%A4"><span class="nav-number">5.5.</span> <span class="nav-text">服务剔除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%BB%AD%E7%BA%A6"><span class="nav-number">5.6.</span> <span class="nav-text">服务续约</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E8%8A%82%E7%82%B9%E5%90%91%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E5%8F%91%E9%80%81%E7%BB%AD%E7%BA%A6%E8%AF%B7%E6%B1%82"><span class="nav-number">5.6.1.</span> <span class="nav-text">服务节点向注册中心发送续约请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E7%BB%AD%E7%BA%A6%E6%A0%A1%E9%AA%8C"><span class="nav-number">5.6.2.</span> <span class="nav-text">注册中心续约校验</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E8%87%AA%E4%BF%9D"><span class="nav-number">5.7.</span> <span class="nav-text">服务自保</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E4%B8%8B%E7%BA%BF"><span class="nav-number">5.8.</span> <span class="nav-text">服务下线</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83%E9%9B%86%E7%BE%A4"><span class="nav-number">6.</span> <span class="nav-text">注册中心集群</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Eureka-%E7%9A%84%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E6%96%B9%E5%BC%8F"><span class="nav-number">6.1.</span> <span class="nav-text">Eureka 的数据同步方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5%E8%BF%87%E7%A8%8B"><span class="nav-number">6.2.</span> <span class="nav-text">同步过程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E6%AD%BB%E5%BE%AA%E7%8E%AF"><span class="nav-number">6.2.1.</span> <span class="nav-text">数据同步死循环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%86%B2%E7%AA%81"><span class="nav-number">6.2.2.</span> <span class="nav-text">数据冲突</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Eureka%E9%9B%86%E7%BE%A4%E6%8C%82%E6%8E%89%E5%90%8E%E6%B6%88%E8%B4%B9%E8%80%85%E5%92%8C%E6%8F%90%E4%BE%9B%E8%80%85%E4%B9%8B%E9%97%B4%E5%85%B3%E7%B3%BB"><span class="nav-number">7.</span> <span class="nav-text">Eureka集群挂掉后消费者和提供者之间关系</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E6%9E%9Ceureka%E9%9B%86%E7%BE%A4%E7%AA%81%E7%84%B6%E5%AE%95%E6%9C%BA%E7%9A%84%E6%83%85%E5%86%B5%E4%B8%8B%EF%BC%8C%E4%BC%9A%E5%87%BA%E7%8E%B0%E4%BB%80%E4%B9%88%E6%83%85%E5%86%B5%E5%91%A2%EF%BC%8C%E6%9C%8D%E5%8A%A1%E4%B9%8B%E9%97%B4%E8%BF%98%E8%83%BD%E4%B8%8D%E8%83%BD%E6%AD%A3%E5%B8%B8%E8%AE%BF%E9%97%AE"><span class="nav-number">7.1.</span> <span class="nav-text">如果eureka集群突然宕机的情况下，会出现什么情况呢，服务之间还能不能正常访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8eureka%E9%9B%86%E7%BE%A4%E5%AE%95%E6%9C%BA%E7%9A%84%E6%83%85%E5%86%B5%E4%B8%8B%EF%BC%8C%E6%B6%88%E8%B4%B9%E8%80%85%E6%88%96%E8%80%85%E6%8F%90%E4%BE%9B%E8%80%85%E6%9C%8D%E5%8A%A1%E9%87%8D%E5%90%AF%E5%90%8E%EF%BC%8C%E6%B6%88%E8%B4%B9%E8%80%85%E6%98%AF%E5%90%A6%E5%8F%AF%E4%BB%A5%E7%BB%A7%E7%BB%AD%E8%AE%BF%E9%97%AE%E6%8F%90%E4%BE%9B%E8%80%85"><span class="nav-number">7.2.</span> <span class="nav-text">在eureka集群宕机的情况下，消费者或者提供者服务重启后，消费者是否可以继续访问提供者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8eureka%E9%9B%86%E7%BE%A4%E5%AE%95%E6%9C%BA%E7%9A%84%E6%83%85%E5%86%B5%E4%B8%8B%EF%BC%8C%E6%9C%8D%E5%8A%A1%E4%B9%8B%E9%97%B4%E5%9C%A8%E4%BD%95%E7%A7%8D%E6%83%85%E5%86%B5%E4%B8%8B%E6%97%A0%E6%B3%95%E7%BB%A7%E7%BB%AD%E8%BF%9B%E8%A1%8C%E7%9B%B8%E4%BA%92%E8%AE%BF%E9%97%AE"><span class="nav-number">7.3.</span> <span class="nav-text">在eureka集群宕机的情况下，服务之间在何种情况下无法继续进行相互访问</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

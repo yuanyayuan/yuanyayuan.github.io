@@ -79,26 +79,27 @@
 
 
 
-<meta name="description" content="Kafka应用场景 Kafka（MQ）异步化，服务解耦，削峰填谷  Kafka海量日志收集  Kafka数据同步  Kafka实时计算   Kafka基础概念 Topic：主题 Partition：分区   应用把消息都发送到Topic上，不去关注消息落入那个分区，topic和partition是一对多关系  Replica：副本   类似于es的集群  In Sync Replicas：通过IS">
+<meta name="description" content="Kafka应用场景 Kafka（MQ）异步化，服务解耦，削峰填谷  Kafka海量日志收集  Kafka数据同步  Kafka实时计算   Kafka 与传统 MQ 消息系统之间有三个关键区别(1).Kafka 持久化日志，这些日志可以被重复读取和无限期保留(2).Kafka 是一个分布式系统：它以集群的方式运行，可以灵活伸缩，在内部通过复制数据提升容错能力和高可用性(3).Kafka 支持实时的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="中间件-Kafka学习">
 <meta property="og:url" content="https://yuanyayuan.github.io/2021/05/10/%E4%B8%AD%E9%97%B4%E4%BB%B6-Kafka%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="Kafka应用场景 Kafka（MQ）异步化，服务解耦，削峰填谷  Kafka海量日志收集  Kafka数据同步  Kafka实时计算   Kafka基础概念 Topic：主题 Partition：分区   应用把消息都发送到Topic上，不去关注消息落入那个分区，topic和partition是一对多关系  Replica：副本   类似于es的集群  In Sync Replicas：通过IS">
+<meta property="og:description" content="Kafka应用场景 Kafka（MQ）异步化，服务解耦，削峰填谷  Kafka海量日志收集  Kafka数据同步  Kafka实时计算   Kafka 与传统 MQ 消息系统之间有三个关键区别(1).Kafka 持久化日志，这些日志可以被重复读取和无限期保留(2).Kafka 是一个分布式系统：它以集群的方式运行，可以灵活伸缩，在内部通过复制数据提升容错能力和高可用性(3).Kafka 支持实时的">
 <meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/kafka%E6%9E%B6%E6%9E%84.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/Kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B51.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/Kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B52.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/Kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B53.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/Kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B54.png">
 <meta property="article:published_time" content="2021-05-10T06:08:07.000Z">
-<meta property="article:modified_time" content="2021-05-10T06:55:57.968Z">
+<meta property="article:modified_time" content="2021-05-11T07:02:58.604Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="面试">
 <meta property="article:tag" content="消息队列">
 <meta property="article:tag" content="分布式">
 <meta property="article:tag" content="Kafka">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/Kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B51.png">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/kafka%E6%9E%B6%E6%9E%84.png">
 
 
 
@@ -370,25 +371,173 @@
 <li><p>Kafka实时计算</p>
 </li>
 </ul>
-<h1 id="Kafka基础概念"><a href="#Kafka基础概念" class="headerlink" title="Kafka基础概念"></a>Kafka基础概念</h1><ul>
-<li>Topic：主题</li>
-<li>Partition：分区</li>
+<h1 id="Kafka-与传统-MQ-消息系统之间有三个关键区别"><a href="#Kafka-与传统-MQ-消息系统之间有三个关键区别" class="headerlink" title="Kafka 与传统 MQ 消息系统之间有三个关键区别"></a>Kafka 与传统 MQ 消息系统之间有三个关键区别</h1><p>(1).Kafka 持久化日志，这些日志可以被重复读取和无限期保留<br>(2).Kafka 是一个分布式系统：它以集群的方式运行，可以灵活伸缩，在内部通过复制数据提升容错能力和高可用性<br>(3).Kafka 支持实时的流式处理</p>
+<h1 id="Zookeeper-对于-Kafka-的作用是什么"><a href="#Zookeeper-对于-Kafka-的作用是什么" class="headerlink" title="Zookeeper 对于 Kafka 的作用是什么"></a>Zookeeper 对于 Kafka 的作用是什么</h1><p>Zookeeper 主要用于在集群中不同节点之间进行通信。</p>
+<p>在 Kafka 中，它被用于提交偏移量，因此如果节点在任何情况下都失败了，它都可以从之前提交的偏移<br>量中获取除此之外。</p>
+<p>它还执行其他活动，如: leader 检测、分布式同步、配置管理、识别新节点何时离开或连接、集群、节点实时状态等等。</p>
+<h1 id="kafka-为什么那么快"><a href="#kafka-为什么那么快" class="headerlink" title="kafka 为什么那么快"></a>kafka 为什么那么快</h1><ul>
+<li>顺序写 由于现代的操作系统提供了预读和写技术，磁盘的顺序写大多数情况下比随机写内存还要快。</li>
+<li>Zero-copy 零拷技术减少拷贝次数</li>
+<li>批量量处理。合并小的请求，然后以流的方式进行交互</li>
+<li>Pull 拉模式 使用拉模式进行消息的获取消费，与消费端处理能力相符</li>
 </ul>
+<h1 id="Kafka基础架构及术语"><a href="#Kafka基础架构及术语" class="headerlink" title="Kafka基础架构及术语"></a>Kafka基础架构及术语</h1><h2 id="kafka架构"><a href="#kafka架构" class="headerlink" title="kafka架构"></a>kafka架构</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/kafka%E6%9E%B6%E6%9E%84.png"></p>
+<h2 id="Kafka相关术语"><a href="#Kafka相关术语" class="headerlink" title="Kafka相关术语"></a>Kafka相关术语</h2><ul>
+<li><p><strong>Producer</strong>:Producer即生产者，消息的产生者，是消息的入口</p>
+</li>
+<li><p><strong>kafka cluster</strong>（Broker，Topic，Partition，Replication，Message）</p>
+</li>
+</ul>
+<p>1、 <strong>Broker</strong>：Broker是kafka实例，每个服务器上有一个或多个kafka的实例。每个broker对应一台服务器。每个kafka集群内的broker都有一个<strong>不重复</strong>的编号，如图中的broker-0、broker-1等……</p>
+<p>2、 <strong>Topic</strong>：消息的主题，可以理解为消息的分类，kafka的数据就保存在topic。在每个broker上都可以创建多个topic。</p>
+<p><strong>kafka 维护消费状态跟踪</strong></p>
+<ul>
+<li>Topic 被分成了若干分区，每个分区在同一时间只被一个 consumer 消费</li>
+<li>每个分区被消费的消息在日志中的位置一个整数：offset</li>
+</ul>
+<p>3、 <strong>Partition</strong>：Topic的分区，每个topic可以有多个分区，分区的作用是做负载，提高kafka的吞吐量。同一个topic在不同的分区的数据是不重复的，partition的表现形式就是一个一个的文件夹！<strong>topic和partition是一对多关系</strong></p>
 <p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/Kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B51.png"></p>
-<p>应用把消息都发送到Topic上，不去关注消息落入那个分区，topic和partition是一对多关系</p>
-<ul>
-<li>Replica：副本</li>
-</ul>
+<p>4、 <strong>Replication</strong>：每一个分区都有多个副本，副本的作用是做备胎。当主分区（Leader）故障的时候会选择一个备胎（Follower）上位，成为Leader。在kafka中默认副本的最大数量是10个，且副本的数量不能大于Broker的数量，follower和leader绝对是在不同的机器，同一机器对同一个分区也只可能存放一个副本（包括自己）<strong>类似于es的集群</strong></p>
 <p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/Kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B52.png"></p>
-<p><strong>类似于es的集群</strong></p>
+<p>5、<strong>Message</strong>：每一条发送的消息主体。</p>
+<p><strong>message格式</strong>：一个固定长度的header和一个变长的消息体body组成</p>
 <ul>
-<li>In Sync Replicas：通过ISR实现数据一致性</li>
+<li><p><strong>Consumer</strong>：消费者，即消息的消费方，是消息的出口。</p>
+</li>
+<li><p><strong>Consumer Group</strong>：我们可以将多个消费组组成一个消费者组，在kafka的设计中同一个分区的数据只能被消费者组中的某一个消费者消费。同一个消费者组的消费者可以消费同一个topic的不同分区的数据，这也是为了提高kafka的吞吐量！</p>
+</li>
+<li><p><strong>Zookeeper</strong>：kafka集群依赖zookeeper来保存集群的的元信息，来保证系统的可用性。</p>
+</li>
+<li><p><strong>In Sync Replicas</strong>：Kafka通过ISR实现数据一致性（<strong>kafka follower如何与leader同步数据</strong>）</p>
+<ul>
+<li>ISR:In-Sync Replicas 副本同步队列</li>
+<li>AR:Assigned Replicas 所有副本</li>
+</ul>
+<p><strong>ISR伸缩</strong>：</p>
+</li>
 </ul>
 <p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/Kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B53.png"></p>
 <p>P1（S1）和P1（S2）都同步及时，进入ISR集合</p>
 <hr>
 <p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/Kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B54.png"></p>
 <p>P1（S2）因网络问题同步同步超时，进入OSR集合。当P1主节点宕机后，从ISR集合中选取一个作为主节点。OSR中的节点后续同步进度跟上后会从新进入ISR</p>
+<p><strong>kafka  unclean 配置</strong>：</p>
+<p><code>unclean.leader.election.enable=true</code>,非ISR集合的broker 也可以参与选举，这样有可能就会丢数据。而如果<code>unclean.leader.election.enable=false</code>，Kafka的可用性就会降低</p>
+<p><strong>如果leader crash时，ISR为空怎么办</strong>:</p>
+<p><code>unclean.leader.election.enable=true</code>时允许不同步副本成为leader</p>
+<p><code>unclean.leader.election.enable=false</code>时不允许不同步副本成为leader，此时如果发生ISR列表为空，会一直等待旧leader恢复，降低了可用性</p>
+<h1 id="kafka-producer（生产者）"><a href="#kafka-producer（生产者）" class="headerlink" title="kafka producer（生产者）"></a>kafka producer（生产者）</h1><h2 id="Kafka消息发送有两种方式"><a href="#Kafka消息发送有两种方式" class="headerlink" title="Kafka消息发送有两种方式"></a>Kafka消息发送有两种方式</h2><p>同步（sync）和异步（async），默认是同步方式，可通过producer.type属性进行配置</p>
+<ul>
+<li>kafka同步生产者：生产者写一条消息的时候，它就立马发送到某个分区去。follower还需要从leader拉取消息到本地，follower再向leader发送确认，leader再向客户端发送确认。由于这一套流程之后，客户端才能得到确认，所以很慢</li>
+<li>kafka异步生产者：这个生产者写一条消息的时候，先是写到某个缓冲区，这个缓冲区里的数据还没写到broker集群里的某个分区的时候，它就返回到client去了。虽然效率快，但是不能保证消息一定被发送出去了</li>
+</ul>
+<h2 id="kafka-的-ack-的三种机制"><a href="#kafka-的-ack-的三种机制" class="headerlink" title="kafka 的 ack 的三种机制"></a>kafka 的 ack 的三种机制</h2><ul>
+<li>1（默认） 数据发送到Kafka后，经过leader成功接收消息的的确认，就算是发送成功了。在这种情况下，不管ISR中Replica是否成功同步，如果leader宕机了，则会<strong>丢失数据</strong>。<strong>消息可能丢失</strong></li>
+<li>0 生产者将数据发送出去就不管了，不去等待任何返回。这种情况下数据传输效率最高，但是数据可靠性确是最低的。<strong>消息可能丢失</strong></li>
+<li>-1 producer需要等待ISR中的所有follower都确认接收到数据后才算一次发送完成，可靠性最高。当ISR中所有Replica都向Leader发送ACK时，leader才commit，这时候producer才能认为一个请求中的消息都commit了</li>
+</ul>
+<h2 id="kafka-producer如何优化"><a href="#kafka-producer如何优化" class="headerlink" title="kafka producer如何优化"></a>kafka producer如何优化</h2><ul>
+<li>增加线程</li>
+<li>提高 batch.size</li>
+<li>增加更多 producer 实例</li>
+<li>增加 partition 数</li>
+<li>设置 acks=-1 时，如果延迟增大：可以增大 num.replica.fetchers（follower 同步数据的线程数）来调解</li>
+<li>跨数据中心的传输：增加 socket 缓冲区设置以及 OS tcp 缓冲区设置</li>
+</ul>
+<h1 id="kafka-consumer（生产者）"><a href="#kafka-consumer（生产者）" class="headerlink" title="kafka consumer（生产者）"></a>kafka consumer（生产者）</h1><h2 id="Kafka消息消费有两个consumer接口，Low-level-API和High-level-API"><a href="#Kafka消息消费有两个consumer接口，Low-level-API和High-level-API" class="headerlink" title="Kafka消息消费有两个consumer接口，Low-level API和High-level API"></a>Kafka消息消费有两个consumer接口，Low-level API和High-level API</h2><ol>
+<li>Low-level API：消费者自己维护offset等值，可以实现对Kafka的完全控制；</li>
+<li>High-level API：封装了对parition和offset的管理，使用简单；</li>
+</ol>
+<p>用高级接口High-level API，可能存在一个问题就是当消息消费者从集群中把消息取出来、并提交了新的消息offset值后，还没来得及消费就挂掉了，那么下次再消费时之前没消费成功的消息就消失了。<strong>消息可能丢失</strong></p>
+<p><strong>解决办法</strong>：</p>
+<p>同步模式下，确认机制（ack）设置为-1，即让消息写入Leader和Follower之后再确认消息发送成功</p>
+<p>异步模式下，为防止缓冲区满，可以在配置文件设置不限制阻塞超时时间，当缓冲区满时让生产者一直处于阻塞状态</p>
+<h2 id="消息重复消费"><a href="#消息重复消费" class="headerlink" title="消息重复消费"></a><strong>消息重复消费</strong></h2><ul>
+<li><strong>保存并查询</strong></li>
+</ul>
+<p>将消息的唯一标识保存到外部介质中，每次消费时判断是否处理过即可</p>
+<ul>
+<li> <strong>利用幂等</strong> </li>
+</ul>
+<p>实现恰好一次的数据传输</p>
+<h2 id="消费者提交消费位移时是offset还是offset-1"><a href="#消费者提交消费位移时是offset还是offset-1" class="headerlink" title="消费者提交消费位移时是offset还是offset+1"></a>消费者提交消费位移时是offset还是offset+1</h2><p>提交的是当前消费到的最新消息的offset+1</p>
+<h2 id="消费者如何不自动提交偏移量，由应用提交"><a href="#消费者如何不自动提交偏移量，由应用提交" class="headerlink" title="消费者如何不自动提交偏移量，由应用提交"></a>消费者如何不自动提交偏移量，由应用提交</h2><p><code>auto.commit.offset 设为 false</code>，然后在处理一批消息后<code>commitSync() </code>或者异步提交<br><code>commitAsync()</code></p>
+<h2 id="Kafka消费者组再均衡问题"><a href="#Kafka消费者组再均衡问题" class="headerlink" title="Kafka消费者组再均衡问题"></a>Kafka消费者组再均衡问题</h2><p>在Kafka中，当有新消费者加入或者订阅的topic数发生变化时，会触发Rebalance(再均衡：在同一个消费者组当中，分区的所有权从一个消费者转移到另外一个消费者)机制</p>
+<h3 id="再均衡发生的场景有以下几种"><a href="#再均衡发生的场景有以下几种" class="headerlink" title="再均衡发生的场景有以下几种"></a>再均衡发生的场景有以下几种</h3><ul>
+<li><p>组成员发生变更(新consumer加入组、已有consumer主动离开组或已有consumer崩溃了)</p>
+</li>
+<li><p>订阅主题数发生变更，如果你使用了正则表达式的方式进行订阅，那么新建匹配正则表达式的topic就会触发rebalance</p>
+</li>
+<li><p>订阅主题的分区数发生变更</p>
+<h3 id="消费者组再均衡过程"><a href="#消费者组再均衡过程" class="headerlink" title="消费者组再均衡过程"></a>消费者组再均衡过程</h3></li>
+</ul>
+<p>第一步：所有成员都向coordinator（协调人）发送请求，请求入组。一旦所有成员都发送了请求，coordinator（协调人）会从中选择一个consumer担任leader的角色，并把组成员信息以及订阅信息发给leader。</p>
+<p>第二步：leader开始分配消费方案，指明具体哪个consumer负责消费哪些topic的哪些partition。一旦完成分配，leader会将这个方案发给coordinator（协调人）。coordinator（协调人）接收到分配方案之后会把方案发给各个consumer，这样组内的所有成员就都知道自己应该消费哪些分区了</p>
+<h1 id="数据传输的事务定义有哪三种"><a href="#数据传输的事务定义有哪三种" class="headerlink" title="数据传输的事务定义有哪三种"></a>数据传输的事务定义有哪三种</h1><p>（1）最多一次: 消息不会被重复发送，最多被传输一次，但也有可能一次不传输</p>
+<ul>
+<li><p>如果生产者在ack超时或者返回错误的时候不重试发送消息，</p>
+</li>
+<li><p>消息有可能最终并没有写入Kafka topic中</p>
+</li>
+<li><p>可能出现消息并没有被消费者消费到的情况</p>
+</li>
+</ul>
+<p>（2）最少一次: 消息不会被漏发送，最少被传输一次，但也有可能被重复传输.</p>
+<ul>
+<li>生产者的acks设置为-1并且在发送消息后也收到了确认ack(broker发送的)，就意味着消息已经被精确一次写入到了Kafka topic。</li>
+<li>但是，如果生产者接收ack超时或者收到了错误，就会认为消息没有写入Kafka topic然后会尝试重新发送消息。</li>
+<li>生产者的重试机制就会导致这条消息被写入Kafka两次，同样就会导致同样的消息被消费者消费不止一次</li>
+</ul>
+<p>（3）精确的一次（Exactly once）（恰好一次）: 不会漏传输也不会重复传输,每个消息都传输被一次而且仅仅被传输一次，<strong>这是大家所期望的</strong></p>
+<ul>
+<li><p>幂等性实现</p>
+<ul>
+<li>实现配置：<ul>
+<li>enable.idempotence=true 开启幂等机制</li>
+<li>retries&gt;0  只有大于0时失败了才会有重试</li>
+<li>acks=-1 开启确认机制</li>
+<li> max.in.flight.requests.per.connection&lt;=5 每个连接最大执行中的请求数</li>
+</ul>
+</li>
+<li>原理：</li>
+</ul>
+<ol>
+<li>每一个生产者在初始化时会生成一个producer_id,(因为可能会有多个生产者) ，并为每个目标分区维护一个”序列号”(SequenceNumber); </li>
+<li>生产者每发送一条消息就会将&lt;produce_id,分区&gt;对应的”序列号”+1 </li>
+<li>broker端会为每一对&lt;produce_id,分区&gt;维护一个序列号，对于每收到的一条消息，会判断服务端的序列号(old)和接收到消息中的序列号(new)进行对比；即服务器会检查消息中的produce_id和序列号和之前的有没有相同来到达过滤的目的</li>
+<li>若：sn_old+1==sn_new broker就正常接收（broker端存的+1==接收到消息中的，就接受）<ul>
+<li>如果old（broker端存的）=2，那么下一个（接收到消息中的）就正常应该是3了<ul>
+<li>sn_old+1&gt;sn_new broker      比如若old=3，new=3,那么说明重复了，就直接丢弃</li>
+<li>sn_old+1&lt;sn_new broke        比如若old=3，new=5,那么说明中间没有收到4的，说明中间有数据没有被写入，可能是发生了乱序,也可能是producer在发送的过程中丢失了数据，出现这种情况，会抛出OutOfOrderSequenceException异常</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>事务机制</p>
+<p>Kafka现在支持使用新事务API原子性的对跨partition进行写操作，该API允许producer发送批量消息到多个partition</p>
+</li>
+</ul>
+<h1 id="Kafka-判断一个节点是否还活着有那两个条件"><a href="#Kafka-判断一个节点是否还活着有那两个条件" class="headerlink" title="Kafka 判断一个节点是否还活着有那两个条件"></a>Kafka 判断一个节点是否还活着有那两个条件</h1><p>（1）节点必须可以维护和 ZooKeeper 的连接，Zookeeper 通过心跳机制检查每个节点的连接<br>（2）如果节点是个 follower,他必须能及时的同步 leader 的写操作，延时不能太久</p>
+<h1 id="Kafka不支持读写分离"><a href="#Kafka不支持读写分离" class="headerlink" title="Kafka不支持读写分离"></a>Kafka不支持读写分离</h1><p>在 Kafka 中，生产者写入消息、消费者读取消息的操作都是与 leader 副本进行交互的，从 而实现的是一种<strong>主写主读</strong>的生产消费模型</p>
+<p>主写从读有 2 个很明显的缺点</p>
+<ul>
+<li><strong>数据一致性问题</strong>。数据从主节点转到从节点必然会有一个延时的时间窗口，这个时间窗口会导致主从节点之间的数据不一致</li>
+<li><strong>延时问题</strong>。数据从写入主节点到同步至从节点中的过程需要经历一定的时间</li>
+</ul>
+<h1 id="Kafka-消息丢失"><a href="#Kafka-消息丢失" class="headerlink" title="Kafka 消息丢失"></a>Kafka 消息丢失</h1><h2 id="生产端保证"><a href="#生产端保证" class="headerlink" title="生产端保证"></a>生产端保证</h2><ul>
+<li>同步模式下ack设置-1（all）</li>
+<li>异步模式配置文件设置不限制阻塞超时时间，当缓冲区满时让生产者一直处于阻塞状态</li>
+</ul>
+<h2 id="消费端保证"><a href="#消费端保证" class="headerlink" title="消费端保证"></a>消费端保证</h2><ul>
+<li>关闭自动提交位移</li>
+</ul>
+<h1 id="Kafka中是怎么体现消息顺序性的"><a href="#Kafka中是怎么体现消息顺序性的" class="headerlink" title="Kafka中是怎么体现消息顺序性的"></a>Kafka中是怎么体现消息顺序性的</h1><p>kafka每个partition中的消息在写入时都是有序的，消费时，每个partition只能被每一个group中的一个消费者消费，保证了消费时也是有序的。<br>整个topic不保证有序。如果为了保证topic整个有序，那么将partition调整为1</p>
+<h1 id="kafka如何实现延迟队列"><a href="#kafka如何实现延迟队列" class="headerlink" title="kafka如何实现延迟队列"></a>kafka如何实现延迟队列</h1><p>基于时间轮自定义了一个用于实现延迟功能的定时器</p>
+<h1 id="Kafka消息是采用Pull模式，还是Push模式"><a href="#Kafka消息是采用Pull模式，还是Push模式" class="headerlink" title="Kafka消息是采用Pull模式，还是Push模式"></a>Kafka消息是采用Pull模式，还是Push模式</h1><p>producer将消息推送到broker，consumer从broker拉取消息</p>
+<p>Pull模式的好处是consumer可以自主决定是否批量的从broker拉取数据，consumer就可以根据自己的消费能力去决定这些策略</p>
+<p>Pull有个缺点是，如果broker没有可供消费的消息，将导致consumer不断在循环中轮询，Kafka可以设置可以让consumer阻塞知道新消息到达</p>
 
       
     </div>
@@ -515,7 +664,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">92</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -526,7 +675,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">65</span>
+                  <span class="site-state-item-count">66</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -537,7 +686,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-count">50</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -586,7 +735,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">Kafka应用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5"><span class="nav-number">2.</span> <span class="nav-text">Kafka基础概念</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">1.</span> <span class="nav-text">Kafka应用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E4%B8%8E%E4%BC%A0%E7%BB%9F-MQ-%E6%B6%88%E6%81%AF%E7%B3%BB%E7%BB%9F%E4%B9%8B%E9%97%B4%E6%9C%89%E4%B8%89%E4%B8%AA%E5%85%B3%E9%94%AE%E5%8C%BA%E5%88%AB"><span class="nav-number">2.</span> <span class="nav-text">Kafka 与传统 MQ 消息系统之间有三个关键区别</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Zookeeper-%E5%AF%B9%E4%BA%8E-Kafka-%E7%9A%84%E4%BD%9C%E7%94%A8%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">3.</span> <span class="nav-text">Zookeeper 对于 Kafka 的作用是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#kafka-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%82%A3%E4%B9%88%E5%BF%AB"><span class="nav-number">4.</span> <span class="nav-text">kafka 为什么那么快</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84%E5%8F%8A%E6%9C%AF%E8%AF%AD"><span class="nav-number">5.</span> <span class="nav-text">Kafka基础架构及术语</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#kafka%E6%9E%B6%E6%9E%84"><span class="nav-number">5.1.</span> <span class="nav-text">kafka架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka%E7%9B%B8%E5%85%B3%E6%9C%AF%E8%AF%AD"><span class="nav-number">5.2.</span> <span class="nav-text">Kafka相关术语</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#kafka-producer%EF%BC%88%E7%94%9F%E4%BA%A7%E8%80%85%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">kafka producer（生产者）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka%E6%B6%88%E6%81%AF%E5%8F%91%E9%80%81%E6%9C%89%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F"><span class="nav-number">6.1.</span> <span class="nav-text">Kafka消息发送有两种方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kafka-%E7%9A%84-ack-%E7%9A%84%E4%B8%89%E7%A7%8D%E6%9C%BA%E5%88%B6"><span class="nav-number">6.2.</span> <span class="nav-text">kafka 的 ack 的三种机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#kafka-producer%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96"><span class="nav-number">6.3.</span> <span class="nav-text">kafka producer如何优化</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#kafka-consumer%EF%BC%88%E7%94%9F%E4%BA%A7%E8%80%85%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">kafka consumer（生产者）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka%E6%B6%88%E6%81%AF%E6%B6%88%E8%B4%B9%E6%9C%89%E4%B8%A4%E4%B8%AAconsumer%E6%8E%A5%E5%8F%A3%EF%BC%8CLow-level-API%E5%92%8CHigh-level-API"><span class="nav-number">7.1.</span> <span class="nav-text">Kafka消息消费有两个consumer接口，Low-level API和High-level API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E9%87%8D%E5%A4%8D%E6%B6%88%E8%B4%B9"><span class="nav-number">7.2.</span> <span class="nav-text">消息重复消费</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E8%80%85%E6%8F%90%E4%BA%A4%E6%B6%88%E8%B4%B9%E4%BD%8D%E7%A7%BB%E6%97%B6%E6%98%AFoffset%E8%BF%98%E6%98%AFoffset-1"><span class="nav-number">7.3.</span> <span class="nav-text">消费者提交消费位移时是offset还是offset+1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E8%80%85%E5%A6%82%E4%BD%95%E4%B8%8D%E8%87%AA%E5%8A%A8%E6%8F%90%E4%BA%A4%E5%81%8F%E7%A7%BB%E9%87%8F%EF%BC%8C%E7%94%B1%E5%BA%94%E7%94%A8%E6%8F%90%E4%BA%A4"><span class="nav-number">7.4.</span> <span class="nav-text">消费者如何不自动提交偏移量，由应用提交</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka%E6%B6%88%E8%B4%B9%E8%80%85%E7%BB%84%E5%86%8D%E5%9D%87%E8%A1%A1%E9%97%AE%E9%A2%98"><span class="nav-number">7.5.</span> <span class="nav-text">Kafka消费者组再均衡问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%8D%E5%9D%87%E8%A1%A1%E5%8F%91%E7%94%9F%E7%9A%84%E5%9C%BA%E6%99%AF%E6%9C%89%E4%BB%A5%E4%B8%8B%E5%87%A0%E7%A7%8D"><span class="nav-number">7.5.1.</span> <span class="nav-text">再均衡发生的场景有以下几种</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E8%80%85%E7%BB%84%E5%86%8D%E5%9D%87%E8%A1%A1%E8%BF%87%E7%A8%8B"><span class="nav-number">7.5.2.</span> <span class="nav-text">消费者组再均衡过程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E4%BC%A0%E8%BE%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%AE%9A%E4%B9%89%E6%9C%89%E5%93%AA%E4%B8%89%E7%A7%8D"><span class="nav-number">8.</span> <span class="nav-text">数据传输的事务定义有哪三种</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E5%88%A4%E6%96%AD%E4%B8%80%E4%B8%AA%E8%8A%82%E7%82%B9%E6%98%AF%E5%90%A6%E8%BF%98%E6%B4%BB%E7%9D%80%E6%9C%89%E9%82%A3%E4%B8%A4%E4%B8%AA%E6%9D%A1%E4%BB%B6"><span class="nav-number">9.</span> <span class="nav-text">Kafka 判断一个节点是否还活着有那两个条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka%E4%B8%8D%E6%94%AF%E6%8C%81%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="nav-number">10.</span> <span class="nav-text">Kafka不支持读写分离</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka-%E6%B6%88%E6%81%AF%E4%B8%A2%E5%A4%B1"><span class="nav-number">11.</span> <span class="nav-text">Kafka 消息丢失</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E4%BA%A7%E7%AB%AF%E4%BF%9D%E8%AF%81"><span class="nav-number">11.1.</span> <span class="nav-text">生产端保证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E7%AB%AF%E4%BF%9D%E8%AF%81"><span class="nav-number">11.2.</span> <span class="nav-text">消费端保证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka%E4%B8%AD%E6%98%AF%E6%80%8E%E4%B9%88%E4%BD%93%E7%8E%B0%E6%B6%88%E6%81%AF%E9%A1%BA%E5%BA%8F%E6%80%A7%E7%9A%84"><span class="nav-number">12.</span> <span class="nav-text">Kafka中是怎么体现消息顺序性的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#kafka%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%BB%B6%E8%BF%9F%E9%98%9F%E5%88%97"><span class="nav-number">13.</span> <span class="nav-text">kafka如何实现延迟队列</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Kafka%E6%B6%88%E6%81%AF%E6%98%AF%E9%87%87%E7%94%A8Pull%E6%A8%A1%E5%BC%8F%EF%BC%8C%E8%BF%98%E6%98%AFPush%E6%A8%A1%E5%BC%8F"><span class="nav-number">14.</span> <span class="nav-text">Kafka消息是采用Pull模式，还是Push模式</span></a></li></ol></div>
             
 
           </div>

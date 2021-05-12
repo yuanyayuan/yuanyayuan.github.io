@@ -92,7 +92,7 @@
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E4%BC%98%E6%83%A0%E5%8D%B7.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E6%89%93%E6%93%82.png">
 <meta property="article:published_time" content="2021-04-02T17:18:46.000Z">
-<meta property="article:modified_time" content="2021-04-24T17:47:27.976Z">
+<meta property="article:modified_time" content="2021-05-11T15:17:44.034Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="redis">
 <meta property="article:tag" content="面试">
@@ -383,9 +383,9 @@
 <p> 因此可以用string类型进行计数，如微博的评论数、点赞数、分享数，抖音作品的收藏数，京东商品的销售量、评价数等。</p>
 </li>
 <li><p>分布式锁 String类型的<code>setnx</code>的作用是<strong>当key不存在时，设值并返回1，当key已经存在时，不设值并返回0</strong>，<strong>判断key是否存在</strong>和<strong>设值</strong>两个操作是原子性地执行的，因此可以用string类型作为分布式锁，返回1表示获得锁，返回0表示没有获得锁。</p>
-<p> 例如，为了保证定时任务的高可用，往往会同时部署多个具备相同定时任务的服务，但是业务上只希望其中的某一台服务执行定时任务，当定时任务的时间点触发时，多个服务同时竞争一个分布式锁，获取到锁的执行定时任务，没获取到的放弃执行定时任务。</p>
-<p> 定时任务执行完时通过del命令删除key即释放锁，如果担心del命令操作失败而导致锁一直未释放，可以通过expire命令给锁设置一个合理的自动过期时间，确保即使del命令失败，锁也能被释放。不过expire命令同样存在失败的可能性，如果你用的是Java语言，建议使用JedisCommands接口提供的<code>String set(String key, String value, String nxxx, String expx, long time)</code>方法，这个方法可以将setnx和expire原子性地执行，具体使用方式如下（相信其它语言的Redis客户端也应当提供了类似的方法）。</p>
- <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jedisCommands.set(<span class="string">&quot;IAmAKey&quot;</span>, <span class="string">&quot;1&quot;</span>, <span class="string">&quot;NX&quot;</span>, <span class="string">&quot;EX&quot;</span>, <span class="number">60</span>);<span class="comment">//如果&quot;IAmAKey&quot;不存	 在，则将其设值为1，同时设置60秒的自动过期时间</span></span><br></pre></td></tr></table></figure></li>
+<p> 定时任务执行完时通过del命令删除key即释放锁，如果担心del命令操作失败而导致锁一直未释放，可以通过expire命令给锁设置一个合理的自动过期时间，确保即使del命令失败，锁也能被释放。</p>
+<p> 不过expire命令同样存在失败的可能性，使用SETEX，SETEX在逻辑上等价于SET和EXPIRE合并的操作</p>
+</li>
 <li><p>限流</p>
 </li>
 <li><p>分布式Session</p>
@@ -394,7 +394,7 @@
 </li>
 </ol>
 <h2 id="列表-List"><a href="#列表-List" class="headerlink" title="列表(List)"></a>列表(List)</h2><h3 id="结构-1"><a href="#结构-1" class="headerlink" title="结构"></a>结构</h3><p>一个列表结构可以有序地存储多个字符串</p>
-<h4 id="链表数据结构，List-底层结构"><a href="#链表数据结构，List-底层结构" class="headerlink" title="链表数据结构，List 底层结构"></a>链表数据结构，List 底层结构</h4><p>链表还是常规的普通双端链表，可以支持反向查找和遍历，更方便操作，通过增删节点来灵活地调整链表的长度，双端链表在Redis内部也是被多次使用：</p>
+<h4 id="链表数据结构，List-底层结构"><a href="#链表数据结构，List-底层结构" class="headerlink" title="链表数据结构，List 底层结构"></a>链表数据结构，List 底层结构</h4><p>链表还是常规的普通双向链表，可以支持反向查找和遍历，更方便操作，通过增删节点来灵活地调整链表的长度，双端链表在Redis内部也是被多次使用：</p>
 <ol>
 <li>事务模块使用双端链表依序保存输入的命令。</li>
 <li>服务器模块使用双端链表来保存多个客户端。</li>
@@ -439,7 +439,7 @@
 <h5 id="如何选用"><a href="#如何选用" class="headerlink" title="如何选用"></a>如何选用</h5><blockquote>
 <p>对于排行榜和最新列表两种应用场景，那为什么还要使用list类型去实现排行榜或最新列表呢，直接用sorted set类型不是更好吗？</p>
 </blockquote>
-<p>原因是sorted <strong>set类型占用的内存容量是list类型的数倍之多</strong>，对于<strong>列表数量不多</strong>的情况，可以用sorted set类型来实现，比如上文中举例的打擂金曲排行榜，每天全国只有一份，两种数据类型的内存容量差距可以忽略不计，但是如果要实现某首歌曲的翻唱作品地区排行榜，数百万的歌曲，300多个地区，会产生数量庞大的榜单，或者数量更加庞大的朋友圈点赞列表，就需要慎重地考虑容量的问题了</p>
+<p>原因是<strong>sorted set类型占用的内存容量是list类型的数倍之多</strong>，对于<strong>列表数量不多</strong>的情况，可以用sorted set类型来实现，比如上文中举例的打擂金曲排行榜，每天全国只有一份，两种数据类型的内存容量差距可以忽略不计，但是如果要实现某首歌曲的翻唱作品地区排行榜，数百万的歌曲，300多个地区，会产生数量庞大的榜单，或者数量更加庞大的朋友圈点赞列表，就需要慎重地考虑容量的问题了</p>
 <h2 id="hash类型"><a href="#hash类型" class="headerlink" title="hash类型"></a>hash类型</h2><h3 id="结构-2"><a href="#结构-2" class="headerlink" title="结构"></a>结构</h3><p>hash类型是一个string类型的field和value的映射表</p>
 <h3 id="命令-2"><a href="#命令-2" class="headerlink" title="命令"></a>命令</h3><ul>
 <li>hdel (HDEL key field1 [field2]) 删除一个或多个哈希表字段</li>
@@ -504,7 +504,7 @@
 <p>如：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1. sinter命令可以获得A和B两个用户的共同好友</span><br><span class="line">2. sismember命令可以判断A是否是B的好友</span><br><span class="line">3. scard命令可以获取好友数量</span><br><span class="line">4. 关注时，smove命令可以将B从A的粉丝集合转移到A的好友集合</span><br></pre></td></tr></table></figure>
 <p><strong>需要注意</strong>:</p>
-<p>如果你用的是<strong>Redis Cluster集群</strong>，对于<strong>sinter、smove这种操作     多个key的命令</strong>，要求这两个key必须存储在<strong>同一个slot（槽位）中</strong>，否则会报出<code>(error) CROSSSLOT Keys in request don&#39;t hash to the same slot </code>错误。</p>
+<p>如果你用的是<strong>Redis Cluster集群</strong>，对于<strong>sinter、smove这种操作多个key的命令</strong>，要求这两个key必须存储在<strong>同一个slot（槽位）中</strong>，否则会报出<code>(error) CROSSSLOT Keys in request don&#39;t hash to the same slot </code>错误。</p>
 <p>Redis Cluster一共有<strong>16384</strong>个slot，每个key都是通过哈希算法CRC16(key)获取数值哈希，再模16384来定位slot的。要使得两个key处于同一slot，除了两个key一模一样，还有没有别的方法呢？</p>
 <p>Redis提供了一种<strong>Hash Tag</strong>的功能，在key中使用<code>&#123;&#125;</code>括起key中的一部分，在进行<code>CRC16(key) mod 16384</code>的过程中，只会对<code>&#123;&#125;</code>内的字符串计算，例如<strong>friend_set:{123456}<strong>和</strong>fans_set:{123456}<strong>，分别表示</strong>用户123456</strong>的<strong>好友集合</strong>和<strong>粉丝集合</strong>，在定位slot时，只对<code>&#123;&#125;</code>内的<code>123456</code>进行计算，所以这两个集合肯定是在同一个slot内的，当用户123456关注某个粉丝时，就可以通过smove命令将这个粉丝从用户123456的粉丝集合移动到好友集合。</p>
 <p>相比于通过srem命令先将这个粉丝从粉丝集合中删除，再通过sadd命令将这个粉丝加到好友集合，smove命令的优势是它是<strong>原子性</strong>的，不会出现这个粉丝从粉丝集合中被删除，却没有加到好友集合的情况。</p>
@@ -532,12 +532,12 @@
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZADD KEY_NAME SCORE1 VALUE1.. SCOREN VALUEN</span><br></pre></td></tr></table></figure>
 
-<ol>
+<ol start="2">
 <li>Zincrby 对有序集合中指定成员的分数加上增量 increment</li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZINCRBY key increment member</span><br></pre></td></tr></table></figure>
 
-<ol>
+<ol start="3">
 <li>Zrange 返回有序集中，指定区间内的成员</li>
 </ol>
 <p>其中成员的位置按分数值递增(从小到大)来排序。 具有相同分数值的成员按字典序(lexicographical order )来排列。</p>
@@ -545,41 +545,42 @@
 <p>你也可以使用负数下标，以 -1 表示最后一个成员， -2 表示倒数第二个成员，以此类推。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZRANGE key start stop [WITHSCORES]</span><br></pre></td></tr></table></figure>
 
-<ol>
+<ol start="4">
 <li>Zrevrange 命令返回有序集中，指定区间内的成员。</li>
 </ol>
 <p><strong>下标参数</strong> start 和 stop 其中成员的位置按分数值递减(从大到小)来排列。 具有相同分数值的成员按字典序的逆序(reverse lexicographical order)排列。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZREVRANGE key start stop [WITHSCORES]</span><br></pre></td></tr></table></figure>
 
-<ol>
+<ol start="5">
 <li>Zrem 命令用于移除有序集中的一个或多个成员，不存在的成员将被忽略。 当 key 存在但不是有序集类型时，返回一个错误。</li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZREM key member [member ...]</span><br></pre></td></tr></table></figure>
 
-<ol>
+<ol start="6">
 <li>Zcard 命令用于计算集合中元素的数量。</li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZCARD KEY_NAME</span><br></pre></td></tr></table></figure>
 
-<ol>
-<li></li>
+<ol start="7">
+<li>Zrangebyscore 返回有序集合中指定分数区间的成员列表。有序集成员按分数值递增(从小到大)次序排列。</li>
 </ol>
-<p>Zrangebyscore 返回有序集合中指定分数区间的成员列表。有序集成员按分数值递增(从小到大)次序排列。</p>
 <p>具有相同分数值的成员按字典序来排列(该属性是有序集提供的，不需要额外的计算)。</p>
 <p>默认情况下，<strong>区间的取值使用闭区间 (小于等于或大于等于)，你也可以通过给参数前增加 ( 符号来使用可选的开区间 (小于或大于)。</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li>ZRANGEBYSCORE zset (1 5 == 1 &lt; score &lt;= 5</li>
-<li>ZRANGEBYSCORE zset (5 (10 == 5 &lt; score &lt; 10</li>
+<li>ZRANGEBYSCORE zset (1 5 == 1 &lt; score &lt;= 5）</li>
+<li>ZRANGEBYSCORE zset (5 (10 == 5 &lt; score &lt; 10）</li>
 <li>ZRANGEBYSCORE salary -inf +inf # 显示整个有序集</li>
 <li>ZRANGEBYSCORE salary -inf +inf WITHSCORES #显示整个有序集及成员的 score 值</li>
 <li>ZRANGEBYSCORE salary -inf 5000 WITHSCORES # 显示工资 &lt;=5000 的所有成员</li>
 <li>ZRANGEBYSCORE salary (5000 400000 # 显示工资大于 5000 小于等于 400000 的成员</li>
 </ul>
-<ol>
-<li>Zrevrangebyscore 返回有序集中指定分数区间内的所有的成员。有序集成员按分数值递减(从大到小)的次序排列。 具有相同分数值的成员按字典序的逆序(reverse lexicographical order )排列。</li>
-<li>Zcount 命令用于计算有序集合中指定分数区间的成员数量。</li>
+<ol start="8">
+<li><p>Zrevrangebyscore 返回有序集中指定分数区间内的所有的成员。有序集成员按分数值递减(从大到小)的次序排列。 具有相同分数值的成员按字典序的逆序(reverse lexicographical order )排列。</p>
+</li>
+<li><p>Zcount 命令用于计算有序集合中指定分数区间的成员数量。</p>
+</li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZCOUNT key min max</span><br></pre></td></tr></table></figure>
 
@@ -713,7 +714,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">92</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -724,7 +725,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">65</span>
+                  <span class="site-state-item-count">66</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -735,7 +736,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-count">50</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

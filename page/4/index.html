@@ -261,6 +261,320 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/19/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/19/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" itemprop="url">分步式-分库分表</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-19T16:42:38+08:00">
+                2021-04-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">分步式 - 分库分表</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="垂直切分、水平切分"><a href="#垂直切分、水平切分" class="headerlink" title="垂直切分、水平切分"></a>垂直切分、水平切分</h1><h2 id="垂直切分"><a href="#垂直切分" class="headerlink" title="垂直切分"></a>垂直切分</h2><ul>
+<li>按业务去切分</li>
+<li>每种业务一个数据库</li>
+<li>不同业务之间，禁止跨库join联查</li>
+</ul>
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>拆分后业务清晰，拆分规则明确</li>
+<li>系统之间容易扩展和整合</li>
+<li>数据维护简单</li>
+</ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>业务之间无法join，只能通过接口调用，提升了系统复杂度</li>
+<li>跨库事务难以处理</li>
+<li>垂直切分后，某些业务数据过于庞大，仍然存在单体性能瓶颈</li>
+</ul>
+<h2 id="水平切分"><a href="#水平切分" class="headerlink" title="水平切分"></a>水平切分</h2><ul>
+<li>将一张表的数据按照某些规则分到不同的数据库中</li>
+<li>需确定分片的规则</li>
+<li>使用分片字段查询时，可确定实体库，其他字段查询，查询所有表</li>
+</ul>
+<h3 id="优点-1"><a href="#优点-1" class="headerlink" title="优点"></a>优点</h3><ul>
+<li>解决单库大数据、高并发的性能瓶颈;</li>
+<li>拆分规则封装好，对应用端几乎透明，开发人员无需关心拆分细节</li>
+</ul>
+<h3 id="缺点-1"><a href="#缺点-1" class="headerlink" title="缺点"></a>缺点</h3><ul>
+<li>拆分规则很难抽象（按用户拆分还是按订单拆分）</li>
+<li>分片事务一致性难以解决</li>
+<li>二次扩展时、数据迁移、维护难度大</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/19/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-MySQL%E5%AE%89%E8%A3%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/19/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-MySQL%E5%AE%89%E8%A3%85/" itemprop="url">软件安装-MySQL安装</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-19T16:34:52+08:00">
+                2021-04-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-MySQL%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
+                    <span itemprop="name">软件安装 - MySQL安装</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">wget http://dev.mysql.com/get/mysql80-community-release-el7-3.noarch.rpm</span><br><span class="line">rpm -ivh mysql80-community-release-el7-3.noarch.rpm</span><br><span class="line">yum install mysql-community-server</span><br><span class="line"><span class="meta">#</span><span class="bash"> 成功安装之后重启mysql服务</span></span><br><span class="line">service mysqld restart</span><br><span class="line"><span class="meta">#</span><span class="bash"> 命令查看数据库的密码</span></span><br><span class="line">cat /var/log/mysqld.log | grep password </span><br><span class="line"><span class="meta">#</span><span class="bash"> 登录输入查看出来的密码</span></span><br><span class="line">mysql -uroot -p</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> ALTER USER <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span> IDENTIFIED WITH mysql_native_password BY <span class="string">&#x27;命令查看数据库的密码&#x27;</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 修改密码策略</span></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> SHOW VARIABLES LIKE <span class="string">&#x27;validate_password%&#x27;</span>;</span> </span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> <span class="built_in">set</span> global validate_password.policy=LOW;</span> </span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> <span class="built_in">set</span> global validate_password.length=5;</span></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> ALTER USER <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;localhost&#x27;</span> IDENTIFIED WITH mysql_native_password BY <span class="string">&#x27;12345&#x27;</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 设置允许远程用户访问</span></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> grant all privileges on *.* to <span class="string">&#x27;root&#x27;</span>@<span class="string">&#x27;%&#x27;</span> with grant option;</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 报错：ERROR 1410 (42000): You are not allowed to create a user with GRANT</span></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> use mysql;</span></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> update user <span class="built_in">set</span> host = <span class="string">&#x27;%&#x27;</span> <span class="built_in">where</span> user = <span class="string">&#x27;root&#x27;</span> and host=<span class="string">&#x27;localhost&#x27;</span>;</span></span><br><span class="line"><span class="meta">mysql&gt;</span><span class="bash"> flush privileges;</span>    </span><br></pre></td></tr></table></figure>
+
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/19/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -675,20 +989,48 @@
 <p>ARGV[1] – 传入的值</p>
 <h2 id="简单例子代码"><a href="#简单例子代码" class="headerlink" title="简单例子代码"></a>简单例子代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisLockController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> RedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;redisLock&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">redisLock</span><span class="params">()</span></span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;我进入了方法&quot;</span>);</span><br><span class="line">        String key = <span class="string">&quot;redisKey&quot;</span>;</span><br><span class="line">        String value = UUID.randomUUID().toString();</span><br><span class="line">        RedisCallback&lt;Boolean&gt; redisCallback = connection -&gt; &#123;</span><br><span class="line">            <span class="comment">//设置NX</span></span><br><span class="line">            RedisStringCommands.SetOption setOption = RedisStringCommands.SetOption.SET_IF_ABSENT;</span><br><span class="line">            <span class="comment">//设置过期时间</span></span><br><span class="line">            Expiration expiration = Expiration.seconds(<span class="number">30</span>);</span><br><span class="line">            <span class="comment">//序列化key</span></span><br><span class="line">            <span class="keyword">byte</span>[] redisKey = redisTemplate.getKeySerializer().serialize(key);</span><br><span class="line">            <span class="comment">//序列化value</span></span><br><span class="line">            <span class="keyword">byte</span>[] redisValue = redisTemplate.getValueSerializer().serialize(value);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">assert</span> redisKey != <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">assert</span> redisValue != <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">return</span> connection.set(redisKey, redisValue, expiration, setOption);</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">//获取分布式锁</span></span><br><span class="line">        Boolean lock = (Boolean)redisTemplate.execute(redisCallback);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(lock!=<span class="keyword">null</span> &amp;&amp; lock)&#123;</span><br><span class="line">            log.info(<span class="string">&quot;我进入了锁&quot;</span>);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">15000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">                String script = <span class="string">&quot;if redis.call(\&quot;get\&quot;,KEYS[1]) == ARGV[1] then\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;    return redis.call(\&quot;del\&quot;,KEYS[1])\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;else\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;    return 0\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;end&quot;</span>;</span><br><span class="line">                List&lt;String&gt; keys = Collections.singletonList(key);</span><br><span class="line">                RedisScript&lt;Boolean&gt; redisScript = RedisScript.of(script,Boolean.class);</span><br><span class="line">                Boolean result = (Boolean)redisTemplate.execute(redisScript, keys, value);</span><br><span class="line">                log.info(<span class="string">&quot;释放锁的结果：&quot;</span> + result);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        log.info(<span class="string">&quot;方法执行完成&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;方法执行完成&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h1 id="基于Redisson实现分布式锁"><a href="#基于Redisson实现分布式锁" class="headerlink" title="基于Redisson实现分布式锁"></a>基于Redisson实现分布式锁</h1><h2 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Redisson%E5%8E%9F%E7%90%86.png"></p>
-<h3 id="加锁机制"><a href="#加锁机制" class="headerlink" title="加锁机制"></a>加锁机制</h3><p>线程去获取锁，获取成功: 根据hash节点选择一台机器执行lua脚本，保存数据到redis数据库。</p>
-<blockquote>
-<p>注意，仅仅只是选择一台机器！</p>
-</blockquote>
-<p>线程去获取锁，获取失败: 一直通过while循环尝试获取锁，获取成功后，执行lua脚本，保存数据到redis数据库。</p>
-<h3 id="为啥要用lua脚本"><a href="#为啥要用lua脚本" class="headerlink" title="为啥要用lua脚本"></a>为啥要用lua脚本</h3><p>一大坨复杂的业务逻辑，可以通过封装在lua脚本中发送给redis，保证这段复杂业务逻辑执行的原子性。</p>
-<h3 id="watch-dog自动延期机制"><a href="#watch-dog自动延期机制" class="headerlink" title="watch dog自动延期机制"></a>watch dog自动延期机制</h3><p>客户端加锁的key默认生存时间是30秒，如果超过了30秒，客户端还想一直持有这把锁，怎么办呢？</p>
-<p>只要客户端一旦加锁成功，就会启动一个watch dog看门狗，他是一个后台线程，每到过期时间1/3（默认生存时间是30s的话，就是10s）就去重新刷一次，如果客户端还持有锁key，那么就会不断的延长锁key的生存时间，如果key不存在则停止刷新。</p>
-<h3 id="可重入锁"><a href="#可重入锁" class="headerlink" title="可重入锁"></a>可重入锁</h3><p>1、Redis存储锁的数据类型是 Hash类型<br>2、Hash数据类型的key值包含了当前线程信息。</p>
-<h3 id="释放锁机制"><a href="#释放锁机制" class="headerlink" title="释放锁机制"></a>释放锁机制</h3><p>如果执行lock.unlock()，就可以释放分布式锁，此时的业务逻辑其实很简单。</p>
-<p>就是每次都对myLock数据结构中的那个加锁次数减1。</p>
-<p>如果发现加锁次数是0了，说明这个客户端已经不再持有锁了，此时就会用： “del myLock”命令，从redis里删除这个key。</p>
-<h3 id="简单的例子"><a href="#简单的例子" class="headerlink" title="简单的例子"></a>简单的例子</h3><ul>
+<h1 id="基于Redisson实现分布式锁"><a href="#基于Redisson实现分布式锁" class="headerlink" title="基于Redisson实现分布式锁"></a>基于Redisson实现分布式锁</h1><p><strong>Redisson 适用于</strong>：分布式应用，分布式缓存，分布式回话管理，分布式服务（任务，延迟任务，执行器），分布式redis客户端。</p>
+<h2 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Redisson%E5%8E%9F%E7%90%86.png"></p>
+<h3 id="可重入锁"><a href="#可重入锁" class="headerlink" title="可重入锁"></a>可重入锁</h3><p>Redis分布式锁，其实不具有可重入性</p>
+<h3 id="获取锁实例"><a href="#获取锁实例" class="headerlink" title="获取锁实例"></a>获取锁实例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RLock lock = client.getLock(<span class="string">&quot;lock1&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> RLock <span class="title">getLock</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">RedissonLock</span>(connectionManager.<span class="built_in">getCommandExecutor</span>(), name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>RedissonLock</code>构造方法中，主要初始化一些属性</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> RedissonLock(CommandAsyncExecutor commandExecutor, String name) &#123;</span><br><span class="line">    <span class="keyword">super</span>(commandExecutor, name);</span><br><span class="line">    <span class="comment">//命令执行器</span></span><br><span class="line">    <span class="keyword">this</span>.commandExecutor = commandExecutor;</span><br><span class="line">    <span class="comment">//UUID字符串</span></span><br><span class="line">    <span class="keyword">this</span>.id = commandExecutor.getConnectionManager().getId();</span><br><span class="line">    <span class="comment">//内部锁过期时间</span></span><br><span class="line">    <span class="keyword">this</span>.internalLockLeaseTime = commandExecutor.</span><br><span class="line">                getConnectionManager().getCfg().getLockWatchdogTimeout();</span><br><span class="line">    <span class="keyword">this</span>.entryName = id + <span class="string">&quot;:&quot;</span> + name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="加锁"><a href="#加锁" class="headerlink" title="加锁"></a>加锁</h3><p>调用<code>lock</code>方法，定位到<code>lockInterruptibly</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lockInterruptibly</span><span class="params">(<span class="keyword">long</span> leaseTime, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//当前线程ID</span></span><br><span class="line">    <span class="keyword">long</span> threadId = Thread.currentThread().getId();</span><br><span class="line">    <span class="comment">//尝试获取锁</span></span><br><span class="line">    Long ttl = tryAcquire(leaseTime, unit, threadId);</span><br><span class="line">    <span class="comment">// 如果ttl为空，则证明获取锁成功</span></span><br><span class="line">    <span class="keyword">if</span> (ttl == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//如果获取锁失败，则订阅到对应这个锁的channel</span></span><br><span class="line">    RFuture&lt;RedissonLockEntry&gt; future = subscribe(threadId);</span><br><span class="line">    commandExecutor.syncSubscription(future);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="comment">//再次尝试获取锁</span></span><br><span class="line">            ttl = tryAcquire(leaseTime, unit, threadId);</span><br><span class="line">            <span class="comment">//ttl为空，说明成功获取锁，返回</span></span><br><span class="line">            <span class="keyword">if</span> (ttl == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//ttl大于0 则等待ttl时间后继续尝试获取</span></span><br><span class="line">            <span class="keyword">if</span> (ttl &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                getEntry(threadId).getLatch().tryAcquire(ttl, TimeUnit.MILLISECONDS);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                getEntry(threadId).getLatch().acquire();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="comment">//取消对channel的订阅</span></span><br><span class="line">        unsubscribe(future, threadId);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//get(lockAsync(leaseTime, unit));</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>先调用<code>tryAcquire</code>来获取锁，</li>
+<li>如果返回值ttl为空，则证明加锁成功，返回；</li>
+<li>如果不为空，则证明加锁失败。会订阅这个锁的Channel，等待锁释放的消息，然后重新尝试获取锁</li>
+</ul>
+<h3 id="获取锁"><a href="#获取锁" class="headerlink" title="获取锁"></a>获取锁</h3><p><code>tryAcquire</code>方法,它有两种处理方式，一种是带有过期时间的锁，一种是不带过期时间的锁</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> &lt;T&gt; <span class="function">RFuture&lt;Long&gt; <span class="title">tryAcquireAsync</span><span class="params">(<span class="keyword">long</span> leaseTime, TimeUnit unit, <span class="keyword">final</span> <span class="keyword">long</span> threadId)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//如果带有过期时间，则按照普通方式获取锁</span></span><br><span class="line">    <span class="keyword">if</span> (leaseTime != -<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> tryLockInnerAsync(leaseTime, unit, threadId, RedisCommands.EVAL_LONG);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//先按照30秒的过期时间来执行获取锁的方法</span></span><br><span class="line">    RFuture&lt;Long&gt; ttlRemainingFuture = tryLockInnerAsync(</span><br><span class="line">        commandExecutor.getConnectionManager().getCfg().getLockWatchdogTimeout(),</span><br><span class="line">        TimeUnit.MILLISECONDS, threadId, RedisCommands.EVAL_LONG);</span><br><span class="line">        </span><br><span class="line">    <span class="comment">//如果还持有这个锁，则开启定时任务不断刷新该锁的过期时间</span></span><br><span class="line">    ttlRemainingFuture.addListener(<span class="keyword">new</span> FutureListener&lt;Long&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operationComplete</span><span class="params">(Future&lt;Long&gt; future)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (!future.isSuccess()) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            Long ttlRemaining = future.getNow();</span><br><span class="line">            <span class="comment">// lock acquired</span></span><br><span class="line">            <span class="keyword">if</span> (ttlRemaining == <span class="keyword">null</span>) &#123;</span><br><span class="line">                scheduleExpirationRenewal(threadId);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> ttlRemainingFuture;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>tryLockInnerAsync</code>方法是真正执行获取锁的逻辑，是一段LUA脚本代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;T&gt; <span class="function">RFuture&lt;T&gt; <span class="title">tryLockInnerAsync</span><span class="params">(<span class="keyword">long</span> leaseTime, TimeUnit unit,     </span></span></span><br><span class="line"><span class="function"><span class="params">                            <span class="keyword">long</span> threadId, RedisStrictCommand&lt;T&gt; command)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//过期时间</span></span><br><span class="line">        internalLockLeaseTime = unit.toMillis(leaseTime);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> commandExecutor.evalWriteAsync(getName(), LongCodec.INSTANCE, command,</span><br><span class="line">                  <span class="comment">//如果锁不存在，则通过hset设置它的值，并设置过期时间</span></span><br><span class="line">                  <span class="string">&quot;if (redis.call(&#x27;exists&#x27;, KEYS[1]) == 0) then &quot;</span> +</span><br><span class="line">                      <span class="string">&quot;redis.call(&#x27;hset&#x27;, KEYS[1], ARGV[2], 1); &quot;</span> +</span><br><span class="line">                      <span class="string">&quot;redis.call(&#x27;pexpire&#x27;, KEYS[1], ARGV[1]); &quot;</span> +</span><br><span class="line">                      <span class="string">&quot;return nil; &quot;</span> +</span><br><span class="line">                  <span class="string">&quot;end; &quot;</span> +</span><br><span class="line">                  <span class="comment">//如果锁已存在，并且锁的是当前线程，则通过hincrby给数值递增1</span></span><br><span class="line">                  <span class="string">&quot;if (redis.call(&#x27;hexists&#x27;, KEYS[1], ARGV[2]) == 1) then &quot;</span> +</span><br><span class="line">                      <span class="string">&quot;redis.call(&#x27;hincrby&#x27;, KEYS[1], ARGV[2], 1); &quot;</span> +</span><br><span class="line">                      <span class="string">&quot;redis.call(&#x27;pexpire&#x27;, KEYS[1], ARGV[1]); &quot;</span> +</span><br><span class="line">                      <span class="string">&quot;return nil; &quot;</span> +</span><br><span class="line">                  <span class="string">&quot;end; &quot;</span> +</span><br><span class="line">                  <span class="comment">//如果锁已存在，但并非本线程，则返回过期时间ttl</span></span><br><span class="line">                  <span class="string">&quot;return redis.call(&#x27;pttl&#x27;, KEYS[1]);&quot;</span>,</span><br><span class="line">        Collections.&lt;Object&gt;singletonList(getName()), </span><br><span class="line">                internalLockLeaseTime, getLockName(threadId));</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>LUA有三个判断</p>
+<p><strong>通过exists判断，如果锁不存在，则设置值和过期时间，加锁成功</strong></p>
+<p><strong>通过hexists判断，如果锁已存在，并且锁的是当前线程，则证明是重入锁，加锁成功</strong></p>
+<p><strong>如果锁已存在，但锁的不是当前线程，则证明有其他线程持有锁。返回当前锁的过期时间，加锁失败</strong></p>
+<p>加锁成功后，在redis的内存数据中，就有一条hash结构的数据。Key为锁的名称；field为随机字符串+线程ID；值为1。如果同一线程多次调用<code>lock</code>方法，值递增1。</p>
+<h3 id="解锁"><a href="#解锁" class="headerlink" title="解锁"></a>解锁</h3><p>调用<code>unlock</code>方法来解锁</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> RFuture&lt;Void&gt; <span class="title">unlockAsync</span><span class="params">(<span class="keyword">final</span> <span class="keyword">long</span> threadId)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> RPromise&lt;Void&gt; result = <span class="keyword">new</span> RedissonPromise&lt;Void&gt;();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//解锁方法</span></span><br><span class="line">    RFuture&lt;Boolean&gt; future = unlockInnerAsync(threadId);</span><br><span class="line"></span><br><span class="line">    future.addListener(<span class="keyword">new</span> FutureListener&lt;Boolean&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operationComplete</span><span class="params">(Future&lt;Boolean&gt; future)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (!future.isSuccess()) &#123;</span><br><span class="line">                cancelExpirationRenewal(threadId);</span><br><span class="line">                result.tryFailure(future.cause());</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//获取返回值</span></span><br><span class="line">            Boolean opStatus = future.getNow();</span><br><span class="line">            <span class="comment">//如果返回空，则证明解锁的线程和当前锁不是同一个线程，抛出异常</span></span><br><span class="line">            <span class="keyword">if</span> (opStatus == <span class="keyword">null</span>) &#123;</span><br><span class="line">                IllegalMonitorStateException cause = </span><br><span class="line">                    <span class="keyword">new</span> IllegalMonitorStateException(<span class="string">&quot;</span></span><br><span class="line"><span class="string">                        attempt to unlock lock, not locked by current thread by node id: &quot;</span></span><br><span class="line">                        + id + <span class="string">&quot; thread-id: &quot;</span> + threadId);</span><br><span class="line">                result.tryFailure(cause);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//解锁成功，取消刷新过期时间的那个定时任务</span></span><br><span class="line">            <span class="keyword">if</span> (opStatus) &#123;</span><br><span class="line">                cancelExpirationRenewal(<span class="keyword">null</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            result.trySuccess(<span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>unlockInnerAsync</code>方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> RFuture&lt;Boolean&gt; <span class="title">unlockInnerAsync</span><span class="params">(<span class="keyword">long</span> threadId)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> commandExecutor.evalWriteAsync(getName(), LongCodec.INSTANCE, EVAL,</span><br><span class="line">    </span><br><span class="line">            <span class="comment">//如果锁已经不存在， 发布锁释放的消息</span></span><br><span class="line">            <span class="string">&quot;if (redis.call(&#x27;exists&#x27;, KEYS[1]) == 0) then &quot;</span> +</span><br><span class="line">                <span class="string">&quot;redis.call(&#x27;publish&#x27;, KEYS[2], ARGV[1]); &quot;</span> +</span><br><span class="line">                <span class="string">&quot;return 1; &quot;</span> +</span><br><span class="line">            <span class="string">&quot;end;&quot;</span> +</span><br><span class="line">            <span class="comment">//如果释放锁的线程和已存在锁的线程不是同一个线程，返回null</span></span><br><span class="line">            <span class="string">&quot;if (redis.call(&#x27;hexists&#x27;, KEYS[1], ARGV[3]) == 0) then &quot;</span> +</span><br><span class="line">                <span class="string">&quot;return nil;&quot;</span> +</span><br><span class="line">            <span class="string">&quot;end; &quot;</span> +</span><br><span class="line">            <span class="comment">//通过hincrby递减1的方式，释放一次锁</span></span><br><span class="line">            <span class="comment">//若剩余次数大于0 ，则刷新过期时间</span></span><br><span class="line">            <span class="string">&quot;local counter = redis.call(&#x27;hincrby&#x27;, KEYS[1], ARGV[3], -1); &quot;</span> +</span><br><span class="line">            <span class="string">&quot;if (counter &gt; 0) then &quot;</span> +</span><br><span class="line">                <span class="string">&quot;redis.call(&#x27;pexpire&#x27;, KEYS[1], ARGV[2]); &quot;</span> +</span><br><span class="line">                <span class="string">&quot;return 0; &quot;</span> +</span><br><span class="line">            <span class="comment">//否则证明锁已经释放，删除key并发布锁释放的消息</span></span><br><span class="line">            <span class="string">&quot;else &quot;</span> +</span><br><span class="line">                <span class="string">&quot;redis.call(&#x27;del&#x27;, KEYS[1]); &quot;</span> +</span><br><span class="line">                <span class="string">&quot;redis.call(&#x27;publish&#x27;, KEYS[2], ARGV[1]); &quot;</span> +</span><br><span class="line">                <span class="string">&quot;return 1; &quot;</span>+</span><br><span class="line">            <span class="string">&quot;end; &quot;</span> +</span><br><span class="line">            <span class="string">&quot;return nil;&quot;</span>,</span><br><span class="line">    Arrays.&lt;Object&gt;asList(getName(), getChannelName()), </span><br><span class="line">        LockPubSub.unlockMessage, internalLockLeaseTime, getLockName(threadId));</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有三个判断：</p>
+<ul>
+<li><strong>如果锁已经不存在，通过publish发布锁释放的消息，解锁成功</strong></li>
+<li><strong>如果解锁的线程和当前锁的线程不是同一个，解锁失败，抛出异常</strong></li>
+<li><strong>通过hincrby递减1，先释放一次锁。若剩余次数还大于0，则证明当前锁是重入锁，刷新过期时间；若剩余次数小于0，删除key并发布锁释放的消息，解锁成功</strong></li>
+</ul>
+<h3 id="简单例子"><a href="#简单例子" class="headerlink" title="简单例子"></a>简单例子</h3><ul>
 <li>引入redission依赖<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.redisson<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>redisson-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.13.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
 <li>SpringBoot集成Redission<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">redis:</span></span><br><span class="line">    <span class="comment"># Redis数据库索引（默认为0）</span></span><br><span class="line">    <span class="attr">database:</span> <span class="number">0</span></span><br><span class="line">    <span class="comment"># Redis服务器地址</span></span><br><span class="line">    <span class="attr">host:</span> <span class="string">localhost</span></span><br><span class="line">    <span class="comment"># Redis服务器连接端口</span></span><br><span class="line">    <span class="attr">port:</span> <span class="number">6379</span></span><br><span class="line">    <span class="comment"># Redis服务器连接密码（默认为空）</span></span><br><span class="line">    <span class="attr">password:</span></span><br><span class="line">    <span class="attr">lettuce:</span></span><br><span class="line">      <span class="attr">pool:</span></span><br><span class="line">        <span class="comment"># 连接池最大连接数（使用负值表示没有限制） 默认 8</span></span><br><span class="line">        <span class="attr">max-active:</span> <span class="number">8</span></span><br><span class="line">        <span class="comment">#  连接池最大阻塞等待时间（使用负值表示没有限制） 默认 -1</span></span><br><span class="line">        <span class="attr">max-wait:</span> <span class="number">-1</span></span><br><span class="line">        <span class="comment"># 连接池中的最大空闲连接 默认 8</span></span><br><span class="line">        <span class="attr">max-idle:</span> <span class="number">8</span></span><br><span class="line">        <span class="comment"># 连接池中的最小空闲连接 默认 0</span></span><br><span class="line">        <span class="attr">min-idle:</span> <span class="number">0</span></span><br><span class="line">    <span class="comment"># 连接超时时间（毫秒）</span></span><br><span class="line">    <span class="attr">timeout:</span> <span class="number">1000</span></span><br></pre></td></tr></table></figure>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedissionLockController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedissonClient redisson;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;redissonLock&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">redissonLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        RLock rLock = redisson.getLock(<span class="string">&quot;order&quot;</span>);</span><br><span class="line">        log.info(<span class="string">&quot;我进入了方法！！&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            rLock.lock(<span class="number">30</span>, TimeUnit.SECONDS);</span><br><span class="line">            log.info(<span class="string">&quot;我获得了锁！！！&quot;</span>);</span><br><span class="line">            Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">            log.info(<span class="string">&quot;我释放了锁！！&quot;</span>);</span><br><span class="line">            rLock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">        log.info(<span class="string">&quot;方法执行完成！！&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;方法执行完成！！&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
@@ -2515,404 +2857,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/16/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/16/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/" itemprop="url">分步式-分步式会话</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-16T16:03:07+08:00">
-                2021-04-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/" itemprop="url" rel="index">
-                    <span itemprop="name">分步式 - 分步式会话</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="什么是会话"><a href="#什么是会话" class="headerlink" title="什么是会话"></a>什么是会话</h1><p>会话Session代表的是客户端与服务器的一次交互过程，</p>
-<p>这个过程可以是连续也可以是时断时续的。曾经的Servlet时代（jsp），一旦用户与服务端交互，服务器tomcat就会为用户创建一个session，同时前端会有一个sessionid，每次交互都会携带。</p>
-<p>如此一来，服务器只要在接到用户请求时候，就可以拿到jsessionid，并根据这个ID在内存中找到对应的会话session，当拿到session会话后，那么我们就可以操作会话了。会话存活期间，我们就能认为用户一直处于正在使用着网站的状态，一旦session超期过时，那么就可以认为用户已经离开网站，停止交互了。用户的身份信息，我们也是通过session来判断的，在session中可以保存不同用户的信息</p>
-<p>操作<code>session</code>的代码</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(&quot;/setSession&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">setSession</span><span class="params">(HttpServletRequest request)</span> </span>&#123;</span><br><span class="line">    HttpSession session = request.getSession();</span><br><span class="line">    session.setAttribute(<span class="string">&quot;userInfo&quot;</span>, <span class="string">&quot;new user&quot;</span>);</span><br><span class="line">    session.setMaxInactiveInterval(<span class="number">3600</span>);</span><br><span class="line">    session.getAttribute(<span class="string">&quot;userInfo&quot;</span>);</span><br><span class="line">    <span class="comment">// session.removeAttribute(&quot;userInfo&quot;);</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;ok&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="无状态会话"><a href="#无状态会话" class="headerlink" title="无状态会话"></a>无状态会话</h2><p>HTTP请求是无状态的，用户向服务端发起多个请求，服务端并不会知道这多次请求都是来自同一用户，这个就是无状态的。cookie的出现就是为了有状态的记录用户。</p>
-<p>常见的，ios与服务端交互，安卓与服务端交互，前后端分离，小程序与服务端交互，他们都是通过发起http来调用接口数据的，每次交互服务端都不会拿到客户端的状态，但是我们可以通过手段去处理，比如每次用户发起请求的时候携带一个userid或者user-token，如此一来，就能让服务端根据用户id或token来获得相应的数据。每个用户的下一次请求都能被服务端识别来自同一个用户。</p>
-<h2 id="有状态会话"><a href="#有状态会话" class="headerlink" title="有状态会话"></a>有状态会话</h2><p>Tomcat中的会话，就是有状态的，一旦用户和服务端交互，就有会话，会话保存了用户的信息，这样用户就“有状态”了，服务端会和每个客户端都保持着这样的一层关系，这个由容器来管理（也就是tomcat），这个session会话是保存到内存空间里的，如此一来，当不同的用户访问服务端，那么就能通过会话知道谁是谁了。tomcat会话的出现也是为了让http请求变的有状态。如果用户不再和服务端交互，那么会话超时则消失，结束了他的生命周期。如此一来，每个用户其实都会有一个会话被维护，这就是有状态会话。 场景：在传统项目或者jsp项目中是使用的最多的session都是有状态的，session的存在就是为了弥补http的无状态。</p>
-<p><strong>注：</strong>tomcat会话可以通过手段实现多系统之间的状态同步，但是会损耗一定的时间，一旦发生同步那么用户请求就会等待，这种做法不可取。</p>
-<h3 id="单Tomcat会话"><a href="#单Tomcat会话" class="headerlink" title="单Tomcat会话"></a>单Tomcat会话</h3><p>单个tomcat会话，这个就是有状态的，用户首次访问服务端，这个时候会话产生，并且会设置jsessionid放入cookie中，后续每次请求都会携带jsessionid以保持用户状态。</p>
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/%E5%8D%95Tomcat%E4%BC%9A%E8%AF%9D.png" style="zoom:50%;" />
-
-<h3 id="动静分离会话"><a href="#动静分离会话" class="headerlink" title="动静分离会话"></a>动静分离会话</h3><p>用户请求服务端，由于动静分离，前端发起http请求，不会携带任何状态，当用户第一次请求以后，我们手动设置一个token，作为用户会话，放入redis中，如此作为redis-session，并且这个token设置后放入前端cookie中（app或小程序可以放入本地缓存），如此后续交互过程中，前端只需要传递token给后端，后端就能识别这个用户请求来自谁了。 </p>
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/%E5%8A%A8%E9%9D%99%E5%88%86%E7%A6%BB%E4%BC%9A%E8%AF%9D.png" style="zoom: 50%;" />
-
-<h3 id="集群分布式系统会话"><a href="#集群分布式系统会话" class="headerlink" title="集群分布式系统会话"></a>集群分布式系统会话</h3><p>集群或分布式系统本质都是多个系统，假设这个里有两个服务器节点，分别是AB系统，他们可以是集群，也可以是分布式系统，一开始用户和A系统交互，那么这个时候的用户状态，我们可以保存到redis中，作为A系统的会话信息，随后用户的请求进入到了B系统，那么B系统中的会话我也同样和redis关联，如此AB系统的session就统一了。当然cookie是会随着用户的访问携带过来的。那么这个其实就是分布式会话，通过redis来保存用户的状态。 </p>
-<blockquote>
-<p>相同顶级域名的二级域名才可以共享cookie</p>
-</blockquote>
-<blockquote>
-<p>集群状态下还可以使用ip_hash的模式保证同一个ip访问同一个tomcat</p>
-</blockquote>
-<h1 id="相同顶级域名的单点登录"><a href="#相同顶级域名的单点登录" class="headerlink" title="相同顶级域名的单点登录"></a>相同顶级域名的单点登录</h1><h2 id="Cookie-Redis-实现-SSO"><a href="#Cookie-Redis-实现-SSO" class="headerlink" title="Cookie + Redis 实现 SSO"></a>Cookie + Redis 实现 SSO</h2><p>分布式会话后端是基于redis的，如此会话可以流窜在后端的任意系统，都能获取到缓存中的用户数据信息。前端通过使用cookie，可以保证在同域名的下的单点登录</p>
-<p><strong>原理</strong></p>
-<ul>
-<li><p>cookie和网站的依赖关系，顶级域名 <a target="_blank" rel="noopener" href="http://www.test.com和*.test.com的cookie值是可以共享的,可以被携带至后端的,比如设置为/">www.test.com和*.test.com的cookie值是可以共享的，可以被携带至后端的，比如设置为</a> 一级域名设置为<code>.imooc.com</code>或<code>.t.mukewang.com</code>。</p>
-</li>
-<li><p>二级域名自己的独立cookie是不能共享的，不能被其他二级域名获取，比如：music.test.com的cookie是不能被mtv.test.com共享，两者互不影响，要共享必须是解析于同一个顶级域名之下,cookieDomain设置为<code>.imooc.com</code>才行。</p>
-</li>
-</ul>
-<h1 id="不同顶级域名的单点登录"><a href="#不同顶级域名的单点登录" class="headerlink" title="不同顶级域名的单点登录"></a>不同顶级域名的单点登录</h1><blockquote>
-<p>谷歌禁用sso了，本身现在也不流行这种做法了，所以了解一下即可,通常也只做同级域名的单点登录，跨域名不做的。</p>
-</blockquote>
-<p><a target="_blank" rel="noopener" href="http://www.test.com要和www.demo.com的会话实现共享,这个时候的cookie由于顶级域名不同,就不能实现cookie跨域了,每个站点各自请求到服务端,cookie无法同步.比如,www.test.com下的用户发起请求后会有cookie,但是他又访问了www.demo.com,由于cookie无法携带,所以会要你二次登录./">www.test.com要和www.demo.com的会话实现共享，这个时候的cookie由于顶级域名不同，就不能实现cookie跨域了，每个站点各自请求到服务端，cookie无法同步。比如，www.test.com下的用户发起请求后会有cookie，但是他又访问了www.demo.com，由于cookie无法携带，所以会要你二次登录。</a> </p>
-<h2 id="解决方法——CAS系统"><a href="#解决方法——CAS系统" class="headerlink" title="解决方法——CAS系统"></a>解决方法——CAS系统</h2><p>多个系统之间的登录会通过一个独立的登录系统去做验证，它就相当于是一个中介公司，整合了所有人，你要看房经过中介允许拿钥匙就行，实现了统一的登录。CAS全称为Central Authentication Service即中央认证服务，是一个单点登录的解决方案，可以用于不同顶级域名之间的单点登录</p>
-<p>用户在浏览需要登录的页面时，客户端将AuthToken提交给CAS服务校验登录状态/获取用户登录信息</p>
-<table>
-<thead>
-<tr>
-<th>对象</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>AuthToken</td>
-<td>直接使用UUID/GUID即可，如果有验证AuthToken合法性需求，可以将userId+时间戳加密生成，服务端解密之后验证合法性</td>
-</tr>
-<tr>
-<td>登录信息</td>
-<td>通常是将UserId，UserName缓存起来</td>
-</tr>
-</tbody></table>
-<h2 id="CAS系统时序图"><a href="#CAS系统时序图" class="headerlink" title="CAS系统时序图"></a>CAS系统时序图</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E6%AD%A5%E5%BC%8F%E4%BC%9A%E8%AF%9D/CAS%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt="image" style="zoom: 50%;" />
-
-
-
-<h3 id="第一部分（用户初次访问MTV系统）"><a href="#第一部分（用户初次访问MTV系统）" class="headerlink" title="第一部分（用户初次访问MTV系统）"></a>第一部分（用户初次访问MTV系统）</h3><ol>
-<li><p>用户初次访问<a target="_blank" rel="noopener" href="http://www.mtv.com:8080/sso-mtv/index.html">http://www.mtv.com:8080/sso-mtv/index.html</a></p>
-</li>
-<li><p>mtv系统在Cookie中未获取到用户信息</p>
-</li>
-<li><p>跳转至携带回跳URL访问CAS系统<a target="_blank" rel="noopener" href="http://www.sso.com:8090/login?returnUrl=http://www.mtv.com:8080/sso-mtv/index.html">http://www.sso.com:8090/login?returnUrl=http://www.mtv.com:8080/sso-mtv/index.html</a></p>
-</li>
-<li><p>CAS系统未能从cookie中能够获取到userTicket门票，证明用户从未登录过</p>
-<ul>
-<li><p>用户从未登录过则跳转到CAS的统一登录页面</p>
-</li>
-<li><p>验证登录信息</p>
-<ol>
-<li><p>创建用户的会话（登录信息，AuthToken统一存放的VO）存入redis</p>
-</li>
-<li><p>创建全局门票存入Cookie,全局门票和用户ID关联放入到redis中，代表这个用户有门票了，可以在访问各个站点了</p>
-</li>
-</ol>
-</li>
-<li><p>生成临时票据（存入redis中并对value加密，设置过期时间），回跳到调用端网站</p>
-</li>
-<li><p>mtv系统接收到临时票据会凭临时票据向CAS系统换取用户会话</p>
-</li>
-<li><p>CAS系统使用一次性临时票据来验证用户是否登录（redis中查找这个临时票据），之前的临时票据value加密是为了此时验证临时票据是否正确，如果登录过需要销毁临时票据，并从CAS系统的Cookie中取出全局门票，去redis中查到用户ID，后再用用户ID在redis中查到用户会话（登录信息，AuthToken统一存放的VO），把用户会话信息返回给站点</p>
-</li>
-<li><p>mtv系统使用Cookie保存用户会话</p>
-</li>
-<li><p>显示登陆成功</p>
-</li>
-</ul>
-</li>
-</ol>
-<h2 id="第二部分（用户在次访问MUSIC系统）"><a href="#第二部分（用户在次访问MUSIC系统）" class="headerlink" title="第二部分（用户在次访问MUSIC系统）"></a>第二部分（用户在次访问MUSIC系统）</h2><ol>
-<li><p>用户在次访问<a target="_blank" rel="noopener" href="http://www.music.com:8080/sso-music/index.html">http://www.music.com:8080/sso-music/index.html</a></p>
-</li>
-<li><p>music系统在Cookie中未获取到用户信息</p>
-</li>
-<li><p>跳转至携带回跳URL访问CAS系统<a target="_blank" rel="noopener" href="http://www.sso.com:8090/login?returnUrl=http://www.music.com:8080/sso-music/index.html">http://www.sso.com:8090/login?returnUrl=http://www.music.com:8080/sso-music/index.html</a></p>
-</li>
-<li><p>CAS系统从Cookie中能够获取到userTicket门票，证明用户登录过，此时签发一个一次性的临时票据（存入redis中并对value加密，设置过期时间）并且回跳</p>
-<ul>
-<li>music系统接收到临时票据会凭临时票据向CAS系统换取用户会话</li>
-<li>CAS系统使用一次性临时票据来验证用户是否登录（redis中查找这个临时票据），之前的临时票据value加密是为了此时验证临时票据是否正确，如果登录过需要销毁临时票据，并从CAS系统的Cookie中取出全局门票，去redis中查到用户ID，后再用用户ID在redis中查到用户会话（登录信息，AuthToken统一存放的VO），把用户会话信息返回给站点</li>
-<li>music系统使用Cookie保存用户会话</li>
-<li>显示登陆成功</li>
-</ul>
-</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/16/Java-%E9%98%9F%E5%88%97/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/16/Java-%E9%98%9F%E5%88%97/" itemprop="url">Java-队列</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-16T00:59:58+08:00">
-                2021-04-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="栈（Stack）和队列（Queue）的相同点和不同点是什么？如何用两个栈实现队列（入队和出队）"><a href="#栈（Stack）和队列（Queue）的相同点和不同点是什么？如何用两个栈实现队列（入队和出队）" class="headerlink" title="栈（Stack）和队列（Queue）的相同点和不同点是什么？如何用两个栈实现队列（入队和出队）"></a>栈（Stack）和队列（Queue）的相同点和不同点是什么？如何用两个栈实现队列（入队和出队）</h1><ul>
-<li>相同点<ul>
-<li>栈和队列都是属于线性表；</li>
-<li>栈和队列插入操作都是限定在线性表的头尾进行；</li>
-<li>栈和队列插入与删除的时间复杂度都是 O (1)；</li>
-</ul>
-</li>
-<li>不同点<ul>
-<li>特性不同，栈后进先出（LIFO，Last In First Out），队列先进先出（FIFO，First In First Out）；</li>
-<li>栈只在表的一端进行插入和删除操作，队列只在表的一端进行插入操作，在表的另一端进行删除操作；</li>
-<li>JAVA 中的栈 (Stack) 继承自 Vector，再往上的接口是 List/Collection；而队列（Queue) 直接继承的是 Collection 接口。</li>
-</ul>
-</li>
-</ul>
-<h1 id="用两个栈实现队列"><a href="#用两个栈实现队列" class="headerlink" title="用两个栈实现队列"></a>用两个栈实现队列</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 两个栈组成队列</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StackQueue</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> Stack&lt;E&gt; stack1 =<span class="keyword">new</span> Stack&lt;&gt;();<span class="comment">//入队操作的栈</span></span><br><span class="line">    <span class="keyword">private</span> Stack&lt;E&gt; stack2 =<span class="keyword">new</span> Stack&lt;&gt;();<span class="comment">//出队操作的栈</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 压入队列元素，只使用stack1</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> element</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(E element)</span> </span>&#123;</span><br><span class="line">        stack1.add(element);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 取出队列顶部元素</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">poll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// stack2的数据为空时，才把stack1中的元素压入stack2（两种情况：1、初始化时两个栈的数据均为空；2、stack2数据出栈出完了</span></span><br><span class="line">        <span class="keyword">if</span> (stack2.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">while</span> (stack1.size() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                stack2.add(stack1.pop());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//stack1的数据出栈完成后，stack2仍然为空，说明两个栈的数据都为空</span></span><br><span class="line">        <span class="keyword">if</span> (stack2.isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;queue is Empty!&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        E head = stack2.pop();</span><br><span class="line">        <span class="keyword">return</span> head;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 测试</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> args</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        StackQueue&lt;String&gt; stackQueue = <span class="keyword">new</span> StackQueue();</span><br><span class="line">        stackQueue.push(<span class="string">&quot;first&quot;</span>);</span><br><span class="line">        stackQueue.push(<span class="string">&quot;second&quot;</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;------first time poll in StackQueue---------&quot;</span>);</span><br><span class="line">        System.out.println(stackQueue.poll());</span><br><span class="line">        System.out.println(<span class="string">&quot;------second time poll in StackQueue---------&quot;</span>);</span><br><span class="line">        System.out.println(stackQueue.poll());</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;------third time poll in StackQueue---------&quot;</span>);</span><br><span class="line">        stackQueue.push(<span class="string">&quot;third&quot;</span>);</span><br><span class="line">        System.out.println(stackQueue.poll());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="点评"><a href="#点评" class="headerlink" title="点评"></a>点评</h2><p>栈，只能在表尾插入或删除的线性表。对栈来说，表尾称为栈顶、表头称为栈底。因此，最先入栈的元素最后被删除，最晚入栈的元素最先被删除，所以栈又称为后进先出的线性表；</p>
-<p>队列，只能在表的一端进行插入（队尾），在表的另一端删除元素（队头），所以又称先进先出的线性表；</p>
-<p>本质上，是各自不同的数据结构决定了栈和队列的特性和应用场景，比如说栈经常用于括号匹配检验、行编辑程序、表达式求值、递归实现等等，而队列常用于作业任务排队等。</p>
-<p><img src="file:///E:/YouDaoYun/m18739288920@163.com/1354e96afe6149689ecdfe7c5a9ed3c4/de5vxq7u.bmp?ynotemdtimestamp=1618464916797" alt="image"></p>
-<p>stack1 用于存储元素，stack2 用于弹出元素。简单地说，就是把数据先压入 stack1，然后再从 stack1 中取出压入 stack2（后进先出），取数的时候直接从 stack2 出（后进先出），经过两次后进先出就符合队列先进先出的特性了。</p>
-<h1 id="LinkedHashMap和PriorityQueue的区别？"><a href="#LinkedHashMap和PriorityQueue的区别？" class="headerlink" title="LinkedHashMap和PriorityQueue的区别？"></a>LinkedHashMap和PriorityQueue的区别？</h1><ul>
-<li>PriorityQueue 是一个优先级队列,保证最高或者最低优先级的的元素总是在队列头部，但是 LinkedHashMap 维持的顺序是元素插入的顺序。当遍历一个 PriorityQueue 时，没有任何顺序保证，</li>
-<li>但是 LinkedHashMap 课保证遍历顺序是元素插入的顺序。</li>
-</ul>
-<h1 id="Queue中add-offer方法的区别？"><a href="#Queue中add-offer方法的区别？" class="headerlink" title="Queue中add/offer方法的区别？"></a>Queue中add/offer方法的区别？</h1><p>add()和offer()都是向队列中添加一个元素。一些队列有大小限制，因此如果想在一个满的队列中加入一个新项，调用 add() 方法就会抛出IllegalStateException异常，而调用 offer() 方法会返回 false。</p>
-<h1 id="Queue中remove-poll-方法的区别？"><a href="#Queue中remove-poll-方法的区别？" class="headerlink" title="Queue中remove()/poll()方法的区别？"></a>Queue中remove()/poll()方法的区别？</h1><p>poll()/remove()方法都是从队列中删除第一个元素。如果队列元素为空，调用remove() 则会抛出NoSuchElementException，而poll() 方法在用空集合调用时只是返回 null。</p>
-<h1 id="Queue中element-peek-方法的区别？"><a href="#Queue中element-peek-方法的区别？" class="headerlink" title="Queue中element()/peek()方法的区别？"></a>Queue中element()/peek()方法的区别？</h1><p>element() 和 peek() 用于在队列的头部查询元素。与 remove() 方法类似，在队列为空时， element() 抛出NoSuchElementException异常，而 peek() 返回 null。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/5/">&gt;</a>
+    <a class="extend prev" rel="prev" href="/page/3/">&lt;</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/5/">&gt;</a>
   </nav>
 
 
@@ -2959,7 +2908,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">92</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2970,7 +2919,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">65</span>
+                  <span class="site-state-item-count">66</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2981,7 +2930,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-count">50</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
