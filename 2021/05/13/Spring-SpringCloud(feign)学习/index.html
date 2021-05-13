@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试,SpringCloud,微服务,feign," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Feign构建请求集成Ribbon、Hystrix Ribbon：利用负载均衡策略选定目标机器 Hystrix：根据熔断器的开启状态，决定是否发起此次调用  动态代理Feign通过代理接口进行远程调用，Feign中动态代理通过Feign.build返回的构造器来装配相关参数,然后调用ReflectFeign的newInstance方法创建 Contract协议contract协议会构造复杂的元数据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring-SpringCloud(feign)学习">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(feign)%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="Feign构建请求集成Ribbon、Hystrix Ribbon：利用负载均衡策略选定目标机器 Hystrix：根据熔断器的开启状态，决定是否发起此次调用  动态代理Feign通过代理接口进行远程调用，Feign中动态代理通过Feign.build返回的构造器来装配相关参数,然后调用ReflectFeign的newInstance方法创建 Contract协议contract协议会构造复杂的元数据">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-05-13T05:58:02.000Z">
+<meta property="article:modified_time" content="2021-05-13T07:10:28.486Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="SpringCloud">
+<meta property="article:tag" content="微服务">
+<meta property="article:tag" content="feign">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(feign)学习/"/>
+
+
+
+
+
+  <title>Spring-SpringCloud(feign)学习 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(feign)%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring-SpringCloud(feign)学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-13T13:58:02+08:00">
+                2021-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringCloud%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - SpringCloud学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Feign"><a href="#Feign" class="headerlink" title="Feign"></a>Feign</h1><h2 id="构建请求"><a href="#构建请求" class="headerlink" title="构建请求"></a>构建请求</h2><h3 id="集成Ribbon、Hystrix"><a href="#集成Ribbon、Hystrix" class="headerlink" title="集成Ribbon、Hystrix"></a>集成Ribbon、Hystrix</h3><ul>
+<li>Ribbon：利用负载均衡策略选定目标机器</li>
+<li>Hystrix：根据熔断器的开启状态，决定是否发起此次调用</li>
+</ul>
+<h3 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h3><p>Feign通过代理接口进行远程调用，Feign中动态代理通过Feign.build返回的构造器来装配相关参数,然后调用ReflectFeign的newInstance方法创建</p>
+<h3 id="Contract协议"><a href="#Contract协议" class="headerlink" title="Contract协议"></a>Contract协议</h3><p>contract协议会构造复杂的元数据对象MethodMetadata，这里面包含动态代理接口定义的所有特征</p>
+<h2 id="发起调用"><a href="#发起调用" class="headerlink" title="发起调用"></a>发起调用</h2><h3 id="拦截器"><a href="#拦截器" class="headerlink" title="拦截器"></a>拦截器</h3><p>feign使用拦截器对request和response对象进行装饰</p>
+<h3 id="发起请求"><a href="#发起请求" class="headerlink" title="发起请求"></a>发起请求</h3><ul>
+<li>重试：Feign借助Ribbon的配置实现重试操作</li>
+<li>降级：Feign接口在声明时可以指定Hystrix的降级策略实现类，如果达到Hystrix的判定标准，或得到了异常结果，将执行指定的降级逻辑。</li>
+</ul>
+<h2 id="FeignClient参数配置"><a href="#FeignClient参数配置" class="headerlink" title="@FeignClient参数配置"></a>@FeignClient参数配置</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yinjihuan/p/12159986.html">那天晚上和@FeignClient注解的深度交流</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FeignClient(value = &quot;demo-service-provider&quot;,</span></span><br><span class="line"><span class="meta">        primary = true,</span></span><br><span class="line"><span class="meta">        configuration = FeignConfig.class,</span></span><br><span class="line"><span class="meta">        path = &quot;/user&quot;,</span></span><br><span class="line"><span class="meta">        fallback = UserFallbackService.class)</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>value, name</strong>：value和name的作用一样，如果没有配置url那么配置的值将作为服务名称，用于服务发现</li>
+<li><strong>contextId</strong>：<br>比如我们有个user服务，但user服务中有很多个接口，我们不想将所有的调用接口都定义在一个类中，比如：<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FeignClient(name = &quot;optimization-user&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserRemoteClient</span> </span>&#123;</span><br><span class="line">	<span class="meta">@GetMapping(&quot;/user/get&quot;)</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> User <span class="title">getUser</span><span class="params">(<span class="meta">@RequestParam(&quot;id&quot;)</span> <span class="keyword">int</span> id)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FeignClient(name = &quot;optimization-user&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserRemoteClient2</span> </span>&#123;</span><br><span class="line">	<span class="meta">@GetMapping(&quot;/user2/get&quot;)</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> User <span class="title">getUser</span><span class="params">(<span class="meta">@RequestParam(&quot;id&quot;)</span> <span class="keyword">int</span> id)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种情况下启动就会报错了，因为Bean的名称冲突了，具体错误如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Description:</span><br><span class="line">The bean &#39;optimization-user.FeignClientSpecification&#39;, defined in null, could not be registered. A bean with that name has already been defined in null and overriding is disabled.</span><br><span class="line">Action:</span><br><span class="line">Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding&#x3D;true</span><br></pre></td></tr></table></figure>
+
+<p>解决方案可以增加下面的配置，作用是允许出现beanName一样的BeanDefinition。</p>
+<p>另一种解决方案就是为每个Client手动指定不同的contextId，这样就不会冲突了。</p>
+<blockquote>
+<p>contextId在Feign Client的作用，在注册Feign Client Configuration的时候需要一个名称，名称是通过getClientName方法获取的。</p>
+<p>如果配置了contextId就会用contextId，如果没有配置就会去value然后是name最后是serviceId。默认都没有配置，当出现一个服务有多个Feign Client的时候就会报错了</p>
+<p>其次的作用是在注册FeignClient中，contextId会作为Client 别名的一部分，如果配置了qualifier优先用qualifier作为别名。</p>
+</blockquote>
+<ul>
+<li><p><strong>url</strong>：url用于配置指定服务的地址，相当于直接请求这个服务，不经过Ribbon的服务选择。像调试等场景可以使用</p>
+</li>
+<li><p><strong>primary</strong>：primary对应的是@Primary注解，默认为true。当我们的Feign实现了fallback后，也就意味着Feign Client有多个相同的Bean在Spring容器中，当我们在使用@Autowired进行注入的时候，不知道注入哪个，所以我们需要设置一个优先级高的，@Primary注解就是干这件事情的。</p>
+</li>
+<li><p><strong>configuration</strong>：onfiguration是配置Feign配置类，在配置类中可以自定义Feign的Encoder、Decoder、LogLevel、Contract等</p>
+</li>
+<li><p><strong>path</strong>：path定义当前FeignClient访问接口时的统一前缀，比如接口地址是/user/get, 如果你定义了前缀是user, 那么具体方法上的路径就只需要写/get 即可。</p>
+</li>
+<li><p><strong>fallback</strong>：定义容错的处理类，也就是回退逻辑，fallback的类必须实现Feign Client的接口，无法知道熔断的异常信息</p>
+</li>
+<li><p><strong>qualifier</strong>：qualifier对应的是@Qualifier注解，可以配置一个qualifier，然后使用@Qualifier注解进行注入</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FeignClient(name = &quot;optimization-user&quot;, path=&quot;user&quot;, qualifier=&quot;userRemoteClient&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UserRemoteClient</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@GetMapping(&quot;/get&quot;)</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> User <span class="title">getUser</span><span class="params">(<span class="meta">@RequestParam(&quot;id&quot;)</span> <span class="keyword">int</span> id)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="meta">@Qualifier(&quot;userRemoteClient&quot;)</span></span><br><span class="line"><span class="keyword">private</span> UserRemoteClient userRemoteClient;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Feign常用配置"><a href="#Feign常用配置" class="headerlink" title="Feign常用配置"></a>Feign常用配置</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">feign:</span></span><br><span class="line">  <span class="attr">hystrix:</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">true</span> <span class="comment">#在Feign中开启Hystrix</span></span><br><span class="line">  <span class="attr">compression:</span></span><br><span class="line">    <span class="attr">request:</span></span><br><span class="line">      <span class="attr">enabled:</span> <span class="literal">false</span> <span class="comment">#是否对请求进行GZIP压缩</span></span><br><span class="line">      <span class="attr">mime-types:</span> <span class="string">text/xml,application/xml,application/json</span> <span class="comment">#指定压缩的请求数据类型</span></span><br><span class="line">      <span class="attr">min-request-size:</span> <span class="number">2048</span> <span class="comment">#超过该大小的请求会被压缩</span></span><br><span class="line">    <span class="attr">response:</span></span><br><span class="line">      <span class="attr">enabled:</span> <span class="literal">false</span> <span class="comment">#是否对响应进行GZIP压缩</span></span><br><span class="line"><span class="attr">logging:</span></span><br><span class="line">  <span class="attr">level:</span> <span class="comment">#修改日志级别</span></span><br><span class="line">    <span class="attr">com.macro.cloud.service.UserService:</span> <span class="string">debug</span></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/SpringCloud/" rel="tag"># SpringCloud</a>
+          
+            <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag"># 微服务</a>
+          
+            <a href="/tags/feign/" rel="tag"># feign</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/13/%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7-%E8%B0%83%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8E%A5%E5%8F%A3/" rel="next" title="项目工具-调用第三方接口">
+                <i class="fa fa-chevron-left"></i> 项目工具-调用第三方接口
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/05/13/Spring-SpringCloud(feign)%E7%BB%83%E4%B9%A0/" rel="prev" title="Spring-SpringCloud(feign)练习">
+                Spring-SpringCloud(feign)练习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">100</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">68</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">57</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Feign"><span class="nav-number">1.</span> <span class="nav-text">Feign</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E5%BB%BA%E8%AF%B7%E6%B1%82"><span class="nav-number">1.1.</span> <span class="nav-text">构建请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%86%E6%88%90Ribbon%E3%80%81Hystrix"><span class="nav-number">1.1.1.</span> <span class="nav-text">集成Ribbon、Hystrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86"><span class="nav-number">1.1.2.</span> <span class="nav-text">动态代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Contract%E5%8D%8F%E8%AE%AE"><span class="nav-number">1.1.3.</span> <span class="nav-text">Contract协议</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%91%E8%B5%B7%E8%B0%83%E7%94%A8"><span class="nav-number">1.2.</span> <span class="nav-text">发起调用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%A6%E6%88%AA%E5%99%A8"><span class="nav-number">1.2.1.</span> <span class="nav-text">拦截器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%91%E8%B5%B7%E8%AF%B7%E6%B1%82"><span class="nav-number">1.2.2.</span> <span class="nav-text">发起请求</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FeignClient%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE"><span class="nav-number">1.3.</span> <span class="nav-text">@FeignClient参数配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Feign%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">1.4.</span> <span class="nav-text">Feign常用配置</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

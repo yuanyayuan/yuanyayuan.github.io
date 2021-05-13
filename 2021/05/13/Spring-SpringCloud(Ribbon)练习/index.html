@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="项目工具,SpringCloud,微服务,Ribbon," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Spring Cloud Ribbon：负载均衡的服务调用改造demo-service-providerUserController添加对User对象常见的CRUD接口1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950@Slf4j@RestController@Req">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring-SpringCloud(Ribbon)练习">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Ribbon)%E7%BB%83%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="Spring Cloud Ribbon：负载均衡的服务调用改造demo-service-providerUserController添加对User对象常见的CRUD接口1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950@Slf4j@RestController@Req">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Ribbon1.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Ribbon2.png">
+<meta property="article:published_time" content="2021-05-12T17:26:08.000Z">
+<meta property="article:modified_time" content="2021-05-13T05:59:44.384Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="项目工具">
+<meta property="article:tag" content="SpringCloud">
+<meta property="article:tag" content="微服务">
+<meta property="article:tag" content="Ribbon">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Ribbon1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Ribbon)练习/"/>
+
+
+
+
+
+  <title>Spring-SpringCloud(Ribbon)练习 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Ribbon)%E7%BB%83%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring-SpringCloud(Ribbon)练习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-13T01:26:08+08:00">
+                2021-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringCloud%E7%BB%83%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - SpringCloud练习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Spring-Cloud-Ribbon：负载均衡的服务调用"><a href="#Spring-Cloud-Ribbon：负载均衡的服务调用" class="headerlink" title="Spring Cloud Ribbon：负载均衡的服务调用"></a>Spring Cloud Ribbon：负载均衡的服务调用</h1><h2 id="改造demo-service-provider"><a href="#改造demo-service-provider" class="headerlink" title="改造demo-service-provider"></a>改造demo-service-provider</h2><h3 id="UserController添加对User对象常见的CRUD接口"><a href="#UserController添加对User对象常见的CRUD接口" class="headerlink" title="UserController添加对User对象常见的CRUD接口"></a>UserController添加对User对象常见的CRUD接口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/user&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> IUserService userService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/hello&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/create&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse&lt;User&gt; <span class="title">create</span><span class="params">(<span class="meta">@RequestBody</span> User user)</span> </span>&#123;</span><br><span class="line">        userService.create(user);</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.success(<span class="string">&quot;操作成功&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/&#123;id&#125;&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse&lt;User&gt; <span class="title">getUser</span><span class="params">(<span class="meta">@PathVariable</span> Long id)</span> </span>&#123;</span><br><span class="line">        User user = userService.getUser(id);</span><br><span class="line">        log.info(<span class="string">&quot;根据id获取用户信息，用户名称为：&#123;&#125;&quot;</span>,user.getUsername());</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.success(user);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/getUserByIds&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> ServerResponse&lt;List&lt;User&gt;&gt; getUserByIds(<span class="meta">@RequestParam</span> List&lt;Long&gt; ids) &#123;</span><br><span class="line">        List&lt;User&gt; userList= userService.getUsersByIds(ids);</span><br><span class="line">        log.info(<span class="string">&quot;根据ids获取用户信息，用户列表为：&#123;&#125;&quot;</span>,userList);</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.success(userList);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/getByUsername&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse&lt;User&gt; <span class="title">getByUsername</span><span class="params">(<span class="meta">@RequestParam</span> String username)</span> </span>&#123;</span><br><span class="line">        User user = userService.getUserByName(username);</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.success(user);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/update&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">update</span><span class="params">(<span class="meta">@RequestBody</span> User user)</span> </span>&#123;</span><br><span class="line">        userService.update(user);</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.success(<span class="string">&quot;操作成功&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/delete/&#123;id&#125;&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">delete</span><span class="params">(<span class="meta">@PathVariable</span> Long id)</span> </span>&#123;</span><br><span class="line">        userService.delete(id);</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.success(<span class="string">&quot;操作成功&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="IUserService和UserServiceImpl中做简单实现"><a href="#IUserService和UserServiceImpl中做简单实现" class="headerlink" title="IUserService和UserServiceImpl中做简单实现"></a>IUserService和UserServiceImpl中做简单实现</h3><h2 id="改造demo-service-consumer"><a href="#改造demo-service-consumer" class="headerlink" title="改造demo-service-consumer"></a>改造demo-service-consumer</h2><h3 id="pom-xml中添加相关依赖"><a href="#pom-xml中添加相关依赖" class="headerlink" title="pom.xml中添加相关依赖"></a>pom.xml中添加相关依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-ribbon<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="在application-yml中进行配置"><a href="#在application-yml中进行配置" class="headerlink" title="在application.yml中进行配置"></a>在application.yml中进行配置</h3><p>新增：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">service-url:</span></span><br><span class="line">  <span class="attr">user-service:</span> <span class="string">http://demo-service-provider</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="使用-LoadBalanced注解赋予RestTemplate负载均衡的能力"><a href="#使用-LoadBalanced注解赋予RestTemplate负载均衡的能力" class="headerlink" title="使用@LoadBalanced注解赋予RestTemplate负载均衡的能力"></a>使用@LoadBalanced注解赋予RestTemplate负载均衡的能力</h3><blockquote>
+<p>可以看出使用Ribbon的负载均衡功能非常简单，和直接使用RestTemplate没什么两样，只需给RestTemplate添加一个@LoadBalanced即可。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Created by macro on 2019/8/29.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RibbonConfig</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@LoadBalanced</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RestTemplate <span class="title">restTemplate</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RestTemplate();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>修改接口调用的代码，将 IP+PORT 改成服务名称，也就是注册到 Eureka 中的名称，代码如下所示。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(&quot;/article/callHello2&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">callHello2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> restTemplate.getForObject(<span class="string">&quot;http://demo-service-provider/user/hello&quot;</span>, String.class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="添加UserController用于提供调用接口"><a href="#添加UserController用于提供调用接口" class="headerlink" title="添加UserController用于提供调用接口"></a>添加UserController用于提供调用接口</h3><blockquote>
+<p>注入RestTemplate，使用其调用user-service中提供的相关接口，这里对GET和POST调用进行了演示，其他方法调用均可参考。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/user&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RestTemplate restTemplate;</span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;service-url.user-service&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String userServiceUrl;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/&#123;id&#125;&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">getUser</span><span class="params">(<span class="meta">@PathVariable</span> Long id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> restTemplate.getForObject(userServiceUrl + <span class="string">&quot;/user/&#123;1&#125;&quot;</span>, ServerResponse.class, id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/getByUsername&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">getByUsername</span><span class="params">(<span class="meta">@RequestParam</span> String username)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> restTemplate.getForObject(userServiceUrl + <span class="string">&quot;/user/getByUsername?username=&#123;1&#125;&quot;</span>, ServerResponse.class, username);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/getEntityByUsername&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">getEntityByUsername</span><span class="params">(<span class="meta">@RequestParam</span> String username)</span> </span>&#123;</span><br><span class="line">        ResponseEntity&lt;ServerResponse&gt; entity = restTemplate.getForEntity(userServiceUrl + <span class="string">&quot;/user/getByUsername?username=&#123;1&#125;&quot;</span>, ServerResponse.class, username);</span><br><span class="line">        <span class="keyword">if</span> (entity.getStatusCode().is2xxSuccessful()) &#123;</span><br><span class="line">            <span class="keyword">return</span> entity.getBody();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> ServerResponse.failed(<span class="string">&quot;操作失败&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/create&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">create</span><span class="params">(<span class="meta">@RequestBody</span> User user)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> restTemplate.postForObject(userServiceUrl + <span class="string">&quot;/user/create&quot;</span>, user, ServerResponse.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/update&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">update</span><span class="params">(<span class="meta">@RequestBody</span> User user)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> restTemplate.postForObject(userServiceUrl + <span class="string">&quot;/user/update&quot;</span>, user, ServerResponse.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/delete/&#123;id&#125;&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">delete</span><span class="params">(<span class="meta">@PathVariable</span> Long id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> restTemplate.postForObject(userServiceUrl + <span class="string">&quot;/user/delete/&#123;1&#125;&quot;</span>, <span class="keyword">null</span>, ServerResponse.class, id);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Ribbon1.png" alt="image" style="zoom:50%;" />
+
+<h1 id="负载均衡测试"><a href="#负载均衡测试" class="headerlink" title="负载均衡测试"></a>负载均衡测试</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 服务列表</span></span><br><span class="line">List&lt;Server&gt; serverList = Lists.newArrayList(<span class="keyword">new</span> Server(<span class="string">&quot;localhost&quot;</span>, <span class="number">7101</span>), <span class="keyword">new</span> Server(<span class="string">&quot;localhost&quot;</span>, <span class="number">7102</span>));</span><br><span class="line"><span class="comment">// 构建负载实例</span></span><br><span class="line">ILoadBalancer loadBalancer = LoadBalancerBuilder.newBuilder().buildFixedServerListLoadBalancer(serverList);</span><br><span class="line"><span class="comment">// 调用 5 次来测试效果</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/Ribbon/test&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">5</span>;i++)&#123;</span><br><span class="line">        String result = LoadBalancerCommand.&lt;String&gt;builder().withLoadBalancer(loadBalancer).build()</span><br><span class="line">            .submit(server -&gt; &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    String addr = <span class="string">&quot;http://&quot;</span> + server.getHost() + <span class="string">&quot;:&quot;</span> + server.getPort() + <span class="string">&quot;/user/hello&quot;</span>;</span><br><span class="line">                    System.out.println(<span class="string">&quot; 调用地址：&quot;</span> + addr);</span><br><span class="line">                    URL url = <span class="keyword">new</span> URL(addr);</span><br><span class="line">                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();</span><br><span class="line">                    conn.setRequestMethod(<span class="string">&quot;GET&quot;</span>);</span><br><span class="line">                    conn.connect();</span><br><span class="line">                    InputStream in = conn.getInputStream();</span><br><span class="line">                    <span class="keyword">byte</span>[] data = <span class="keyword">new</span> <span class="keyword">byte</span>[in.available()];</span><br><span class="line">                    in.read(data);</span><br><span class="line">                    <span class="keyword">return</span> Observable.just(<span class="keyword">new</span> String(data));</span><br><span class="line">                &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                    <span class="keyword">return</span> Observable.error(e);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;).toBlocking().first();</span><br><span class="line">        System.out.println(<span class="string">&quot; 调用结果：&quot;</span> + result);</span><br><span class="line">        System.out.println(<span class="string">&quot;======================================&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Ribbon2.png" style="zoom:50%;" />
+
+<h1 id="Ribbon-API-使用"><a href="#Ribbon-API-使用" class="headerlink" title="Ribbon API 使用"></a>Ribbon API 使用</h1><p>当你有一些特殊的需求，想通过 Ribbon 获取对应的服务信息时，可以使用 Load-Balancer Client 来获取，比如你想获取一个 ribbon-eureka-demo 服务的服务地址，可以通过 LoadBalancerClient 的 choose 方法来选择一个：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> LoadBalancerClient loadBalancer;</span><br><span class="line"><span class="meta">@GetMapping(&quot;/choose&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">chooseUrl</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ServiceInstance instance = loadBalancer.choose(<span class="string">&quot;ribbon-eureka-demo&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> instance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>访问接口，可以看到返回的信息如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    serviceId: &quot;ribbon-eureka-demo&quot;,</span><br><span class="line">    server: &#123;</span><br><span class="line">        host: &quot;localhost&quot;,</span><br><span class="line">        port: 8081,</span><br><span class="line">        id: &quot;localhost:8081&quot;,</span><br><span class="line">        zone: &quot;UNKNOWN&quot;,</span><br><span class="line">        readyToServe: true,</span><br><span class="line">        alive: true,</span><br><span class="line">        hostPort: &quot;localhost:8081&quot;,</span><br><span class="line">        metaInfo: &#123;</span><br><span class="line">            serverGroup: null,</span><br><span class="line">            serviceIdForDiscovery: null, instanceId: &quot;localhost:8081&quot;,</span><br><span class="line">            appName: null</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    secure: false, metadata: &#123; &#125;, host: &quot;localhost&quot;, port: 8081,</span><br><span class="line">    uri: &quot;http://localhost:8081&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7/" rel="tag"># 项目工具</a>
+          
+            <a href="/tags/SpringCloud/" rel="tag"># SpringCloud</a>
+          
+            <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag"># 微服务</a>
+          
+            <a href="/tags/Ribbon/" rel="tag"># Ribbon</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/13/Spring-SpringCloud(hystrix)%E5%AD%A6%E4%B9%A0/" rel="next" title="Spring-SpringCloud(Hystrix)练习">
+                <i class="fa fa-chevron-left"></i> Spring-SpringCloud(Hystrix)练习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/05/13/%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7-%E8%B0%83%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8E%A5%E5%8F%A3/" rel="prev" title="项目工具-调用第三方接口">
+                项目工具-调用第三方接口 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">100</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">68</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">57</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-Cloud-Ribbon%EF%BC%9A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%9A%84%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">Spring Cloud Ribbon：负载均衡的服务调用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E9%80%A0demo-service-provider"><span class="nav-number">1.1.</span> <span class="nav-text">改造demo-service-provider</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UserController%E6%B7%BB%E5%8A%A0%E5%AF%B9User%E5%AF%B9%E8%B1%A1%E5%B8%B8%E8%A7%81%E7%9A%84CRUD%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.1.1.</span> <span class="nav-text">UserController添加对User对象常见的CRUD接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IUserService%E5%92%8CUserServiceImpl%E4%B8%AD%E5%81%9A%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.1.2.</span> <span class="nav-text">IUserService和UserServiceImpl中做简单实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E9%80%A0demo-service-consumer"><span class="nav-number">1.2.</span> <span class="nav-text">改造demo-service-consumer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pom-xml%E4%B8%AD%E6%B7%BB%E5%8A%A0%E7%9B%B8%E5%85%B3%E4%BE%9D%E8%B5%96"><span class="nav-number">1.2.1.</span> <span class="nav-text">pom.xml中添加相关依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8application-yml%E4%B8%AD%E8%BF%9B%E8%A1%8C%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.2.</span> <span class="nav-text">在application.yml中进行配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-LoadBalanced%E6%B3%A8%E8%A7%A3%E8%B5%8B%E4%BA%88RestTemplate%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%9A%84%E8%83%BD%E5%8A%9B"><span class="nav-number">1.2.3.</span> <span class="nav-text">使用@LoadBalanced注解赋予RestTemplate负载均衡的能力</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0UserController%E7%94%A8%E4%BA%8E%E6%8F%90%E4%BE%9B%E8%B0%83%E7%94%A8%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.2.4.</span> <span class="nav-text">添加UserController用于提供调用接口</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%B5%8B%E8%AF%95"><span class="nav-number">2.</span> <span class="nav-text">负载均衡测试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ribbon-API-%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">Ribbon API 使用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

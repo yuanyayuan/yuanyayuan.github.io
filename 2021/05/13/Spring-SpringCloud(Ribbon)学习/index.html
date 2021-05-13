@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试,SpringCloud,微服务,Ribbon," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Ribbon简介在微服务架构中，很多服务都会部署多个，其他服务去调用该服务的时候，如何保证负载均衡是个不得不去考虑的问题。负载均衡可以增加系统的可用性和扩展性，当我们使用RestTemplate来调用其他服务时，Ribbon可以很方便的实现负载均衡功能。 负载均衡客户端负载均衡  服务端负载均衡  模式比较  基本工作流程  http请求先被转发到服务节点（Eureka Clinet）上，此时服务">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring-SpringCloud(Ribbon)学习">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Ribbon)%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="Ribbon简介在微服务架构中，很多服务都会部署多个，其他服务去调用该服务的时候，如何保证负载均衡是个不得不去考虑的问题。负载均衡可以增加系统的可用性和扩展性，当我们使用RestTemplate来调用其他服务时，Ribbon可以很方便的实现负载均衡功能。 负载均衡客户端负载均衡  服务端负载均衡  模式比较  基本工作流程  http请求先被转发到服务节点（Eureka Clinet）上，此时服务">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%AF%94%E8%BE%83.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Ribbon%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png">
+<meta property="article:published_time" content="2021-05-12T16:38:53.000Z">
+<meta property="article:modified_time" content="2021-05-13T10:31:57.855Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="SpringCloud">
+<meta property="article:tag" content="微服务">
+<meta property="article:tag" content="Ribbon">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Ribbon)学习/"/>
+
+
+
+
+
+  <title>Spring-SpringCloud(Ribbon)学习 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Ribbon)%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring-SpringCloud(Ribbon)学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-13T00:38:53+08:00">
+                2021-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringCloud%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - SpringCloud学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Ribbon简介"><a href="#Ribbon简介" class="headerlink" title="Ribbon简介"></a>Ribbon简介</h2><p>在微服务架构中，很多服务都会部署多个，其他服务去调用该服务的时候，如何保证负载均衡是个不得不去考虑的问题。负载均衡可以增加系统的可用性和扩展性，当我们使用RestTemplate来调用其他服务时，Ribbon可以很方便的实现负载均衡功能。</p>
+<h2 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h2><h2 id="客户端负载均衡"><a href="#客户端负载均衡" class="headerlink" title="客户端负载均衡"></a>客户端负载均衡</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.png" style="zoom: 33%;" />
+
+<h2 id="服务端负载均衡"><a href="#服务端负载均衡" class="headerlink" title="服务端负载均衡"></a>服务端负载均衡</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.png" style="zoom: 33%;" />
+
+<h2 id="模式比较"><a href="#模式比较" class="headerlink" title="模式比较"></a>模式比较</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%AF%94%E8%BE%83.png" style="zoom: 33%;" />
+
+<h1 id="基本工作流程"><a href="#基本工作流程" class="headerlink" title="基本工作流程"></a>基本工作流程</h1><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Ribbon%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png" style="zoom:50%;" />
+
+<p>http请求先被转发到服务节点（Eureka Clinet）上，此时服务节点（Eureka Clinet）仍然通过服务发现获取了所有服务节点的物理地址，但服务节点（Eureka Clinet）不知道该调用哪一个，所以把请求转到ribbon手中<br>1、IPing IPing是Ribbon的一套healthcheck机制，即Ping一下目标机器是否在线，一般情况下IPing并不会主动向服务节点发起healthcheck请求，Ribbon后台通过静默处理返回true默认表示所有节点都处于存活状态（和Eureka集成的时候回去检查节点UP状态）。</p>
+<p>2、IRule ribbon组件库，各种负载均衡策略都继承自IRule接口，所有经过ribbon的请求都会去请示IRule，找到负载均衡策略选定的目标机器，再把请求转发过去。</p>
+<h1 id="Ribbon懒加载机制"><a href="#Ribbon懒加载机制" class="headerlink" title="Ribbon懒加载机制"></a>Ribbon懒加载机制</h1><p>ribbon及有懒加载，第一次去调用时才初始化LoadBalance，如果http方法本身比较耗时，再加上loadbalance创建耗时，而且超时时间又设置的比较短，很可能出现第一次http调用失败。</p>
+<p><strong>解决方法</strong>:</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启饥饿加载模式</span></span><br><span class="line"><span class="meta">ribbon.eager-load.enabled</span>=<span class="string">true </span></span><br><span class="line"><span class="comment"># 指定饥饿加载的服务名称</span></span><br><span class="line"><span class="meta">ribbon.eager-load.clients</span>=<span class="string">ribbon-consumer</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Ribbon的负载均衡策略"><a href="#Ribbon的负载均衡策略" class="headerlink" title="Ribbon的负载均衡策略"></a>Ribbon的负载均衡策略</h1><blockquote>
+<p>所谓的负载均衡策略，就是当A服务调用B服务时，此时B服务有多个实例，这时A服务以何种方式来选择调用的B实例，ribbon可以选择以下几种负载均衡策略。</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ribbon:</span></span><br><span class="line">  <span class="attr">NFLoadBalancerRuleClassName:</span> <span class="string">com.netflix.loadbalancer.RandomRule</span> <span class="comment">#修改负载均衡算法</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>RandomRule</code>：</li>
+</ul>
+<p>从提供服务的实例中以随机的方式；使用了yieid+自旋的方式重试，还采用防御性编程（为了保证对程序的不可预见的使用，不会造成程序功能上的损坏）</p>
+<ul>
+<li><code>RoundRobinRule</code>：</li>
+</ul>
+<p>以线性轮询的方式，就是维护一个计数器，从提供服务的实例中按顺序选取，第一次选第一个，第二次选第二个，以此类推，到最后一个以后再从头来过；</p>
+<p>底层用的是自旋锁+CAS防止两个请求访问这个Rule时读取到相同节点。Eureka为了方式服务下线重复调用，也是使用的AtomicBoolean的CSA方法做同步控制。</p>
+<ul>
+<li><code>RetryRule</code>：</li>
+</ul>
+<p>在RoundRobinRule的基础上添加重试机制（类似修饰器模式的RoundRobinRule），即在指定的重试时间内，反复使用线性轮询策略来选择可用实例；</p>
+<ul>
+<li><code>WeightedResponseTimeRule</code>：</li>
+</ul>
+<p>对RoundRobinRule的扩展，响应速度越快的实例选择权重越大，越容易被选择，如果统计结果未生成采用轮询；</p>
+<ul>
+<li><code>BestAvailableRule</code>：</li>
+</ul>
+<p>在过滤掉故障服务后，选择并发量较小的实例，如果统计结果未生成采用轮询；</p>
+<ul>
+<li><code>AvailabilityFilteringRule</code>：</li>
+</ul>
+<p>每次<code>AvailabilityFilteringRule</code>（ARF）都会请求RobinRule挑选一个节点，然后对这个节点进行两步检查</p>
+<ol>
+<li>是否处于熔断状态</li>
+<li>节点当前active请求连接数超过阈值</li>
+</ol>
+<p>如果未通过检查，ARF会重试（最多十次），如果还不行，让RobinRule重新选择一个节点</p>
+<ul>
+<li><code>ZoneAwareLoadBalancer</code>： </li>
+</ul>
+<p>采用双重过滤，同时过滤不是同一区域的实例和故障实例，选择并发较小</p>
+<h2 id="如何选择负载均衡策略"><a href="#如何选择负载均衡策略" class="headerlink" title="如何选择负载均衡策略"></a>如何选择负载均衡策略</h2><ul>
+<li>时间——RT（Response Time）响应时间</li>
+<li>空间——服务器的可用连接数</li>
+</ul>
+<p><strong>连接数敏感模型</strong>：    </p>
+<p>对响应时间短，或RT和业务复杂度是非线性相关关系的接口，采用基于可用连接数的负载均衡策略更加合适RT（response time）敏感模型；</p>
+<p><strong>对重量级接口</strong><br>根据参数不同会导致系统资源使用浮动较大的接口（RT与业务复杂度线性相关），建议采用基于响应时间的负载均衡策略</p>
+<h1 id="Ribbon原理"><a href="#Ribbon原理" class="headerlink" title="Ribbon原理"></a>Ribbon原理</h1><h2 id="LoadBalance"><a href="#LoadBalance" class="headerlink" title="@LoadBalance"></a>@LoadBalance</h2><ul>
+<li><p>@LoadBalanced这个注解一头挂在RestTemplate上，另一个挂在LoadBalancerAutoConfig这个类上</p>
+</li>
+<li><p>@LoadBalanced这个注解会将RestTemplate传送到Ribbon的自动装配类(LoadBalancerAutoConfig)里面进行改造</p>
+<h3 id="LoadBalancerAutoConfig"><a href="#LoadBalancerAutoConfig" class="headerlink" title="LoadBalancerAutoConfig"></a>LoadBalancerAutoConfig</h3></li>
+</ul>
+<p>对网络请求进行拦截，加工</p>
+<h2 id="IPing"><a href="#IPing" class="headerlink" title="IPing"></a>IPing</h2><p>IPing作用获取服务节点的状态，只有可用节点才进行负载均衡</p>
+<p>IPing的三种工作模式</p>
+<ul>
+<li><p>DummyPing    自娱自乐式：静默模式，默认返回true，认为所有节点都可用</p>
+</li>
+<li><p>NIWSDiscoveryPing    隔山打牛式：借助Eureka服务发现机制获取节点状态，状态为：UP则可用（默认这一种）</p>
+</li>
+<li><p>PingUrl    主动出击式：增加后台服务器压力</p>
+</li>
+</ul>
+<h1 id="Ribbon参数配置"><a href="#Ribbon参数配置" class="headerlink" title="Ribbon参数配置"></a>Ribbon参数配置</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ribbon:</span></span><br><span class="line">  <span class="attr">OkToRetryOnAllOperations:</span> <span class="literal">true</span> <span class="comment">#对超时请求启用重试机制（真实环境Get请求可以重试或实现了幂等性的其他类型请求）</span></span><br><span class="line">  <span class="attr">ConnectTimeout:</span> <span class="number">1000</span> <span class="comment">#服务请求连接超时时间（毫秒）</span></span><br><span class="line">  <span class="attr">ReadTimeout:</span> <span class="number">2000</span> <span class="comment">#服务请求处理超时时间（毫秒）</span></span><br><span class="line">  <span class="attr">MaxAutoRetries:</span> <span class="number">2</span> <span class="comment"># 当前节点的重试次数，2代表重试2次，首次调用超时后，会再次向同一个服务节点发起最多两次重试（总共向当前节点1+2=3次请求）</span></span><br><span class="line">  <span class="attr">MaxAutoRetriesNextServer:</span> <span class="number">2</span> <span class="comment">#切换重试实例的最大个数，2代表换2个节点重试，当前节点超时后，Fegin将最多切换2台机器发起调用，在新机器上再次发起最多（MaxAutoRetries+1）次调用</span></span><br><span class="line">  <span class="attr">NFLoadBalancerRuleClassName:</span> <span class="string">com.netflix.loadbalancer.RandomRule</span> <span class="comment">#修改负载均衡算法</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="极限值计算"><a href="#极限值计算" class="headerlink" title="极限值计算"></a>极限值计算</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MAX(Response Time) &#x3D; (ConnectTimeout + ReadTimeout) * (MaxAutoRetries + 1) * (MaxAutoRetriesNextServer + 1)</span><br><span class="line">27000ms &#x3D; （2000 + 1000）*（2 + 1）*（2 + 1）</span><br></pre></td></tr></table></figure>
+
+<h2 id="制定服务进行配置"><a href="#制定服务进行配置" class="headerlink" title="制定服务进行配置"></a>制定服务进行配置</h2><blockquote>
+<p>当我们在使用@FeignClient(name = “user-service”)注解来生成一个名为user-service的feign客户端时，同时也生成了一个名为user-service的ribbon客户端，所以我们才能用注解@FeignClient里的name值（value也是一样的）来设置对应的ribbon参数，起到指定服务的效果，不再是全局配置了</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">user-service:</span></span><br><span class="line">  <span class="attr">ribbon:</span></span><br><span class="line">    <span class="attr">ConnectTimeout:</span> <span class="number">1000</span> <span class="comment">#服务请求连接超时时间（毫秒）</span></span><br><span class="line">    <span class="attr">ReadTimeout:</span> <span class="number">3000</span> <span class="comment">#服务请求处理超时时间（毫秒）</span></span><br><span class="line">    <span class="attr">OkToRetryOnAllOperations:</span> <span class="literal">true</span> <span class="comment">#对超时请求启用重试机制</span></span><br><span class="line">    <span class="attr">MaxAutoRetriesNextServer:</span> <span class="number">1</span> <span class="comment">#切换重试实例的最大个数</span></span><br><span class="line">    <span class="attr">MaxAutoRetries:</span> <span class="number">1</span> <span class="comment"># 切换实例后重试最大次数</span></span><br><span class="line">    <span class="attr">NFLoadBalancerRuleClassName:</span> <span class="string">com.netflix.loadbalancer.RandomRule</span> <span class="comment">#修改负载均衡算法</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="载均衡策略配置方法"><a href="#载均衡策略配置方法" class="headerlink" title="载均衡策略配置方法"></a>载均衡策略配置方法</h2><h3 id="配置类中选择"><a href="#配置类中选择" class="headerlink" title="配置类中选择"></a>配置类中选择</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanConfiguration</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@LoadBalanced</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RestTemplate <span class="title">getRestTemplate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RestTemplate();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IRule <span class="title">iRule</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RoundRobinRule();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="选择自定义负载均衡规则"><a href="#选择自定义负载均衡规则" class="headerlink" title="选择自定义负载均衡规则"></a>选择自定义负载均衡规则</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanConfiguration</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@LoadBalanced</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RestTemplate <span class="title">getRestTemplate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RestTemplate();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IRule <span class="title">iRule</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> MyRule()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyRule</span> <span class="keyword">extends</span> <span class="title">AbstractLoadBalancerRule</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyRule</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initWithNiwsConfig</span><span class="params">(IClientConfig iClientConfig)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//灰度发布 10%的流量在新的功能 ~ 90%的流量在旧的功能</span></span><br><span class="line">        <span class="comment">//自定义规则</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//无论传入什么，都返回null</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">public class MyRule implements IRule &#123;</span><br><span class="line"></span><br><span class="line">    private ILoadBalancer lb;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Server choose(Object key) &#123;</span><br><span class="line">    &#x2F;&#x2F;自定义规则</span><br><span class="line">        List&lt;Server&gt; servers &#x3D; lb.getAllServers();</span><br><span class="line">        for (Server server : servers) &#123;</span><br><span class="line">            System.out.println(&quot;调用了第一个服务&quot;+server.getHostPort());</span><br><span class="line">        &#125;</span><br><span class="line">        return servers.get(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void setLoadBalancer(ILoadBalancer lb) &#123;</span><br><span class="line">        this.lb &#x3D; lb;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public ILoadBalancer getLoadBalancer() &#123;</span><br><span class="line">        return lb;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="yml中配置"><a href="#yml中配置" class="headerlink" title="yml中配置"></a>yml中配置</h3><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ribbon:</span></span><br><span class="line">    <span class="attr">NFLoadBalancerRuleClassName:</span> <span class="string">com.netflix.loadbalancer.RandomRule</span> <span class="comment">#修改负载均衡算法</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="超时时间"><a href="#超时时间" class="headerlink" title="超时时间"></a>超时时间</h2><p>Ribbon 中有两种和时间相关的设置，分别是请求连接的超时时间和请求处理的超时时间，设置规则如下：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#请求连接的超时时间</span></span><br><span class="line"><span class="meta">ribbon.ConnectTimeout</span>=<span class="string">2000</span></span><br><span class="line"><span class="comment"># 请求处理的超时时间</span></span><br><span class="line"><span class="meta">ribbon.ReadTimeout</span>=<span class="string">5000</span></span><br></pre></td></tr></table></figure>
+
+<p>也可以为每个Ribbon客户端设置不同的超时时间, 通过服务名称进行指定：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">demo-service-provider.ribbon.ConnectTimeout</span>=<span class="string">2000</span></span><br><span class="line"><span class="meta">demo-service-provider.ribbon.ReadTimeout</span>=<span class="string">5000</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="并发参数"><a href="#并发参数" class="headerlink" title="并发参数"></a>并发参数</h2><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 最大连接数</span></span><br><span class="line"><span class="meta">ribbon.MaxTotalConnections</span>=<span class="string">500</span></span><br><span class="line"><span class="comment"># 每个host最大连接数</span></span><br><span class="line"><span class="meta">ribbon.MaxConnectionsPerHost</span>=<span class="string">500</span></span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/SpringCloud/" rel="tag"># SpringCloud</a>
+          
+            <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag"># 微服务</a>
+          
+            <a href="/tags/Ribbon/" rel="tag"># Ribbon</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/13/Spring-SpringCloud(Eureka)%E7%BB%83%E4%B9%A0/" rel="next" title="Spring-SpringCloud(Eureka)练习">
+                <i class="fa fa-chevron-left"></i> Spring-SpringCloud(Eureka)练习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/05/13/Spring-SpringCloud(hystrix)%E5%AD%A6%E4%B9%A0/" rel="prev" title="Spring-SpringCloud(Hystrix)练习">
+                Spring-SpringCloud(Hystrix)练习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">100</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">68</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">57</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Ribbon%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">Ribbon简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">2.</span> <span class="nav-text">负载均衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">3.</span> <span class="nav-text">客户端负载均衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">4.</span> <span class="nav-text">服务端负载均衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%BC%8F%E6%AF%94%E8%BE%83"><span class="nav-number">5.</span> <span class="nav-text">模式比较</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number"></span> <span class="nav-text">基本工作流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ribbon%E6%87%92%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6"><span class="nav-number"></span> <span class="nav-text">Ribbon懒加载机制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ribbon%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AD%96%E7%95%A5"><span class="nav-number"></span> <span class="nav-text">Ribbon的负载均衡策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AD%96%E7%95%A5"><span class="nav-number">1.</span> <span class="nav-text">如何选择负载均衡策略</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ribbon%E5%8E%9F%E7%90%86"><span class="nav-number"></span> <span class="nav-text">Ribbon原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LoadBalance"><span class="nav-number">1.</span> <span class="nav-text">@LoadBalance</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#LoadBalancerAutoConfig"><span class="nav-number">1.1.</span> <span class="nav-text">LoadBalancerAutoConfig</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IPing"><span class="nav-number">2.</span> <span class="nav-text">IPing</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ribbon%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE"><span class="nav-number"></span> <span class="nav-text">Ribbon参数配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%81%E9%99%90%E5%80%BC%E8%AE%A1%E7%AE%97"><span class="nav-number">1.</span> <span class="nav-text">极限值计算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%B6%E5%AE%9A%E6%9C%8D%E5%8A%A1%E8%BF%9B%E8%A1%8C%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">制定服务进行配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AD%96%E7%95%A5%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">载均衡策略配置方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E7%B1%BB%E4%B8%AD%E9%80%89%E6%8B%A9"><span class="nav-number">3.1.</span> <span class="nav-text">配置类中选择</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%89%E6%8B%A9%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E8%A7%84%E5%88%99"><span class="nav-number">3.1.1.</span> <span class="nav-text">选择自定义负载均衡规则</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#yml%E4%B8%AD%E9%85%8D%E7%BD%AE"><span class="nav-number">3.2.</span> <span class="nav-text">yml中配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B6%85%E6%97%B6%E6%97%B6%E9%97%B4"><span class="nav-number">4.</span> <span class="nav-text">超时时间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E5%8F%82%E6%95%B0"><span class="nav-number">5.</span> <span class="nav-text">并发参数</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试,SpringCloud,微服务,Hystrix," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="服务雪崩  服务C超时，则会逐渐蔓延至服务B服务A，后台整个服务集群瘫痪。 TomCat线程池耗尽  假设服务A，B，C的请求频率相同，服务C响应时间过长，随着时间的推移，Tomcat中的线程会逐渐被C占据，直到挤满。 生产故障 延迟 服务不可用  降低故障影响 隔离异常服务[降低串联影响（线程隔离）] 减压[快速失败（熔断）] 备选方案[最小可用性（降级）]  服务降级 假设服务出现出现异常，导">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring-SpringCloud(Hystrix)练习">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(hystrix)%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="服务雪崩  服务C超时，则会逐渐蔓延至服务B服务A，后台整个服务集群瘫痪。 TomCat线程池耗尽  假设服务A，B，C的请求频率相同，服务C响应时间过长，随着时间的推移，Tomcat中的线程会逐渐被C占据，直到挤满。 生产故障 延迟 服务不可用  降低故障影响 隔离异常服务[降低串联影响（线程隔离）] 减压[快速失败（熔断）] 备选方案[最小可用性（降级）]  服务降级 假设服务出现出现异常，导">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E6%9C%8D%E5%8A%A1%E9%9B%AA%E5%B4%A9.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%80%97%E5%B0%BD.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E9%99%8D%E7%BA%A7.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/hystrix.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E7%86%94%E6%96%AD.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E7%86%94%E6%96%AD%E5%8E%9F%E7%90%86.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E7%BA%BF%E7%A8%8B%E9%9A%94%E7%A6%BB.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E7%BA%BF%E7%A8%8B%E9%9A%94%E7%A6%BB%E5%8E%9F%E7%90%86.png">
+<meta property="article:published_time" content="2021-05-12T17:26:08.000Z">
+<meta property="article:modified_time" content="2021-05-13T11:47:07.675Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="SpringCloud">
+<meta property="article:tag" content="微服务">
+<meta property="article:tag" content="Hystrix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E6%9C%8D%E5%8A%A1%E9%9B%AA%E5%B4%A9.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(hystrix)学习/"/>
+
+
+
+
+
+  <title>Spring-SpringCloud(Hystrix)练习 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(hystrix)%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring-SpringCloud(Hystrix)练习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-13T01:26:08+08:00">
+                2021-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringCloud%E7%BB%83%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - SpringCloud练习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="服务雪崩"><a href="#服务雪崩" class="headerlink" title="服务雪崩"></a>服务雪崩</h1><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E6%9C%8D%E5%8A%A1%E9%9B%AA%E5%B4%A9.png" style="zoom:67%;" />
+
+<p>服务C超时，则会逐渐蔓延至服务B服务A，后台整个服务集群瘫痪。</p>
+<h1 id="TomCat线程池耗尽"><a href="#TomCat线程池耗尽" class="headerlink" title="TomCat线程池耗尽"></a>TomCat线程池耗尽</h1><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%80%97%E5%B0%BD.png" style="zoom:67%;" />
+
+<p>假设服务A，B，C的请求频率相同，服务C响应时间过长，随着时间的推移，Tomcat中的线程会逐渐被C占据，直到挤满。</p>
+<h1 id="生产故障"><a href="#生产故障" class="headerlink" title="生产故障"></a>生产故障</h1><ul>
+<li>延迟</li>
+<li>服务不可用</li>
+</ul>
+<h1 id="降低故障影响"><a href="#降低故障影响" class="headerlink" title="降低故障影响"></a>降低故障影响</h1><ul>
+<li>隔离异常服务[降低串联影响（线程隔离）]</li>
+<li>减压[快速失败（熔断）]</li>
+<li>备选方案[最小可用性（降级）]</li>
+</ul>
+<h1 id="服务降级"><a href="#服务降级" class="headerlink" title="服务降级"></a>服务降级</h1><blockquote>
+<p>假设服务出现出现异常，导致响应超时，那么搜有依赖他的下游系统的响应时间都会被拉长，会引发雪崩效应，有最上游的的系统问题，引发了一系列下游系统响应超时，最终导致整个系统被拖垮。</p>
+</blockquote>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E9%99%8D%E7%BA%A7.png" style="zoom:50%;" />
+
+<p>假如Hystrix调用目标请求的时候发生异常，这时Hystrix会自动把这个请求转发到降级逻辑中，由服务调用方来编写异常处理逻辑。</p>
+<p>对响应超时的场景，可以通过配置Hystrix的超时等待时间（Ribbon的timeout是两个不同配置），把超时响应的服务调用也当作是异常情况，转发到fallback逻辑中进行处理</p>
+<h2 id="HystrixCommand原理"><a href="#HystrixCommand原理" class="headerlink" title="@HystrixCommand原理"></a>@HystrixCommand原理</h2><h3 id="HystrixCommand参数"><a href="#HystrixCommand参数" class="headerlink" title="@HystrixCommand参数"></a>@HystrixCommand参数</h3><p><strong>常用参数</strong>:</p>
+<ul>
+<li>fallbackMethod：指定服务降级处理方法；</li>
+<li>ignoreExceptions：忽略某些异常，不发生服务降级；</li>
+<li>commandKey：命令名称，用于区分不同的命令；</li>
+<li>groupKey：分组名称，Hystrix会根据不同的分组来统计命令的告警及仪表盘信息；</li>
+<li>threadPoolKey：线程池名称，用于划分线程池。</li>
+</ul>
+<h3 id="HystrixCommand实现降级"><a href="#HystrixCommand实现降级" class="headerlink" title="@HystrixCommand实现降级"></a>@HystrixCommand实现降级</h3><p>注解中指定<code>fallbackMethod</code>，需要注意降级方法的参数列表需要和原方法的保持一致</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserServiceImpl</span> <span class="keyword">implements</span> <span class="title">IUserService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RestTemplate restTemplate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;service-url.user-service&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String userServiceUrl;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="meta">@HystrixCommand(fallbackMethod = &quot;getDefaultUser&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">getUser</span><span class="params">(Long  id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> restTemplate.getForObject(userServiceUrl + <span class="string">&quot;/user/&#123;1&#125;&quot;</span>, ServerResponse.class, id);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> ServerResponse <span class="title">getDefaultUser</span><span class="params">(<span class="meta">@PathVariable</span> Long id)</span> </span>&#123;</span><br><span class="line">        User defaultUser = <span class="keyword">new</span> User(-<span class="number">1L</span>, <span class="string">&quot;defaultUser&quot;</span>, <span class="string">&quot;进入服务降级方法&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> ServerResponse.success(defaultUser);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="结合Feign实现降级"><a href="#结合Feign实现降级" class="headerlink" title="结合Feign实现降级"></a>结合Feign实现降级</h3><p>Hystrix Feign共同使用，还有一种配置方式，那就是FeignClient注解中指定一个class，再class里可以处理Feign接口中声明的所有方法的降级需求。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FeignClient(name = &quot;feign-service-provider&quot;, fallback = Fallback.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyHelloService</span> <span class="keyword">extends</span> <span class="title">HelloService</span> </span>&#123;    </span><br><span class="line">    <span class="comment">//方法1</span></span><br><span class="line">   	<span class="comment">//方法2</span></span><br><span class="line">    <span class="comment">//……</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Fallback</span> <span class="keyword">implements</span> <span class="title">MyService</span> </span>&#123;</span><br><span class="line">    <span class="comment">//方法1降级处理</span></span><br><span class="line">   	<span class="comment">//方法2降级处理</span></span><br><span class="line">    <span class="comment">//……降级处理</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="HystrixCommand执行逻辑"><a href="#HystrixCommand执行逻辑" class="headerlink" title="@HystrixCommand执行逻辑"></a>@HystrixCommand执行逻辑</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/hystrix.png" style="zoom:50%;" />
+
+<ul>
+<li><p>@HysrixCommand： 安插在方法上，标识此方法由Hystrix监管。</p>
+</li>
+<li><p>AspectJ：运用Spring的切面能力，给带有@HystrixCommand注解的方法配置了切面</p>
+</li>
+<li><p>Request Cache：</p>
+<ul>
+<li>开启，尝试从缓存中获取数据，也就不用发起方法调用了。</li>
+<li>关闭，执行注册Observer</li>
+</ul>
+</li>
+<li><p>注册Observer：运用RxJava注册了异步回调函数，当方法正常执行、异常抛出、结束或其他状态的时候，将会触发对应的回调函数进行处理</p>
+</li>
+<li><p>发起调用： 在发起调用之前，将会检查熔断状态，如果短路器当前处于开启的状态，那么将直接走向fallback流程。如果断路器处于关闭状态，则发起真正的调用</p>
+</li>
+<li><p>异常：异常触发了注册的回调函数，然后直接转给了降级方法</p>
+</li>
+</ul>
+<h2 id="服务降级常用方案"><a href="#服务降级常用方案" class="headerlink" title="服务降级常用方案"></a>服务降级常用方案</h2><ul>
+<li><p>静默处理：在fallback中返回null，（try catch不能做超时判定。其次使用try catch就要在代码里包含异常处理块。）</p>
+</li>
+<li><p>默认值：返回默认值，如非核心链路中，商品优惠价格服务发生故障返回商品价格原价</p>
+</li>
+<li><p>进行补偿处理：</p>
+<ul>
+<li>缓存异常：假如因为缓存故障无法获取数据，在fallback逻辑中可以转而访问底层数据库。反过来如果数据库发生故障，也可以在fallback里访问缓存，但要注意数据一致性</li>
+<li>切换备库：一般大型应用会采用+备库的方式做灾备。假如我们的主从库都发生了故障，往往需要人工将数据库源切换到备份数据库，我们在fallback中可以先人工干预之前自动访问备份数据。这个场景尽量限定在核心主链路接口上，不要动不动就去访问备库，以免造成脏读幻读</li>
+<li>重试：Ribbon可以处理超时重试，但对于异常情况来说，我们可以在fallback中自己尝试重新发起接口调用</li>
+<li>人工干预：有些极其重要的接口，对异常不饿能容忍，这里可以借助fallback启动人工干预流程 ，比如做日志打点，通过监控组件触发报警，通知人工介入</li>
+</ul>
+</li>
+</ul>
+<h2 id="Hystrix实现Timeout降级"><a href="#Hystrix实现Timeout降级" class="headerlink" title="Hystrix实现Timeout降级"></a>Hystrix实现Timeout降级</h2><h3 id="全局yml配置"><a href="#全局yml配置" class="headerlink" title="全局yml配置"></a>全局yml配置</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">hystrix:</span></span><br><span class="line">  <span class="attr">command:</span> <span class="comment">#用于控制HystrixCommand的行为</span></span><br><span class="line">    <span class="attr">default:</span></span><br><span class="line">      <span class="attr">execution:</span></span><br><span class="line">        <span class="attr">isolation:</span></span><br><span class="line">          <span class="attr">timeout:</span></span><br><span class="line">            <span class="attr">enabled:</span> <span class="literal">true</span> <span class="comment">#配置HystrixCommand的执行是否启用超时时间</span></span><br><span class="line">          <span class="attr">thread:</span></span><br><span class="line">            <span class="attr">timeoutInMilliseconds:</span> <span class="number">2000</span> <span class="comment">#配置HystrixCommand执行的超时时间，执行超过该时间会进行服务降级处理</span></span><br><span class="line">            <span class="attr">interruptOnTimeout:</span> <span class="literal">true</span> <span class="comment">#配置HystrixCommand执行超时的时候是否要中断</span></span><br><span class="line">            <span class="attr">interruptOnFutureCancel:</span> <span class="literal">true</span> <span class="comment">#配置HystrixCommand执行被取消的时候是否要中断</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="多级降级"><a href="#多级降级" class="headerlink" title="多级降级"></a>多级降级</h2><p>降级处理方法仍可以继续指定降级处理</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Fallback</span> <span class="keyword">implements</span> <span class="title">MyService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="meta">@HystrixCommand(fallbackMethod = &quot;fallback2&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">error</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;Fallback: I&#x27;m not a black sheep any more&quot;</span>);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;first fallback&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@HystrixCommand(fallbackMethod = &quot;fallback3&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">fallback2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;fallback again&quot;</span>);</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;fallback again&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">fallback3</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;fallback again and again&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;success&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="服务熔断"><a href="#服务熔断" class="headerlink" title="服务熔断"></a>服务熔断</h1><blockquote>
+<p>服务熔断是建立在服务降级之上的一个异常处理措施，服务降级需要等待HTTP请求从服务节点返回异常或超时，在转向fallback</p>
+</blockquote>
+<p>服务熔断引入“熔断器”机制，当熔断器打开的时候，对服务的调用请求不会发送到目标服务节点，而是直接转向fallback逻辑</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E7%86%94%E6%96%AD.png" style="zoom:50%;" />
+
+<h2 id="熔断配置"><a href="#熔断配置" class="headerlink" title="熔断配置"></a>熔断配置</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 核心配置</span></span><br><span class="line"><span class="attr">hystrix:</span></span><br><span class="line">  <span class="attr">command:</span></span><br><span class="line">    <span class="attr">default:</span></span><br><span class="line">      <span class="attr">circuitBreaker:</span></span><br><span class="line">      	<span class="comment"># 熔断的前提条件（请求的数量），在一定的时间窗口内，请求达到5个以后，才开始进行熔断判断</span></span><br><span class="line">        <span class="attr">requestVolumeThreshold:</span> <span class="number">5</span></span><br><span class="line">        <span class="comment"># 超过50%的失败请求，则熔断开关开启</span></span><br><span class="line">        <span class="attr">errorThresholdPercentage:</span> <span class="number">50</span></span><br><span class="line">        <span class="comment"># 当熔断开启以后，经过多少秒再进入半开状态</span></span><br><span class="line">		<span class="attr">sleepWindowInMilliseconds:</span> <span class="number">15000</span></span><br><span class="line">		<span class="comment"># 配置时间窗口</span></span><br><span class="line">		<span class="attr">timeInMilliseconds:</span> <span class="number">20000</span></span><br><span class="line"><span class="comment"># 辅助配置</span></span><br><span class="line"><span class="attr">hystrix:</span></span><br><span class="line">  <span class="attr">command:</span></span><br><span class="line">    <span class="attr">default:</span></span><br><span class="line">      <span class="attr">circuitBreaker:</span></span><br><span class="line">        <span class="comment"># 熔断功能打开</span></span><br><span class="line">        <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">        <span class="comment"># 强制开启熔断开关</span></span><br><span class="line">        <span class="attr">forceOpen:</span> <span class="literal">false</span></span><br><span class="line">        <span class="comment"># 强制关闭熔断开关</span></span><br><span class="line">        <span class="attr">forceClosed:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="熔断原理"><a href="#熔断原理" class="headerlink" title="熔断原理"></a>熔断原理</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E7%86%94%E6%96%AD%E5%8E%9F%E7%90%86.png" style="zoom:50%;" />
+
+<ul>
+<li>发起调用，切面拦截：在向<code>@HystrixCommand</code>注解修饰的方法调用时，将会触发由Aspect切面逻辑</li>
+<li>检查熔断器：当熔断状态开启的时候，直接进入fallback，不执行远程调用</li>
+<li>发起远程调用-异常：进入回调函数</li>
+<li>计算Metrics（衡量指标），如果达到熔断标准，则开启断路开关，后续的请求直接进入fallback流程</li>
+</ul>
+<h2 id="熔断器三个状态"><a href="#熔断器三个状态" class="headerlink" title="熔断器三个状态"></a>熔断器三个状态</h2><p>1、open：服务在一定时间内不得发起外部调用</p>
+<p>2、half-open：如果降级时间过长，可以尝试发起真实的服务调用，但这一切都是在监控下进行</p>
+<p>3、closed：half-open状态下调用成功了，熔断器可以关闭</p>
+<h2 id="熔断器的判断阀值"><a href="#熔断器的判断阀值" class="headerlink" title="熔断器的判断阀值"></a>熔断器的判断阀值</h2><p>1、在一定时间窗口内，发生异常的请求数量达到临界值<br>2、在一定时间窗口内，发生异常的请求数量占请求总数量达到一定比例</p>
+<h1 id="线程隔离"><a href="#线程隔离" class="headerlink" title="线程隔离"></a>线程隔离</h1><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E7%BA%BF%E7%A8%8B%E9%9A%94%E7%A6%BB.png" style="zoom:50%;" />
+
+<p>web容器通常用线程池来接待来访请求，如果并发量过高，线程池被打满，就会影响后面请求的响应。    </p>
+<p>Hystrix通过线程隔离的方案，将执行服务调用的代码与容器本身的线程池（如tomcat thread pool）进行隔离，配置每个服务所需线程的最大数量。这样即便一个服务的线程池被吃满，也不会影响其他服务    </p>
+<p>与线程隔离类似还有一个“信号量”的方案    </p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/hystrix/%E7%BA%BF%E7%A8%8B%E9%9A%94%E7%A6%BB%E5%8E%9F%E7%90%86.png" style="zoom:50%;" />
+
+<p><strong>线程池拒绝</strong>：由线程隔离机制直接负责，假如当前商品服务分配了10个线程，那么当线程池已经饱和的时候，可以拒绝服务，调用请求会接受到Thread Pool Rejects，转到fallback逻辑，由多个参数共同控制：</p>
+<ul>
+<li>coreSize：核心线程数</li>
+<li>maximumSize：设置最大允许的线程数，需要打allowMaximumSizeToDivergeFromCoreSize才生效</li>
+<li>queueSizeRejectionThreshould：控制队列最大阈值，Hystix默认设置5，即便把maximumSize该打，因为线程队列阈值的约束，程序依然无法承载很多并发量，当改大线程池时，需要这两个属性一同增大。</li>
+<li> keepAliveTimeMinutes:这个属性与线程回收有关。当线程空闲时间，多余线程会被后手，此属性指定线程被回收前存活时间，默认2分钟。</li>
+</ul>
+<p><strong>线程Timeout</strong>：调用失败和延迟也可能发生在远程调用之前（比如一次超长FullGC导致的超时，或者方法只是一个本地业务计算，并不会调用外部方法。），此方法调用过程中发生超时，产生Thread Timeout，调用请求被流转到fallback</p>
+<p><strong>服务异常、超时</strong>：就是服务降级</p>
+<h2 id="隔离方式"><a href="#隔离方式" class="headerlink" title="隔离方式"></a>隔离方式</h2><ul>
+<li>线程池技术（默认）</li>
+<li>信号量技术</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 切换信号量</span></span><br><span class="line"><span class="meta">execution.isolation.strategy</span> = <span class="string">ExecutionIsolationStrategy.SEMAPHORE</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="线程隔离方式VS信号量隔离方式"><a href="#线程隔离方式VS信号量隔离方式" class="headerlink" title="线程隔离方式VS信号量隔离方式"></a>线程隔离方式VS信号量隔离方式</h2><p><strong>原理</strong>   </p>
+<p>线程池技术： 使用Hystrix内建的线程池去执行方法调用，而不是Tomcat的容器线程</p>
+<p>信号量技术：直接使用Tomcat的容器线程去执行方法，不会另外创建新的线程，信号量只充当开关和计数器的作用。获取信号量的线程可以执行方法，没有获取到的就转到fallback</p>
+<p><strong>性能角度</strong>    </p>
+<p>线程池技术：涉及到线程的创建、销毁和任务调度，而且CPU在执行多线程任务的时候会在不同线程之间做切换，操作系统层面cpu线程切换是一个相对耗时的操作，因此从资源利用率和效率的角度看，线程池技术比信号量慢</p>
+<p>信号量技术：直接使用tomcat容器线程去访问方法，信号量只是充当一个计数器的作用，没有额外的系统资源消费，所有在性能方面有明显的优势</p>
+<p><strong>超时判断</strong>    </p>
+<p>线程池技术：相当于多了一层保护机制（Hystrix自建线程），可以直接进行超时判断<br>信号量技术：只能等待诸如网络请求超时等“被动超时”的情况</p>
+<p><strong>使用场景：</strong>    </p>
+<p>信号量适合在超高并发的非外部接口调用，其他场景尽量使用线程隔离</p>
+<h1 id="请求缓存"><a href="#请求缓存" class="headerlink" title="请求缓存"></a>请求缓存</h1><h2 id="相关注解"><a href="#相关注解" class="headerlink" title="相关注解"></a>相关注解</h2><ul>
+<li>@CacheResult：开启缓存，默认所有参数作为缓存的key，cacheKeyMethod可以通过返回String类型的方法指定key；</li>
+<li>@CacheKey：指定缓存的key，可以指定参数或指定参数中的属性值为缓存key，cacheKeyMethod还可以通过返回String类型的方法指定；</li>
+<li>@CacheRemove：移除缓存，需要指定commandKey。</li>
+</ul>
+<h2 id="注意问题"><a href="#注意问题" class="headerlink" title="注意问题"></a>注意问题</h2><p><strong>在缓存使用过程中，我们需要在每次使用缓存的请求前后对HystrixRequestContext进行初始化和关闭，否则会出现如下异常</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">java.lang.IllegalStateException: Request caching is not available. Maybe you need to initialize the HystrixRequestContext?</span><br><span class="line">    at com.netflix.hystrix.HystrixRequestCache.get(HystrixRequestCache.java:104) ~[hystrix-core-1.5.18.jar:1.5.18]</span><br><span class="line">    at com.netflix.hystrix.AbstractCommand$7.call(AbstractCommand.java:478) ~[hystrix-core-1.5.18.jar:1.5.18]</span><br><span class="line">    at com.netflix.hystrix.AbstractCommand$7.call(AbstractCommand.java:454) ~[hystrix-core-1.5.18.jar:1.5.18]</span><br></pre></td></tr></table></figure>
+
+<p><strong>这里我们通过使用过滤器，在每个请求前后初始化和关闭HystrixRequestContext来解决该问题：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@WebFilter(urlPatterns = &quot;/*&quot;,asyncSupported = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HystrixRequestContextFilter</span> <span class="keyword">implements</span> <span class="title">Filter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">doFilter</span><span class="params">(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)</span> <span class="keyword">throws</span> IOException, ServletException </span>&#123;</span><br><span class="line">        HystrixRequestContext context = HystrixRequestContext.initializeContext();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            filterChain.doFilter(servletRequest, servletResponse);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            context.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用请求缓存"><a href="#使用请求缓存" class="headerlink" title="使用请求缓存"></a>使用请求缓存</h2><ul>
+<li>在UserService中添加具有缓存功能的getUserCache方法：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CacheResult(cacheKeyMethod = &quot;getCacheKey&quot;)</span></span><br><span class="line"><span class="meta">@HystrixCommand(fallbackMethod = &quot;getDefaultUser&quot;, commandKey = &quot;getUserCache&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ServerResponse <span class="title">getUserCache</span><span class="params">(Long id)</span> </span>&#123;</span><br><span class="line">    log.info(<span class="string">&quot;getUserCache id:&#123;&#125;&quot;</span>, id);</span><br><span class="line">    <span class="keyword">return</span> restTemplate.getForObject(userServiceUrl + <span class="string">&quot;/user/&#123;1&#125;&quot;</span>, ServerResponse.class, id);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 为缓存生成key的方法，对应cacheKeyMethod = &quot;getCacheKey&quot;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getCacheKey</span><span class="params">(Long id)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> String.valueOf(id);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * key只能是String类型</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@CacheResult</span></span><br><span class="line"><span class="meta">@HystrixCommand(commandKey = &quot;cacheKey&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Friend <span class="title">requestCache</span><span class="params">(<span class="meta">@CacheKey</span> String name)</span> </span>&#123;</span><br><span class="line">    log.info(<span class="string">&quot;request cache &quot;</span> + name);</span><br><span class="line">    Friend friend = <span class="keyword">new</span> Friend();</span><br><span class="line">    friend.setName(name);</span><br><span class="line">    friend = service.sayHiPost(friend);</span><br><span class="line">    log.info(<span class="string">&quot;after requesting cache &quot;</span> + name);</span><br><span class="line">    <span class="keyword">return</span> friend;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="移除缓存"><a href="#移除缓存" class="headerlink" title="移除缓存"></a>移除缓存</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@CacheRemove(commandKey = &quot;getUserCache&quot;, cacheKeyMethod = &quot;getCacheKey&quot;)</span></span><br><span class="line"><span class="meta">@HystrixCommand</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ServerResponse <span class="title">removeCache</span><span class="params">(Long id)</span> </span>&#123;</span><br><span class="line">    log.info(<span class="string">&quot;removeCache id:&#123;&#125;&quot;</span>, id);</span><br><span class="line">    <span class="keyword">return</span> restTemplate.postForObject(userServiceUrl + <span class="string">&quot;/user/delete/&#123;1&#125;&quot;</span>, <span class="keyword">null</span>, ServerResponse.class, id);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">getCacheKey</span><span class="params">(Long id)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> String.valueOf(id);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="请求合并"><a href="#请求合并" class="headerlink" title="请求合并"></a>请求合并</h1><blockquote>
+<p>微服务系统中的服务间通信，需要通过远程调用来实现，随着调用次数越来越多，占用线程资源也会越来越多。Hystrix中提供了@HystrixCollapser用于合并请求，从而达到减少通信消耗及线程数量的效果。</p>
+</blockquote>
+<p>@HystrixCollapser的常用属性</p>
+<ul>
+<li>batchMethod：用于设置请求合并的方法；</li>
+<li>collapserProperties：请求合并属性，用于控制实例属性，有很多；</li>
+<li>timerDelayInMilliseconds：collapserProperties中的属性，用于控制每隔多少时间合并一次请求；</li>
+</ul>
+<h1 id="Hystrix全局配置"><a href="#Hystrix全局配置" class="headerlink" title="Hystrix全局配置"></a>Hystrix全局配置</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">hystrix:</span></span><br><span class="line">  <span class="comment">#用于控制HystrixCommand的行为</span></span><br><span class="line">  <span class="attr">command:</span> </span><br><span class="line">    <span class="attr">default:</span></span><br><span class="line">      <span class="attr">execution:</span></span><br><span class="line">        <span class="attr">isolation:</span></span><br><span class="line">          <span class="attr">strategy:</span> <span class="string">THREAD</span> <span class="comment">#控制HystrixCommand的隔离策略，THREAD-&gt;线程池隔离策略(默认)，SEMAPHORE-&gt;信号量隔离策略</span></span><br><span class="line">          <span class="attr">thread:</span></span><br><span class="line">            <span class="attr">timeoutInMilliseconds:</span> <span class="number">1000</span> <span class="comment">#配置HystrixCommand执行的超时时间，执行超过该时间会进行服务降级处理</span></span><br><span class="line">            <span class="attr">interruptOnTimeout:</span> <span class="literal">true</span> <span class="comment">#配置HystrixCommand执行超时的时候是否要中断</span></span><br><span class="line">            <span class="attr">interruptOnFutureCancel:</span> <span class="literal">true</span> <span class="comment">#配置HystrixCommand执行被取消的时候是否要中断</span></span><br><span class="line">          <span class="attr">timeout:</span></span><br><span class="line">            <span class="attr">enabled:</span> <span class="literal">true</span> <span class="comment">#配置HystrixCommand的执行是否启用超时时间</span></span><br><span class="line">          <span class="attr">semaphore:</span></span><br><span class="line">            <span class="attr">maxConcurrentRequests:</span> <span class="number">10</span> <span class="comment">#当使用信号量隔离策略时，用来控制并发量的大小，超过该并发量的请求会被拒绝</span></span><br><span class="line">      <span class="comment">#用于控制是否启用服务降级</span></span><br><span class="line">      <span class="attr">fallback:</span></span><br><span class="line">        <span class="attr">enabled:</span> <span class="literal">true</span> </span><br><span class="line">      <span class="comment">#用于控制HystrixCircuitBreaker的行为</span></span><br><span class="line">      <span class="attr">circuitBreaker:</span> </span><br><span class="line">        <span class="attr">enabled:</span> <span class="literal">true</span> <span class="comment">#用于控制断路器是否跟踪健康状况以及熔断请求</span></span><br><span class="line">        <span class="attr">requestVolumeThreshold:</span> <span class="number">20</span> <span class="comment">#超过该请求数的请求会被拒绝</span></span><br><span class="line">        <span class="attr">forceOpen:</span> <span class="literal">false</span> <span class="comment">#强制打开断路器，拒绝所有请求</span></span><br><span class="line">        <span class="attr">forceClosed:</span> <span class="literal">false</span> <span class="comment">#强制关闭断路器，接收所有请求</span></span><br><span class="line">      <span class="comment">#用于控制是否开启请求缓存</span></span><br><span class="line">      <span class="attr">requestCache:</span></span><br><span class="line">        <span class="attr">enabled:</span> <span class="literal">true</span> </span><br><span class="line">  <span class="comment">#用于控制HystrixCollapser请求合并的执行行为</span></span><br><span class="line">  <span class="attr">collapser:</span> </span><br><span class="line">    <span class="attr">default:</span></span><br><span class="line">      <span class="attr">maxRequestsInBatch:</span> <span class="number">100</span> <span class="comment">#控制一次合并请求合并的最大请求数</span></span><br><span class="line">      <span class="attr">timerDelayinMilliseconds:</span> <span class="number">10</span> <span class="comment">#控制多少毫秒内的请求会被合并成一个</span></span><br><span class="line">      <span class="attr">requestCache:</span></span><br><span class="line">        <span class="attr">enabled:</span> <span class="literal">true</span> <span class="comment">#控制合并请求是否开启缓存</span></span><br><span class="line">  <span class="comment">#用于控制HystrixCommand执行所在线程池的行为</span></span><br><span class="line">  <span class="attr">threadpool:</span> </span><br><span class="line">    <span class="attr">default:</span></span><br><span class="line">      <span class="attr">coreSize:</span> <span class="number">10</span> <span class="comment">#线程池的核心线程数</span></span><br><span class="line">      <span class="attr">maximumSize:</span> <span class="number">10</span> <span class="comment">#线程池的最大线程数，超过该线程数的请求会被拒绝</span></span><br><span class="line">      <span class="attr">maxQueueSize:</span> <span class="number">-1</span> <span class="comment">#用于设置线程池的最大队列大小，-1采用SynchronousQueue，其他正数采用LinkedBlockingQueue</span></span><br><span class="line">      <span class="attr">queueSizeRejectionThreshold:</span> <span class="number">5</span> <span class="comment">#用于设置线程池队列的拒绝阀值，由于LinkedBlockingQueue不能动态改版大小，使用时需要用该参数来控</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Ribbon与Hystrix超时配置问题"><a href="#Ribbon与Hystrix超时配置问题" class="headerlink" title="Ribbon与Hystrix超时配置问题"></a>Ribbon与Hystrix超时配置问题</h1><p>Ribbon超时时间：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ribbon计算公式：最大超时时间&#x3D;（连接超时时间+接口超时时间）*（当前节点重试次数+1）*（换节点重试次数+1）</span><br></pre></td></tr></table></figure>
+<p>Hystrix超时时间默认1000ms：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds&#x3D;1000</span><br></pre></td></tr></table></figure>
+
+<p>Hystrix超时时间小于Ribbon超时时间，还没来得及重试就进入fallback逻辑</p>
+<p><strong>Hystrix的熔断时间要比Ribbon的最长超时时间设置的略长一些，这样就可以让Ribbon的重试机制充分发挥作用</strong></p>
+<h2 id="Hystrix方法级别超时控制"><a href="#Hystrix方法级别超时控制" class="headerlink" title="Hystrix方法级别超时控制"></a>Hystrix方法级别超时控制</h2><h3 id="具体方法（实例）配置"><a href="#具体方法（实例）配置" class="headerlink" title="具体方法（实例）配置"></a>具体方法（实例）配置</h3><blockquote>
+<p>实例配置只需要将全局配置中的default换成与之对应的key即可。</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">hystrix:</span></span><br><span class="line">  <span class="attr">command:</span></span><br><span class="line">    <span class="attr">HystrixComandKey:</span> <span class="comment">#将default换成HystrixComrnandKey</span></span><br><span class="line">      <span class="attr">execution:</span></span><br><span class="line">        <span class="attr">isolation:</span></span><br><span class="line">          <span class="attr">strategy:</span> <span class="string">THREAD</span></span><br><span class="line">  <span class="attr">collapser:</span></span><br><span class="line">    <span class="attr">HystrixCollapserKey:</span> <span class="comment">#将default换成HystrixCollapserKey</span></span><br><span class="line">      <span class="attr">maxRequestsInBatch:</span> <span class="number">100</span></span><br><span class="line">  <span class="attr">threadpool:</span></span><br><span class="line">    <span class="attr">HystrixThreadPoolKey:</span> <span class="comment">#将default换成HystrixThreadPoolKey</span></span><br><span class="line">      <span class="attr">coreSize:</span> <span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="配置文件中相关key的说明"><a href="#配置文件中相关key的说明" class="headerlink" title="配置文件中相关key的说明"></a>配置文件中相关key的说明</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">HystrixComandKey对应@HystrixCommand中的commandKey属性；</span><br><span class="line">HystrixCollapserKey对应@HystrixCollapser注解中的collapserKey属性；</span><br><span class="line">HystrixThreadPoolKey对应@HystrixCommand中的threadPoolKey属性。</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：各方法不同超时时间在相互调用时冲突</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/SpringCloud/" rel="tag"># SpringCloud</a>
+          
+            <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag"># 微服务</a>
+          
+            <a href="/tags/Hystrix/" rel="tag"># Hystrix</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/13/Spring-SpringCloud(Ribbon)%E5%AD%A6%E4%B9%A0/" rel="next" title="Spring-SpringCloud(Ribbon)学习">
+                <i class="fa fa-chevron-left"></i> Spring-SpringCloud(Ribbon)学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/05/13/Spring-SpringCloud(Ribbon)%E7%BB%83%E4%B9%A0/" rel="prev" title="Spring-SpringCloud(Ribbon)练习">
+                Spring-SpringCloud(Ribbon)练习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">100</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">68</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">57</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E9%9B%AA%E5%B4%A9"><span class="nav-number">1.</span> <span class="nav-text">服务雪崩</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TomCat%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%80%97%E5%B0%BD"><span class="nav-number">2.</span> <span class="nav-text">TomCat线程池耗尽</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%9F%E4%BA%A7%E6%95%85%E9%9A%9C"><span class="nav-number">3.</span> <span class="nav-text">生产故障</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%8D%E4%BD%8E%E6%95%85%E9%9A%9C%E5%BD%B1%E5%93%8D"><span class="nav-number">4.</span> <span class="nav-text">降低故障影响</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E9%99%8D%E7%BA%A7"><span class="nav-number">5.</span> <span class="nav-text">服务降级</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HystrixCommand%E5%8E%9F%E7%90%86"><span class="nav-number">5.1.</span> <span class="nav-text">@HystrixCommand原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HystrixCommand%E5%8F%82%E6%95%B0"><span class="nav-number">5.1.1.</span> <span class="nav-text">@HystrixCommand参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HystrixCommand%E5%AE%9E%E7%8E%B0%E9%99%8D%E7%BA%A7"><span class="nav-number">5.1.2.</span> <span class="nav-text">@HystrixCommand实现降级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E5%90%88Feign%E5%AE%9E%E7%8E%B0%E9%99%8D%E7%BA%A7"><span class="nav-number">5.1.3.</span> <span class="nav-text">结合Feign实现降级</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HystrixCommand%E6%89%A7%E8%A1%8C%E9%80%BB%E8%BE%91"><span class="nav-number">5.2.</span> <span class="nav-text">@HystrixCommand执行逻辑</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E9%99%8D%E7%BA%A7%E5%B8%B8%E7%94%A8%E6%96%B9%E6%A1%88"><span class="nav-number">5.3.</span> <span class="nav-text">服务降级常用方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hystrix%E5%AE%9E%E7%8E%B0Timeout%E9%99%8D%E7%BA%A7"><span class="nav-number">5.4.</span> <span class="nav-text">Hystrix实现Timeout降级</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E5%B1%80yml%E9%85%8D%E7%BD%AE"><span class="nav-number">5.4.1.</span> <span class="nav-text">全局yml配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%BA%A7%E9%99%8D%E7%BA%A7"><span class="nav-number">5.5.</span> <span class="nav-text">多级降级</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E7%86%94%E6%96%AD"><span class="nav-number">6.</span> <span class="nav-text">服务熔断</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%86%94%E6%96%AD%E9%85%8D%E7%BD%AE"><span class="nav-number">6.1.</span> <span class="nav-text">熔断配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%86%94%E6%96%AD%E5%8E%9F%E7%90%86"><span class="nav-number">6.2.</span> <span class="nav-text">熔断原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%86%94%E6%96%AD%E5%99%A8%E4%B8%89%E4%B8%AA%E7%8A%B6%E6%80%81"><span class="nav-number">6.3.</span> <span class="nav-text">熔断器三个状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%86%94%E6%96%AD%E5%99%A8%E7%9A%84%E5%88%A4%E6%96%AD%E9%98%80%E5%80%BC"><span class="nav-number">6.4.</span> <span class="nav-text">熔断器的判断阀值</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E9%9A%94%E7%A6%BB"><span class="nav-number">7.</span> <span class="nav-text">线程隔离</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">7.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%94%E7%A6%BB%E6%96%B9%E5%BC%8F"><span class="nav-number">7.2.</span> <span class="nav-text">隔离方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E9%9A%94%E7%A6%BB%E6%96%B9%E5%BC%8FVS%E4%BF%A1%E5%8F%B7%E9%87%8F%E9%9A%94%E7%A6%BB%E6%96%B9%E5%BC%8F"><span class="nav-number">7.3.</span> <span class="nav-text">线程隔离方式VS信号量隔离方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E7%BC%93%E5%AD%98"><span class="nav-number">8.</span> <span class="nav-text">请求缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E6%B3%A8%E8%A7%A3"><span class="nav-number">8.1.</span> <span class="nav-text">相关注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E9%97%AE%E9%A2%98"><span class="nav-number">8.2.</span> <span class="nav-text">注意问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E8%AF%B7%E6%B1%82%E7%BC%93%E5%AD%98"><span class="nav-number">8.3.</span> <span class="nav-text">使用请求缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%BB%E9%99%A4%E7%BC%93%E5%AD%98"><span class="nav-number">8.4.</span> <span class="nav-text">移除缓存</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E5%90%88%E5%B9%B6"><span class="nav-number">9.</span> <span class="nav-text">请求合并</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Hystrix%E5%85%A8%E5%B1%80%E9%85%8D%E7%BD%AE"><span class="nav-number">10.</span> <span class="nav-text">Hystrix全局配置</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ribbon%E4%B8%8EHystrix%E8%B6%85%E6%97%B6%E9%85%8D%E7%BD%AE%E9%97%AE%E9%A2%98"><span class="nav-number">11.</span> <span class="nav-text">Ribbon与Hystrix超时配置问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hystrix%E6%96%B9%E6%B3%95%E7%BA%A7%E5%88%AB%E8%B6%85%E6%97%B6%E6%8E%A7%E5%88%B6"><span class="nav-number">11.1.</span> <span class="nav-text">Hystrix方法级别超时控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E6%96%B9%E6%B3%95%EF%BC%88%E5%AE%9E%E4%BE%8B%EF%BC%89%E9%85%8D%E7%BD%AE"><span class="nav-number">11.1.1.</span> <span class="nav-text">具体方法（实例）配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9B%B8%E5%85%B3key%E7%9A%84%E8%AF%B4%E6%98%8E"><span class="nav-number">11.1.1.1.</span> <span class="nav-text">配置文件中相关key的说明</span></a></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
