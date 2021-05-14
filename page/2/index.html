@@ -261,6 +261,934 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(hystrix)%E9%A1%B9%E7%9B%AE%E5%BA%94%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/05/13/Spring-SpringCloud(hystrix)%E9%A1%B9%E7%9B%AE%E5%BA%94%E7%94%A8/" itemprop="url">Spring-SpringCloud(Hystrix)项目应用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-13T01:26:08+08:00">
+                2021-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringCloud%E7%BB%83%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - SpringCloud练习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Ribbon)%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/05/13/Spring-SpringCloud(Ribbon)%E5%AD%A6%E4%B9%A0/" itemprop="url">Spring-SpringCloud(Ribbon)学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-13T00:38:53+08:00">
+                2021-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringCloud%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - SpringCloud学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Ribbon简介"><a href="#Ribbon简介" class="headerlink" title="Ribbon简介"></a>Ribbon简介</h2><p>在微服务架构中，很多服务都会部署多个，其他服务去调用该服务的时候，如何保证负载均衡是个不得不去考虑的问题。负载均衡可以增加系统的可用性和扩展性，当我们使用RestTemplate来调用其他服务时，Ribbon可以很方便的实现负载均衡功能。</p>
+<h2 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h2><h2 id="客户端负载均衡"><a href="#客户端负载均衡" class="headerlink" title="客户端负载均衡"></a>客户端负载均衡</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.png" style="zoom: 33%;" />
+
+<h2 id="服务端负载均衡"><a href="#服务端负载均衡" class="headerlink" title="服务端负载均衡"></a>服务端负载均衡</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1.png" style="zoom: 33%;" />
+
+<h2 id="模式比较"><a href="#模式比较" class="headerlink" title="模式比较"></a>模式比较</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%AF%94%E8%BE%83.png" style="zoom: 33%;" />
+
+<h1 id="基本工作流程"><a href="#基本工作流程" class="headerlink" title="基本工作流程"></a>基本工作流程</h1><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Ribbon%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png" style="zoom:50%;" />
+
+<p>http请求先被转发到服务节点（Eureka Clinet）上，此时服务节点（Eureka Clinet）仍然通过服务发现获取了所有服务节点的物理地址，但服务节点（Eureka Clinet）不知道该调用哪一个，所以把请求转到ribbon手中<br>1、IPing IPing是Ribbon的一套healthcheck机制，即Ping一下目标机器是否在线，一般情况下IPing并不会主动向服务节点发起healthcheck请求，Ribbon后台通过静默处理返回true默认表示所有节点都处于存活状态（和Eureka集成的时候回去检查节点UP状态）。</p>
+<p>2、IRule ribbon组件库，各种负载均衡策略都继承自IRule接口，所有经过ribbon的请求都会去请示IRule，找到负载均衡策略选定的目标机器，再把请求转发过去。</p>
+<h1 id="Ribbon懒加载机制"><a href="#Ribbon懒加载机制" class="headerlink" title="Ribbon懒加载机制"></a>Ribbon懒加载机制</h1><p>ribbon及有懒加载，第一次去调用时才初始化LoadBalance，如果http方法本身比较耗时，再加上loadbalance创建耗时，而且超时时间又设置的比较短，很可能出现第一次http调用失败。</p>
+<p><strong>解决方法</strong>:</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启饥饿加载模式</span></span><br><span class="line"><span class="meta">ribbon.eager-load.enabled</span>=<span class="string">true </span></span><br><span class="line"><span class="comment"># 指定饥饿加载的服务名称</span></span><br><span class="line"><span class="meta">ribbon.eager-load.clients</span>=<span class="string">ribbon-consumer</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Ribbon的负载均衡策略"><a href="#Ribbon的负载均衡策略" class="headerlink" title="Ribbon的负载均衡策略"></a>Ribbon的负载均衡策略</h1><blockquote>
+<p>所谓的负载均衡策略，就是当A服务调用B服务时，此时B服务有多个实例，这时A服务以何种方式来选择调用的B实例，ribbon可以选择以下几种负载均衡策略。</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ribbon:</span></span><br><span class="line">  <span class="attr">NFLoadBalancerRuleClassName:</span> <span class="string">com.netflix.loadbalancer.RandomRule</span> <span class="comment">#修改负载均衡算法</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>RandomRule</code>：</li>
+</ul>
+<p>从提供服务的实例中以随机的方式；使用了yieid+自旋的方式重试，还采用防御性编程（为了保证对程序的不可预见的使用，不会造成程序功能上的损坏）</p>
+<ul>
+<li><code>RoundRobinRule</code>：</li>
+</ul>
+<p>以线性轮询的方式，就是维护一个计数器，从提供服务的实例中按顺序选取，第一次选第一个，第二次选第二个，以此类推，到最后一个以后再从头来过；</p>
+<p>底层用的是自旋锁+CAS防止两个请求访问这个Rule时读取到相同节点。Eureka为了方式服务下线重复调用，也是使用的AtomicBoolean的CSA方法做同步控制。</p>
+<ul>
+<li><code>RetryRule</code>：</li>
+</ul>
+<p>在RoundRobinRule的基础上添加重试机制（类似修饰器模式的RoundRobinRule），即在指定的重试时间内，反复使用线性轮询策略来选择可用实例；</p>
+<ul>
+<li><code>WeightedResponseTimeRule</code>：</li>
+</ul>
+<p>对RoundRobinRule的扩展，响应速度越快的实例选择权重越大，越容易被选择，如果统计结果未生成采用轮询；</p>
+<ul>
+<li><code>BestAvailableRule</code>：</li>
+</ul>
+<p>在过滤掉故障服务后，选择并发量较小的实例，如果统计结果未生成采用轮询；</p>
+<ul>
+<li><code>AvailabilityFilteringRule</code>：</li>
+</ul>
+<p>每次<code>AvailabilityFilteringRule</code>（ARF）都会请求RobinRule挑选一个节点，然后对这个节点进行两步检查</p>
+<ol>
+<li>是否处于熔断状态</li>
+<li>节点当前active请求连接数超过阈值</li>
+</ol>
+<p>如果未通过检查，ARF会重试（最多十次），如果还不行，让RobinRule重新选择一个节点</p>
+<ul>
+<li><code>ZoneAwareLoadBalancer</code>： </li>
+</ul>
+<p>采用双重过滤，同时过滤不是同一区域的实例和故障实例，选择并发较小</p>
+<h2 id="如何选择负载均衡策略"><a href="#如何选择负载均衡策略" class="headerlink" title="如何选择负载均衡策略"></a>如何选择负载均衡策略</h2><ul>
+<li>时间——RT（Response Time）响应时间</li>
+<li>空间——服务器的可用连接数</li>
+</ul>
+<p><strong>连接数敏感模型</strong>：    </p>
+<p>对响应时间短，或RT和业务复杂度是非线性相关关系的接口，采用基于可用连接数的负载均衡策略更加合适RT（response time）敏感模型；</p>
+<p><strong>对重量级接口</strong><br>根据参数不同会导致系统资源使用浮动较大的接口（RT与业务复杂度线性相关），建议采用基于响应时间的负载均衡策略</p>
+<h1 id="Ribbon原理"><a href="#Ribbon原理" class="headerlink" title="Ribbon原理"></a>Ribbon原理</h1><h2 id="LoadBalance"><a href="#LoadBalance" class="headerlink" title="@LoadBalance"></a>@LoadBalance</h2><ul>
+<li><p>@LoadBalanced这个注解一头挂在RestTemplate上，另一个挂在LoadBalancerAutoConfig这个类上</p>
+</li>
+<li><p>@LoadBalanced这个注解会将RestTemplate传送到Ribbon的自动装配类(LoadBalancerAutoConfig)里面进行改造</p>
+<h3 id="LoadBalancerAutoConfig"><a href="#LoadBalancerAutoConfig" class="headerlink" title="LoadBalancerAutoConfig"></a>LoadBalancerAutoConfig</h3></li>
+</ul>
+<p>对网络请求进行拦截，加工</p>
+<h2 id="IPing"><a href="#IPing" class="headerlink" title="IPing"></a>IPing</h2><p>IPing作用获取服务节点的状态，只有可用节点才进行负载均衡</p>
+<p>IPing的三种工作模式</p>
+<ul>
+<li><p>DummyPing    自娱自乐式：静默模式，默认返回true，认为所有节点都可用</p>
+</li>
+<li><p>NIWSDiscoveryPing    隔山打牛式：借助Eureka服务发现机制获取节点状态，状态为：UP则可用（默认这一种）</p>
+</li>
+<li><p>PingUrl    主动出击式：增加后台服务器压力</p>
+</li>
+</ul>
+<h1 id="Ribbon参数配置"><a href="#Ribbon参数配置" class="headerlink" title="Ribbon参数配置"></a>Ribbon参数配置</h1><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ribbon:</span></span><br><span class="line">  <span class="attr">OkToRetryOnAllOperations:</span> <span class="literal">true</span> <span class="comment">#对超时请求启用重试机制（真实环境Get请求可以重试或实现了幂等性的其他类型请求）</span></span><br><span class="line">  <span class="attr">ConnectTimeout:</span> <span class="number">1000</span> <span class="comment">#服务请求连接超时时间（毫秒）</span></span><br><span class="line">  <span class="attr">ReadTimeout:</span> <span class="number">2000</span> <span class="comment">#服务请求处理超时时间（毫秒）</span></span><br><span class="line">  <span class="attr">MaxAutoRetries:</span> <span class="number">2</span> <span class="comment"># 当前节点的重试次数，2代表重试2次，首次调用超时后，会再次向同一个服务节点发起最多两次重试（总共向当前节点1+2=3次请求）</span></span><br><span class="line">  <span class="attr">MaxAutoRetriesNextServer:</span> <span class="number">2</span> <span class="comment">#切换重试实例的最大个数，2代表换2个节点重试，当前节点超时后，Fegin将最多切换2台机器发起调用，在新机器上再次发起最多（MaxAutoRetries+1）次调用</span></span><br><span class="line">  <span class="attr">NFLoadBalancerRuleClassName:</span> <span class="string">com.netflix.loadbalancer.RandomRule</span> <span class="comment">#修改负载均衡算法</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="极限值计算"><a href="#极限值计算" class="headerlink" title="极限值计算"></a>极限值计算</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MAX(Response Time) &#x3D; (ConnectTimeout + ReadTimeout) * (MaxAutoRetries + 1) * (MaxAutoRetriesNextServer + 1)</span><br><span class="line">27000ms &#x3D; （2000 + 1000）*（2 + 1）*（2 + 1）</span><br></pre></td></tr></table></figure>
+
+<h2 id="制定服务进行配置"><a href="#制定服务进行配置" class="headerlink" title="制定服务进行配置"></a>制定服务进行配置</h2><blockquote>
+<p>当我们在使用@FeignClient(name = “user-service”)注解来生成一个名为user-service的feign客户端时，同时也生成了一个名为user-service的ribbon客户端，所以我们才能用注解@FeignClient里的name值（value也是一样的）来设置对应的ribbon参数，起到指定服务的效果，不再是全局配置了</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">user-service:</span></span><br><span class="line">  <span class="attr">ribbon:</span></span><br><span class="line">    <span class="attr">ConnectTimeout:</span> <span class="number">1000</span> <span class="comment">#服务请求连接超时时间（毫秒）</span></span><br><span class="line">    <span class="attr">ReadTimeout:</span> <span class="number">3000</span> <span class="comment">#服务请求处理超时时间（毫秒）</span></span><br><span class="line">    <span class="attr">OkToRetryOnAllOperations:</span> <span class="literal">true</span> <span class="comment">#对超时请求启用重试机制</span></span><br><span class="line">    <span class="attr">MaxAutoRetriesNextServer:</span> <span class="number">1</span> <span class="comment">#切换重试实例的最大个数</span></span><br><span class="line">    <span class="attr">MaxAutoRetries:</span> <span class="number">1</span> <span class="comment"># 切换实例后重试最大次数</span></span><br><span class="line">    <span class="attr">NFLoadBalancerRuleClassName:</span> <span class="string">com.netflix.loadbalancer.RandomRule</span> <span class="comment">#修改负载均衡算法</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="载均衡策略配置方法"><a href="#载均衡策略配置方法" class="headerlink" title="载均衡策略配置方法"></a>载均衡策略配置方法</h2><h3 id="配置类中选择"><a href="#配置类中选择" class="headerlink" title="配置类中选择"></a>配置类中选择</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanConfiguration</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@LoadBalanced</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RestTemplate <span class="title">getRestTemplate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RestTemplate();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IRule <span class="title">iRule</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RoundRobinRule();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="选择自定义负载均衡规则"><a href="#选择自定义负载均衡规则" class="headerlink" title="选择自定义负载均衡规则"></a>选择自定义负载均衡规则</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanConfiguration</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@LoadBalanced</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RestTemplate <span class="title">getRestTemplate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RestTemplate();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IRule <span class="title">iRule</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> MyRule()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyRule</span> <span class="keyword">extends</span> <span class="title">AbstractLoadBalancerRule</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyRule</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initWithNiwsConfig</span><span class="params">(IClientConfig iClientConfig)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//灰度发布 10%的流量在新的功能 ~ 90%的流量在旧的功能</span></span><br><span class="line">        <span class="comment">//自定义规则</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">//无论传入什么，都返回null</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">public class MyRule implements IRule &#123;</span><br><span class="line"></span><br><span class="line">    private ILoadBalancer lb;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Server choose(Object key) &#123;</span><br><span class="line">    &#x2F;&#x2F;自定义规则</span><br><span class="line">        List&lt;Server&gt; servers &#x3D; lb.getAllServers();</span><br><span class="line">        for (Server server : servers) &#123;</span><br><span class="line">            System.out.println(&quot;调用了第一个服务&quot;+server.getHostPort());</span><br><span class="line">        &#125;</span><br><span class="line">        return servers.get(0);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void setLoadBalancer(ILoadBalancer lb) &#123;</span><br><span class="line">        this.lb &#x3D; lb;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public ILoadBalancer getLoadBalancer() &#123;</span><br><span class="line">        return lb;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="yml中配置"><a href="#yml中配置" class="headerlink" title="yml中配置"></a>yml中配置</h3><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">ribbon:</span></span><br><span class="line">    <span class="attr">NFLoadBalancerRuleClassName:</span> <span class="string">com.netflix.loadbalancer.RandomRule</span> <span class="comment">#修改负载均衡算法</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="超时时间"><a href="#超时时间" class="headerlink" title="超时时间"></a>超时时间</h2><p>Ribbon 中有两种和时间相关的设置，分别是请求连接的超时时间和请求处理的超时时间，设置规则如下：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#请求连接的超时时间</span></span><br><span class="line"><span class="meta">ribbon.ConnectTimeout</span>=<span class="string">2000</span></span><br><span class="line"><span class="comment"># 请求处理的超时时间</span></span><br><span class="line"><span class="meta">ribbon.ReadTimeout</span>=<span class="string">5000</span></span><br></pre></td></tr></table></figure>
+
+<p>也可以为每个Ribbon客户端设置不同的超时时间, 通过服务名称进行指定：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">demo-service-provider.ribbon.ConnectTimeout</span>=<span class="string">2000</span></span><br><span class="line"><span class="meta">demo-service-provider.ribbon.ReadTimeout</span>=<span class="string">5000</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="并发参数"><a href="#并发参数" class="headerlink" title="并发参数"></a>并发参数</h2><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 最大连接数</span></span><br><span class="line"><span class="meta">ribbon.MaxTotalConnections</span>=<span class="string">500</span></span><br><span class="line"><span class="comment"># 每个host最大连接数</span></span><br><span class="line"><span class="meta">ribbon.MaxConnectionsPerHost</span>=<span class="string">500</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Eureka)%E9%A1%B9%E7%9B%AE%E5%BA%94%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/05/13/Spring-SpringCloud(Eureka)%E9%A1%B9%E7%9B%AE%E5%BA%94%E7%94%A8/" itemprop="url">Spring-SpringCloud(Eureka)项目应用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-13T00:12:46+08:00">
+                2021-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringCloud%E7%BB%83%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - SpringCloud练习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Spring-Cloud-Eureka-服务注册与发现"><a href="#Spring-Cloud-Eureka-服务注册与发现" class="headerlink" title="Spring Cloud Eureka: 服务注册与发现"></a>Spring Cloud Eureka: 服务注册与发现</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>在微服务架构中往往会有一个注册中心，每个微服务都会向注册中心去注册自己的地址及端口信息，注册中心维护着服务名称与服务实例的对应关系。每个微服务都会定时从注册中心获取服务列表，同时汇报自己的运行情况，这样当有的服务需要调用其他服务时，就可以从自己获取到的服务列表中获取实例地址进行调用，Eureka实现了这套服务注册与发现机制。</p>
+<h2 id="搭建Eureka注册中心"><a href="#搭建Eureka注册中心" class="headerlink" title="搭建Eureka注册中心"></a>搭建Eureka注册中心</h2><h3 id="添加依赖"><a href="#添加依赖" class="headerlink" title="添加依赖"></a>添加依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">       <span class="comment">&lt;!--给Eureka注册中心添加认证--&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-security<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="启动类"><a href="#启动类" class="headerlink" title="启动类"></a>启动类</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">/开启作为Eureka Server的客户端的支持</span><br><span class="line"><span class="meta">@EnableDiscoveryClient</span></span><br><span class="line"><span class="comment">//开启对EurekaServer的支持，即：作为Eureka服务端</span></span><br><span class="line"><span class="meta">@EnableEurekaServer</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CloudEurekaNode1Application</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(CloudEurekaNode1Application.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="yml配置"><a href="#yml配置" class="headerlink" title="yml配置"></a>yml配置</h3><h4 id="单节点"><a href="#单节点" class="headerlink" title="单节点"></a>单节点</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">pring:</span><br><span class="line">  security:</span><br><span class="line">    user:</span><br><span class="line">      name: liyuan</span><br><span class="line">      password: liyuan123</span><br><span class="line">      roles: SUPERUSER</span><br><span class="line">server:</span><br><span class="line">  port: <span class="number">8761</span></span><br><span class="line"></span><br><span class="line">eureka:</span><br><span class="line">  instance:</span><br><span class="line">    hostname: localhost</span><br><span class="line">    prefer-ip-address: <span class="keyword">true</span></span><br><span class="line">  client:</span><br><span class="line">    register-with-eureka: <span class="keyword">false</span></span><br><span class="line">    fetch-registry: <span class="keyword">false</span></span><br><span class="line">    service-url:</span><br><span class="line">      defaultZone: http:<span class="comment">//liyuan:liyuan123@localhost:8761/eureka/</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h4><p>配置host</p>
+<ul>
+<li>127.0.0.1 eureka-server1</li>
+<li>127.0.0.1 eureka-server2</li>
+</ul>
+<h5 id="节点1"><a href="#节点1" class="headerlink" title="节点1"></a>节点1</h5><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="comment">#配置SpringSecurity登录用户名和密码</span></span><br><span class="line">  <span class="attr">security:</span></span><br><span class="line">    <span class="attr">user:</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">liyuan</span></span><br><span class="line">      <span class="attr">password:</span> <span class="string">liyuan123</span></span><br><span class="line">      <span class="attr">roles:</span> <span class="string">SUPERUSER</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">eureka-server</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">8761</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">instance:</span></span><br><span class="line">    <span class="comment"># 在同一个局域网，可以通过hostname来互相访问，因为同一个局域网不允许出现相同的hostname</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">eureka-server1</span></span><br><span class="line">    <span class="comment"># prefer-ip-address = true，hostname将失效</span></span><br><span class="line">    <span class="attr">prefer-ip-address:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="comment">#指示此实例是否应将其信息注册到eureka服务器以供其他服务发现，默认为false</span></span><br><span class="line">    <span class="attr">register-with-eureka:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment">#客户端是否获取eureka服务器注册表上的注册信息，默认为true</span></span><br><span class="line">    <span class="attr">fetch-registry:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">    <span class="comment">#将自己注册到eureka-server2</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://liyuan:liyuan123@eureka-server2:8762/eureka/</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="节点2"><a href="#节点2" class="headerlink" title="节点2"></a>节点2</h5><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">security:</span></span><br><span class="line">    <span class="attr">user:</span></span><br><span class="line">      <span class="attr">name:</span> <span class="string">liyuan</span></span><br><span class="line">      <span class="attr">password:</span> <span class="string">liyuan123</span></span><br><span class="line">      <span class="attr">roles:</span> <span class="string">SUPERUSER</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">eureka-server</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">8762</span></span><br><span class="line"></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">instance:</span></span><br><span class="line">    <span class="comment"># 在同一个局域网，可以通过hostname来互相访问，因为同一个局域网不允许出现相同的hostname</span></span><br><span class="line">    <span class="attr">hostname:</span> <span class="string">eureka-server2</span></span><br><span class="line">    <span class="comment"># prefer-ip-address = true，hostname将失效</span></span><br><span class="line">    <span class="attr">prefer-ip-address:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="comment">#指示此实例是否应将其信息注册到eureka服务器以供其他服务发现，默认为false</span></span><br><span class="line">    <span class="attr">register-with-eureka:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment">#客户端是否获取eureka服务器注册表上的注册信息，默认为true</span></span><br><span class="line">    <span class="attr">fetch-registry:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">    <span class="comment">#将自己注册到eureka-server1</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://liyuan:liyuan123@eureka-server1:8761/eureka/</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="添加Java配置WebSecurityConfig"><a href="#添加Java配置WebSecurityConfig" class="headerlink" title="添加Java配置WebSecurityConfig"></a>添加Java配置WebSecurityConfig</h3><blockquote>
+<p>默认情况下添加SpringSecurity依赖的应用每个请求都需要添加CSRF token才能访问，Eureka客户端注册时并不会添加，所以需要配置/eureka/**路径不需要CSRF token。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableWebSecurity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpringSecurityConfig</span> <span class="keyword">extends</span> <span class="title">WebSecurityConfigurerAdapter</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        http.csrf().ignoringAntMatchers(<span class="string">&quot;/eureka/**&quot;</span>);</span><br><span class="line">        <span class="keyword">super</span>.configure(http);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="搭建Eureka-客户端"><a href="#搭建Eureka-客户端" class="headerlink" title="搭建Eureka 客户端"></a>搭建Eureka 客户端</h2><h3 id="添加依赖-1"><a href="#添加依赖-1" class="headerlink" title="添加依赖"></a>添加依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">           <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">       <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="启动项"><a href="#启动项" class="headerlink" title="启动项"></a>启动项</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableDiscoveryClient</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        SpringApplication.run(DemoConsumerApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="搭建Eureka服务提供者"><a href="#搭建Eureka服务提供者" class="headerlink" title="搭建Eureka服务提供者"></a>搭建Eureka服务提供者</h3><h4 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h4><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">instance:</span></span><br><span class="line">    <span class="attr">prefer-ip-address:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">instance-id:</span> <span class="string">$&#123;spring.application.name&#125;:$&#123;spring.cloud.client.ip-address&#125;:$&#123;server.port&#125;</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="comment">#注册到Eureka的注册中心</span></span><br><span class="line">    <span class="attr">register-with-eureka:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment">#获取注册实例列表</span></span><br><span class="line">    <span class="attr">fetch-registry:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment">#配置注册中心地址</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://liyuan:liyuan123@eureka-server1:8761/eureka/,http://liyuan:liyuan123@eureka-server2:8762/eureka/</span></span><br></pre></td></tr></table></figure>
+<h4 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/user&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/hello&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="搭建Eureka消费者"><a href="#搭建Eureka消费者" class="headerlink" title="搭建Eureka消费者"></a>搭建Eureka消费者</h3><h4 id="配置文件-1"><a href="#配置文件-1" class="headerlink" title="配置文件"></a>配置文件</h4><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">instance:</span></span><br><span class="line">    <span class="attr">prefer-ip-address:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">instance-id:</span> <span class="string">$&#123;spring.application.name&#125;:$&#123;spring.cloud.client.ip-address&#125;:$&#123;server.port&#125;</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="comment">#注册到Eureka的注册中心</span></span><br><span class="line">    <span class="attr">register-with-eureka:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment">#获取注册实例列表</span></span><br><span class="line">    <span class="attr">fetch-registry:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment">#配置注册中心地址</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://liyuan:liyuan123@eureka-server1:8761/eureka/,http://liyuan:liyuan123@eureka-server2:8762/eureka/</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="RestTemplate"><a href="#RestTemplate" class="headerlink" title="RestTemplate"></a>RestTemplate</h4><h5 id="直接调用接口"><a href="#直接调用接口" class="headerlink" title="直接调用接口"></a>直接调用接口</h5><p>RestTemplate是 <a target="_blank" rel="noopener" href="http://c.biancheng.net/spring/">Spring</a> 提供的用于访问 Rest 服务的客户端，RestTemplate 提供了多种便捷访问远程 Http 服务的方法，能够大大提高客户端的编写效率。我们通过配置 RestTemplate 来调用接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanConfiguration</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RestTemplate <span class="title">getRestTemplate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RestTemplate();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArticleController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RestTemplate restTemplate;</span><br><span class="line">    <span class="meta">@GetMapping(&quot;/article /callHello&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">callHello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> restTemplate.getForObject(<span class="string">&quot;http://localhost:8081/user/hello&quot;</span>, String.class);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="通过-Eureka-来消费接口"><a href="#通过-Eureka-来消费接口" class="headerlink" title="通过 Eureka 来消费接口"></a>通过 Eureka 来消费接口</h5><p>上面提到的方法是直接通过服务接口的地址来调用的，和我们之前的做法一样，完全没有用到 Eureka 带给我们的便利。既然用了注册中心，那么客户端调用的时候肯定是不需要关心有多少个服务提供接口，下面我们来改造之前的调用代码。</p>
+<p>首先改造 RestTemplate 的配置，添加一个 @LoadBalanced 注解，这个注解会自动构造 LoadBalancerClient 接口的实现类并注册到 Spring 容器中，代码如下所示。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanConfiguration</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@LoadBalanced</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RestTemplate <span class="title">getRestTemplate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> RestTemplate();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArticleController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RestTemplate restTemplate;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@GetMapping(&quot;/article/callHello2&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">callHello2</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> restTemplate.getForObject(<span class="string">&quot;http://demo-service-provider/user/hello&quot;</span>, String.class);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h2><figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">cloud-parent</span><br><span class="line">├── cloud_eureka_node1 <span class="comment">-- eureka注册中心节点1</span></span><br><span class="line">├── cloud_eureka_node2 <span class="comment">-- eureka注册中心节点2</span></span><br><span class="line">└── cloud-demo <span class="comment">-- SpringCloud测试项目</span></span><br><span class="line">	├── cloud_consumer <span class="comment">--服务消费端</span></span><br><span class="line">	├── cloud_provider <span class="comment">--服务提供端</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/12/Spring-SpringCloud(Eureka,nacos)%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/05/12/Spring-SpringCloud(Eureka,nacos)%E5%AD%A6%E4%B9%A0/" itemprop="url">Spring-SpringCloud(Eureka,nacos)学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-12T18:41:28+08:00">
+                2021-05-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringCloud%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - SpringCloud学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="微服务环境下面临的问题"><a href="#微服务环境下面临的问题" class="headerlink" title="微服务环境下面临的问题"></a>微服务环境下面临的问题</h1><p>1、服务治理与负载均衡</p>
+<p>2、服务容错</p>
+<p>3、配置管理</p>
+<p>4、服务网关</p>
+<p>5、调用链路追踪</p>
+<p>6、消息驱动</p>
+<p>7、限流</p>
+<h1 id="什么是SpringCloud"><a href="#什么是SpringCloud" class="headerlink" title="什么是SpringCloud"></a>什么是SpringCloud</h1><p>是一套目前完整的微服务框架，它是是一系列框架的有序集合，将各服务组件组合起来，通过SpringBoot风格进行再封装屏蔽掉了复杂的配置和实现原理，最终实现一套简单易懂、易部署和易维护的分布式系统开发工具包</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84.png"></p>
+<h1 id="服务治理"><a href="#服务治理" class="headerlink" title="服务治理"></a>服务治理</h1><h3 id="服务治理目标"><a href="#服务治理目标" class="headerlink" title="服务治理目标"></a>服务治理目标</h3><ul>
+<li><p>高可用性</p>
+<p>服务不能轻易就不可用，即使只存活最后一个节点，服务治理框架也要保证服务的可用性</p>
+</li>
+<li><p>分布式调用</p>
+<p>微服务的节点通常散落在不同的网络环境中，甚至会使用两地三机房或跨洲际机房做异地容灾，    这就要求服务治理框架具备在复杂网络环境下准确获知服务节点网络地址（IP，端口以及服务名称）的能力</p>
+</li>
+<li><p>生命周期管理</p>
+<p>从服务上线、持续运行直到服务终止，服务治理始终贯穿整个微服务生命周期</p>
+</li>
+<li><p>健康度检查<br>如果一个节点因各种原因不可用，服务治理框架要精准识别这些节点，将其剔除</p>
+<h3 id="服务治理面临的问题及解决方案"><a href="#服务治理面临的问题及解决方案" class="headerlink" title="服务治理面临的问题及解决方案"></a>服务治理面临的问题及解决方案</h3></li>
+</ul>
+<ol>
+<li>服务治理框架如何识别服务（ip，端口，服务名，健康状况）——服务注册</li>
+<li>服务调用方如何获取服务——服务发现</li>
+<li>服务治理框如何管理服务——心跳检测，服务续约，服务剔除</li>
+<li>服务治理框如何应对服务主动退出——服务下线</li>
+</ol>
+<h1 id="服务治理技术选型"><a href="#服务治理技术选型" class="headerlink" title="服务治理技术选型"></a>服务治理技术选型</h1><ul>
+<li><p>Consul（AP）</p>
+<ul>
+<li>性能慢（RAFT协议Leader选举，过半数节点都写入成功才行）</li>
+<li>HTTP&amp;DNS协议</li>
+</ul>
+</li>
+<li><p>Eureka（AP），eureka就是注册中心而创建，节点都是相对独立，不需要考虑数据一致性的问题，为了保证高可用存在某一个瞬间可能导致某些ip节点被调用数多，某些ip节点调用数少的问题。也有可能存在一些本应该被删除而没被删除的脏数据，但是有服务容错来进行兜底。</p>
+<p>Eureka还有自我保护机制（应对因网络故障导致部分节点失去联系的情况），如果在15分钟内超过85%的节点没有正常的心跳，那么Eureka就认为客户端与注册中心发生了网络故障（Eureka不在从注册列表中移除因为长时间没有收到心跳而应该过期的服务）（Eureka仍然能够接受新服务的注册和查询请求，但是不会被同步到其他节点上）（当网络稳定时，当前实例新的注册信息会被同步到其他节点）</p>
+<ul>
+<li>性能快</li>
+<li>HTTP协议</li>
+<li>2.0暂停开源计划</li>
+</ul>
+</li>
+<li><p>Nacos（AP，CP）</p>
+<ul>
+<li>性能块</li>
+<li>HTTP&amp;DNS&amp;UDP</li>
+</ul>
+</li>
+<li><p>Zookeeper（CP），zk更多是作为分布式协调服务的存在，只不过因为它的特性被dubbo赋予了注册中心，它的职责更多是保证数据（配置数据，状态数据）在管辖下的所有服务之间保持一致。zk最核心的算法ZAB，就是为了解决分布式系统下数据在多个服务之间一致同步的问题。为了保证一致性存在选主期间，服务不可用的情况。</p>
+<ul>
+<li>性能慢（ZAB算法Leader选举）</li>
+<li>Dubbo</li>
+</ul>
+</li>
+</ul>
+<h1 id="注册中心-Eureka"><a href="#注册中心-Eureka" class="headerlink" title="注册中心-Eureka"></a>注册中心-Eureka</h1><h2 id="注册中心核心工作流程"><a href="#注册中心核心工作流程" class="headerlink" title="注册中心核心工作流程"></a>注册中心核心工作流程</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%A0%B8%E5%BF%83%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png"></p>
+<h2 id="服务注册"><a href="#服务注册" class="headerlink" title="服务注册"></a>服务注册</h2><h3 id="两种服务注册解决方案"><a href="#两种服务注册解决方案" class="headerlink" title="两种服务注册解决方案"></a>两种服务注册解决方案</h3><p>1、由注册中心主动访问网络节点中的所有机器<br>2、注册中心等待服务节点自己注册</p>
+<h3 id="Eureka的注册模式"><a href="#Eureka的注册模式" class="headerlink" title="Eureka的注册模式"></a>Eureka的注册模式</h3><p>选择等待服务节点自己注册</p>
+<h4 id="好处"><a href="#好处" class="headerlink" title="好处"></a>好处</h4><p>1、对于网络中其他非服务节点不会产生任何无效请求<br>2、省去了广播环节，使注册效率大大提高<br>3、节省了大量网络请求的开销</p>
+<h3 id="服务节点注册包含的主要内容"><a href="#服务节点注册包含的主要内容" class="headerlink" title="服务节点注册包含的主要内容"></a>服务节点注册包含的主要内容</h3><ul>
+<li>服务节点所提供的微服务是什么</li>
+<li>服务节点的IP+端口号</li>
+<li>服务节点的状态</li>
+</ul>
+<h3 id="Eureka在等待服务节点注册期间还需要做什么"><a href="#Eureka在等待服务节点注册期间还需要做什么" class="headerlink" title="Eureka在等待服务节点注册期间还需要做什么"></a>Eureka在等待服务节点注册期间还需要做什么</h3><ul>
+<li>心跳检测和服务剔除——对于已注册的节点进行心跳检测，如果节点没有回应则进行服务剔除</li>
+<li>注册信息同步——注册中心集群状态下进行信息同步</li>
+</ul>
+<h3 id="服务注册基本流程"><a href="#服务注册基本流程" class="headerlink" title="服务注册基本流程"></a>服务注册基本流程</h3><ol>
+<li><p><strong>扫描注解</strong>：</p>
+<p><code>@EnableDiscoveryClient</code>开启作为Eureka Server的客户端的支持**(作为客户端)**</p>
+<blockquote>
+<p><code>@EnableEurekaServer</code>开启对EurekaServer服务端的支持**(作为服务端)**</p>
+<p>搭建注册中心或集群时用到</p>
+</blockquote>
+</li>
+<li><p><strong>发起注册</strong></p>
+</li>
+<li><p>使用<strong>装饰器+代理</strong>模式构建组件（装饰器模式实现失败重试功能）</p>
+</li>
+<li><p><strong>获取HttpClient</strong></p>
+</li>
+<li><p><strong>获取Server列表</strong></p>
+<ul>
+<li>有——发送注册请求<ul>
+<li>注册成功或换另一台Server注册</li>
+</ul>
+</li>
+<li>没有——抛出异常</li>
+</ul>
+</li>
+</ol>
+<h2 id="服务发现"><a href="#服务发现" class="headerlink" title="服务发现"></a>服务发现</h2><h3 id="两种服务发现解决方案"><a href="#两种服务发现解决方案" class="headerlink" title="两种服务发现解决方案"></a>两种服务发现解决方案</h3><ul>
+<li>基于客户端的服务发现</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%9F%BA%E4%BA%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.png" style="zoom:50%;" />
+
+<p>网络服务节点将自己的服务信息以及IP地址发送给注册中心，调用方从注册中心后去所有的可用服务列表，然后从中选择一个访问。</p>
+<p><strong>应用</strong>：Eureka定时拉取，Dubbo订阅模式</p>
+<ul>
+<li>基于服务端的服务发现</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%9F%BA%E4%BA%8E%E6%9C%8D%E5%8A%A1%E7%AB%AF%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.png" style="zoom:50%;" />
+
+<p>网络服务节点将自己的服务信息以及IP地址发送给注册中心，调用方访问的时服务端的代理Router，这个Router既是服务端负载均衡器，也可以是网关层，负载均衡策略在服务端执行。</p>
+<p><strong>应用</strong>：K8s代理，LVS</p>
+<h2 id="心跳检测"><a href="#心跳检测" class="headerlink" title="心跳检测"></a>心跳检测</h2><h3 id="服务心跳特点"><a href="#服务心跳特点" class="headerlink" title="服务心跳特点"></a>服务心跳特点</h3><ul>
+<li>客户端发起：心跳服务是由一个个服务节点根据配置的时间主动发起的</li>
+<li>同步状态 ：心跳服务中还要通知客户端状态，out_of_service还是up</li>
+<li>服务剔除 ： 对于一段时间无响应的服务，注册中心从注册列表剔除</li>
+<li>服务续约 ：底层也是心跳服务</li>
+</ul>
+<h3 id="心跳传输的信息"><a href="#心跳传输的信息" class="headerlink" title="心跳传输的信息"></a>心跳传输的信息</h3><ul>
+<li><p>访问地址：Eureka注册中心的地址</p>
+</li>
+<li><p>访问地址：节点的个人信息——<code>instance-id: $&#123;spring.application.name&#125;:$&#123;spring.cloud.client.ip-address&#125;:$&#123;server.port&#125;</code></p>
+</li>
+<li><p>服务状态：反应节点状态<code>UP</code>,<code>DOWN</code>,<code>STARTING</code>,<code>out_of_service</code>,<code>UNKNOWN</code></p>
+</li>
+<li><p>最后一次同步注册的时间(<code>lastdirtytimestamp</code>)：当前服务节点最后一次与服务中心失去同步时的时间</p>
+</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">配置心跳指标</span></span><br><span class="line"><span class="comment">#每隔多久向服务器发送一次心跳包</span></span><br><span class="line"><span class="meta">eureka.instance.lease-renewal-intercal-in-seconds</span>=<span class="string">10</span></span><br><span class="line"><span class="comment">#如果在x秒内都没心跳，代表挂掉了</span></span><br><span class="line"><span class="meta">eureka.instance.lease-expiration-duration-in-seconds</span>=<span class="string">20</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="服务剔除"><a href="#服务剔除" class="headerlink" title="服务剔除"></a>服务剔除</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%9C%8D%E5%8A%A1%E5%89%94%E9%99%A4.png" style="zoom:50%;" />
+
+<ol>
+<li>启动定时任务：注册中心在启动时会开启一个后台任务，默认每隔60s触发服务剔除任务，可使用<code>eureka.server.eviction-interval-timer-in-ms=30000</code>配置。</li>
+<li>调用服务提出方法<ul>
+<li>自保开启（Eureka不在从注册列表中移除因为长时间没有收到心跳而应该过期的服务）</li>
+</ul>
+</li>
+<li>遍历过期服务，满足条件的当作过期<ul>
+<li>已被标记为过期（evictionTimestamp&gt;0）</li>
+<li>最后一次心跳时间+服务端配置的心跳间隔时间&lt;当前时间</li>
+</ul>
+</li>
+<li>计算可提出的服务总个数：注册中心设置一个系数（默认0.85），可剔除的服务个数，不能大于已注册服务的总数量*系数，超过则进入自保模式</li>
+<li>乱序提出服务：随机剔除过期服务</li>
+</ol>
+<h2 id="服务续约"><a href="#服务续约" class="headerlink" title="服务续约"></a>服务续约</h2><p>第一步：服务节点的状态同步至注册中心，告知注册中心该服务节点还存活，这一步由客户端的心跳完成</p>
+<p>第二步：当心跳包到达注册中心的时候，那就要看注册中心的判别机制来判定当前的续约心跳是否合理，并根据结果修改当前节点在注册中心记录的同步时间</p>
+<h3 id="服务节点向注册中心发送续约请求"><a href="#服务节点向注册中心发送续约请求" class="headerlink" title="服务节点向注册中心发送续约请求"></a>服务节点向注册中心发送续约请求</h3><ul>
+<li><p>服务节点向注册中心发送心跳，返回200就续约成功，如果续约不成功返回404（<strong>返回404不是注册中心挂了而是注册中心认为服务节点不存在</strong>，这时客户端就要触发一次重新注册操作，就要将服务节点重新注册到服务中心）</p>
+</li>
+<li><p>在重新注册之前，客户端先进行两个操作</p>
+<ul>
+<li><p><code>isInstanceinfoDirty=true</code>,标记自己为脏节点。</p>
+</li>
+<li><p>重新设置<code>lastdirtytimestamp</code>(当前服务节点最后一次与服务中心失去同步时的时间)为系统时间</p>
+</li>
+</ul>
+</li>
+<li><p>重新注册成功清楚脏节点标记，但是不清除<code>lastDirtytimestamp</code>这个参数，将会在后面的服务续约中作为参数发送给注册中心，以便注册中心判断节点的同步状态</p>
+</li>
+</ul>
+<h3 id="注册中心续约校验"><a href="#注册中心续约校验" class="headerlink" title="注册中心续约校验"></a>注册中心续约校验</h3><ul>
+<li>接受请求</li>
+<li>尝试续约，没有注册和UnKnown状态，续约失败，需要重新注册</li>
+<li>脏数据校验 ，如果注册中心的<code>lastDirtytimestamp</code>大于节点的<code>lastDirtytimestamp</code>，说明从服务节点上次注册到这次注册之间，发生了数据不同步，续约不通过，返回404</li>
+</ul>
+<h2 id="服务自保"><a href="#服务自保" class="headerlink" title="服务自保"></a>服务自保</h2><p>Eureka还有自我保护机制（应对因网络故障导致部分节点失去联系的情况），如果在15分钟内超过85%的节点没有正常的心跳，那么Eureka就认为客户端与注册中心发生了网络故障，自我保护期间：</p>
+<ul>
+<li><p>Eureka不在从注册列表中移除因为长时间没有收到心跳而应该过期的服务</p>
+</li>
+<li><p>Eureka仍然能够接受新服务的注册和查询请求，但是不会被同步到其他节点上</p>
+</li>
+<li><p>当网络稳定时，当前实例新的注册信息会被同步到其他节点</p>
+</li>
+</ul>
+<p><strong>手动开关</strong>：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">eureka.server.enable-self-preservation</span>=<span class="string">false</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="服务下线"><a href="#服务下线" class="headerlink" title="服务下线"></a>服务下线</h2><p>1、标记服务状态DOWN<br>2、获取系统锁（<strong>CAS机制防止服务下线被重复调用</strong>）   </p>
+<blockquote>
+<p>Java线程安全的方法：synchronize，concurrent包下的一些线程安全类，Thread的wait和notify方法</p>
+<p>还有CAS（Compare and swap）机制——比较和替换，使用一个期望值和一个变量的当前值进行比较，如果当前变量的值与我们期望的值相等，就使用一个新值替换当前变量的值<br>操作系统的CAS操作会将内存值和期望值进行比较，如果相等就将参数更新到内存并返回成功，如果不相等就返回失败。操作系统层面这个比较-替换操作是原子性的，所以线程安全。类似乐观锁</p>
+<p>CAS的ABA问题，内存值从A变到B，然后再变回A，假设期望值是A，尽管中途发生了A-&gt;B的变化，但是最终还是变回A，因此CAS操作依然认为没有变化</p>
+<p>解决方法：添加版本号，使用前查询版本号，比对时同时验证版本号，修改后版本号+1</p>
+</blockquote>
+<p>3、释放自身资源<br>4、关闭状态监听器、状态同步任务、心跳任务<br>5、发送下线指令，delete请求到注册中心</p>
+<h1 id="注册中心集群"><a href="#注册中心集群" class="headerlink" title="注册中心集群"></a>注册中心集群</h1><h2 id="Eureka-的数据同步方式"><a href="#Eureka-的数据同步方式" class="headerlink" title="Eureka 的数据同步方式"></a>Eureka 的数据同步方式</h2><p>对等复制——副本间不分主从，任何副本都可以接收写操作，然后每个副本间互相进行数据更新</p>
+<h2 id="同步过程"><a href="#同步过程" class="headerlink" title="同步过程"></a>同步过程</h2><p>Eureka Server 每当自己的信息变更后，例如 Client 向自己发起<em>注册、续约、注销</em>请求， 就会把自己的最新信息通知给其他 Eureka Server，保持数据同步。</p>
+<h3 id="数据同步死循环"><a href="#数据同步死循环" class="headerlink" title="数据同步死循环"></a>数据同步死循环</h3><p>如果自己的信息变更是另一个Eureka Server同步过来</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%90%8C%E6%AD%A5%E6%AD%BB%E5%BE%AA%E7%8E%AF.png" style="zoom: 50%;" />
+
+<p><strong>解决方式</strong>：Eureka Server 在执行复制操作的时候，使用 <code>HEADER_REPLICATION</code> 这个 http header 来区分普通应用实例的正常请求，说明这是一个复制请求，这样其他 peer 节点收到请求时，就不会再对其进行复制操作，从而避免死循环</p>
+<h3 id="数据冲突"><a href="#数据冲突" class="headerlink" title="数据冲突"></a>数据冲突</h3><p>server A 向 server B 发起同步请求，如果 A 的数据比 B 的还旧，B 不可能接受 A 的数据</p>
+<p><strong>解决方式</strong>：数据的新旧一般是通过<em>版本号</em>来定义的，Eureka 是通过 <code>lastDirtyTimestamp</code> （当前服务节点最后一次与服务中心失去同步时的时间）这个类似版本号的属性来实现的</p>
+<p> Eureka Server A 向 Eureka Server B 复制数据，数据冲突有2种情况：</p>
+<p>（1）A 的数据比 B 的新，B 返回 404，A 重新把这个应用实例注册到 B。</p>
+<p>（2）A 的数据比 B 的旧，B 返回 409，要求 A 同步 B 的数据。</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5.png" style="zoom:50%;" />
+
+<h1 id="Eureka集群挂掉后消费者和提供者之间关系"><a href="#Eureka集群挂掉后消费者和提供者之间关系" class="headerlink" title="Eureka集群挂掉后消费者和提供者之间关系"></a>Eureka集群挂掉后消费者和提供者之间关系</h1><h2 id="如果eureka集群突然宕机的情况下，会出现什么情况呢，服务之间还能不能正常访问"><a href="#如果eureka集群突然宕机的情况下，会出现什么情况呢，服务之间还能不能正常访问" class="headerlink" title="如果eureka集群突然宕机的情况下，会出现什么情况呢，服务之间还能不能正常访问"></a>如果eureka集群突然宕机的情况下，会出现什么情况呢，服务之间还能不能正常访问</h2><p><strong>可以</strong></p>
+<p>在启动消费者和提供者的时候，eureka注册中心是正常运行的，因此可以将各个消费者和提供者可以正常订阅。当eureka突然宕机的时候，<strong>各个提供者和消费者都已经保存有相互间的服务名称与ip映射</strong>，所以相互访问没有问题</p>
+<h2 id="在eureka集群宕机的情况下，消费者或者提供者服务重启后，消费者是否可以继续访问提供者"><a href="#在eureka集群宕机的情况下，消费者或者提供者服务重启后，消费者是否可以继续访问提供者" class="headerlink" title="在eureka集群宕机的情况下，消费者或者提供者服务重启后，消费者是否可以继续访问提供者"></a>在eureka集群宕机的情况下，消费者或者提供者服务重启后，消费者是否可以继续访问提供者</h2><p> 在eureka宕机未启动的情况下，</p>
+<ul>
+<li>当消费者重新启动后，<strong>无法从eureka中拉取其他服务的映射信息</strong>，因此消费者是<strong>无法再访问</strong>提供者的</li>
+<li>当提供者重新启动后，由于<strong>消费者还继续保存着与提供者之间的映射信息，而且提供者的信息并未发生改变</strong>，因此消费者<strong>还是可以继续访问提供者</strong>的。</li>
+</ul>
+<h2 id="在eureka集群宕机的情况下，服务之间在何种情况下无法继续进行相互访问"><a href="#在eureka集群宕机的情况下，服务之间在何种情况下无法继续进行相互访问" class="headerlink" title="在eureka集群宕机的情况下，服务之间在何种情况下无法继续进行相互访问"></a>在eureka集群宕机的情况下，服务之间在何种情况下无法继续进行相互访问</h2><ul>
+<li>所有服务全部停止，再重新启动除eureka之外的服务</li>
+<li>修改消费者或提供者IP，端口，服务名称等映射信息的情况下</li>
+</ul>
+<h1 id="Nacos"><a href="#Nacos" class="headerlink" title="Nacos"></a>Nacos</h1><p>Nacos 具有如下特性:</p>
+<ul>
+<li>服务发现和服务健康监测：支持基于DNS和基于RPC的服务发现，支持对服务的实时的健康检查，阻止向不健康的主机或服务实例发送请求；</li>
+<li>动态配置服务：动态配置服务可以让您以中心化、外部化和动态化的方式管理所有环境的应用配置和服务配置；</li>
+<li>动态 DNS 服务：动态 DNS 服务支持权重路由，让您更容易地实现中间层负载均衡、更灵活的路由策略、流量控制以及数据中心内网的简单DNS解析服务；</li>
+<li>服务及其元数据管理：支持从微服务平台建设的视角管理数据中心的所有服务及元数据。</li>
+</ul>
+<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><ul>
+<li>负载均衡功能</li>
+<li>注册中心+配置中心（动态刷新）</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/10/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-ELK%E6%90%AD%E5%BB%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1486,939 +2414,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/10/%E4%B8%AD%E9%97%B4%E4%BB%B6-%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%B7%A5%E5%85%B7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/05/10/%E4%B8%AD%E9%97%B4%E4%BB%B6-%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%B7%A5%E5%85%B7/" itemprop="url">中间件-数据同步工具</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-10T13:45:27+08:00">
-                2021-05-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5-%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index">
-                    <span itemprop="name">数据同步 - 数据同步工具</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Logstash数据同步"><a href="#Logstash数据同步" class="headerlink" title="Logstash数据同步"></a>Logstash数据同步</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>可以从从数据库中采集数据到es中，可以通过<strong>设置自增id主键</strong>或者<strong>时间</strong>来控制数据的自动同步。</p>
-<ul>
-<li>id：假设有1000条数据，Logstash识别后会进行一次同步，同步完会记录这个id为1000，以后数据库新增数据，那么id会一直累加，Logstash会有定时任务，发现id大于1000了，则增量到es</li>
-<li>时间：假设有1000条数据，每条数据都有一个字段为time，初次同步完毕后记录这个time，下次同步的时候进行时间对比，如果有超过这个事件的，那么可以做同步。<strong>这里可以同步增加数据或者修改数据，因为同一条数据的时间更改会被识别，而id不会</strong></li>
-</ul>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><ul>
-<li><p>插件logstash-input-jdbc(已经集成在Logstash中)</p>
-</li>
-<li><p>创建索引</p>
-</li>
-<li><p>JDK</p>
-</li>
-<li><p>Logstash配置文件</p>
-</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">    jdbc &#123;</span><br><span class="line">        # 设置 MySql&#x2F;MariaDB 数据库url以及数据库名称</span><br><span class="line">        jdbc_connection_string &#x3D;&gt; &quot;jdbc:mysql:&#x2F;&#x2F;192.168.1.6:3306&#x2F;foodie-shop-dev?useUnicode&#x3D;true&amp;characterEncoding&#x3D;UTF-8&amp;autoReconnect&#x3D;true&quot;</span><br><span class="line">        # 用户名和密码</span><br><span class="line">        jdbc_user &#x3D;&gt; &quot;root&quot;</span><br><span class="line">        jdbc_password &#x3D;&gt; &quot;root&quot;</span><br><span class="line">        # 数据库驱动所在位置，可以是绝对路径或者相对路径</span><br><span class="line">        jdbc_driver_library &#x3D;&gt; &quot;&#x2F;usr&#x2F;local&#x2F;logstash-6.4.3&#x2F;sync&#x2F;mysql-connector-java-5.1.41.jar&quot;</span><br><span class="line">        # 驱动类名</span><br><span class="line">        jdbc_driver_class &#x3D;&gt; &quot;com.mysql.jdbc.Driver&quot;</span><br><span class="line">        # 开启分页</span><br><span class="line">        jdbc_paging_enabled &#x3D;&gt; &quot;true&quot;</span><br><span class="line">        # 分页每页数量，可以自定义</span><br><span class="line">        jdbc_page_size &#x3D;&gt; &quot;10000&quot;</span><br><span class="line">        # 执行的sql文件路径</span><br><span class="line">        statement_filepath &#x3D;&gt; &quot;&#x2F;usr&#x2F;local&#x2F;logstash-6.4.3&#x2F;sync&#x2F;foodie-items.sql&quot;</span><br><span class="line">        # 设置定时任务间隔  含义：分、时、天、月、年，全部为*默认含义为每分钟跑一次任务</span><br><span class="line">        schedule &#x3D;&gt; &quot;* * * * *&quot;</span><br><span class="line">        # 索引类型</span><br><span class="line">        type &#x3D;&gt; &quot;_doc&quot;</span><br><span class="line">        # 是否开启记录上次追踪的结果，也就是上次更新的时间，这个会记录到 last_run_metadata_path 的文件</span><br><span class="line">        use_column_value &#x3D;&gt; true</span><br><span class="line">        # 记录上一次追踪的结果值</span><br><span class="line">        last_run_metadata_path &#x3D;&gt; &quot;&#x2F;usr&#x2F;local&#x2F;logstash-6.4.3&#x2F;sync&#x2F;track_time&quot;</span><br><span class="line">        # 如果 use_column_value 为true， 配置本参数，追踪的 column 名，可以是自增id或者时间</span><br><span class="line">        tracking_column &#x3D;&gt; &quot;updated_time&quot;</span><br><span class="line">        # tracking_column 对应字段的类型</span><br><span class="line">        tracking_column_type &#x3D;&gt; &quot;timestamp&quot;</span><br><span class="line">        # 是否清除 last_run_metadata_path 的记录，true则每次都从头开始查询所有的数据库记录</span><br><span class="line">        clean_run &#x3D;&gt; false</span><br><span class="line">        # 数据库字段名称大写转小写</span><br><span class="line">        lowercase_column_names &#x3D;&gt; false</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">output &#123;</span><br><span class="line">    elasticsearch &#123;</span><br><span class="line">        # es地址</span><br><span class="line">        hosts &#x3D;&gt; [&quot;192.168.1.187:9200&quot;]</span><br><span class="line">        # 同步的索引名</span><br><span class="line">        index &#x3D;&gt; &quot;foodie-items&quot;</span><br><span class="line">        # 设置_docID和数据相同</span><br><span class="line">        document_id &#x3D;&gt; &quot;%&#123;id&#125;&quot;</span><br><span class="line">        # 定义模板名称</span><br><span class="line">        template_name &#x3D;&gt; &quot;myik&quot;</span><br><span class="line">        # 模板所在位置</span><br><span class="line">        template &#x3D;&gt; &quot;&#x2F;usr&#x2F;local&#x2F;logstash-6.4.3&#x2F;sync&#x2F;logstash-ik.json&quot;</span><br><span class="line">        # 重写模板</span><br><span class="line">        template_overwrite &#x3D;&gt; true</span><br><span class="line">        # 默认为true，false关闭logstash自动管理模板功能，如果自定义模板，则设置为false</span><br><span class="line">        manage_template &#x3D;&gt; false</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    # 日志输出</span><br><span class="line">    stdout &#123;</span><br><span class="line">        codec &#x3D;&gt; json_lines</span><br><span class="line">    &#125;&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>sql同步脚本</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">    i.id <span class="keyword">as</span> itemId,</span><br><span class="line">    i.item_name <span class="keyword">as</span> itemName,</span><br><span class="line">    i.sell_counts <span class="keyword">as</span> sellCounts,</span><br><span class="line">    ii.url <span class="keyword">as</span> imgUrl,</span><br><span class="line">    tempSpec.price_discount <span class="keyword">as</span> price,</span><br><span class="line">    i.updated_time <span class="keyword">as</span> updated_time</span><br><span class="line"><span class="keyword">FROM</span></span><br><span class="line">    items i</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">    items_img ii</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">    i.id <span class="operator">=</span> ii.item_id</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span></span><br><span class="line">    (<span class="keyword">SELECT</span> item_id,<span class="built_in">MIN</span>(price_discount) <span class="keyword">as</span> price_discount <span class="keyword">from</span> items_spec <span class="keyword">GROUP</span> <span class="keyword">BY</span> item_id) tempSpec</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">    i.id <span class="operator">=</span> tempSpec.item_id</span><br><span class="line"><span class="keyword">WHERE</span></span><br><span class="line">    ii.is_main <span class="operator">=</span> <span class="number">1</span></span><br><span class="line">    <span class="keyword">and</span></span><br><span class="line">    i.updated_time <span class="operator">&gt;=</span> :sql_last_value #<span class="string">&#x27;:sql_last_value&#x27;</span> Logstash每次同步完后的边界值</span><br></pre></td></tr></table></figure>
-
-<h2 id="自定义模本配置中文分词"><a href="#自定义模本配置中文分词" class="headerlink" title="自定义模本配置中文分词"></a>自定义模本配置中文分词</h2><blockquote>
-<p>数据同步，mappings映射会自动创建，但是分词不会</p>
-</blockquote>
-<ul>
-<li>查看Logstash默认模板</li>
-</ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET     /_template/logstash</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>修改模板</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;order&quot;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="attr">&quot;version&quot;</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="attr">&quot;index_patterns&quot;</span>: [<span class="string">&quot;*&quot;</span>],</span><br><span class="line">    <span class="attr">&quot;settings&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;index&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;refresh_interval&quot;</span>: <span class="string">&quot;5s&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;mappings&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;_default_&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;dynamic_templates&quot;</span>: [</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">&quot;message_field&quot;</span>: &#123;</span><br><span class="line">                        <span class="attr">&quot;path_match&quot;</span>: <span class="string">&quot;message&quot;</span>,</span><br><span class="line">                        <span class="attr">&quot;match_mapping_type&quot;</span>: <span class="string">&quot;string&quot;</span>,</span><br><span class="line">                        <span class="attr">&quot;mapping&quot;</span>: &#123;</span><br><span class="line">                            <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;text&quot;</span>,</span><br><span class="line">                            <span class="attr">&quot;norms&quot;</span>: <span class="literal">false</span></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;,</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="attr">&quot;string_fields&quot;</span>: &#123;</span><br><span class="line">                        <span class="attr">&quot;match&quot;</span>: <span class="string">&quot;*&quot;</span>,</span><br><span class="line">                        <span class="attr">&quot;match_mapping_type&quot;</span>: <span class="string">&quot;string&quot;</span>,</span><br><span class="line">                        <span class="attr">&quot;mapping&quot;</span>: &#123;</span><br><span class="line">                            <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;text&quot;</span>,</span><br><span class="line">                            <span class="attr">&quot;norms&quot;</span>: <span class="literal">false</span>,</span><br><span class="line">                            &quot;analyzer&quot;: &quot;ik_max_word&quot;,#修改分词器</span><br><span class="line">                            &quot;fields&quot;: &#123;</span><br><span class="line">                                &quot;keyword&quot;: &#123;</span><br><span class="line">                                    &quot;type&quot;: &quot;keyword&quot;,</span><br><span class="line">                                    &quot;ignore_above&quot;: 256</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            ],</span><br><span class="line">            &quot;properties&quot;: &#123;</span><br><span class="line">                &quot;@timestamp&quot;: &#123;</span><br><span class="line">                    &quot;type&quot;: &quot;date&quot;</span><br><span class="line">                &#125;,</span><br><span class="line">                &quot;@version&quot;: &#123;</span><br><span class="line">                    &quot;type&quot;: &quot;keyword&quot;</span><br><span class="line">                &#125;,</span><br><span class="line">                &quot;geoip&quot;: &#123;</span><br><span class="line">                    &quot;dynamic&quot;: true,</span><br><span class="line">                    &quot;properties&quot;: &#123;</span><br><span class="line">                        &quot;ip&quot;: &#123;</span><br><span class="line">                            &quot;type&quot;: &quot;ip&quot;</span><br><span class="line">                        &#125;,</span><br><span class="line">                        &quot;location&quot;: &#123;</span><br><span class="line">                            &quot;type&quot;: &quot;geo_point&quot;</span><br><span class="line">                        &#125;,</span><br><span class="line">                        &quot;latitude&quot;: &#123;</span><br><span class="line">                            &quot;type&quot;: &quot;half_float&quot;</span><br><span class="line">                        &#125;,</span><br><span class="line">                        &quot;longitude&quot;: &#123;</span><br><span class="line">                            &quot;type&quot;: &quot;half_float&quot;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;aliases&quot;: &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>修改配置文件，设置中文分词</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 定义模板名称</span><br><span class="line">template_name &#x3D;&gt; &quot;myik&quot;</span><br><span class="line"># 模板所在位置</span><br><span class="line">template &#x3D;&gt; &quot;&#x2F;usr&#x2F;local&#x2F;logstash-6.4.3&#x2F;sync&#x2F;logstash-ik.json&quot;</span><br><span class="line"># 重写模板</span><br><span class="line">template_overwrite &#x3D;&gt; true</span><br><span class="line"># 默认为true，false关闭logstash自动管理模板功能，如果自定义模板，则设置为false</span><br><span class="line">manage_template &#x3D;&gt; false</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/09/%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE-Elasticsearch%E9%9B%86%E7%BE%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/05/09/%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE-Elasticsearch%E9%9B%86%E7%BE%A4/" itemprop="url">高可用配置-Elasticsearch集群</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-09T13:57:17+08:00">
-                2021-05-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/elasticsearch-elasticsearch%E9%9B%86%E7%BE%A4/" itemprop="url" rel="index">
-                    <span itemprop="name">elasticsearch - elasticsearch集群</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="ES集群的概念"><a href="#ES集群的概念" class="headerlink" title="ES集群的概念"></a>ES集群的概念</h1><p>Cluster（集群）：群集是一个或多个节点的集合，它们一起保存整个数据，并提供跨所有节点的联合索引和搜索功能。每个群集都有自己的唯一群集名称，节点通过名称加入群集。</p>
-<ul>
-<li>索引分片相当于蛋糕被分成好几块</li>
-<li>副本分片是主分片的备份，主挂了，备份还是可以访问</li>
-<li>同一个分片的主与副本是不会放在同一个服务器里的。</li>
-</ul>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/es%E9%9B%86%E7%BE%A4.png"></p>
-<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 配置集群名称，保证每个节点的名称相同，如此就能都处于一个集群之内了</span></span><br><span class="line"><span class="attr">cluster.name:</span> <span class="string">es-cluster</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 每一个节点的名称，必须不一样</span></span><br><span class="line"><span class="attr">node.name:</span> <span class="string">es-node1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># http端口（使用默认即可）</span></span><br><span class="line"><span class="attr">http.port:</span> <span class="number">9200</span></span><br><span class="line"><span class="comment"># 各节点ip</span></span><br><span class="line"><span class="attr">network.publish_host:</span> <span class="number">192.168</span><span class="number">.159</span><span class="number">.129</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 主节点，作用主要是用于来管理整个集群，负责创建或删除索引，管理其他非master节点（相当于企业老总）,后期选举时从设置为true中选举</span></span><br><span class="line"><span class="attr">node.master:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 数据节点，用于对文档数据的增删改查</span></span><br><span class="line"><span class="attr">node.data:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 集群列表</span></span><br><span class="line"><span class="attr">discovery.seed_hosts:</span> [<span class="string">&quot;192.168.1.184&quot;</span>, <span class="string">&quot;192.168.1.185&quot;</span>, <span class="string">&quot;192.168.1.186&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动的时候使用一个master节点</span></span><br><span class="line"><span class="attr">cluster.initial_master_nodes:</span> [<span class="string">&quot;es-node1&quot;</span>]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>可以通过命令查看配置文件内容</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">more elasticsearch.yml | grep ^[^#]</span><br></pre></td></tr></table></figure>
-
-<h2 id="展示集群信息"><a href="#展示集群信息" class="headerlink" title="展示集群信息"></a>展示集群信息</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E9%9B%86%E7%BE%A4129.png"></p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E9%9B%86%E7%BE%A4130.png"></p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E9%9B%86%E7%BE%A4131.png"></p>
-<h1 id="集群测试"><a href="#集群测试" class="headerlink" title="集群测试"></a>集群测试</h1><h2 id="创建索引测试"><a href="#创建索引测试" class="headerlink" title="创建索引测试"></a>创建索引测试</h2><ul>
-<li>创建分片数为1，副本数为0</li>
-</ul>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%95.png"></p>
-<ul>
-<li>创建分片数为3，副本数为1</li>
-</ul>
-<blockquote>
-<p>粗方框为主分片，细方框为副本分片</p>
-</blockquote>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%952.png"></p>
-<ul>
-<li>创建分片数为5，副本数为1</li>
-</ul>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E9%9B%86%E7%BE%A4%E6%B5%8B%E8%AF%953.png"></p>
-<p><em>注意</em></p>
-<ul>
-<li><strong>集群master宕机后再恢复后不再是master</strong></li>
-<li><strong>某一节点宕机后，其他节点会进行一次同步</strong></li>
-</ul>
-<h1 id="集群脑裂"><a href="#集群脑裂" class="headerlink" title="集群脑裂"></a>集群脑裂</h1><h2 id="什么是脑裂"><a href="#什么是脑裂" class="headerlink" title="什么是脑裂"></a>什么是脑裂</h2><p>发生网络中断或者服务器宕机，那么集群会有可能被划分成两个部分，各自有自己的master管理</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>master主节点要经历过多个master节点共同选举后才能成为新的主节点，需要半数以上的同意。</p>
-<p>原理：半数以上的节点同意选举，节点才能成为新的master</p>
-<p>discovery.zen.minimum_master_nodes=(n/2)+1</p>
-<ul>
-<li>n为集群中master节点的数量（<code>node.master=true</code>设置的那些服务器节点总数）</li>
-<li>ES7.X中移除<code>minimum_master_nodes</code>，完全由ES自己去控制</li>
-</ul>
-<h1 id="集群文档读写原理"><a href="#集群文档读写原理" class="headerlink" title="集群文档读写原理"></a>集群文档读写原理</h1><h2 id="文档写原理"><a href="#文档写原理" class="headerlink" title="文档写原理"></a>文档写原理</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%96%87%E6%A1%A3%E5%86%99%E5%8E%9F%E7%90%86.png"></p>
-<ol>
-<li>客户端会选择某一个节点作为协调节点，负责接收用户请求</li>
-<li>协调节点会根据文档进行路由，数据要写到哪一个主分片里面（根据文档id进行hash算法）</li>
-<li>数据同步至副本分片</li>
-<li>请求返回协调节点</li>
-<li>告知客户端</li>
-</ol>
-<h2 id="文档读原理"><a href="#文档读原理" class="headerlink" title="文档读原理"></a>文档读原理</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%96%87%E6%A1%A3%E8%AF%BB%E5%8E%9F%E7%90%86.png"></p>
-<ol>
-<li>客户端会选择某一个节点作为协调节点，负责接收用户请求</li>
-<li>协调节点根据文档id进行hash算法，计算出文档在那个位置，<strong>读数据是从主分片和副本分片轮询读取</strong></li>
-<li>请求返回协调节点</li>
-<li>告知客户端</li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/09/%E4%B8%AD%E9%97%B4%E4%BB%B6-Elasticsearch%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5%E4%B8%8E%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/05/09/%E4%B8%AD%E9%97%B4%E4%BB%B6-Elasticsearch%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5%E4%B8%8E%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/" itemprop="url">中间件-Elasticsearch深度分页与批量操作</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-09T10:50:40+08:00">
-                2021-05-09
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/elasticsearch-elasticsearch%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5%E4%B8%8E%E6%89%B9%E9%87%8F%E6%93%8D%E4%BD%9C/" itemprop="url" rel="index">
-                    <span itemprop="name">elasticsearch - elasticsearch深度分页与批量操作</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="ES分页"><a href="#ES分页" class="headerlink" title="ES分页"></a>ES分页</h1><h2 id="分页查询"><a href="#分页查询" class="headerlink" title="分页查询"></a>分页查询</h2><p>搜索分深浅，比如第一页，第二页，第十页是比较浅的分页，第200000页就比较深了</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123; </span><br><span class="line">    <span class="attr">&quot;match_all&quot;</span>: &#123;&#125; </span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;from&quot;</span>: <span class="number">1</span>,</span><br><span class="line">  <span class="attr">&quot;size&quot;</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/es%E5%88%86%E9%A1%B5.png" style="zoom:50%;" />
-
-<h2 id="深度分页"><a href="#深度分页" class="headerlink" title="深度分页"></a>深度分页</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;match_all&quot;</span>: &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;from&quot;</span>: <span class="number">9999</span>,</span><br><span class="line">    <span class="attr">&quot;size&quot;</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%B7%B1%E5%BA%A6%E5%88%86%E9%A1%B5.png"></p>
-<p>在获取9999条到10009条时，其实每个分片都会拿到10009条数据，延后集合在一起，总共10009*3=30027条数据，针对这30027条数据在做排序处理，最终获得最后10条数据。</p>
-<p><strong>搜索的太深就会带来新能问题，消耗CPU和内存</strong>。es为了性能不支持一万条数据以上的分页。</p>
-<p>为了避免此问题，避免深度分页操作，比如限制分页页数，只支持100页展示。</p>
-<h3 id="解除分页限制"><a href="#解除分页限制" class="headerlink" title="解除分页限制"></a>解除分页限制</h3><blockquote>
-<p>企业内部有些业务需突破10000条限制</p>
-</blockquote>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">GET     /bank/_settings</span><br><span class="line"></span><br><span class="line">PUT     /bank/_settings</span><br><span class="line">&#123; </span><br><span class="line">    <span class="attr">&quot;index.max_result_window&quot;</span>: <span class="string">&quot;20000&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;bank&quot;</span> : &#123;</span><br><span class="line">    <span class="attr">&quot;settings&quot;</span> : &#123;</span><br><span class="line">      <span class="attr">&quot;index&quot;</span> : &#123;</span><br><span class="line">        <span class="attr">&quot;routing&quot;</span> : &#123;</span><br><span class="line">          <span class="attr">&quot;allocation&quot;</span> : &#123;</span><br><span class="line">            <span class="attr">&quot;include&quot;</span> : &#123;</span><br><span class="line">              <span class="attr">&quot;_tier_preference&quot;</span> : <span class="string">&quot;data_content&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">&quot;number_of_shards&quot;</span> : <span class="string">&quot;1&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;provided_name&quot;</span> : <span class="string">&quot;bank&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;max_result_window&quot;</span> : <span class="string">&quot;20000&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;creation_date&quot;</span> : <span class="string">&quot;1619342566350&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;number_of_replicas&quot;</span> : <span class="string">&quot;0&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;uuid&quot;</span> : <span class="string">&quot;RpDsE2ncQ1qVZp4vPTvGdQ&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;version&quot;</span> : &#123;</span><br><span class="line">          <span class="attr">&quot;created&quot;</span> : <span class="string">&quot;7120099&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="滚动分页"><a href="#滚动分页" class="headerlink" title="滚动分页"></a>滚动分页</h2><p>一次性查询1万+的数据，会影响性能，可以采用滚动搜索。滚动搜索可以先查询出一些数据，然后在紧接着依次往下查询。</p>
-<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>第一次查询的时候会有一个滚动ID，相当于一个锚标记，随后再次滚动搜索时需要上一次的锚标记，根据这个进行下一次搜索请求。每次搜索都是基于一个历史的数据快照，查询数据期间，如果有数据变更，那么和搜索是没有关系的，搜索内容还是快照内的内容</p>
-<ul>
-<li>第一次搜索</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">POST    /bank/_search?scroll=1m</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123; </span><br><span class="line">    	<span class="attr">&quot;match_all&quot;</span>: &#123;</span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;,  </span><br><span class="line">    <span class="attr">&quot;sort&quot;</span> : [<span class="string">&quot;_doc&quot;</span>], </span><br><span class="line">    <span class="attr">&quot;size&quot;</span>:  <span class="number">5</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%BB%9A%E5%8A%A8%E6%90%9C%E7%B4%A2.png" style="zoom:50%;" />
-
-<ul>
-<li>第二次搜索</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST    /_search/scroll</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;scroll&quot;</span>: <span class="string">&quot;1m&quot;</span>, </span><br><span class="line">    <span class="attr">&quot;scroll_id&quot;</span> : <span class="string">&quot;FGluY2x1ZGVfY29udGV4dF91dWlkDXF1ZXJ5QW5kRmV0Y2gBFkM3RVpzczJfUi1hSGRwVjBoYlB4TkEAAAAAAAAYXhZhUHVyMVM0SlRHbVZLYXBUcFJYR21n&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="批量操作bulk"><a href="#批量操作bulk" class="headerlink" title="批量操作bulk"></a>批量操作bulk</h1><h2 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123; action: &#123; metadata &#125;&#125;\n</span><br><span class="line">&#123; request body        &#125;\n</span><br><span class="line">&#123; action: &#123; metadata &#125;&#125;\n</span><br><span class="line">&#123; request body        &#125;\n</span><br><span class="line">...</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>&#123; action: &#123; metadata &#125;&#125;</code>代表批量操作的类型，可以是新增、删除或修改</li>
-<li><code>\n</code>是每行结尾必须填写的一个规范，每一行包括最后一行都要写，用于es的解析</li>
-<li><code>&#123; request body &#125;</code>是请求body，增加和修改操作需要，删除操作则不需要</li>
-</ul>
-<h2 id="批量操作的类型"><a href="#批量操作的类型" class="headerlink" title="批量操作的类型"></a>批量操作的类型</h2><p>action 必须是以下选项之一:</p>
-<ul>
-<li>create：如果文档不存在，那么就创建它。存在会报错。发生异常报错不会影响其他操作。</li>
-<li>index：创建一个新文档或者替换一个现有的文档。</li>
-<li>update：部分更新一个文档。</li>
-<li>delete：删除一个文档。</li>
-</ul>
-<blockquote>
-<p>metadata中需要指定要操作的文档的_index、_type和_id,_index、_type也可以在url中指定</p>
-</blockquote>
-<h2 id="实操"><a href="#实操" class="headerlink" title="实操"></a>实操</h2><ul>
-<li><p>create新增文档数据，在metadata中指定index以及type</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST    /_bulk</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="attr">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2001&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2001&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="attr">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2002&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2002&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2002&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_index&quot;</span>: <span class="string">&quot;shop2&quot;</span>, <span class="attr">&quot;_type&quot;</span>: <span class="string">&quot;_doc&quot;</span>, <span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2003&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2003&quot;</span>&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p>create创建已有id文档，在url中指定index和type</p>
-</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2003&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2003&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2004&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2004&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2005&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2005&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2005&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>index创建，已有文档id会被覆盖，不存在的id则新增</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="attr">&quot;index&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2004&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;index2004&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;index&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2007&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2007&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;index&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2008&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;2008&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name2008&quot;</span>&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>update跟新部分文档数据</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="attr">&quot;update&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;doc&quot;</span>:&#123; <span class="attr">&quot;id&quot;</span>: <span class="string">&quot;3004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;update&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;doc&quot;</span>:&#123; <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;nameupdate&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>delete批量删除</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="attr">&quot;delete&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2004&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;delete&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2007&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>综合批量各种操作</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">POST    /shop/_doc/_bulk</span><br><span class="line">&#123;<span class="attr">&quot;create&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;8001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;id&quot;</span>: <span class="string">&quot;8001&quot;</span>, <span class="attr">&quot;nickname&quot;</span>: <span class="string">&quot;name8001&quot;</span>&#125;</span><br><span class="line">&#123;<span class="attr">&quot;update&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2001&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;doc&quot;</span>:&#123; <span class="attr">&quot;id&quot;</span>: <span class="string">&quot;20010&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;delete&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2003&quot;</span>&#125;&#125;</span><br><span class="line">&#123;<span class="attr">&quot;delete&quot;</span>: &#123;<span class="attr">&quot;_id&quot;</span>: <span class="string">&quot;2005&quot;</span>&#125;&#125;</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/26/%E4%B8%AD%E9%97%B4%E4%BB%B6-ElasticsearchDSL%E6%90%9C%E7%B4%A2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/26/%E4%B8%AD%E9%97%B4%E4%BB%B6-ElasticsearchDSL%E6%90%9C%E7%B4%A2/" itemprop="url">中间件-ElasticsearchDSL搜索</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-26T00:02:05+08:00">
-                2021-04-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/elasticsearch-elasticsearchDSL%E6%90%9C%E7%B4%A2/" itemprop="url" rel="index">
-                    <span itemprop="name">elasticsearch - elasticsearchDSL搜索</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>引用<a target="_blank" rel="noopener" href="http://www.macrozheng.com/#/reference/elasticsearch_start?id=elasticsearch%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8%EF%BC%8C%E6%8E%8C%E6%8F%A1%E8%BF%99%E4%BA%9B%E5%88%9A%E5%88%9A%E5%A5%BD%EF%BC%81">Elasticsearch快速入门，掌握这些刚刚好！</a></p>
-<h1 id="DSL搜索"><a href="#DSL搜索" class="headerlink" title="DSL搜索"></a>DSL搜索</h1><h2 id="搜索入门"><a href="#搜索入门" class="headerlink" title="搜索入门"></a>搜索入门</h2><h3 id="查询全部-match-all"><a href="#查询全部-match-all" class="headerlink" title="查询全部(match_all)"></a>查询全部(match_all)</h3><ul>
-<li>最简单的搜索，使用<code>match_all</code>来表示，例如搜索全部；</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123; <span class="attr">&quot;match_all&quot;</span>: &#123;&#125; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search1.png" style="zoom: 67%;" />
-
-<h3 id="搜索并返回指定字段内容"><a href="#搜索并返回指定字段内容" class="headerlink" title="搜索并返回指定字段内容"></a>搜索并返回指定字段内容</h3><p>使用<code>_source</code>表示，例如只返回<code>account_number</code>,<code>balance</code>,<code>age</code>三个字段内容：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">GET	/bank/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;match_all&quot;</span>: &#123;&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;_source&quot;</span>: [<span class="string">&quot;account_number&quot;</span>, <span class="string">&quot;balance&quot;</span>, <span class="string">&quot;age&quot;</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search2.png" style="zoom:67%;" />
-
-<h3 id="分页查询"><a href="#分页查询" class="headerlink" title="分页查询"></a>分页查询</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123; <span class="attr">&quot;match_all&quot;</span>: &#123;&#125; &#125;,</span><br><span class="line">  <span class="attr">&quot;from&quot;</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">&quot;size&quot;</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123; </span><br><span class="line">      <span class="attr">&quot;match_all&quot;</span>: &#123;&#125; </span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;_source&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;account_number&quot;</span>, </span><br><span class="line">      <span class="string">&quot;balance&quot;</span>, </span><br><span class="line">      <span class="string">&quot;age&quot;</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">&quot;from&quot;</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">&quot;size&quot;</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search3.png" style="zoom:67%;" />
-
-<h3 id="搜索排序"><a href="#搜索排序" class="headerlink" title="搜索排序"></a>搜索排序</h3><p>使用<code>sort</code>表示，例如按<code>balance</code>字段降序排列；</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123; <span class="attr">&quot;match_all&quot;</span>: &#123;&#125; &#125;,</span><br><span class="line">  <span class="attr">&quot;sort&quot;</span>: &#123; <span class="attr">&quot;balance&quot;</span>: &#123; <span class="attr">&quot;order&quot;</span>: <span class="string">&quot;desc&quot;</span> &#125; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search4.png" style="zoom:67%;" />
-
-<blockquote>
-<p><strong>对文本排序</strong></p>
-<p>由于文本会被分词，所以往往要去做排序会报错，通常我们可以为这个字段增加额外的一个附属属性，类型为keyword，用于做排序。</p>
-</blockquote>
-<h2 id="条件搜索"><a href="#条件搜索" class="headerlink" title="条件搜索"></a>条件搜索</h2><h3 id="使用match-term表示匹配条件"><a href="#使用match-term表示匹配条件" class="headerlink" title="使用match,term表示匹配条件"></a>使用<code>match</code>,<code>term</code>表示匹配条件</h3><blockquote>
-<p>因为用到了中文分词，所以找了其他例子</p>
-</blockquote>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">GET /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;match&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;desc&quot;</span>: <span class="string">&quot;慕课网&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;term&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;desc&quot;</span>: <span class="string">&quot;慕课网&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>注：match会对<code>慕课网</code>先进行分词（其实就是全文检索），在查询，而term则不会，直接把<code>慕课网</code>作为一个整的词汇去搜索。<br><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search5.png"></p>
-</li>
-<li><p><strong>terms 多个词语匹配搜索</strong></p>
-</li>
-</ul>
-<p>相当于是tag标签查询，比如慕课网的一些课程会打上<code>前端</code>/<code>后端</code>/<code>大数据</code>/<code>就业课</code>这样的标签，可以完全匹配做类似标签的查询</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">GET     /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    &quot;query&quot;: &#123;</span><br><span class="line">        &quot;terms&quot;: &#123;</span><br><span class="line">            &quot;desc&quot;: [&quot;慕课网&quot;, &quot;学习&quot;, &quot;骚年&quot;]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="文本-数值类型字段的条件搜索"><a href="#文本-数值类型字段的条件搜索" class="headerlink" title="文本/数值类型字段的条件搜索"></a>文本/数值类型字段的条件搜索</h4><p>例如搜索<code>address</code>字段中包含<code>mill</code>的文档，对比搜索数值可以发现，对于数值类型<code>match</code>操作使用的是精确匹配，对于文本类型使用的是模糊匹配；</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;match&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;account_number&quot;</span>: <span class="number">20</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search7.png" style="zoom:67%;" />
-
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;match&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;address&quot;</span>: <span class="string">&quot;mill&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;_source&quot;</span>: [</span><br><span class="line">    <span class="string">&quot;address&quot;</span>,</span><br><span class="line">    <span class="string">&quot;account_number&quot;</span></span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search6.png" style="zoom:67%;" />
-
-<h3 id="短语匹配搜索（match-phrase）"><a href="#短语匹配搜索（match-phrase）" class="headerlink" title="短语匹配搜索（match_phrase）"></a>短语匹配搜索（<code>match_phrase</code>）</h3><p>使用<code>match_phrase</code>表示，例如搜索<code>address</code>字段中同时包含<code>mill</code>和<code>lane</code>的文档：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;match_phrase&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;address&quot;</span>: <span class="string">&quot;mill lane&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">或</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;match_phrase&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;address&quot;</span>: &#123;</span><br><span class="line">         <span class="attr">&quot;query&quot;</span>: <span class="string">&quot;mill lane&quot;</span>,</span><br><span class="line">          <span class="attr">&quot;slop&quot;</span>: <span class="number">2</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>slop: 允许词语间跳过的数量<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search8.png" style="zoom:67%;" /></li>
-</ul>
-<h3 id="match拓展（operator，minimum-should-match）"><a href="#match拓展（operator，minimum-should-match）" class="headerlink" title="match拓展（operator，minimum_should_match）"></a>match拓展（<code>operator</code>，<code>minimum_should_match</code>）</h3><ul>
-<li><code>operator</code><ul>
-<li><code>or</code>:  搜索内容分词后，只要存在一个词语匹配就展示结果</li>
-<li><code>and</code>:  搜索内容分词后，都要满足词语匹配</li>
-</ul>
-</li>
-</ul>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;match&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;desc&quot;</span>: &#123;</span><br><span class="line">                <span class="attr">&quot;query&quot;</span>: <span class="string">&quot;xbox游戏机&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;operator&quot;</span>: <span class="string">&quot;or&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"># 相当于 select * from shop where desc=&#x27;xbox&#x27; or|and desc=&#x27;游戏机&#x27;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>minimum_should_match</code></li>
-</ul>
-<p>最低匹配精度，至少有[分词后的词语个数]x百分百，得出一个数据值取整。举个例子：当前属性设置为<code>70</code>，若一个用户查询检索内容分词后有10个词语，那么匹配度按照 10x70%=7，则desc中至少需要有7个词语匹配，就展示；若分词后有8个，则 8x70%=5.6，则desc中至少需要有5个词语匹配，就展示。</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">POST     /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;match&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;desc&quot;</span>: &#123;</span><br><span class="line">                <span class="attr">&quot;query&quot;</span>: <span class="string">&quot;女友生日送我好玩的xbox游戏机&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;minimum_should_match&quot;</span>: <span class="string">&quot;60%&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<h3 id="根据文件主键ids搜索"><a href="#根据文件主键ids搜索" class="headerlink" title="根据文件主键ids搜索"></a>根据文件主键ids搜索</h3><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;ids&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;account&quot;</span>,</span><br><span class="line">            <span class="attr">&quot;values&quot;</span>: [<span class="string">&quot;1&quot;</span>, <span class="string">&quot;136&quot;</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search9.png" style="zoom:67%;" />
-
-<h3 id="在多字段中查询（multi-match），字段设置权重（boost）"><a href="#在多字段中查询（multi-match），字段设置权重（boost）" class="headerlink" title="在多字段中查询（multi_match），字段设置权重（boost）"></a>在多字段中查询（<code>multi_match</code>），字段设置权重（<code>boost</code>）</h3><ul>
-<li><code>multi_match</code></li>
-</ul>
-<p>满足使用match在多个字段中进行查询的需求</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;multi_match&quot;</span>: &#123;</span><br><span class="line">                <span class="attr">&quot;query&quot;</span>: <span class="string">&quot;Winnie&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;fields&quot;</span>: [<span class="string">&quot;firstname&quot;</span>, <span class="string">&quot;email&quot;</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><code>boost</code></li>
-</ul>
-<p>权重，为某个字段设置权重，权重越高，文档相关性得分就越高。通畅来说搜索商品名称要比商品简介的权重更高。</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;multi_match&quot;</span>: &#123;</span><br><span class="line">                <span class="attr">&quot;query&quot;</span>: <span class="string">&quot;皮特帕克慕课网&quot;</span>,</span><br><span class="line">                <span class="attr">&quot;fields&quot;</span>: [<span class="string">&quot;firstname&quot;</span>, <span class="string">&quot;email^10&quot;</span>]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>email^10 代表搜索提升10倍相关性，也就是说用户搜索的时候其实以这个email为主，firstname为辅，email的匹配相关度当然要提高权重比例了。</p>
-<h2 id="组合查询"><a href="#组合查询" class="headerlink" title="组合查询"></a>组合查询</h2><ul>
-<li>组合搜索，使用<code>bool</code>来进行组合，<code>must</code>表示同时满足，例如搜索<code>address</code>字段中同时包含<code>mill</code>和<code>lane</code>的文档；</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;bool&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;must&quot;</span>: [</span><br><span class="line">        &#123; <span class="attr">&quot;match&quot;</span>: &#123; <span class="attr">&quot;address&quot;</span>: <span class="string">&quot;mill&quot;</span> &#125; &#125;,</span><br><span class="line">        &#123; <span class="attr">&quot;match&quot;</span>: &#123; <span class="attr">&quot;address&quot;</span>: <span class="string">&quot;lane&quot;</span> &#125; &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search10.png" style="zoom:67%;" />
-
-<ul>
-<li>组合搜索，<code>should</code>表示满足其中任意一个，搜索<code>address</code>字段中包含<code>mill</code>或者<code>lane</code>的文档；</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;bool&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;should&quot;</span>: [</span><br><span class="line">        &#123; <span class="attr">&quot;match&quot;</span>: &#123; <span class="attr">&quot;address&quot;</span>: <span class="string">&quot;mill&quot;</span> &#125; &#125;,</span><br><span class="line">        &#123; <span class="attr">&quot;match&quot;</span>: &#123; <span class="attr">&quot;address&quot;</span>: <span class="string">&quot;lane&quot;</span> &#125; &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search11.png" style="zoom:67%;" />
-
-<ul>
-<li>组合搜索，<code>must_not</code>表示同时不满足，例如搜索<code>address</code>字段中不包含<code>mill</code>且不包含<code>lane</code>的文档；</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;bool&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;must_not&quot;</span>: [</span><br><span class="line">        &#123; <span class="attr">&quot;match&quot;</span>: &#123; <span class="attr">&quot;address&quot;</span>: <span class="string">&quot;mill&quot;</span> &#125; &#125;,</span><br><span class="line">        &#123; <span class="attr">&quot;match&quot;</span>: &#123; <span class="attr">&quot;address&quot;</span>: <span class="string">&quot;lane&quot;</span> &#125; &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search12.png" style="zoom:67%;" />
-
-<ul>
-<li>组合搜索，组合<code>must</code>和<code>must_not</code>，例如搜索<code>age</code>字段等于<code>40</code>且<code>state</code>字段不包含<code>ID</code>的文档；</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;bool&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;must&quot;</span>: [</span><br><span class="line">        &#123; <span class="attr">&quot;match&quot;</span>: &#123; <span class="attr">&quot;age&quot;</span>: <span class="string">&quot;40&quot;</span> &#125; &#125;</span><br><span class="line">      ],</span><br><span class="line">      <span class="attr">&quot;must_not&quot;</span>: [</span><br><span class="line">        &#123; <span class="attr">&quot;match&quot;</span>: &#123; <span class="attr">&quot;state&quot;</span>: <span class="string">&quot;ID&quot;</span> &#125; &#125;</span><br><span class="line">      ]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search13.png" style="zoom:67%;" />
-
-<h2 id="过滤搜索"><a href="#过滤搜索" class="headerlink" title="过滤搜索"></a>过滤搜索</h2><p>对搜索出来的结果进行数据过滤。不会到es库里去搜，不会去计算文档的相关度分数，所以过滤的性能会比较高，过滤器可以和全文搜索结合在一起使用。<br>post_filter元素是一个顶层元素，只会对搜索结果进行过滤。不会计算数据的匹配度相关性分数，不会根据分数去排序，query则相反，会计算分数，也会按照分数去排序。</p>
-<ul>
-<li><p>query：根据用户搜索条件检索匹配记录</p>
-</li>
-<li><p>post_filter：用于查询后，对结果数据的筛选</p>
-</li>
-<li><p>gte：大于等于</p>
-</li>
-<li><p>lte：小于等于</p>
-</li>
-<li><p>gt：大于</p>
-</li>
-<li><p>lt：小于</p>
-</li>
-</ul>
-<p>使用例子</p>
-<ul>
-<li>搜索过滤，使用<code>filter</code>来表示，例如过滤出<code>balance</code>字段在<code>20000~30000</code>的文档；</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;bool&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;must&quot;</span>: &#123; <span class="attr">&quot;match_all&quot;</span>: &#123;&#125; &#125;,</span><br><span class="line">      <span class="attr">&quot;filter&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;range&quot;</span>: &#123;</span><br><span class="line">          <span class="attr">&quot;balance&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;gte&quot;</span>: <span class="number">20000</span>,</span><br><span class="line">            <span class="attr">&quot;lte&quot;</span>: <span class="number">30000</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search14.png" style="zoom: 67%;" />
-
-<h2 id="搜索聚合"><a href="#搜索聚合" class="headerlink" title="搜索聚合"></a>搜索聚合</h2><ul>
-<li>对搜索结果进行聚合，使用<code>aggs</code>来表示，类似于MySql中的<code>group by</code>，例如对<code>state</code>字段进行聚合，统计出相同<code>state</code>的文档数量；</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;size&quot;</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">&quot;aggs&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;group_by_state&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;terms&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;field&quot;</span>: <span class="string">&quot;state.keyword&quot;</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search15.png" style="zoom:67%;" />
-
-<ul>
-<li>嵌套聚合，例如对<code>state</code>字段进行聚合，统计出相同<code>state</code>的文档数量，再统计出<code>balance</code>的平均值；</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;size&quot;</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">&quot;aggs&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;group_by_state&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;terms&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;field&quot;</span>: <span class="string">&quot;state.keyword&quot;</span></span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">&quot;aggs&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;average_balance&quot;</span>: &#123;</span><br><span class="line">          <span class="attr">&quot;avg&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;field&quot;</span>: <span class="string">&quot;balance&quot;</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search16.png" style="zoom:67%;" />
-
-<ul>
-<li>对聚合搜索的结果进行排序，例如按<code>balance</code>的平均值降序排列；</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;size&quot;</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">&quot;aggs&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;group_by_state&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;terms&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;field&quot;</span>: <span class="string">&quot;state.keyword&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;order&quot;</span>: &#123;</span><br><span class="line">          <span class="attr">&quot;average_balance&quot;</span>: <span class="string">&quot;desc&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">&quot;aggs&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;average_balance&quot;</span>: &#123;</span><br><span class="line">          <span class="attr">&quot;avg&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;field&quot;</span>: <span class="string">&quot;balance&quot;</span></span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search17.png" style="zoom:67%;" />
-
-<ul>
-<li>按字段值的范围进行分段聚合，例如分段范围为<code>age</code>字段的<code>[20,30]</code> <code>[30,40]</code> <code>[40,50]</code>，之后按<code>gender</code>统计文档个数和<code>balance</code>的平均值；</li>
-</ul>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;size&quot;</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="attr">&quot;aggs&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;group_by_age&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;range&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;field&quot;</span>: <span class="string">&quot;age&quot;</span>,</span><br><span class="line">        <span class="attr">&quot;ranges&quot;</span>: [</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">&quot;from&quot;</span>: <span class="number">20</span>,</span><br><span class="line">            <span class="attr">&quot;to&quot;</span>: <span class="number">30</span></span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">&quot;from&quot;</span>: <span class="number">30</span>,</span><br><span class="line">            <span class="attr">&quot;to&quot;</span>: <span class="number">40</span></span><br><span class="line">          &#125;,</span><br><span class="line">          &#123;</span><br><span class="line">            <span class="attr">&quot;from&quot;</span>: <span class="number">40</span>,</span><br><span class="line">            <span class="attr">&quot;to&quot;</span>: <span class="number">50</span></span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="attr">&quot;aggs&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;group_by_gender&quot;</span>: &#123;</span><br><span class="line">          <span class="attr">&quot;terms&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;field&quot;</span>: <span class="string">&quot;gender.keyword&quot;</span></span><br><span class="line">          &#125;,</span><br><span class="line">          <span class="attr">&quot;aggs&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;average_balance&quot;</span>: &#123;</span><br><span class="line">              <span class="attr">&quot;avg&quot;</span>: &#123;</span><br><span class="line">                <span class="attr">&quot;field&quot;</span>: <span class="string">&quot;balance&quot;</span></span><br><span class="line">              &#125;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search18.png"></p>
-<h2 id="高亮highlight"><a href="#高亮highlight" class="headerlink" title="高亮highlight"></a>高亮highlight</h2><figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">GET /bank/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">       <span class="attr">&quot;match&quot;</span>: &#123;</span><br><span class="line">      		<span class="attr">&quot;address&quot;</span>: <span class="string">&quot;mill&quot;</span></span><br><span class="line">    	&#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">&quot;highlight&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;pre_tags&quot;</span>: [<span class="string">&quot;&lt;tag&gt;&quot;</span>],</span><br><span class="line">        <span class="attr">&quot;post_tags&quot;</span>: [<span class="string">&quot;&lt;/tag&gt;&quot;</span>],</span><br><span class="line">        <span class="attr">&quot;fields&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;address&quot;</span>: &#123;&#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/search19.png" style="zoom:67%;" />
-
-<h2 id="prefix-fuzzy-wildcard"><a href="#prefix-fuzzy-wildcard" class="headerlink" title="prefix-fuzzy-wildcard"></a>prefix-fuzzy-wildcard</h2><h3 id="prefix"><a href="#prefix" class="headerlink" title="prefix"></a>prefix</h3><blockquote>
-<p>根据前缀去查询</p>
-</blockquote>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">POST     /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">        <span class="attr">&quot;prefix&quot;</span>: &#123;</span><br><span class="line">            <span class="attr">&quot;desc&quot;</span>: <span class="string">&quot;imo&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="fuzzy"><a href="#fuzzy" class="headerlink" title="fuzzy"></a>fuzzy</h3><blockquote>
-<p>模糊搜索，并不是指的sql的模糊搜索，而是用户在进行搜索的时候的打字错误现象，搜索引擎会自动纠正，然后尝试匹配索引库中的数据。</p>
-</blockquote>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">POST     /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;fuzzy&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;desc&quot;</span>: <span class="string">&quot;imoov.coom&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"># 或多字段搜索</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;multi_match&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;fields&quot;</span>: [ <span class="string">&quot;desc&quot;</span>, <span class="string">&quot;nickname&quot;</span>],</span><br><span class="line">      <span class="attr">&quot;query&quot;</span>: <span class="string">&quot;imcoc supor&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;fuzziness&quot;</span>: <span class="string">&quot;AUTO&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;multi_match&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;fields&quot;</span>: [ <span class="string">&quot;desc&quot;</span>, <span class="string">&quot;nickname&quot;</span>],</span><br><span class="line">      <span class="attr">&quot;query&quot;</span>: <span class="string">&quot;演说&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;fuzziness&quot;</span>: <span class="string">&quot;1&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="wildcard"><a href="#wildcard" class="headerlink" title="wildcard"></a>wildcard</h3><p>占位符查询。</p>
-<ul>
-<li><p>？：1个字符</p>
-</li>
-<li><p>*：1个或多个字符</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">POST     /shop/_doc/_search</span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;wildcard&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;desc&quot;</span>: <span class="string">&quot;*oo?&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">	<span class="attr">&quot;query&quot;</span>: &#123;</span><br><span class="line">    	<span class="attr">&quot;wildcard&quot;</span>: &#123;</span><br><span class="line">    		<span class="attr">&quot;desc&quot;</span>: <span class="string">&quot;演*&quot;</span></span><br><span class="line">    	&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/">&lt;</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/3/">&gt;</a>
+    <a class="extend prev" rel="prev" href="/">&lt;</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/3/">&gt;</a>
   </nav>
 
 
@@ -2465,7 +2465,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">100</span>
+                  <span class="site-state-item-count">105</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2487,7 +2487,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">57</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="SpringCloud,微服务,Gateway,OAuth2,nacos," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Spring Cloud Security：Oauth2使用入门 OAuth2OAuth2 相关名词解释 Resource owner（资源拥有者）：拥有该资源的最终用户，他有访问资源的账号密码； Resource server（资源服务器）：拥有受保护资源的服务器，如果请求包含正确的访问令牌，可以访问资源； Client（客户端）：访问资源的客户端，会使用访问令牌去获取资源服务器的资源，可以是浏">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring-SpringCloud(OAuth2)学习">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(OAuth2)%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="Spring Cloud Security：Oauth2使用入门 OAuth2OAuth2 相关名词解释 Resource owner（资源拥有者）：拥有该资源的最终用户，他有访问资源的账号密码； Resource server（资源服务器）：拥有受保护资源的服务器，如果请求包含正确的访问令牌，可以访问资源； Client（客户端）：访问资源的客户端，会使用访问令牌去获取资源服务器的资源，可以是浏">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/oauth2/%E6%8E%88%E6%9D%83%E7%A0%81%E6%A8%A1%E5%BC%8F.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/oauth2/%E5%AF%86%E7%A0%81%E6%A8%A1%E5%BC%8F.png">
+<meta property="article:published_time" content="2021-05-13T15:57:08.000Z">
+<meta property="article:modified_time" content="2021-05-14T08:05:06.162Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="SpringCloud">
+<meta property="article:tag" content="微服务">
+<meta property="article:tag" content="Gateway">
+<meta property="article:tag" content="OAuth2">
+<meta property="article:tag" content="nacos">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/oauth2/%E6%8E%88%E6%9D%83%E7%A0%81%E6%A8%A1%E5%BC%8F.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(OAuth2)学习/"/>
+
+
+
+
+
+  <title>Spring-SpringCloud(OAuth2)学习 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(OAuth2)%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring-SpringCloud(OAuth2)学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-13T23:57:08+08:00">
+                2021-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringCloud%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - SpringCloud学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a target="_blank" rel="noopener" href="http://www.macrozheng.com/#/cloud/oauth2?id=spring-cloud-security%EF%BC%9Aoauth2%E4%BD%BF%E7%94%A8%E5%85%A5%E9%97%A8">Spring Cloud Security：Oauth2使用入门</a></p>
+<h1 id="OAuth2"><a href="#OAuth2" class="headerlink" title="OAuth2"></a>OAuth2</h1><h2 id="OAuth2-相关名词解释"><a href="#OAuth2-相关名词解释" class="headerlink" title="OAuth2 相关名词解释"></a>OAuth2 相关名词解释</h2><ul>
+<li>Resource owner（资源拥有者）：拥有该资源的最终用户，他有访问资源的账号密码；</li>
+<li>Resource server（资源服务器）：拥有受保护资源的服务器，如果请求包含正确的访问令牌，可以访问资源；</li>
+<li>Client（客户端）：访问资源的客户端，会使用访问令牌去获取资源服务器的资源，可以是浏览器、移动设备或者服务器；</li>
+<li>Authorization server（认证服务器）：用于认证用户的服务器，如果客户端认证通过，发放访问资源服务器的令牌。</li>
+</ul>
+<h2 id="四种授权模式"><a href="#四种授权模式" class="headerlink" title="四种授权模式"></a>四种授权模式</h2><ul>
+<li>Authorization Code（授权码模式）：正宗的OAuth2的授权模式，客户端先将用户导向认证服务器，登录后获取授权码，然后进行授权，最后根据授权码获取访问令牌；</li>
+<li>Implicit（简化模式）：和授权码模式相比，取消了获取授权码的过程，直接获取访问令牌；</li>
+<li>Resource Owner Password Credentials（密码模式）：客户端直接向用户获取用户名和密码，之后向认证服务器获取访问令牌；</li>
+<li>Client Credentials（客户端模式）：客户端直接通过客户端认证（比如client_id和client_secret）从认证服务器获取访问令牌。</li>
+</ul>
+<h3 id="常用的两种"><a href="#常用的两种" class="headerlink" title="常用的两种"></a>常用的两种</h3><h4 id="授权码模式-CAS"><a href="#授权码模式-CAS" class="headerlink" title="授权码模式(CAS)"></a>授权码模式(CAS)</h4><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/oauth2/%E6%8E%88%E6%9D%83%E7%A0%81%E6%A8%A1%E5%BC%8F.png" style="zoom:50%;" />
+
+<ul>
+<li>(A)客户端将用户导向认证服务器；</li>
+<li>(B)用户在认证服务器进行登录并授权；</li>
+<li>(C)认证服务器返回授权码给客户端；</li>
+<li>(D)客户端通过授权码和跳转地址向认证服务器获取访问令牌；</li>
+<li>(E)认证服务器发放访问令牌（有需要带上刷新令牌）。</li>
+</ul>
+<h4 id="密码模式"><a href="#密码模式" class="headerlink" title="密码模式"></a>密码模式</h4><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/oauth2/%E5%AF%86%E7%A0%81%E6%A8%A1%E5%BC%8F.png" style="zoom:50%;" />
+
+<ul>
+<li>(A)客户端从用户获取用户名和密码；</li>
+<li>(B)客户端通过用户的用户名和密码访问认证服务器；</li>
+<li>(C)认证服务器返回访问令牌（有需要带上刷新令牌）。</li>
+</ul>
+<h2 id="OAuth2自定义处理结果"><a href="#OAuth2自定义处理结果" class="headerlink" title="OAuth2自定义处理结果"></a>OAuth2自定义处理结果</h2><h3 id="认证成功结果"><a href="#认证成功结果" class="headerlink" title="认证成功结果"></a>认证成功结果</h3><ul>
+<li><code>org.springframework.security.oauth2.provider.endpoint.TokenEndpoint</code>,其中定义了我们非常熟悉的登录认证接口，我们只要自己重写登录认证接口，直接调用默认的实现逻辑，然后把默认返回的结果处理下即可</li>
+<li>创建一个<code>AuthController</code>，自定义实现Oauth2默认的登录认证接口；</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 自定义Oauth2获取令牌接口</span></span><br><span class="line"><span class="comment"> * Created by macro on 2020/7/17.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/oauth&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AuthController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> TokenEndpoint tokenEndpoint;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Oauth2登录认证</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@RequestMapping(value = &quot;/token&quot;, method = RequestMethod.POST)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> CommonResult&lt;Oauth2TokenDto&gt; <span class="title">postAccessToken</span><span class="params">(Principal principal, <span class="meta">@RequestParam</span> Map&lt;String, String&gt; parameters)</span> <span class="keyword">throws</span> HttpRequestMethodNotSupportedException </span>&#123;</span><br><span class="line">        OAuth2AccessToken oAuth2AccessToken = tokenEndpoint.postAccessToken(principal, parameters).getBody();</span><br><span class="line">        Oauth2TokenDto oauth2TokenDto = Oauth2TokenDto.builder()</span><br><span class="line">                .token(oAuth2AccessToken.getValue())</span><br><span class="line">                .refreshToken(oAuth2AccessToken.getRefreshToken().getValue())</span><br><span class="line">                .expiresIn(oAuth2AccessToken.getExpiresIn())</span><br><span class="line">                .tokenHead(<span class="string">&quot;Bearer &quot;</span>).build();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> CommonResult.success(oauth2TokenDto);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="认证失败结果"><a href="#认证失败结果" class="headerlink" title="认证失败结果"></a>认证失败结果</h3><ul>
+<li>认证失败的操作都会直接抛出<code>OAuth2Exception</code>异常，对于在<code>Controller</code>中抛出的异常，我们可以使用<code>@ControllerAdvice</code>注解来进行全局处理；</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 全局处理Oauth2抛出的异常</span></span><br><span class="line"><span class="comment"> * Created by macro on 2020/7/17.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@ControllerAdvice</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Oauth2ExceptionHandler</span> </span>&#123;</span><br><span class="line">    <span class="meta">@ResponseBody</span></span><br><span class="line">    <span class="meta">@ExceptionHandler(value = OAuth2Exception.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> CommonResult <span class="title">handleOauth2</span><span class="params">(OAuth2Exception e)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> CommonResult.failed(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义网关鉴权失败结果"><a href="#自定义网关鉴权失败结果" class="headerlink" title="自定义网关鉴权失败结果"></a>自定义网关鉴权失败结果</h3><ul>
+<li>修改网关的安全配置<code>ResourceServerConfig</code>，设置好资源服务器的<code>ServerAuthenticationEntryPoint</code>即可</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebFluxSecurity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ResourceServerConfig</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AuthorizationManager authorizationManager;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> IgnoreUrlsConfig ignoreUrlsConfig;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> RestfulAccessDeniedHandler restfulAccessDeniedHandler;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> RestAuthenticationEntryPoint restAuthenticationEntryPoint;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SecurityWebFilterChain <span class="title">springSecurityFilterChain</span><span class="params">(ServerHttpSecurity http)</span> </span>&#123;</span><br><span class="line">        http.oauth2ResourceServer().jwt()</span><br><span class="line">                .jwtAuthenticationConverter(jwtAuthenticationConverter());</span><br><span class="line">        <span class="comment">//自定义处理JWT请求头过期或签名错误的结果（新添加的）</span></span><br><span class="line">        http.oauth2ResourceServer().authenticationEntryPoint(restAuthenticationEntryPoint);</span><br><span class="line">        http.authorizeExchange()</span><br><span class="line">                .pathMatchers(ArrayUtil.toArray(ignoreUrlsConfig.getUrls(),String.class)).permitAll()<span class="comment">//白名单配置</span></span><br><span class="line">                .anyExchange().access(authorizationManager)<span class="comment">//鉴权管理器配置</span></span><br><span class="line">                .and().exceptionHandling()</span><br><span class="line">                .accessDeniedHandler(restfulAccessDeniedHandler)<span class="comment">//处理未授权</span></span><br><span class="line">                .authenticationEntryPoint(restAuthenticationEntryPoint)<span class="comment">//处理未认证</span></span><br><span class="line">                .and().csrf().disable();</span><br><span class="line">        <span class="keyword">return</span> http.build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="白名单接口"><a href="#白名单接口" class="headerlink" title="白名单接口"></a>白名单接口</h3><p>在Oauth2默认的认证过滤器前面再加个过滤器，如果是白名单接口，直接移除认证头即可</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IgnoreUrlsRemoveJwtFilter</span> <span class="keyword">implements</span> <span class="title">WebFilter</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> IgnoreUrlsConfig ignoreUrlsConfig;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Mono&lt;Void&gt; <span class="title">filter</span><span class="params">(ServerWebExchange exchange, WebFilterChain chain)</span> </span>&#123;</span><br><span class="line">        ServerHttpRequest request = exchange.getRequest();</span><br><span class="line">        URI uri = request.getURI();</span><br><span class="line">        PathMatcher pathMatcher = <span class="keyword">new</span> AntPathMatcher();</span><br><span class="line">        <span class="comment">//白名单路径移除JWT请求头</span></span><br><span class="line">        List&lt;String&gt; ignoreUrls = ignoreUrlsConfig.getUrls();</span><br><span class="line">        <span class="keyword">for</span> (String ignoreUrl : ignoreUrls) &#123;</span><br><span class="line">            <span class="keyword">if</span> (pathMatcher.match(ignoreUrl, uri.getPath())) &#123;</span><br><span class="line">                request = exchange.getRequest().mutate().header(<span class="string">&quot;Authorization&quot;</span>, <span class="string">&quot;&quot;</span>).build();</span><br><span class="line">                exchange = exchange.mutate().request(request).build();</span><br><span class="line">                <span class="keyword">return</span> chain.filter(exchange);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> chain.filter(exchange);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>过滤器配置到默认的认证过滤器之前即可，在ResourceServerConfig中进行配置</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableWebFluxSecurity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ResourceServerConfig</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AuthorizationManager authorizationManager;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> IgnoreUrlsConfig ignoreUrlsConfig;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> RestfulAccessDeniedHandler restfulAccessDeniedHandler;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> RestAuthenticationEntryPoint restAuthenticationEntryPoint;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> IgnoreUrlsRemoveJwtFilter ignoreUrlsRemoveJwtFilter;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SecurityWebFilterChain <span class="title">springSecurityFilterChain</span><span class="params">(ServerHttpSecurity http)</span> </span>&#123;</span><br><span class="line">        http.oauth2ResourceServer().jwt()</span><br><span class="line">                .jwtAuthenticationConverter(jwtAuthenticationConverter());</span><br><span class="line">        <span class="comment">//自定义处理JWT请求头过期或签名错误的结果</span></span><br><span class="line">        http.oauth2ResourceServer().authenticationEntryPoint(restAuthenticationEntryPoint);</span><br><span class="line">        <span class="comment">//对白名单路径，直接移除JWT请求头（新添加的）</span></span><br><span class="line">        http.addFilterBefore(ignoreUrlsRemoveJwtFilter, SecurityWebFiltersOrder.AUTHENTICATION);</span><br><span class="line">        http.authorizeExchange()</span><br><span class="line">                .pathMatchers(ArrayUtil.toArray(ignoreUrlsConfig.getUrls(),String.class)).permitAll()<span class="comment">//白名单配置</span></span><br><span class="line">                .anyExchange().access(authorizationManager)<span class="comment">//鉴权管理器配置</span></span><br><span class="line">                .and().exceptionHandling()</span><br><span class="line">                .accessDeniedHandler(restfulAccessDeniedHandler)<span class="comment">//处理未授权</span></span><br><span class="line">                .authenticationEntryPoint(restAuthenticationEntryPoint)<span class="comment">//处理未认证</span></span><br><span class="line">                .and().csrf().disable();</span><br><span class="line">        <span class="keyword">return</span> http.build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Gateway-Oauth2实现统一认证和鉴权"><a href="#Gateway-Oauth2实现统一认证和鉴权" class="headerlink" title="Gateway+Oauth2实现统一认证和鉴权"></a>Gateway+Oauth2实现统一认证和鉴权</h1><h2 id="应用架构"><a href="#应用架构" class="headerlink" title="应用架构"></a>应用架构</h2><ul>
+<li><p>Gateway——网关服务，负责请求转发和鉴权功能，整合Spring Security+Oauth2</p>
+</li>
+<li><p>Oauth2——Oauth2认证服务，负责对登录用户进行认证，整合Spring Security+Oauth2；</p>
+</li>
+<li><p>api——受保护的API服务，用户鉴权通过后可以访问该服务，不整合Spring Security+Oauth2。</p>
+</li>
+</ul>
+<h2 id="Oauth2模块"><a href="#Oauth2模块" class="headerlink" title="Oauth2模块"></a>Oauth2模块</h2><blockquote>
+<p>简单说明：实现SpringSecurity相关功能（实现UserDetails，配置SecurityConfig），可通过username查询用户权限</p>
+</blockquote>
+<p>认证服务，它将作为Oauth2的认证服务使用，并且网关服务的鉴权功能也需要依赖它</p>
+<h2 id="Gateway模块"><a href="#Gateway模块" class="headerlink" title="Gateway模块"></a>Gateway模块</h2><blockquote>
+<p>网关服务了，它将作为Oauth2的资源服务、客户端服务使用，对访问微服务的请求进行统一的校验认证和鉴权操作。</p>
+</blockquote>
+<ul>
+<li><p>对网关服务进行配置安全配置，由于Gateway使用的是<code>WebFlux</code>，所以需要使用<code>@EnableWebFluxSecurity</code>注解开启</p>
+</li>
+<li><p>在<code>WebFluxSecurity</code>中自定义鉴权操作（根据角色还是根据路径自行实现）需要实现<code>ReactiveAuthorizationManager</code>接口</p>
+</li>
+<li><p>当鉴权通过后将JWT令牌中的用户信息解析出来，然后存入请求的Header中，这样后续服务就不需要解析JWT令牌了，可以直接从请求的Header中获取到用户信息</p>
+</li>
+</ul>
+<h2 id="api模块"><a href="#api模块" class="headerlink" title="api模块"></a>api模块</h2><p>就是用户请求访问的模块</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/SpringCloud/" rel="tag"># SpringCloud</a>
+          
+            <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag"># 微服务</a>
+          
+            <a href="/tags/Gateway/" rel="tag"># Gateway</a>
+          
+            <a href="/tags/OAuth2/" rel="tag"># OAuth2</a>
+          
+            <a href="/tags/nacos/" rel="tag"># nacos</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/13/Spring-SpringCloud(Sleuth,Zipkin)%E5%AD%A6%E4%B9%A0%20/" rel="next" title="Spring-SpringCloud(Sleuth,Zipkin)学习">
+                <i class="fa fa-chevron-left"></i> Spring-SpringCloud(Sleuth,Zipkin)学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">68</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#OAuth2"><span class="nav-number">1.</span> <span class="nav-text">OAuth2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#OAuth2-%E7%9B%B8%E5%85%B3%E5%90%8D%E8%AF%8D%E8%A7%A3%E9%87%8A"><span class="nav-number">1.1.</span> <span class="nav-text">OAuth2 相关名词解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E7%A7%8D%E6%8E%88%E6%9D%83%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.2.</span> <span class="nav-text">四种授权模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84%E4%B8%A4%E7%A7%8D"><span class="nav-number">1.2.1.</span> <span class="nav-text">常用的两种</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%88%E6%9D%83%E7%A0%81%E6%A8%A1%E5%BC%8F-CAS"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">授权码模式(CAS)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AF%86%E7%A0%81%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">密码模式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OAuth2%E8%87%AA%E5%AE%9A%E4%B9%89%E5%A4%84%E7%90%86%E7%BB%93%E6%9E%9C"><span class="nav-number">1.3.</span> <span class="nav-text">OAuth2自定义处理结果</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A4%E8%AF%81%E6%88%90%E5%8A%9F%E7%BB%93%E6%9E%9C"><span class="nav-number">1.3.1.</span> <span class="nav-text">认证成功结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%A4%E8%AF%81%E5%A4%B1%E8%B4%A5%E7%BB%93%E6%9E%9C"><span class="nav-number">1.3.2.</span> <span class="nav-text">认证失败结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BD%91%E5%85%B3%E9%89%B4%E6%9D%83%E5%A4%B1%E8%B4%A5%E7%BB%93%E6%9E%9C"><span class="nav-number">1.3.3.</span> <span class="nav-text">自定义网关鉴权失败结果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%99%BD%E5%90%8D%E5%8D%95%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.3.4.</span> <span class="nav-text">白名单接口</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Gateway-Oauth2%E5%AE%9E%E7%8E%B0%E7%BB%9F%E4%B8%80%E8%AE%A4%E8%AF%81%E5%92%8C%E9%89%B4%E6%9D%83"><span class="nav-number">2.</span> <span class="nav-text">Gateway+Oauth2实现统一认证和鉴权</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E6%9E%B6%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">应用架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Oauth2%E6%A8%A1%E5%9D%97"><span class="nav-number">2.2.</span> <span class="nav-text">Oauth2模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Gateway%E6%A8%A1%E5%9D%97"><span class="nav-number">2.3.</span> <span class="nav-text">Gateway模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#api%E6%A8%A1%E5%9D%97"><span class="nav-number">2.4.</span> <span class="nav-text">api模块</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试,SpringCloud,微服务,Stream,RabbitMQ," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Spring Cloud Bus和Spring Cloud Stream的区别是啥？使用场景有啥区别？Spring Cloud Stream通过对消息中间件进行抽象封装，提供一个统一的接口供我们发送和监听消息，而Bus则是在Stream基础之上再次进行抽象封装，使得我们可以在不用理解消息发送、监听等概念的基础上使用消息来完成业务逻辑的处理。Spring Cloud Stream中，异步调用能让各个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring-SpringCloud(Stream)学习">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Stream)%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="Spring Cloud Bus和Spring Cloud Stream的区别是啥？使用场景有啥区别？Spring Cloud Stream通过对消息中间件进行抽象封装，提供一个统一的接口供我们发送和监听消息，而Bus则是在Stream基础之上再次进行抽象封装，使得我们可以在不用理解消息发送、监听等概念的基础上使用消息来完成业务逻辑的处理。Spring Cloud Stream中，异步调用能让各个">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Sleuth/1.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/2.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/3.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/stream/%E6%AD%BB%E4%BF%A1%E9%98%9F%E5%88%97.png">
+<meta property="article:published_time" content="2021-05-13T15:57:08.000Z">
+<meta property="article:modified_time" content="2021-05-14T17:05:57.250Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="SpringCloud">
+<meta property="article:tag" content="微服务">
+<meta property="article:tag" content="Stream">
+<meta property="article:tag" content="RabbitMQ">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Sleuth/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Stream)学习/"/>
+
+
+
+
+
+  <title>Spring-SpringCloud(Stream)学习 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Stream)%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Spring-SpringCloud(Stream)学习</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-13T23:57:08+08:00">
+                2021-05-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%B8%B8%E7%94%A8%E6%A1%86%E6%9E%B6-SpringCloud%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">常用框架 - SpringCloud学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Spring-Cloud-Bus和Spring-Cloud-Stream的区别是啥？使用场景有啥区别？"><a href="#Spring-Cloud-Bus和Spring-Cloud-Stream的区别是啥？使用场景有啥区别？" class="headerlink" title="Spring Cloud Bus和Spring Cloud Stream的区别是啥？使用场景有啥区别？"></a>Spring Cloud Bus和Spring Cloud Stream的区别是啥？使用场景有啥区别？</h1><p>Spring Cloud Stream通过对消息中间件进行抽象封装，提供一个统一的接口供我们发送和监听消息，而Bus则是在Stream基础之上再次进行抽象封装，使得我们可以在不用理解消息发送、监听等概念的基础上使用消息来完成业务逻辑的处理。Spring Cloud Stream中，异步调用能让各个服务充分解耦而且也更加灵活。而Spring Cloud Bus就是借助消息驱动来实现将消息（事件）广播到各个服务中，然后服务对这些消息进行消费</p>
+<h1 id="消息驱动在微服务中的应用"><a href="#消息驱动在微服务中的应用" class="headerlink" title="消息驱动在微服务中的应用"></a>消息驱动在微服务中的应用</h1><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Sleuth/1.png" style="zoom:50%;" />
+
+<h1 id="Stream体系架构和交互模型"><a href="#Stream体系架构和交互模型" class="headerlink" title="Stream体系架构和交互模型"></a>Stream体系架构和交互模型</h1><ul>
+<li>专门为构建消息驱动服务所涉及的应用框架</li>
+<li>stream底层使用Spring Integration为消息代理层提供网络支持</li>
+</ul>
+<h1 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h1><ul>
+<li>应用模式<ul>
+<li>   输入通道</li>
+<li>   输出通道</li>
+<li>   通道与底层中间件的代理</li>
+</ul>
+</li>
+<li>适配层抽象</li>
+</ul>
+<p>Stram将组件与底层中间件之间的通信过程抽象成了Binder层，不再关心底层是RabbitMQ还是kafka，只注重业务就行</p>
+<ul>
+<li>插件式适配层</li>
+</ul>
+<p>Binder层采用插件的形式提供服务</p>
+<ul>
+<li><p>持久化的发布订阅模型</p>
+</li>
+<li><p>消费组：一条消息只能被组内一个实例消费</p>
+</li>
+<li><p>分区：支持在消费者实例之间创建分区</p>
+</li>
+</ul>
+<h1 id="业务场景"><a href="#业务场景" class="headerlink" title="业务场景"></a>业务场景</h1><ul>
+<li>引用</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-actuator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-stream-rabbit<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>消息体</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MessageBean</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String payload;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="基于发布订阅实现广播"><a href="#基于发布订阅实现广播" class="headerlink" title="基于发布订阅实现广播"></a>基于发布订阅实现广播</h2><blockquote>
+<p>发布/订阅模式是指同时向多个消费者发送消息的模式（类似广播的形式），它包含一个生产者、两个消费者、两个队列和一个交换机。两个消费者同时绑定到不同的队列上去，两个队列绑定到交换机上去，生产者通过发送消息到交换机，所有消费者接收并消费消息。</p>
+</blockquote>
+<ul>
+<li>交换机</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyTopic</span> </span>&#123;</span><br><span class="line">    String INPUT = <span class="string">&quot;myTopic-consumer&quot;</span>;</span><br><span class="line">    String OUTPUT = <span class="string">&quot;myTopic-producer&quot;</span>;</span><br><span class="line">    <span class="meta">@Input(INPUT)</span></span><br><span class="line">    <span class="function">SubscribableChannel <span class="title">input</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="meta">@Output(OUTPUT)</span></span><br><span class="line">    <span class="function">MessageChannel <span class="title">output</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>消费者队列</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableBinding(value = &#123;</span></span><br><span class="line"><span class="meta">        MyTopic.class,</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StreamConsumer</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 自定义消息广播</span></span><br><span class="line">    <span class="meta">@StreamListener(MyTopic.INPUT)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">consumeMyMessage</span><span class="params">(Object payload)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;My message consumed successfully, payload=&#123;&#125;&quot;</span>, payload);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>生产者</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Controller</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyTopic producer;</span><br><span class="line">    <span class="comment">// 简单广播消息</span></span><br><span class="line">    <span class="meta">@PostMapping(&quot;send&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessage</span><span class="params">(<span class="meta">@RequestParam(value = &quot;body&quot;)</span> String body)</span> </span>&#123;</span><br><span class="line">        producer.output().send(MessageBuilder.withPayload(body).build());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>yml配置</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 绑定Channel到broadcast</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">stream:</span></span><br><span class="line">      <span class="attr">bindings:</span></span><br><span class="line">        <span class="attr">myTopic-consumer:</span></span><br><span class="line">          <span class="attr">destination:</span> <span class="string">broadcast</span></span><br><span class="line">		<span class="attr">myTopic-producer:</span></span><br><span class="line">		  <span class="attr">destination:</span> <span class="string">broadcast</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F.png"></p>
+<h2 id="单播模式"><a href="#单播模式" class="headerlink" title="单播模式"></a>单播模式</h2><h3 id="消费组"><a href="#消费组" class="headerlink" title="消费组"></a>消费组</h3><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/2.png" style="zoom:50%;" />
+
+<p><strong>消息会被所有消费组消费，但每个消费组只会有一个消费者消费</strong></p>
+<ul>
+<li>交换机</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyTopic</span> </span>&#123;</span><br><span class="line">    String INPUT = <span class="string">&quot;group-consumer&quot;</span>;</span><br><span class="line">    String OUTPUT = <span class="string">&quot;group-producer&quot;</span>;</span><br><span class="line">    <span class="meta">@Input(INPUT)</span></span><br><span class="line">    <span class="function">SubscribableChannel <span class="title">input</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="meta">@Output(OUTPUT)</span></span><br><span class="line">    <span class="function">MessageChannel <span class="title">output</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>消费者队列</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableBinding(value = &#123;</span></span><br><span class="line"><span class="meta">        GroupTopic.class,</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StreamConsumer</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 消息分组 &amp; 消费分区示例</span></span><br><span class="line">    <span class="meta">@StreamListener(GroupTopic.INPUT)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">consumeGroupMessage</span><span class="params">(Object payload)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;Group message consumed successfully, payload=&#123;&#125;&quot;</span>, payload);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>生产者</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Controller</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyTopic producer;</span><br><span class="line">    <span class="comment">// 消息分组和消息分区</span></span><br><span class="line">    <span class="meta">@PostMapping(&quot;sendToGroup&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessageToGroup</span><span class="params">(<span class="meta">@RequestParam(value = &quot;body&quot;)</span> String body)</span> </span>&#123;</span><br><span class="line">        groupTopicProducer.output().send(MessageBuilder.withPayload(body).build());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>yml配置</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 消息分组示例</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.group-consumer.destination</span>=<span class="string">group-topic</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.group-producer.destination</span>=<span class="string">group-topic</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.group-consumer.group</span>=<span class="string">Group-A</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="消费分区"><a href="#消费分区" class="headerlink" title="消费分区"></a>消费分区</h3><p>多次请求到同一分区，此分区对应消费组内的消费者轮询消费</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/3.png" style="zoom:50%;" />
+
+<ul>
+<li>交换机</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MyTopic</span> </span>&#123;</span><br><span class="line">    String INPUT = <span class="string">&quot;group-consumer&quot;</span>;</span><br><span class="line">    String OUTPUT = <span class="string">&quot;group-producer&quot;</span>;</span><br><span class="line">    <span class="meta">@Input(INPUT)</span></span><br><span class="line">    <span class="function">SubscribableChannel <span class="title">input</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="meta">@Output(OUTPUT)</span></span><br><span class="line">    <span class="function">MessageChannel <span class="title">output</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>消费者队列</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableBinding(value = &#123;</span></span><br><span class="line"><span class="meta">        GroupTopic.class,</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StreamConsumer</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 消息分组 &amp; 消费分区示例</span></span><br><span class="line">    <span class="meta">@StreamListener(GroupTopic.INPUT)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">consumeGroupMessage</span><span class="params">(Object payload)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;Group message consumed successfully, payload=&#123;&#125;&quot;</span>, payload);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>生产者</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Controller</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyTopic producer;</span><br><span class="line">    <span class="comment">// 消息分组和消息分区</span></span><br><span class="line">    <span class="meta">@PostMapping(&quot;sendToGroup&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessageToGroup</span><span class="params">(<span class="meta">@RequestParam(value = &quot;body&quot;)</span> String body)</span> </span>&#123;</span><br><span class="line">        groupTopicProducer.output().send(MessageBuilder.withPayload(body).build());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>yml配置</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 消息分区配置</span></span><br><span class="line"><span class="comment">## 打开消费者的消费分区功能</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.group-consumer.consumer.partitioned</span>=<span class="string">true</span></span><br><span class="line"><span class="comment">## 两个消息分区</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.group-producer.producer.partition-count</span>=<span class="string">2</span></span><br><span class="line"><span class="comment"># SpEL (Key resolver) 可以定义复杂表达式生成Key</span></span><br><span class="line"><span class="comment"># 我们这里用最简化的配置，只有索引参数为1的节点（消费者），才能消费消息</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.group-producer.producer.partition-key-expression</span>=<span class="string">1</span></span><br><span class="line"><span class="comment"># 当前消费者实例总数</span></span><br><span class="line"><span class="meta">spring.cloud.stream.instanceCount</span>=<span class="string">2</span></span><br><span class="line"><span class="comment"># 最大值instanceCount-1，当前实例的索引号</span></span><br><span class="line"><span class="comment"># spring.cloud.stream.instanceIndex=1</span></span><br><span class="line"><span class="meta">spring.cloud.stream.instanceIndex</span>=<span class="string">0</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="延迟消息"><a href="#延迟消息" class="headerlink" title="延迟消息"></a>延迟消息</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">1.	下载插件</span><br><span class="line">https:&#x2F;&#x2F;www.rabbitmq.com&#x2F;community-plugins.html</span><br><span class="line"></span><br><span class="line">找到rabbitmq_delayed_message_exchange</span><br><span class="line">下载对应版本的插件，3.6和3.7版本插件不一样</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">2. 下载以后解压，copy到rabbitmq安装目录下的plugins文件夹</span><br><span class="line"></span><br><span class="line">3.	安装插件</span><br><span class="line">rabbitmq-plugins enable rabbitmq_delayed_message_exchange</span><br><span class="line"></span><br><span class="line">4.	安装完一定要重启RabbitMQ，不是单单重启UI管理界面！</span><br><span class="line">如果只是单单调用rabbitmqctl  stop_app然后再rabbitmqctl  start_app是没有作用的！</span><br><span class="line">正确的步骤是先rabbitmqctl stop，然后再直接执行rabbitmq-server</span><br></pre></td></tr></table></figure>
+
+<h3 id="业务场景-1"><a href="#业务场景-1" class="headerlink" title="业务场景"></a>业务场景</h3><ul>
+<li>用户进行下单操作（会有锁定商品库存、使用优惠券、积分一系列的操作）；</li>
+<li>生成订单，获取订单的id；</li>
+<li>获取到设置的订单超时时间（假设设置的为60分钟不支付取消订单）；</li>
+<li>按订单超时时间发送一个延迟消息给RabbitMQ，让它在订单超时后触发取消订单的操作；</li>
+<li>如果用户没有支付，进行取消订单操作（释放锁定商品库存、返还优惠券、返回积分一系列操作）。</li>
+</ul>
+<hr>
+<ul>
+<li>交换机</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">DelayedTopic</span> </span>&#123;</span><br><span class="line">    String INPUT = <span class="string">&quot;delayed-consumer&quot;</span>;</span><br><span class="line">    String OUTPUT = <span class="string">&quot;delayed-producer&quot;</span>;</span><br><span class="line">    <span class="meta">@Input(INPUT)</span></span><br><span class="line">    <span class="function">SubscribableChannel <span class="title">input</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="meta">@Output(OUTPUT)</span></span><br><span class="line">    <span class="function">MessageChannel <span class="title">output</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>消费者队列</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableBinding(value = &#123;</span></span><br><span class="line"><span class="meta">        DelayedTopic.class,</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StreamConsumer</span> </span>&#123;</span><br><span class="line">     <span class="comment">// 延迟消息示例</span></span><br><span class="line">    <span class="meta">@StreamListener(DelayedTopic.INPUT)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">consumeDelayedMessage</span><span class="params">(MessageBean bean)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;Delayed message consumed successfully, payload=&#123;&#125;&quot;</span>, bean.getPayload());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>生产者</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Controller</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyTopic producer;</span><br><span class="line">     <span class="comment">// 延迟消息</span></span><br><span class="line">    <span class="meta">@PostMapping(&quot;sendDM&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendDelayedMessage</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="meta">@RequestParam(value = &quot;body&quot;)</span> String body,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="meta">@RequestParam(value = &quot;seconds&quot;)</span> Integer seconds)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        MessageBean msg = <span class="keyword">new</span> MessageBean();</span><br><span class="line">        msg.setPayload(body);</span><br><span class="line"></span><br><span class="line">        log.info(<span class="string">&quot;ready to send delayed message&quot;</span>);</span><br><span class="line">        delayedTopicProducer.output().send(</span><br><span class="line">                MessageBuilder.withPayload(msg)</span><br><span class="line">                        .setHeader(<span class="string">&quot;x-delay&quot;</span>, seconds * <span class="number">1000</span>)</span><br><span class="line">                        .build());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>yml配置</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 延迟消息配置</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.delayed-consumer.destination</span>=<span class="string">delayed-topic</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.delayed-producer.destination</span>=<span class="string">delayed-topic</span></span><br><span class="line"><span class="meta">spring.cloud.stream.rabbit.bindings.delayed-producer.producer.delayed-exchange</span>=<span class="string">true</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Stream出现异常处理"><a href="#Stream出现异常处理" class="headerlink" title="Stream出现异常处理"></a>Stream出现异常处理</h2><h4 id="异常情况："><a href="#异常情况：" class="headerlink" title="异常情况："></a>异常情况：</h4><ol>
+<li>消息被拒接（重试次数Max）</li>
+<li>消息过期（TTl）</li>
+<li>队列长度已满</li>
+</ol>
+<h3 id="直接发起重试"><a href="#直接发起重试" class="headerlink" title="直接发起重试"></a>直接发起重试</h3><ul>
+<li>异常重试（单机版）</li>
+</ul>
+<p>重试只会发在消费端，Stream将失败消息原封不动的发给当前这个消费者，重试只会发生在当前机器，不会换一个节点重试</p>
+<ul>
+<li>重入队列重试</li>
+</ul>
+<ol>
+<li>消息来源：重入队列重试等于是新发一个消息</li>
+<li>消费地点：可能会被其他Comsumer消费</li>
+</ol>
+<ul>
+<li>交换机</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">DelayedTopic</span> </span>&#123;</span><br><span class="line">    String INPUT = <span class="string">&quot;error-consumer&quot;</span>;</span><br><span class="line">    String OUTPUT = <span class="string">&quot;error-producer&quot;</span>;</span><br><span class="line">    <span class="meta">@Input(INPUT)</span></span><br><span class="line">    <span class="function">SubscribableChannel <span class="title">input</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="meta">@Output(OUTPUT)</span></span><br><span class="line">    <span class="function">MessageChannel <span class="title">output</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>消费者队列</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableBinding(value = &#123;</span></span><br><span class="line"><span class="meta">        ErrorTopic.class,</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StreamConsumer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> AtomicInteger count = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 异常重试（单机版）</span></span><br><span class="line">    <span class="meta">@StreamListener(ErrorTopic.INPUT)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">consumeErrorMessage</span><span class="params">(MessageBean bean)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;Are you OK?&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (count.incrementAndGet() % <span class="number">3</span> == <span class="number">0</span>) &#123;</span><br><span class="line">            log.info(<span class="string">&quot;Fine, thank you. And you?&quot;</span>);</span><br><span class="line">            count.set(<span class="number">0</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            log.info(<span class="string">&quot;What&#x27;s your problem?&quot;</span>);</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;I&#x27;m not OK&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 异常重试（联机版-重新入列）</span></span><br><span class="line">    <span class="meta">@StreamListener(RequeueTopic.INPUT)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">requeueErrorMessage</span><span class="params">(MessageBean bean)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;Are you OK?&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">3000L</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        &#125;</span><br><span class="line"><span class="comment">//        throw new RuntimeException(&quot;I&#x27;m not OK&quot;);</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>生产者</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Controller</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ErrorTopic errorTopicProducer;</span><br><span class="line">    <span class="comment">// 异常重试（单机版）</span></span><br><span class="line">    <span class="meta">@PostMapping(&quot;sendError&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendErrorMessage</span><span class="params">(<span class="meta">@RequestParam(value = &quot;body&quot;)</span> String body)</span> </span>&#123;</span><br><span class="line">        MessageBean msg = <span class="keyword">new</span> MessageBean();</span><br><span class="line">        msg.setPayload(body);</span><br><span class="line">        errorTopicProducer.output().send(MessageBuilder.withPayload(msg).build());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 异常重试（联机版 - 重新入列）</span></span><br><span class="line">    <span class="meta">@PostMapping(&quot;requeue&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendErrorMessageToMQ</span><span class="params">(<span class="meta">@RequestParam(value = &quot;body&quot;)</span> String body)</span> </span>&#123;</span><br><span class="line">        MessageBean msg = <span class="keyword">new</span> MessageBean();</span><br><span class="line">        msg.setPayload(body);</span><br><span class="line">        requeueTopicProducer.output().send(MessageBuilder.withPayload(msg).build());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>yml配置</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 异常消息（单机版重试）</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.error-consumer.destination</span>=<span class="string">error-out-topic</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.error-producer.destination</span>=<span class="string">error-out-topic</span></span><br><span class="line"><span class="comment"># 重试次数（本机重试）</span></span><br><span class="line"><span class="comment"># 次数=1相当于不重试</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.error-consumer.consumer.max-attempts</span>=<span class="string">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment">######################################################################################</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 异常消息（requeue重试）</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.requeue-consumer.destination</span>=<span class="string">requeue-topic</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.requeue-producer.destination</span>=<span class="string">requeue-topic</span></span><br><span class="line"><span class="comment"># 必须把max-attempts设置为1，否则requeue不能生效</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.requeue-consumer.consumer.max-attempts</span>=<span class="string">1</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.requeue-consumer.group</span>=<span class="string">requeue-group</span></span><br><span class="line"><span class="comment"># 仅对当前requeue-consumer，开启requeue</span></span><br><span class="line"><span class="meta">spring.cloud.stream.rabbit.bindings.requeue-consumer.consumer.requeueRejected</span>=<span class="string">true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="降级"><a href="#降级" class="headerlink" title="降级"></a>降级</h3><ul>
+<li>交换机</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">FallbackTopic</span> </span>&#123;</span><br><span class="line">    String INPUT = <span class="string">&quot;fallback-consumer&quot;</span>;</span><br><span class="line">    String OUTPUT = <span class="string">&quot;fallback-producer&quot;</span>;</span><br><span class="line">    <span class="meta">@Input(INPUT)</span></span><br><span class="line">    <span class="function">SubscribableChannel <span class="title">input</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="meta">@Output(OUTPUT)</span></span><br><span class="line">    <span class="function">MessageChannel <span class="title">output</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>消费者队列</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableBinding(value = &#123;</span></span><br><span class="line"><span class="meta">       FallbackTopic.class</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StreamConsumer</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Fallback + 升级版本</span></span><br><span class="line">    <span class="meta">@StreamListener(FallbackTopic.INPUT)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">goodbyeBadGuy</span><span class="params">(MessageBean bean,</span></span></span><br><span class="line"><span class="function"><span class="params">                              <span class="meta">@Header(&quot;version&quot;)</span> String version)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;Fallback - Are you OK?&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="string">&quot;1.0&quot;</span>.equalsIgnoreCase(version)) &#123;</span><br><span class="line">            log.info(<span class="string">&quot;Fallback - Fine, thank you. And you?&quot;</span>);</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;2.0&quot;</span>.equalsIgnoreCase(version)) &#123;</span><br><span class="line">            log.info(<span class="string">&quot;unsupported version&quot;</span>);</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;I&#x27;m not OK&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            log.info(<span class="string">&quot;Fallback - version=&#123;&#125;&quot;</span>, version);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 降级流程</span></span><br><span class="line">    <span class="meta">@ServiceActivator(inputChannel = &quot;fallback-topic.fallback-group.errors&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fallback</span><span class="params">(Message&lt;?&gt; message)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;fallback entered&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>生产者</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Controller</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> FallbackTopic fallbackTopicProducer;</span><br><span class="line">    <span class="comment">// fallback + 升版</span></span><br><span class="line">    <span class="meta">@PostMapping(&quot;fallback&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessageToFallback</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="meta">@RequestParam(value = &quot;body&quot;)</span> String body,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="meta">@RequestParam(value = &quot;version&quot;, defaultValue = &quot;1.0&quot;)</span> String version)</span> </span>&#123;</span><br><span class="line">        MessageBean msg = <span class="keyword">new</span> MessageBean();</span><br><span class="line">        msg.setPayload(body);</span><br><span class="line">        fallbackTopicProducer.output().send(</span><br><span class="line">                MessageBuilder.withPayload(msg)</span><br><span class="line">                        .setHeader(<span class="string">&quot;version&quot;</span>, version)</span><br><span class="line">                        .build());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>yml配置</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Fallback配置</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.fallback-consumer.destination</span>=<span class="string">fallback-topic</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.fallback-producer.destination</span>=<span class="string">fallback-topic</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.fallback-consumer.consumer.max-attempts</span>=<span class="string">2</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.fallback-consumer.group</span>=<span class="string">fallback-group</span></span><br><span class="line"><span class="comment"># input channel -&gt;    fallback-topic.fallback-group.errors</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="死信交换机-死信队列处理"><a href="#死信交换机-死信队列处理" class="headerlink" title="死信交换机(死信队列处理)"></a>死信交换机(死信队列处理)</h3><p>DLX-死信交换器，将异常消息路由到死信队列<br>DLK-Dead Letter Routing key</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/stream/%E6%AD%BB%E4%BF%A1%E9%98%9F%E5%88%97.png" style="zoom:50%;" />
+
+<ul>
+<li>交换机</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">DlqTopic</span> </span>&#123;</span><br><span class="line">    String INPUT = <span class="string">&quot;dlq-consumer&quot;</span>;</span><br><span class="line">    String OUTPUT = <span class="string">&quot;dlq-producer&quot;</span>;</span><br><span class="line">    <span class="meta">@Input(INPUT)</span></span><br><span class="line">    <span class="function">SubscribableChannel <span class="title">input</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="meta">@Output(OUTPUT)</span></span><br><span class="line">    <span class="function">MessageChannel <span class="title">output</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>消费者队列</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableBinding(value = &#123;</span></span><br><span class="line"><span class="meta">        DlqTopic.class</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StreamConsumer</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 死信队列</span></span><br><span class="line">    <span class="meta">@StreamListener(DlqTopic.INPUT)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">consumeDlqMessage</span><span class="params">(MessageBean bean)</span> </span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;Dlq - Are you OK?&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (count.incrementAndGet() % <span class="number">3</span> == <span class="number">0</span>) &#123;</span><br><span class="line">            log.info(<span class="string">&quot;Dlq - Fine, thank you. And you?&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            log.info(<span class="string">&quot;Dlq - What&#x27;s your problem?&quot;</span>);</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;I&#x27;m not OK&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>生产者</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Controller</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> DlqTopic dlqTopicProducer;</span><br><span class="line">    <span class="comment">// 死信队列测试</span></span><br><span class="line">    <span class="meta">@PostMapping(&quot;dlq&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sendMessageToDlq</span><span class="params">(<span class="meta">@RequestParam(value = &quot;body&quot;)</span> String body)</span> </span>&#123;</span><br><span class="line">        MessageBean msg = <span class="keyword">new</span> MessageBean();</span><br><span class="line">        msg.setPayload(body);</span><br><span class="line">        dlqTopicProducer.output().send(MessageBuilder.withPayload(msg).build());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>yml配置</li>
+</ul>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 死信队列配置</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.dlq-consumer.destination</span>=<span class="string">dlq-topic</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.dlq-producer.destination</span>=<span class="string">dlq-topic</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.dlq-consumer.consumer.max-attempts</span>=<span class="string">2</span></span><br><span class="line"><span class="meta">spring.cloud.stream.bindings.dlq-consumer.group</span>=<span class="string">dlq-group</span></span><br><span class="line"><span class="comment"># 开启死信队列（默认 topic.dlq）</span></span><br><span class="line"><span class="meta">spring.cloud.stream.rabbit.bindings.dlq-consumer.consumer.auto-bind-dlq</span>=<span class="string">true</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="如何选取合适的异常处理策略"><a href="#如何选取合适的异常处理策略" class="headerlink" title="如何选取合适的异常处理策略"></a>如何选取合适的异常处理策略</h1><ul>
+<li><p><strong>可以抛弃的异常</strong>——转入其他队列或直接丢弃</p>
+<p>1、参数异常<br>2、非法数据</p>
+</li>
+<li><p><strong>谨慎使用重回队列</strong>——遇到重试也无法解决的异常（如上述两个异常）服务将进入无限循环中</p>
+</li>
+<li><p><strong>重试+状态检查</strong>——添加version乐观锁，如果操作对象的当前版本高于消息中的版本，就不做处理</p>
+</li>
+</ul>
+<p>例如有些分步操作的业务（商品批量上下架），先进行下架的消息任务，在进行上架的消息业务，如果业务没问题那么商品状态最终为<strong>上架</strong></p>
+<p>但是，下架操作失败了，触发重试，再重试之前出发了上架消息业务，之后又重试下架成功，最后商品状态为<strong>下架</strong>。</p>
+<ul>
+<li><p>适合<strong>重试</strong>的场景：</p>
+<ol>
+<li>读数据服务</li>
+<li>实现幂等性的写服务</li>
+</ol>
+</li>
+<li><p>优先考虑<strong>降级</strong></p>
+<p>比如一些操作无法立即重试，可以使用降级让请求在延迟队列等待一段时间在重试。</p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/SpringCloud/" rel="tag"># SpringCloud</a>
+          
+            <a href="/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/" rel="tag"># 微服务</a>
+          
+            <a href="/tags/Stream/" rel="tag"># Stream</a>
+          
+            <a href="/tags/RabbitMQ/" rel="tag"># RabbitMQ</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/13/Spring-SpringCloud(Zuul,Gateway)%E5%AD%A6%E4%B9%A0/" rel="next" title="Spring-SpringCloud(Zuul,Gateway)学习">
+                <i class="fa fa-chevron-left"></i> Spring-SpringCloud(Zuul,Gateway)学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/05/13/Spring-SpringCloud(Sleuth,Zipkin)%E5%AD%A6%E4%B9%A0%20/" rel="prev" title="Spring-SpringCloud(Sleuth,Zipkin)学习">
+                Spring-SpringCloud(Sleuth,Zipkin)学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">68</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-Cloud-Bus%E5%92%8CSpring-Cloud-Stream%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E5%95%A5%EF%BC%9F%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF%E6%9C%89%E5%95%A5%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">Spring Cloud Bus和Spring Cloud Stream的区别是啥？使用场景有啥区别？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E9%A9%B1%E5%8A%A8%E5%9C%A8%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">消息驱动在微服务中的应用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Stream%E4%BD%93%E7%B3%BB%E6%9E%B6%E6%9E%84%E5%92%8C%E4%BA%A4%E4%BA%92%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">Stream体系架构和交互模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">4.</span> <span class="nav-text">核心概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E5%9C%BA%E6%99%AF"><span class="nav-number">5.</span> <span class="nav-text">业务场景</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E5%AE%9E%E7%8E%B0%E5%B9%BF%E6%92%AD"><span class="nav-number">5.1.</span> <span class="nav-text">基于发布订阅实现广播</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E6%92%AD%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.2.</span> <span class="nav-text">单播模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E7%BB%84"><span class="nav-number">5.2.1.</span> <span class="nav-text">消费组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E8%B4%B9%E5%88%86%E5%8C%BA"><span class="nav-number">5.2.2.</span> <span class="nav-text">消费分区</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%B6%E8%BF%9F%E6%B6%88%E6%81%AF"><span class="nav-number">5.3.</span> <span class="nav-text">延迟消息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E5%9C%BA%E6%99%AF-1"><span class="nav-number">5.3.1.</span> <span class="nav-text">业务场景</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Stream%E5%87%BA%E7%8E%B0%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="nav-number">5.4.</span> <span class="nav-text">Stream出现异常处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E6%83%85%E5%86%B5%EF%BC%9A"><span class="nav-number">5.4.0.1.</span> <span class="nav-text">异常情况：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E5%8F%91%E8%B5%B7%E9%87%8D%E8%AF%95"><span class="nav-number">5.4.1.</span> <span class="nav-text">直接发起重试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%99%8D%E7%BA%A7"><span class="nav-number">5.4.2.</span> <span class="nav-text">降级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%BB%E4%BF%A1%E4%BA%A4%E6%8D%A2%E6%9C%BA-%E6%AD%BB%E4%BF%A1%E9%98%9F%E5%88%97%E5%A4%84%E7%90%86"><span class="nav-number">5.4.3.</span> <span class="nav-text">死信交换机(死信队列处理)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E5%8F%96%E5%90%88%E9%80%82%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E7%AD%96%E7%95%A5"><span class="nav-number">6.</span> <span class="nav-text">如何选取合适的异常处理策略</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

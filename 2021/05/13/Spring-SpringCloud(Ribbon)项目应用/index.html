@@ -81,15 +81,15 @@
 
 <meta name="description" content="Spring Cloud Ribbon：负载均衡的服务调用改造demo-service-providerUserController添加对User对象常见的CRUD接口1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950@Slf4j@RestController@Req">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Spring-SpringCloud(Ribbon)练习">
-<meta property="og:url" content="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Ribbon)%E7%BB%83%E4%B9%A0/index.html">
+<meta property="og:title" content="Spring-SpringCloud(Ribbon)项目应用">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Ribbon)%E9%A1%B9%E7%9B%AE%E5%BA%94%E7%94%A8/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
 <meta property="og:description" content="Spring Cloud Ribbon：负载均衡的服务调用改造demo-service-providerUserController添加对User对象常见的CRUD接口1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950@Slf4j@RestController@Req">
 <meta property="og:locale">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Ribbon1.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Ribbon2.png">
 <meta property="article:published_time" content="2021-05-12T17:26:08.000Z">
-<meta property="article:modified_time" content="2021-05-13T05:59:44.384Z">
+<meta property="article:modified_time" content="2021-05-14T08:15:53.378Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="项目工具">
 <meta property="article:tag" content="SpringCloud">
@@ -126,13 +126,13 @@
 
 
 
-  <link rel="canonical" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Ribbon)练习/"/>
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Ribbon)项目应用/"/>
 
 
 
 
 
-  <title>Spring-SpringCloud(Ribbon)练习 | Hikari的Java之路</title>
+  <title>Spring-SpringCloud(Ribbon)项目应用 | Hikari的Java之路</title>
   
 
 
@@ -269,7 +269,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Ribbon)%E7%BB%83%E4%B9%A0/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/13/Spring-SpringCloud(Ribbon)%E9%A1%B9%E7%9B%AE%E5%BA%94%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -286,7 +286,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Spring-SpringCloud(Ribbon)练习</h1>
+          <h1 class="post-title" itemprop="name headline">Spring-SpringCloud(Ribbon)项目应用</h1>
         
 
         <div class="post-meta">
@@ -390,7 +390,7 @@
 <p>访问接口，可以看到返回的信息如下：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    serviceId: &quot;ribbon-eureka-demo&quot;,</span><br><span class="line">    server: &#123;</span><br><span class="line">        host: &quot;localhost&quot;,</span><br><span class="line">        port: 8081,</span><br><span class="line">        id: &quot;localhost:8081&quot;,</span><br><span class="line">        zone: &quot;UNKNOWN&quot;,</span><br><span class="line">        readyToServe: true,</span><br><span class="line">        alive: true,</span><br><span class="line">        hostPort: &quot;localhost:8081&quot;,</span><br><span class="line">        metaInfo: &#123;</span><br><span class="line">            serverGroup: null,</span><br><span class="line">            serviceIdForDiscovery: null, instanceId: &quot;localhost:8081&quot;,</span><br><span class="line">            appName: null</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;,</span><br><span class="line">    secure: false, metadata: &#123; &#125;, host: &quot;localhost&quot;, port: 8081,</span><br><span class="line">    uri: &quot;http://localhost:8081&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
+<h1 id="自定义负载均衡策略"><a href="#自定义负载均衡策略" class="headerlink" title="自定义负载均衡策略"></a>自定义负载均衡策略</h1>
       
     </div>
     
@@ -426,8 +426,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2021/05/13/Spring-SpringCloud(hystrix)%E5%AD%A6%E4%B9%A0/" rel="next" title="Spring-SpringCloud(Hystrix)练习">
-                <i class="fa fa-chevron-left"></i> Spring-SpringCloud(Hystrix)练习
+              <a href="/2021/05/13/Spring-SpringCloud(hystrix)%E9%A1%B9%E7%9B%AE%E5%BA%94%E7%94%A8/" rel="next" title="Spring-SpringCloud(Hystrix)项目应用">
+                <i class="fa fa-chevron-left"></i> Spring-SpringCloud(Hystrix)项目应用
               </a>
             
           </div>
@@ -436,8 +436,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2021/05/13/%E9%A1%B9%E7%9B%AE%E5%B7%A5%E5%85%B7-%E8%B0%83%E7%94%A8%E7%AC%AC%E4%B8%89%E6%96%B9%E6%8E%A5%E5%8F%A3/" rel="prev" title="项目工具-调用第三方接口">
-                项目工具-调用第三方接口 <i class="fa fa-chevron-right"></i>
+              <a href="/2021/05/13/Spring-SpringCloud(hystrix)%E5%AD%A6%E4%B9%A0/" rel="prev" title="Spring-SpringCloud(Hystrix)练习">
+                Spring-SpringCloud(Hystrix)练习 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -516,7 +516,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">100</span>
+                  <span class="site-state-item-count">105</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -538,7 +538,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">57</span>
+                  <span class="site-state-item-count">63</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -587,7 +587,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-Cloud-Ribbon%EF%BC%9A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%9A%84%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">Spring Cloud Ribbon：负载均衡的服务调用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E9%80%A0demo-service-provider"><span class="nav-number">1.1.</span> <span class="nav-text">改造demo-service-provider</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UserController%E6%B7%BB%E5%8A%A0%E5%AF%B9User%E5%AF%B9%E8%B1%A1%E5%B8%B8%E8%A7%81%E7%9A%84CRUD%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.1.1.</span> <span class="nav-text">UserController添加对User对象常见的CRUD接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IUserService%E5%92%8CUserServiceImpl%E4%B8%AD%E5%81%9A%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.1.2.</span> <span class="nav-text">IUserService和UserServiceImpl中做简单实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E9%80%A0demo-service-consumer"><span class="nav-number">1.2.</span> <span class="nav-text">改造demo-service-consumer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pom-xml%E4%B8%AD%E6%B7%BB%E5%8A%A0%E7%9B%B8%E5%85%B3%E4%BE%9D%E8%B5%96"><span class="nav-number">1.2.1.</span> <span class="nav-text">pom.xml中添加相关依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8application-yml%E4%B8%AD%E8%BF%9B%E8%A1%8C%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.2.</span> <span class="nav-text">在application.yml中进行配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-LoadBalanced%E6%B3%A8%E8%A7%A3%E8%B5%8B%E4%BA%88RestTemplate%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%9A%84%E8%83%BD%E5%8A%9B"><span class="nav-number">1.2.3.</span> <span class="nav-text">使用@LoadBalanced注解赋予RestTemplate负载均衡的能力</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0UserController%E7%94%A8%E4%BA%8E%E6%8F%90%E4%BE%9B%E8%B0%83%E7%94%A8%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.2.4.</span> <span class="nav-text">添加UserController用于提供调用接口</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%B5%8B%E8%AF%95"><span class="nav-number">2.</span> <span class="nav-text">负载均衡测试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ribbon-API-%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">Ribbon API 使用</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-Cloud-Ribbon%EF%BC%9A%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%9A%84%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">Spring Cloud Ribbon：负载均衡的服务调用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E9%80%A0demo-service-provider"><span class="nav-number">1.1.</span> <span class="nav-text">改造demo-service-provider</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UserController%E6%B7%BB%E5%8A%A0%E5%AF%B9User%E5%AF%B9%E8%B1%A1%E5%B8%B8%E8%A7%81%E7%9A%84CRUD%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.1.1.</span> <span class="nav-text">UserController添加对User对象常见的CRUD接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IUserService%E5%92%8CUserServiceImpl%E4%B8%AD%E5%81%9A%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.1.2.</span> <span class="nav-text">IUserService和UserServiceImpl中做简单实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E9%80%A0demo-service-consumer"><span class="nav-number">1.2.</span> <span class="nav-text">改造demo-service-consumer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#pom-xml%E4%B8%AD%E6%B7%BB%E5%8A%A0%E7%9B%B8%E5%85%B3%E4%BE%9D%E8%B5%96"><span class="nav-number">1.2.1.</span> <span class="nav-text">pom.xml中添加相关依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8application-yml%E4%B8%AD%E8%BF%9B%E8%A1%8C%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.2.</span> <span class="nav-text">在application.yml中进行配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-LoadBalanced%E6%B3%A8%E8%A7%A3%E8%B5%8B%E4%BA%88RestTemplate%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%9A%84%E8%83%BD%E5%8A%9B"><span class="nav-number">1.2.3.</span> <span class="nav-text">使用@LoadBalanced注解赋予RestTemplate负载均衡的能力</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0UserController%E7%94%A8%E4%BA%8E%E6%8F%90%E4%BE%9B%E8%B0%83%E7%94%A8%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.2.4.</span> <span class="nav-text">添加UserController用于提供调用接口</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%B5%8B%E8%AF%95"><span class="nav-number">2.</span> <span class="nav-text">负载均衡测试</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ribbon-API-%E4%BD%BF%E7%94%A8"><span class="nav-number">3.</span> <span class="nav-text">Ribbon API 使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AD%96%E7%95%A5"><span class="nav-number">4.</span> <span class="nav-text">自定义负载均衡策略</span></a></li></ol></div>
             
 
           </div>
