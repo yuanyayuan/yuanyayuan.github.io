@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="面试,分步式," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="如果让你写⼀个消息队列，该如何进⾏架构设计？可伸缩性mq 得支持可伸缩性，就是需要的时候快速扩容，就可以增加吞吐量和容量，参照Kafka和ES实现分区和副本 数据落地磁盘mq 的数据落地磁盘，落磁盘的时候顺序写，这样就没有磁盘随机读写的寻址开销，磁盘顺序读写的性能是很高 可用性mq 的可用性，参考Cluster（集群）：群集是一个或多个节点的集合，它们一起保存整个数据，并提供跨所有节点的联合索引和">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式-架构相关问题">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/04/23/%E5%88%86%E5%B8%83%E5%BC%8F-%E6%9E%B6%E6%9E%84%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="如果让你写⼀个消息队列，该如何进⾏架构设计？可伸缩性mq 得支持可伸缩性，就是需要的时候快速扩容，就可以增加吞吐量和容量，参照Kafka和ES实现分区和副本 数据落地磁盘mq 的数据落地磁盘，落磁盘的时候顺序写，这样就没有磁盘随机读写的寻址开销，磁盘顺序读写的性能是很高 可用性mq 的可用性，参考Cluster（集群）：群集是一个或多个节点的集合，它们一起保存整个数据，并提供跨所有节点的联合索引和">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-04-23T15:24:19.000Z">
+<meta property="article:modified_time" content="2021-05-18T10:25:21.899Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="分步式">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/04/23/分布式-架构相关问题/"/>
+
+
+
+
+
+  <title>分布式-架构相关问题 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/23/%E5%88%86%E5%B8%83%E5%BC%8F-%E6%9E%B6%E6%9E%84%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">分布式-架构相关问题</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-23T23:24:19+08:00">
+                2021-04-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%B8%83%E5%BC%8F%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index">
+                    <span itemprop="name">分步式 - 分布式架构</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="如果让你写⼀个消息队列，该如何进⾏架构设计？"><a href="#如果让你写⼀个消息队列，该如何进⾏架构设计？" class="headerlink" title="如果让你写⼀个消息队列，该如何进⾏架构设计？"></a>如果让你写⼀个消息队列，该如何进⾏架构设计？</h1><h2 id="可伸缩性"><a href="#可伸缩性" class="headerlink" title="可伸缩性"></a>可伸缩性</h2><p>mq 得<strong>支持可伸缩性</strong>，就是需要的时候快速扩容，就可以增加吞吐量和容量，参照Kafka和ES实现分区和副本</p>
+<h2 id="数据落地磁盘"><a href="#数据落地磁盘" class="headerlink" title="数据落地磁盘"></a>数据落地磁盘</h2><p>mq 的数据落地磁盘，落磁盘的时候顺序写，这样就没有磁盘随机读写的寻址开销，磁盘顺序读写的性能是很高</p>
+<h2 id="可用性"><a href="#可用性" class="headerlink" title="可用性"></a>可用性</h2><p>mq 的可用性，参考Cluster（集群）：群集是一个或多个节点的集合，它们一起保存整个数据，并提供跨所有节点的联合索引和搜索功能。每个群集都有自己的唯一群集名称，节点通过名称加入群集。</p>
+<h2 id="数据-0-丢失"><a href="#数据-0-丢失" class="headerlink" title="数据 0 丢失"></a>数据 0 丢失</h2><p>消息可靠性投递</p>
+<p>避免消息重复投递或重复消费</p>
+<p>消息投递顺序</p>
+<h1 id="秒杀架构模型设计"><a href="#秒杀架构模型设计" class="headerlink" title="秒杀架构模型设计"></a>秒杀架构模型设计</h1><h2 id="秒杀应该考虑问题"><a href="#秒杀应该考虑问题" class="headerlink" title="秒杀应该考虑问题"></a>秒杀应该考虑问题</h2><h3 id="超卖问题"><a href="#超卖问题" class="headerlink" title="超卖问题"></a>超卖问题</h3><p>分布式锁解决超卖问题</p>
+<h3 id="高并发"><a href="#高并发" class="headerlink" title="高并发"></a>高并发</h3><p>通过nginx映射客户端请求，再分发到后台tomcat服务器集群中可以提升并发能力。</p>
+<h3 id="接口防刷"><a href="#接口防刷" class="headerlink" title="接口防刷"></a>接口防刷</h3><p>接口实现幂等性</p>
+<h3 id="秒杀url"><a href="#秒杀url" class="headerlink" title="秒杀url"></a>秒杀url</h3><p>避免有程序访问经验的人通过下单页面url直接访问后台接口来秒杀货品，我们需要将秒杀的url实现动态化，即使是开发整个系统的人都无法在秒杀开始前知道秒杀的url。具体的做法就是通过md5加密⼀串随机字符作为秒杀的url，然后前端访问后台获取具体的url，后台校验通过之后才可以继续秒杀。</p>
+<h3 id="数据库设计"><a href="#数据库设计" class="headerlink" title="数据库设计"></a>数据库设计</h3><h4 id="表设计"><a href="#表设计" class="headerlink" title="表设计"></a>表设计</h4><p>应该单独设计⼀个秒杀数据库，防止因为秒杀活动的高并发访问拖垮整个网站</p>
+<p>秒杀订单表：订单id，用户id，商品id，支付状态，订单创建时间</p>
+<p>秒杀货品表：货物id，商品名，库存，版本，秒杀开始时间，秒杀结束时间</p>
+<p>商品表：可以关联goods_id查到具体的商品信息，商品图像、名称、平时价格、秒杀价格等，</p>
+<p>用户表：根据用户user_id可以查询到用户昵称、用户手机号，收货地址等其他额外信息</p>
+<h4 id="精简sql"><a href="#精简sql" class="headerlink" title="精简sql"></a>精简sql</h4><p>避免先select再update操作</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">update miaosha_goods set stock =stock-1 where goos_id = &#123;#goods_id&#125; and version = #&#123;version&#125; and sock&gt;0;</span><br></pre></td></tr></table></figure>
+<p>这样的话，就可以保证库存不会超卖并且⼀次更新库存,还有注意⼀点这里使用了版本号的乐观锁，相比较悲观锁，它的性能较好。</p>
+<h3 id="大量请求问题"><a href="#大量请求问题" class="headerlink" title="大量请求问题"></a>大量请求问题</h3><p>缓存集群，构建redis集群，采用哨兵模式，可以提升redis的性能和可用性</p>
+<p>数据库主从</p>
+<p>接口限流：前端限流，同⼀个用户xx秒内重复请求直接拒绝，令牌桶算法限流</p>
+<h3 id="秒杀页面静态化"><a href="#秒杀页面静态化" class="headerlink" title="秒杀页面静态化"></a>秒杀页面静态化</h3><p>将商品的描述、参数、成交记录、图像、评价等全部写入到⼀个静态页面，用户请求不需要通过访问后端服务器，不需要经过数据库，直接在前台客户端生成，这样可以最大可能的减少服务器的压力</p>
+<h3 id="redis预减库存"><a href="#redis预减库存" class="headerlink" title="redis预减库存"></a>redis预减库存</h3><p>很多请求进来，都需要后台查询库存,这是一个频繁读的场景。可以使用redis来预减库存，在秒杀开始前可以在redis设值</p>
+<p>比如redis.set(goodsId,100),这里预放的库存为100可以设值为常量。每次下单成功之后,Integer stock = (Integer)redis.get(goosId); </p>
+<p>然后判断sock的值，如果小于常量值就库存减去1;不过注意当取消的时候,需要增加库存。增加库存的时候也得注意不能大于之间设定的总库存数(查询库存和扣减库存需要原子操作，此时可以借助lua脚本)</p>
+<p>下次下单再获取库存的时候,直接从redis里面查就可以了。</p>
+<h3 id="异步下单"><a href="#异步下单" class="headerlink" title="异步下单"></a>异步下单</h3><p>可以采用rabbitmq，在后台经过了限流、库存校验之后，流入到这⼀步骤的就是有效请求。然后发送到队列里，队列接受消息，异步下单。下完单，入库没有问题可以用短信通知用户秒杀成功。假如失败的话,可以采用补偿机制，重试</p>
+<h3 id="服务降级"><a href="#服务降级" class="headerlink" title="服务降级"></a>服务降级</h3><p>某个服务器宕机，或者服务不可用，应该做好后备工作，通过Hystrix进行服务熔断和降级</p>
+<h1 id="设计一个分布式环境下全局唯一的发号器"><a href="#设计一个分布式环境下全局唯一的发号器" class="headerlink" title="设计一个分布式环境下全局唯一的发号器"></a>设计一个分布式环境下全局唯一的发号器</h1><h2 id="UUID"><a href="#UUID" class="headerlink" title="UUID"></a>UUID</h2><p>通用唯一标识码，保证每一条记录的id都是不同的</p>
+<p>优点：简单，全球唯一</p>
+<p>缺点：只是一个单纯的id，没有实际意义，长度32位，太长</p>
+<h2 id="数据库自增长序列或字段"><a href="#数据库自增长序列或字段" class="headerlink" title="数据库自增长序列或字段"></a>数据库自增长序列或字段</h2><p>优点：简单，代码方便</p>
+<p>缺点：在单个数据库或读写分离或一主多从的情况下，只有一个主库可以生成。有单点故障风险；如果遇见多个系统需要合并或者涉及数据迁移会相当痛苦；分表分库时候会有麻烦</p>
+<p><strong>优化方案</strong>：多个Master库，则每个Master库设置的起始数字不一样，步长一样，可以是Master的个数：比如：Master1 生成的是 1，4，7，10，Master2生成的是2,5,8,11 Master3生成的是 3,6,9,12</p>
+<h2 id="数据库sequence表以及乐观锁"><a href="#数据库sequence表以及乐观锁" class="headerlink" title="数据库sequence表以及乐观锁"></a>数据库sequence表以及乐观锁</h2><p>单独设置一张表，来存储所有表的下一个主键的值</p>
+<table>
+<thead>
+<tr>
+<th align="center">表名（name）</th>
+<th align="center">下一个主键(id)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">A</td>
+<td align="center">10</td>
+</tr>
+<tr>
+<td align="center">B</td>
+<td align="center">100</td>
+</tr>
+<tr>
+<td align="center">C</td>
+<td align="center">1000</td>
+</tr>
+</tbody></table>
+<p>每当需要获取下一个主键值得时候，首先使用select询句获取主键，然后使用数据库得乐观锁机制去update 这个sequence表，更新成功则说明获取主键成功，更新失败则说明存在并发，当前主键被别的机器抢走了，需要重新select出新的主键，再update。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> id <span class="keyword">from</span> sequence <span class="keyword">where</span> name<span class="operator">=</span>B</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>获得id<span class="operator">=</span><span class="number">100</span>,更新sequence表</span><br><span class="line">update sequence <span class="keyword">set</span> id<span class="operator">=</span>id<span class="operator">+</span><span class="number">1</span> <span class="keyword">where</span> name<span class="operator">=</span>B <span class="keyword">and</span> id<span class="operator">=</span><span class="number">100</span></span><br></pre></td></tr></table></figure>
+
+<p>优点：操作简单，使用乐观锁可以提高性能，可适用于分布式环境，可以进行分库分表</p>
+<p>缺点：需要单独设置一张表，浪费存储空间，数据库更新比较频繁，写压力太大</p>
+<p><strong>优化方案</strong>：可以将每次获取一个主键，改为每次获取500个或者更多，然后缓存到当前机器中，用完返500个后，再去请求数据库，做更新操作，可以减少数据库的读写压力，但是会造成主键不连续</p>
+<h2 id="Redis生成ID"><a href="#Redis生成ID" class="headerlink" title="Redis生成ID"></a>Redis生成ID</h2><p>当使用数据库来生成ID性能不够要求得时候，我们可以尝试使用Redis来生成ID。返主要依赖Redis是单线程程， 所以也可以用生成全局唯一的ID。可以用Redis的原子操作 INCR与INCRBY来实现。</p>
+<p>可以使用Redis集群来获取更高的吞吐量，防止单点故障。</p>
+<p>假如一个集群中有5台Redis。可以初始化每台Redis的值分别是1,2,3,4,5，然后步长都是5。各个Redis生成的ID为：A：1,6,11,16,21 B：2,7,12,17,22 C：3,8,13,18,23 D：4,9,14,19,24 E：5,10,15,20,25</p>
+<p>另外，比较适合使用Redis来生成每天从0开始的流水号。比如订单号=日期+当日自增长号。可以每天在Redis中生 成一个Key，使用INCR进行累加。</p>
+<p>优点：不依赖于数据库，灵活方便，且性能优于数据库。数字ID天然排序，对分页或者需要排序的结果很有帮助。</p>
+<p>缺点：如果系统中没有Redis，还需要引入新的组件，增加系统复杂度</p>
+<h2 id="Twitter的snowflake算法"><a href="#Twitter的snowflake算法" class="headerlink" title="Twitter的snowflake算法"></a>Twitter的snowflake算法</h2><p><strong>id的类型位long</strong></p>
+<p>0+41为时间戳+5位机房id+5位机器id+12位序列号</p>
+<p>优点：</p>
+<ol>
+<li><p>不依赖二数据库，灵活方便，性能优于数据库。</p>
+</li>
+<li><p>ID按照时间在单机上是递增的。</p>
+</li>
+</ol>
+<p>缺点：<br>在单机上是递增的，但是由于涉及分布式环境，每台机器上的时钟不可能完全同步，也许有时候也会出现不是全 是递增的情况。</p>
+<h1 id="设计一个带有过期时间的LRU（最近最少）缓存"><a href="#设计一个带有过期时间的LRU（最近最少）缓存" class="headerlink" title="设计一个带有过期时间的LRU（最近最少）缓存"></a>设计一个带有过期时间的LRU（最近最少）缓存</h1><p><strong>数据结构：LinkedHashMap</strong></p>
+<p>使用LinkedHashMap实现LRU的必要前提是将accessOrder标志位设为true以便开启按访问顺序排序的模式。</p>
+<p>无论是put方法还是get方法，都会导致目标Entry成为最近访问的Entry。</p>
+<p>把最近使用的Entry放入到了双向链表的后面。多次操作后，双向链表前面的Entry便是最近没有使用的，这样当节点个数满的时候，删除最前面的Entry(head后面的那个Entry)即可，因为它就是最近最少使用的Entry</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LRU</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">LinkedHashMap</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>&lt;<span class="title">K</span>, <span class="title">V</span>&gt;</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LRU</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor, <span class="keyword">boolean</span> accessOrder)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(initialCapacity, loadFactor, accessOrder);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@description</span> 重写LinkedHashMap中的removeEldestEntry方法，当LRU中元素多余6个时，</span></span><br><span class="line"><span class="comment">     *              删除最不经常使用的元素</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@author</span> rico       </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@created</span> 2017年5月12日 上午11:32:51      </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> eldest</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span>     </span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span> java.util.LinkedHashMap#removeEldestEntry(java.util.Map.Entry)     </span></span><br><span class="line"><span class="comment">     */</span>  </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">removeEldestEntry</span><span class="params">(java.util.Map.Entry&lt;K, V&gt; eldest)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">        <span class="keyword">if</span>(size() &gt; <span class="number">6</span>)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        LRU&lt;Character, Integer&gt; lru = <span class="keyword">new</span> LRU&lt;Character, Integer&gt;(</span><br><span class="line">                <span class="number">16</span>, <span class="number">0.75f</span>, <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        String s = <span class="string">&quot;abcdefghijkl&quot;</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; s.length(); i++) &#123;</span><br><span class="line">            lru.put(s.charAt(i), i);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;LRU中key为h的Entry的值为： &quot;</span> + lru.get(<span class="string">&#x27;h&#x27;</span>));</span><br><span class="line">        System.out.println(<span class="string">&quot;LRU的大小 ：&quot;</span> + lru.size());</span><br><span class="line">        System.out.println(<span class="string">&quot;LRU ：&quot;</span> + lru);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>过期时间实现:维护一个线程，进行惰性删除</strong></p>
+<h1 id="设计一个分布式环境下的统一配置中心"><a href="#设计一个分布式环境下的统一配置中心" class="headerlink" title="设计一个分布式环境下的统一配置中心"></a>设计一个分布式环境下的统一配置中心</h1><h2 id="配置中心功能"><a href="#配置中心功能" class="headerlink" title="配置中心功能"></a>配置中心功能</h2><ol>
+<li>配置的增初改查</li>
+<li>不同环境配置隔离（开发、测试、预发布、灰度/线上） 高性能、高可用性</li>
+<li>请求量多、高并发</li>
+</ol>
+<h2 id="设计说明点："><a href="#设计说明点：" class="headerlink" title="设计说明点："></a>设计说明点：</h2><ul>
+<li>通过管理系统对每一条配置（每一个配置有唯一的配置ID）进行增删改查。</li>
+<li>区分不同环境得配置，每个环境同一配置ID对应不同数据库记录。</li>
+<li>配置最终以json格式储存在mysql集群中。</li>
+<li>引入redis集群，做配置的缓存 </li>
+<li>配置对外服务，多机器部署，满足性能需要。</li>
+<li>如果有必要，可以引入配置历史修改记录。</li>
+<li>配置服务拉取缓存</li>
+<li>客户端异步刷新配置</li>
+</ul>
+<h2 id="配置中心性能改进"><a href="#配置中心性能改进" class="headerlink" title="配置中心性能改进"></a>配置中心性能改进</h2><p>为了提高配置中心的可用性，减少网络请求等因素对性能带来的影响，在客户端引入localcache，来解决系统的高可用，高性能、可伸缩性。</p>
+<p>配置修改后没通知应用服务清除本地缓存和分布式缓存，引入mq</p>
+<h1 id="设计一致性hash算法"><a href="#设计一致性hash算法" class="headerlink" title="设计一致性hash算法"></a>设计一致性hash算法</h1><p><strong>数据结构：TreeMap</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyRule</span> <span class="keyword">extends</span> <span class="title">AbstractLoadBalancerRule</span> <span class="keyword">implements</span> <span class="title">IRule</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initWithNiwsConfig</span><span class="params">(IClientConfig iClientConfig)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Server <span class="title">choose</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">        HttpServletRequest request = ((ServletRequestAttributes)</span><br><span class="line">                RequestContextHolder.getRequestAttributes())</span><br><span class="line">                .getRequest();</span><br><span class="line">        <span class="comment">//使用URL做摘要，根据业务修改，比如和用户强绑定业务，加上用户ID</span></span><br><span class="line">        String uri = request.getServletPath() + <span class="string">&quot;?&quot;</span> + request.getQueryString();</span><br><span class="line">        <span class="keyword">return</span> route(uri.hashCode(), getLoadBalancer().getAllServers());</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> Server <span class="title">route</span><span class="params">(<span class="keyword">int</span> hashId, List&lt;Server&gt; addressList)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (CollectionUtils.isEmpty(addressList)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        TreeMap&lt;Long, Server&gt; address = <span class="keyword">new</span> TreeMap&lt;&gt;();</span><br><span class="line">        addressList.stream().forEach(e -&gt; &#123;</span><br><span class="line">            <span class="comment">// 虚化若干个服务节点，到环上</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">8</span>; i++) &#123;</span><br><span class="line">                <span class="keyword">long</span> hash = hash(e.getId() + i);</span><br><span class="line">                address.put(hash, e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">long</span> hash = hash(String.valueOf(hashId));</span><br><span class="line">        SortedMap&lt;Long, Server&gt; last = address.tailMap(hash);</span><br><span class="line">        <span class="comment">// 当request URL的hash值大于任意一个服务器对应的hashKey，</span></span><br><span class="line">        <span class="comment">// 取address中的第一个节点</span></span><br><span class="line">        <span class="keyword">if</span> (last.isEmpty()) &#123;</span><br><span class="line">            address.firstEntry().getValue();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> last.get(last.firstKey());</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">hash</span><span class="params">(String key)</span> </span>&#123;</span><br><span class="line">        MessageDigest md5;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            md5 = MessageDigest.getInstance(<span class="string">&quot;MD5&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (NoSuchAlgorithmException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">byte</span>[] keyByte = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            keyByte = key.getBytes(<span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (UnsupportedEncodingException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        md5.update(keyByte);</span><br><span class="line">        <span class="keyword">byte</span>[] digest = md5.digest();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">long</span> hashCode = ((<span class="keyword">long</span>) (digest[<span class="number">2</span>] &amp; <span class="number">0xFF</span> &lt;&lt; <span class="number">16</span>))</span><br><span class="line">                | ((<span class="keyword">long</span>) (digest[<span class="number">1</span>] &amp; <span class="number">0xFF</span> &lt;&lt; <span class="number">8</span>))</span><br><span class="line">                | ((<span class="keyword">long</span>) (digest[<span class="number">0</span>] &amp; <span class="number">0xFF</span>));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> hashCode &amp; <span class="number">0xffffffffL</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+          
+            <a href="/tags/%E5%88%86%E6%AD%A5%E5%BC%8F/" rel="tag"># 分步式</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/04/23/Spring-Spring%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="next" title="Spring-Spring设计模式">
+                <i class="fa fa-chevron-left"></i> Spring-Spring设计模式
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/04/23/Spring-SpringBoot%E5%8F%82%E6%95%B0%E6%A0%A1%E9%AA%8C/" rel="prev" title="Spring-SpringBoot参数校验">
+                Spring-SpringBoot参数校验 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">108</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E6%9E%9C%E8%AE%A9%E4%BD%A0%E5%86%99%E2%BC%80%E4%B8%AA%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%EF%BC%8C%E8%AF%A5%E5%A6%82%E4%BD%95%E8%BF%9B%E2%BE%8F%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">如果让你写⼀个消息队列，该如何进⾏架构设计？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E4%BC%B8%E7%BC%A9%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text">可伸缩性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E8%90%BD%E5%9C%B0%E7%A3%81%E7%9B%98"><span class="nav-number">1.2.</span> <span class="nav-text">数据落地磁盘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E7%94%A8%E6%80%A7"><span class="nav-number">1.3.</span> <span class="nav-text">可用性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE-0-%E4%B8%A2%E5%A4%B1"><span class="nav-number">1.4.</span> <span class="nav-text">数据 0 丢失</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A7%92%E6%9D%80%E6%9E%B6%E6%9E%84%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1"><span class="nav-number">2.</span> <span class="nav-text">秒杀架构模型设计</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%92%E6%9D%80%E5%BA%94%E8%AF%A5%E8%80%83%E8%99%91%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.</span> <span class="nav-text">秒杀应该考虑问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%85%E5%8D%96%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.1.</span> <span class="nav-text">超卖问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E5%B9%B6%E5%8F%91"><span class="nav-number">2.1.2.</span> <span class="nav-text">高并发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E9%98%B2%E5%88%B7"><span class="nav-number">2.1.3.</span> <span class="nav-text">接口防刷</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%92%E6%9D%80url"><span class="nav-number">2.1.4.</span> <span class="nav-text">秒杀url</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E8%AE%BE%E8%AE%A1"><span class="nav-number">2.1.5.</span> <span class="nav-text">数据库设计</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A1%A8%E8%AE%BE%E8%AE%A1"><span class="nav-number">2.1.5.1.</span> <span class="nav-text">表设计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%B2%BE%E7%AE%80sql"><span class="nav-number">2.1.5.2.</span> <span class="nav-text">精简sql</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%A7%E9%87%8F%E8%AF%B7%E6%B1%82%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.6.</span> <span class="nav-text">大量请求问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%92%E6%9D%80%E9%A1%B5%E9%9D%A2%E9%9D%99%E6%80%81%E5%8C%96"><span class="nav-number">2.1.7.</span> <span class="nav-text">秒杀页面静态化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redis%E9%A2%84%E5%87%8F%E5%BA%93%E5%AD%98"><span class="nav-number">2.1.8.</span> <span class="nav-text">redis预减库存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5%E4%B8%8B%E5%8D%95"><span class="nav-number">2.1.9.</span> <span class="nav-text">异步下单</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E9%99%8D%E7%BA%A7"><span class="nav-number">2.1.10.</span> <span class="nav-text">服务降级</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E4%B8%8B%E5%85%A8%E5%B1%80%E5%94%AF%E4%B8%80%E7%9A%84%E5%8F%91%E5%8F%B7%E5%99%A8"><span class="nav-number">3.</span> <span class="nav-text">设计一个分布式环境下全局唯一的发号器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#UUID"><span class="nav-number">3.1.</span> <span class="nav-text">UUID</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E8%87%AA%E5%A2%9E%E9%95%BF%E5%BA%8F%E5%88%97%E6%88%96%E5%AD%97%E6%AE%B5"><span class="nav-number">3.2.</span> <span class="nav-text">数据库自增长序列或字段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93sequence%E8%A1%A8%E4%BB%A5%E5%8F%8A%E4%B9%90%E8%A7%82%E9%94%81"><span class="nav-number">3.3.</span> <span class="nav-text">数据库sequence表以及乐观锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis%E7%94%9F%E6%88%90ID"><span class="nav-number">3.4.</span> <span class="nav-text">Redis生成ID</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Twitter%E7%9A%84snowflake%E7%AE%97%E6%B3%95"><span class="nav-number">3.5.</span> <span class="nav-text">Twitter的snowflake算法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E5%B8%A6%E6%9C%89%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4%E7%9A%84LRU%EF%BC%88%E6%9C%80%E8%BF%91%E6%9C%80%E5%B0%91%EF%BC%89%E7%BC%93%E5%AD%98"><span class="nav-number">4.</span> <span class="nav-text">设计一个带有过期时间的LRU（最近最少）缓存</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E5%88%86%E5%B8%83%E5%BC%8F%E7%8E%AF%E5%A2%83%E4%B8%8B%E7%9A%84%E7%BB%9F%E4%B8%80%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83"><span class="nav-number">5.</span> <span class="nav-text">设计一个分布式环境下的统一配置中心</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E5%8A%9F%E8%83%BD"><span class="nav-number">5.1.</span> <span class="nav-text">配置中心功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E8%AF%B4%E6%98%8E%E7%82%B9%EF%BC%9A"><span class="nav-number">5.2.</span> <span class="nav-text">设计说明点：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E6%80%A7%E8%83%BD%E6%94%B9%E8%BF%9B"><span class="nav-number">5.3.</span> <span class="nav-text">配置中心性能改进</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E4%B8%80%E8%87%B4%E6%80%A7hash%E7%AE%97%E6%B3%95"><span class="nav-number">6.</span> <span class="nav-text">设计一致性hash算法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

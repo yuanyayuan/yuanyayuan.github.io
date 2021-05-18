@@ -261,6 +261,870 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/31/Java-hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/31/Java-hashmap%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" itemprop="url">Java-hashmap源码学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-31T22:36:51+08:00">
+                2021-03-31
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java容器</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="HashMap-简介"><a href="#HashMap-简介" class="headerlink" title="HashMap 简介"></a>HashMap 简介</h1><p>HashMap 主要用来存放键值对，它基于哈希表的Map接口实现，是常用的Java集合之一。 </p>
+<p>JDK1.8 之前  HashMap 由 数组+链表 组成的，数组是 HashMap 的主体，链表则是主要为了解决哈希冲突而存在的（“拉链法”解决冲突）.</p>
+<p>JDK1.8 当链表长度大于阈值（默认为8）时，将链表转化为红黑树（将链表转换成红黑树前会判断，如果当前数组的长度小于64，那么会选择先进行数组扩容，而不是转换为红黑树），以减少搜索时间，具体可以参考 <code>treeifyBin</code>方法。</p>
+<h2 id="底层数据结构分析"><a href="#底层数据结构分析" class="headerlink" title="底层数据结构分析"></a>底层数据结构分析</h2><h3 id="JDK1-8之前"><a href="#JDK1-8之前" class="headerlink" title="JDK1.8之前"></a>JDK1.8之前</h3><p>JDK1.8 之前 HashMap 底层是 <strong>数组和链表</strong> 结合在一起使用也就是 <strong>链表散列</strong>。</p>
+<p><strong>HashMap 通过 key 的 hashCode 经过扰动函数处理过后得到 hash  值，然后通过 <code>(n - 1) &amp; hash</code> 判断当前元素存放的位置（这里的 n 指的是数组的长度）。</strong></p>
+<p><strong>如果当前位置存在元素的话，就判断该元素与要存入的元素的 hash 值以及 key 是否相同，如果相同的话，直接覆盖，不相同就通过拉链法解决冲突。</strong></p>
+<blockquote>
+<p>所谓 <strong>“拉链法”</strong> 就是：将链表和数组相结合。也就是说创建一个链表数组，数组中每一格就是一个链表。若遇到哈希冲突，则将冲突的值加到链表中即可。</p>
+</blockquote>
+<blockquote>
+<p><strong>所谓扰动函数指的就是 HashMap 的 hash 方法。使用 hash 方法也就是扰动函数是为了防止一些实现比较差的 hashCode() 方法 换句话说使用扰动函数之后可以减少碰撞。</strong></p>
+</blockquote>
+<h4 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h4><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/collection/images/jdk1.8%E4%B9%8B%E5%89%8D%E7%9A%84%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84-HashMap.png" alt="jdk1.8之前的内部结构-HashMap"></p>
+<h3 id="JDK1-8之后"><a href="#JDK1-8之后" class="headerlink" title="JDK1.8之后"></a>JDK1.8之后</h3><h4 id="整体架构-1"><a href="#整体架构-1" class="headerlink" title="整体架构"></a>整体架构</h4><p>相比于之前的版本， JDK1.8 之后在解决哈希冲突时有了较大的变化，当链表长度大于阈值（默认为 8）（将链表转换成红黑树前会判断，如果当前数组的长度小于 64，那么会选择先进行数组扩容，而不是转换为红黑树）时，将链表转化为红黑树，以减少搜索时间。</p>
+<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/collection/images/jdk1.8%E4%B9%8B%E5%90%8E%E7%9A%84%E5%86%85%E9%83%A8%E7%BB%93%E6%9E%84-HashMap.png" alt="jdk1.8之后的内部结构-HashMap"></p>
+<blockquote>
+<p>TreeMap、TreeSet 以及 JDK1.8 之后的 HashMap 底层都用到了红黑树。红黑树就是为了解决二叉查找树的缺陷，因为二叉查找树在某些情况下会退化成一个线性结构。</p>
+</blockquote>
+<h3 id="HashMap-的-hash-方法源码"><a href="#HashMap-的-hash-方法源码" class="headerlink" title="HashMap 的 hash 方法源码:"></a>HashMap 的 hash 方法源码:</h3><p>JDK1.7的 HashMap 的 hash 方法源码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(<span class="keyword">int</span> h)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// This function ensures that hashCodes that differ only by</span></span><br><span class="line">    <span class="comment">// constant multiples at each bit position have a bounded</span></span><br><span class="line">    <span class="comment">// number of collisions (approximately 8 at default load factor).</span></span><br><span class="line"></span><br><span class="line">    h ^= (h &gt;&gt;&gt; <span class="number">20</span>) ^ (h &gt;&gt;&gt; <span class="number">12</span>);</span><br><span class="line">    <span class="keyword">return</span> h ^ (h &gt;&gt;&gt; <span class="number">7</span>) ^ (h &gt;&gt;&gt; <span class="number">4</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>JDK 1.8 的 HashMap 的hash 方法源码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> h;</span><br><span class="line">    <span class="comment">// key.hashCode()：返回散列值也就是hashcode</span></span><br><span class="line">    <span class="comment">// ^ ：按位异或</span></span><br><span class="line">    <span class="comment">// &gt;&gt;&gt;:无符号右移，忽略符号位，空位都以0补齐</span></span><br><span class="line">    <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="你知道hash的实现吗-为什么要这样实现"><a href="#你知道hash的实现吗-为什么要这样实现" class="headerlink" title="你知道hash的实现吗?为什么要这样实现?"></a>你知道hash的实现吗?为什么要这样实现?</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> h;</span><br><span class="line">    <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>key.hashCode()；返回散列值也就是hashcode，假设随便生成的一个值。</p>
+<p>n表示数组初始化的长度是16。</p>
+<p>&amp;（按位与运算）：运算规则：相同的二进制数位上，都是1的时候，结果为1，否则为零。</p>
+<p>^（按位异或运算）：运算规则：相同的二进制数位上，数字相同，结果为0，不同为1。</p>
+</blockquote>
+<ol>
+<li>首先计算出<strong>key 的 hashcode</strong>，<ol>
+<li>因为 key 是 Object，所以<strong>会根据 key 的不同类型进行 hashcode 的计算</strong>，</li>
+<li>接着<strong>计算 h ^ (h &gt;&gt;&gt; 16)</strong> ，这么做的好处是使大多数场景下，<strong>算出来的 hash 值比较分散</strong>。</li>
+</ol>
+</li>
+</ol>
+<h4 id="为什么不用-key-数组大小，而是需要用-key-的-hash-值-数组大小"><a href="#为什么不用-key-数组大小，而是需要用-key-的-hash-值-数组大小" class="headerlink" title="为什么不用 key % 数组大小，而是需要用 key 的 hash 值 % 数组大小"></a>为什么不用 key % 数组大小，而是需要用 key 的 hash 值 % 数组大小</h4><p><strong>如果 key 是数字，直接用 key % 数组大小是完全没有问题的</strong>，</p>
+<p><strong>但我们的 key 还有可能是字符串，是复杂对象，% 数组大小是不行的</strong>，所以需要先计算出 key 的 hash 值。</p>
+<h4 id="计算-hash-值时，为什么需要右移-16-位"><a href="#计算-hash-值时，为什么需要右移-16-位" class="headerlink" title="计算 hash 值时，为什么需要右移 16 位"></a>计算 hash 值时，为什么需要右移 16 位</h4><p><strong>hash 算法是 h ^ (h &gt;&gt;&gt; 16)，为了使计算出的 hash 值更分散</strong>，所以选择先将 h 无符号右移 16 位，然后再于 h 异或时，就能达到 h 的高 16 位和低 16 位都能参与计算，减少了碰撞的可能性。</p>
+<h4 id="为什么把取模操作换成了-amp-操作"><a href="#为什么把取模操作换成了-amp-操作" class="headerlink" title="为什么把取模操作换成了 &amp; 操作"></a>为什么把取模操作换成了 &amp; 操作</h4><p><strong>key.hashCode() 算出来的 hash 值还不是数组的索引下标</strong>，为了随机的计算出索引的下表位置，我们还会用<strong>hash 值和数组大小进行取模，这样子计算出来的索引下标比较均匀分布</strong>。</p>
+<p><strong>取模操作处理器计算比较慢，处理器对 &amp; 操作就比较擅长，换成了 &amp; 操作</strong>，是有数学上证明的支撑，为了提高了处理器处理的速度。</p>
+<h4 id="为什么要用异或运算符"><a href="#为什么要用异或运算符" class="headerlink" title="为什么要用异或运算符?"></a>为什么要用异或运算符?</h4><p>保证了对象的<code>hashCode</code>的32位值只要有一位发生改变,整个<code>hash()</code>返回值就会改变。尽可能的减少碰撞。</p>
+<h2 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h2><ul>
+<li>允许 null 值，不同于 HashTable ，是线程不安全的；</li>
+<li>如果有很多数据需要储存到 HashMap 中，建议 HashMap 的容量一开始就设置成足够的大小，这样可以防止在其过程中不断的扩容，影响性能</li>
+<li>在迭代过程中，如果 HashMap 的结构被修改，会快速失败</li>
+</ul>
+<h2 id="HashMap的工作原理"><a href="#HashMap的工作原理" class="headerlink" title="HashMap的工作原理"></a>HashMap的工作原理</h2><h3 id="HashMap-的存储数据的过程是什么样的（put（）过程）"><a href="#HashMap-的存储数据的过程是什么样的（put（）过程）" class="headerlink" title="HashMap 的存储数据的过程是什么样的（put（）过程）"></a>HashMap 的存储数据的过程是什么样的（put（）过程）</h3><p>不同的 JDK 版本版本的存储过程略有差异。在 JDK1.8 中，HashMap 存储数据的过程可以分为以下几步：</p>
+<ul>
+<li><p>1.对 key 的 hashCode () 进行 hash 后计算数组获得下标 index;</p>
+</li>
+<li><p>2.如果当前数组为 null，进行容量的初始化，初始容量为 16；</p>
+</li>
+<li><p>3.如果 hash 计算后没有碰撞，直接放到对应数组下标里；</p>
+</li>
+<li><p>4.如果 hash 计算后发生碰撞且节点已存在，则替换掉原来的对象；</p>
+</li>
+<li><p>5.如果 hash 计算后发生碰撞且节点已经是树结构，则挂载到树上。</p>
+</li>
+<li><p>6.如果 hash 计算后发生碰撞且节点是链表结构，则添加到链表尾，并判断链表是否需要转换成树结构（默认大于 8 的情况会转换成树结构）；</p>
+</li>
+<li><p>7.完成 put 后，是否需要 resize () 操作（数据量超过 threshold，threshold 为初始容量和负载因子之积，默认为 12）。</p>
+<p>而在 1.7 的版本中，5/6 是合在一起的，即如果发生哈希碰撞且节点是链表结构，则放在链表头。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">面试 Tips</span><br><span class="line"></span><br><span class="line">可以在回答时提及 HashMap 中的两类存储数据的方法：put () 和 putAll ()，put ()调用的putVal ()，然后再针对 putVal 展开回答</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="HashMap查找（get（）过程）"><a href="#HashMap查找（get（）过程）" class="headerlink" title="HashMap查找（get（）过程）"></a>HashMap查找（get（）过程）</h3><p>HashMap 的查找主要分为以下三步：</p>
+<ul>
+<li>根据 hash 算法定位数组的索引位置，equals 判断当前节点是否是我们需要寻找的 key，是的话直接返回，不是的话往下。</li>
+<li>判断当前节点有无 next 节点，有的话判断是链表类型，还是红黑树类型。</li>
+<li>分别走链表和红黑树不同类型的查找方法。</li>
+</ul>
+<h3 id="HashMap的table的容量如何确定-loadFactor是什么-该容量如何变化-这种变化会带来什么问题"><a href="#HashMap的table的容量如何确定-loadFactor是什么-该容量如何变化-这种变化会带来什么问题" class="headerlink" title="HashMap的table的容量如何确定?loadFactor是什么?该容量如何变化?这种变化会带来什么问题?"></a>HashMap的table的容量如何确定?loadFactor是什么?该容量如何变化?这种变化会带来什么问题?</h3><ul>
+<li><code>table</code>数组大小是由<code>capacity</code>这个参数确定的,默认是16,也可以构造时传入,最大限制是1&lt;&lt;30;</li>
+<li><code>loadFactor</code>是装载因子,主要目的是用来确认<code>table</code>数组是否需要动态扩展,默认值是0.75,比如<code>table</code>数组大小为16,装载因子为0.75时,<code>threshold</code>就是12,当<code>table</code>的实际大小超过12时,<code>table</code>就需要动态扩容;</li>
+<li>扩容时,调用<code>resize()</code>方法,将<code>table</code>长度变为原来的两倍(注意是table长度,而不是<code>threshold</code>)</li>
+<li>如果数据很大的情况下,扩展时将会带来性能的损失,在性能要求很高的地方,这种损失很可能很致命。</li>
+</ul>
+<h3 id="节点为链表时的新增"><a href="#节点为链表时的新增" class="headerlink" title="节点为链表时的新增"></a>节点为链表时的新增</h3><p>当链表长度大于等于 8 时，此时的链表就会转化成红黑树，转化的方法是：treeifyBin，此方法有一个判断，当链表长度大于等于 8，并且整个数组大小大于 64 时，才会转成红黑树，当数组大小小于 64 时，只会触发扩容，不会转化成红黑树</p>
+<h3 id="为什么是8的时候转化成红黑树"><a href="#为什么是8的时候转化成红黑树" class="headerlink" title="为什么是8的时候转化成红黑树"></a>为什么是8的时候转化成红黑树</h3><p>当链表个数太多了，遍历可能比较耗时，转化成红黑树，可以使遍历的时间复杂度降低，但转化成红黑树，有空间和转化耗时的成本，我们通过泊松分布公式计算，正常情况下，链表个数出现 8 的概念不到千万分之一，所以说正常情况下，链表都不会转化成红黑树，这样设计的目的，是为了防止非正常情况下，比如 hash 算法出了问题时，导致链表个数轻易大于等于 8 时，仍然能够快速遍历。</p>
+<p><strong>延伸问题：红黑树什么时候转变成链表。</strong></p>
+<p>答：当节点的个数小于等于 6 时，红黑树会自动转化成链表，主要还是考虑红黑树的空间成本问题，当节点个数小于等于 6 时，遍历链表也很快，所以红黑树会重新变成链表。</p>
+<h3 id="红黑树新增节点过程"><a href="#红黑树新增节点过程" class="headerlink" title="红黑树新增节点过程"></a>红黑树新增节点过程</h3><ol>
+<li><p>首先判断新增的节点在红黑树上是不是已经存在，判断手段有如下两种：</p>
+<p>1.1. 如果节点没有实现 Comparable 接口，使用 equals 进行判断；</p>
+<p>1.2. 如果节点自己实现了  Comparable 接口，使用 compareTo 进行判断。</p>
+</li>
+<li><p>新增的节点如果已经在红黑树上，直接返回；不在的话，判断新增节点是在当前节点的左边还是右边，左边值小，右边值大；</p>
+</li>
+<li><p>自旋递归 1 和 2 步，直到当前节点的左边或者右边的节点为空时，停止自旋，当前节点即为我们新增节点的父节点；</p>
+</li>
+<li><p>把新增节点放到当前节点的左边或右边为空的地方，并于当前节点建立父子节点关系；</p>
+</li>
+<li><p>进行着色和旋转，结束。</p>
+<p>着色指的是给红黑树的节点着上红色或黑色，旋转是为了让红黑树更加平衡，提高查询的效率</p>
+</li>
+</ol>
+<h3 id="数组扩容的过程"><a href="#数组扩容的过程" class="headerlink" title="数组扩容的过程"></a>数组扩容的过程</h3><p>创建一个新的数组,其容量为旧数组的两倍,并重新计算旧数组中结点的存储位置。结点在新数组中的位置只有两种,原下标位置或原下标+旧数组的大小。</p>
+<h4 id="什么时候扩容"><a href="#什么时候扩容" class="headerlink" title="什么时候扩容"></a>什么时候扩容</h4><ol>
+<li>put 时，发现数组为空，进行初始化扩容，默认扩容大小为 16;</li>
+<li>put 成功后，当HashMap中的数组大小超过threshold **（数组大小(数组长度)*loadFactor(负载因子)）**时，就会进行数组扩容（resize () 操作）</li>
+</ol>
+<h3 id="HashMap扩容后需要rehash"><a href="#HashMap扩容后需要rehash" class="headerlink" title="HashMap扩容后需要rehash"></a>HashMap扩容后需要rehash</h3><p>JDK1.7的时候，是将数组扩容为两倍，然后<strong>将HashMap中所有的key重新进行hash寻址然后再放入到新的位置</strong></p>
+<p>JDK1.8HashMap在扩容时，需要县创建一个新数组，然后将旧数组的数据转移到新数组上来，此时旧数组上的数据就会根据（e.hash&amp;old.hash）是否等于0这个算法分为两类</p>
+<ul>
+<li>等于0，将该节点放到新数组，新索引为旧数组索引，记低位区链表开头-low</li>
+<li>等于1，将该节点放到新数组，新索引为旧数组索引位置加上旧数组长度，记为高位区链表开头high</li>
+</ul>
+<h3 id="拉链法导致的链表过深问题为什么不用二叉查找树代替-而选择红黑树-为什么不一直使用红黑树"><a href="#拉链法导致的链表过深问题为什么不用二叉查找树代替-而选择红黑树-为什么不一直使用红黑树" class="headerlink" title="拉链法导致的链表过深问题为什么不用二叉查找树代替,而选择红黑树?为什么不一直使用红黑树?"></a>拉链法导致的链表过深问题为什么不用二叉查找树代替,而选择红黑树?为什么不一直使用红黑树?</h3><p>红黑树是为了解决二叉查找树的缺陷,二叉查找树在特殊情况下会变成一条线性结构(这就跟原来使用链表结构一样了,造成很深的问题),遍历查找会非常慢。而红黑树在插入新数据后可能需要通过左旋,右旋、变色这些操作来保持平衡,引入红黑树就是为了查找数据快,解决链表查询深度的问题,</p>
+<h4 id="说说你对红黑树的见解"><a href="#说说你对红黑树的见解" class="headerlink" title="说说你对红黑树的见解"></a>说说你对红黑树的见解</h4><ul>
+<li>1、每个节点非红即黑</li>
+<li>2、根节点总是黑色的</li>
+<li>3、如果节点是红色的,则它的子节点必须是黑色的(反之不一定)</li>
+<li>4、每个叶子节点都是黑色的空节点(NIL节点)</li>
+<li>5、从根节点到叶节点或空子节点的每条路径,必须包含相同数目的黑色节点(即相同的黑色高度)</li>
+</ul>
+<h2 id="当两个对象的hashCode相同会发生什么"><a href="#当两个对象的hashCode相同会发生什么" class="headerlink" title="当两个对象的hashCode相同会发生什么?"></a>当两个对象的hashCode相同会发生什么?</h2><p>因为<code>hashCode</code>相同,不一定就是相等的(<code>equals</code>方法比较),所以两个对象所在数组的下标相同,”碰撞”就此发生。又因为<code>HashMap</code>使用链表存储对象,这个<code>Node</code>会存储到链表中。</p>
+<h2 id="HashMap是使用了哪些方法来有效解决哈希冲突的"><a href="#HashMap是使用了哪些方法来有效解决哈希冲突的" class="headerlink" title="HashMap是使用了哪些方法来有效解决哈希冲突的"></a>HashMap是使用了哪些方法来有效解决哈希冲突的</h2><p><strong>1. 使用链地址法（使用散列表）来链接拥有相同hash值的数据；</strong><br><strong>2. 使用2次扰动函数（hash函数）来降低哈希冲突的概率，使得数据分布更平均；</strong><br><strong>3. 引入红黑树进一步降低遍历的时间复杂度，使得遍历更快；</strong></p>
+<h2 id="HashMap-的长度为什么是-2-的幂次方"><a href="#HashMap-的长度为什么是-2-的幂次方" class="headerlink" title="HashMap 的长度为什么是 2 的幂次方"></a>HashMap 的长度为什么是 2 的幂次方</h2><p>为了能让 HashMap 存取高效，尽量较少碰撞，也就是要尽量把数据分配均匀。我们上面也讲到了过了，Hash 值的范围值-2147483648 到  2147483647，前后加起来大概 40 亿的映射空间，只要哈希函数映射得比较均匀松散，一般应用是很难出现碰撞的。但问题是一个 40  亿长度的数组，内存是放不下的。所以这个散列值是不能直接拿来用的。用之前还要先做对数组的长度取模运算，得到的余数才能用来要存放的位置也就是对应的数组下标。这个数组下标的计算方法是“ <code>(n - 1) &amp; hash</code>”。（n 代表数组长度）。这也就解释了 HashMap 的长度为什么是 2 的幂次方。</p>
+<p><strong>这个算法应该如何设计呢？</strong></p>
+<p>我们首先可能会想到采用%取余的操作来实现。但是，重点来了：<strong>“取余(%)操作中如果除数是 2 的幂次则等价于与其除数减一的与(&amp;)操作（也就是说 hash%length==hash&amp;(length-1)的前提是 length 是 2 的 n 次方；）。”</strong> 并且 <strong>采用二进制位操作 &amp;，相对于%能够提高运算效率，这就解释了 HashMap 的长度为什么是 2 的幂次方。</strong></p>
+<h2 id="HashMap-多线程操作导致死循环问题"><a href="#HashMap-多线程操作导致死循环问题" class="headerlink" title="HashMap 多线程操作导致死循环问题"></a>HashMap 多线程操作导致死循环问题</h2><p>主要原因在于并发下的 Rehash 会造成元素之间会形成一个循环链表。</p>
+<h2 id="HashMap线程安全方面会出现什么问题"><a href="#HashMap线程安全方面会出现什么问题" class="headerlink" title="HashMap线程安全方面会出现什么问题"></a>HashMap线程安全方面会出现什么问题</h2><ul>
+<li>在jdk1.7中，在多线程环境下，扩容时会造成环形链或数据丢失。</li>
+<li>在jdk1.8中，在多线程环境下，会发生数据覆盖的情况</li>
+</ul>
+<h2 id="如果-hashCode-相同，如何获取对象呢"><a href="#如果-hashCode-相同，如何获取对象呢" class="headerlink" title="如果 hashCode 相同，如何获取对象呢"></a>如果 hashCode 相同，如何获取对象呢</h2><p>hashCode 相同，说明这些对象的数据都在同一个数组下标对应的链表或者树上。get 方法的签名是 V get (Object key)  ，入参只有一个 key，因此通过遍链表或者树，取出每一个节点对比 hash 值是否相等且 key 是否相等 (= 或者 equals)。</p>
+<h2 id="HashMap-有哪几种常见的遍历方式"><a href="#HashMap-有哪几种常见的遍历方式" class="headerlink" title="HashMap 有哪几种常见的遍历方式?"></a>HashMap 有哪几种常见的遍历方式?</h2><p>HashMap <strong>遍历从大的方向来说，可分为以下 4 类</strong>：</p>
+<ol>
+<li>迭代器（Iterator）方式遍历；</li>
+<li>For Each 方式遍历；</li>
+<li>Lambda 表达式遍历（JDK 1.8+）;</li>
+<li>Streams API 遍历（JDK 1.8+）。</li>
+</ol>
+<p>但每种类型下又有不同的实现方式，因此具体的遍历方式又可以分为以下 7 种：</p>
+<ol>
+<li>使用迭代器（Iterator）EntrySet 的方式进行遍历；</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashMapTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建并赋值 HashMap</span></span><br><span class="line">        Map&lt;Integer, String&gt; map = <span class="keyword">new</span> HashMap();</span><br><span class="line">        map.put(<span class="number">1</span>, <span class="string">&quot;Java&quot;</span>);</span><br><span class="line">        map.put(<span class="number">2</span>, <span class="string">&quot;JDK&quot;</span>);</span><br><span class="line">        map.put(<span class="number">3</span>, <span class="string">&quot;Spring Framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">4</span>, <span class="string">&quot;MyBatis framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">5</span>, <span class="string">&quot;Java中文社群&quot;</span>);</span><br><span class="line">        <span class="comment">// 遍历</span></span><br><span class="line">        Iterator&lt;Map.Entry&lt;Integer, String&gt;&gt; iterator = map.entrySet().iterator();</span><br><span class="line">        <span class="keyword">while</span> (iterator.hasNext()) &#123;</span><br><span class="line">            Map.Entry&lt;Integer, String&gt; entry = iterator.next();</span><br><span class="line">            System.out.print(entry.getKey());</span><br><span class="line">            System.out.print(entry.getValue());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<blockquote>
+<p>1 Java 2 JDK 3 Spring Framework 4 MyBatis framework 5 Java中文社群</p>
+</blockquote>
+<ol start="2">
+<li>使用迭代器（Iterator）KeySet 的方式进行遍历；</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashMapTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建并赋值 HashMap</span></span><br><span class="line">        Map&lt;Integer, String&gt; map = <span class="keyword">new</span> HashMap();</span><br><span class="line">        map.put(<span class="number">1</span>, <span class="string">&quot;Java&quot;</span>);</span><br><span class="line">        map.put(<span class="number">2</span>, <span class="string">&quot;JDK&quot;</span>);</span><br><span class="line">        map.put(<span class="number">3</span>, <span class="string">&quot;Spring Framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">4</span>, <span class="string">&quot;MyBatis framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">5</span>, <span class="string">&quot;Java中文社群&quot;</span>);</span><br><span class="line">        <span class="comment">// 遍历</span></span><br><span class="line">        Iterator&lt;Integer&gt; iterator = map.keySet().iterator();</span><br><span class="line">        <span class="keyword">while</span> (iterator.hasNext()) &#123;</span><br><span class="line">            Integer key = iterator.next();</span><br><span class="line">            System.out.print(key);</span><br><span class="line">            System.out.print(map.get(key));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上程序的执行结果为：</p>
+<blockquote>
+<p>1 Java 2 JDK 3 Spring Framework 4 MyBatis framework 5 Java中文社群</p>
+</blockquote>
+<ol start="3">
+<li>使用 For Each EntrySet 的方式进行遍历；</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashMapTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建并赋值 HashMap</span></span><br><span class="line">        Map&lt;Integer, String&gt; map = <span class="keyword">new</span> HashMap();</span><br><span class="line">        map.put(<span class="number">1</span>, <span class="string">&quot;Java&quot;</span>);</span><br><span class="line">        map.put(<span class="number">2</span>, <span class="string">&quot;JDK&quot;</span>);</span><br><span class="line">        map.put(<span class="number">3</span>, <span class="string">&quot;Spring Framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">4</span>, <span class="string">&quot;MyBatis framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">5</span>, <span class="string">&quot;Java中文社群&quot;</span>);</span><br><span class="line">        <span class="comment">// 遍历</span></span><br><span class="line">        <span class="keyword">for</span> (Map.Entry&lt;Integer, String&gt; entry : map.entrySet()) &#123;</span><br><span class="line">            System.out.print(entry.getKey());</span><br><span class="line">            System.out.print(entry.getValue());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上程序的执行结果为：</p>
+<blockquote>
+<p>1 Java 2 JDK 3 Spring Framework 4 MyBatis framework 5 Java中文社群</p>
+</blockquote>
+<ol start="4">
+<li>使用 For Each KeySet 的方式进行遍历；</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashMapTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建并赋值 HashMap</span></span><br><span class="line">        Map&lt;Integer, String&gt; map = <span class="keyword">new</span> HashMap();</span><br><span class="line">        map.put(<span class="number">1</span>, <span class="string">&quot;Java&quot;</span>);</span><br><span class="line">        map.put(<span class="number">2</span>, <span class="string">&quot;JDK&quot;</span>);</span><br><span class="line">        map.put(<span class="number">3</span>, <span class="string">&quot;Spring Framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">4</span>, <span class="string">&quot;MyBatis framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">5</span>, <span class="string">&quot;Java中文社群&quot;</span>);</span><br><span class="line">        <span class="comment">// 遍历</span></span><br><span class="line">        <span class="keyword">for</span> (Integer key : map.keySet()) &#123;</span><br><span class="line">            System.out.print(key);</span><br><span class="line">            System.out.print(map.get(key));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上程序的执行结果为：</p>
+<blockquote>
+<p>1 Java 2 JDK 3 Spring Framework 4 MyBatis framework 5 Java中文社群</p>
+</blockquote>
+<ol start="5">
+<li>使用 Lambda 表达式的方式进行遍历；</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashMapTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建并赋值 HashMap</span></span><br><span class="line">        Map&lt;Integer, String&gt; map = <span class="keyword">new</span> HashMap();</span><br><span class="line">        map.put(<span class="number">1</span>, <span class="string">&quot;Java&quot;</span>);</span><br><span class="line">        map.put(<span class="number">2</span>, <span class="string">&quot;JDK&quot;</span>);</span><br><span class="line">        map.put(<span class="number">3</span>, <span class="string">&quot;Spring Framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">4</span>, <span class="string">&quot;MyBatis framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">5</span>, <span class="string">&quot;Java中文社群&quot;</span>);</span><br><span class="line">        <span class="comment">// 遍历</span></span><br><span class="line">        map.forEach((key, value) -&gt; &#123;</span><br><span class="line">            System.out.print(key);</span><br><span class="line">            System.out.print(value);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上程序的执行结果为：</p>
+<blockquote>
+<p>1 Java 2 JDK 3 Spring Framework 4 MyBatis framework 5 Java中文社群</p>
+</blockquote>
+<ol start="6">
+<li>使用 Streams API 单线程的方式进行遍历；</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashMapTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建并赋值 HashMap</span></span><br><span class="line">        Map&lt;Integer, String&gt; map = <span class="keyword">new</span> HashMap();</span><br><span class="line">        map.put(<span class="number">1</span>, <span class="string">&quot;Java&quot;</span>);</span><br><span class="line">        map.put(<span class="number">2</span>, <span class="string">&quot;JDK&quot;</span>);</span><br><span class="line">        map.put(<span class="number">3</span>, <span class="string">&quot;Spring Framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">4</span>, <span class="string">&quot;MyBatis framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">5</span>, <span class="string">&quot;Java中文社群&quot;</span>);</span><br><span class="line">        <span class="comment">// 遍历</span></span><br><span class="line">        map.entrySet().stream().forEach((entry) -&gt; &#123;</span><br><span class="line">            System.out.print(entry.getKey());</span><br><span class="line">            System.out.print(entry.getValue());</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上程序的执行结果为：</p>
+<blockquote>
+<p>1 Java 2 JDK 3 Spring Framework 4 MyBatis framework 5 Java中文社群</p>
+</blockquote>
+<ol start="7">
+<li>使用 Streams API 多线程的方式进行遍历。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashMapTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 创建并赋值 HashMap</span></span><br><span class="line">        Map&lt;Integer, String&gt; map = <span class="keyword">new</span> HashMap();</span><br><span class="line">        map.put(<span class="number">1</span>, <span class="string">&quot;Java&quot;</span>);</span><br><span class="line">        map.put(<span class="number">2</span>, <span class="string">&quot;JDK&quot;</span>);</span><br><span class="line">        map.put(<span class="number">3</span>, <span class="string">&quot;Spring Framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">4</span>, <span class="string">&quot;MyBatis framework&quot;</span>);</span><br><span class="line">        map.put(<span class="number">5</span>, <span class="string">&quot;Java中文社群&quot;</span>);</span><br><span class="line">        <span class="comment">// 遍历</span></span><br><span class="line">        map.entrySet().parallelStream().forEach((entry) -&gt; &#123;</span><br><span class="line">            System.out.print(entry.getKey());</span><br><span class="line">            System.out.print(entry.getValue());</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上程序的执行结果为：</p>
+<blockquote>
+<p>4 MyBatis framework 5 Java中文社群 1 Java 2 JDK 3 Spring Framework</p>
+</blockquote>
+<h2 id="HashMap常用方法测试"><a href="#HashMap常用方法测试" class="headerlink" title="HashMap常用方法测试"></a>HashMap常用方法测试</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Collection;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashMapDemo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        HashMap&lt;String, String&gt; map = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</span><br><span class="line">        <span class="comment">// 键不能重复，值可以重复</span></span><br><span class="line">        map.put(<span class="string">&quot;san&quot;</span>, <span class="string">&quot;张三&quot;</span>);</span><br><span class="line">        map.put(<span class="string">&quot;si&quot;</span>, <span class="string">&quot;李四&quot;</span>);</span><br><span class="line">        map.put(<span class="string">&quot;wu&quot;</span>, <span class="string">&quot;王五&quot;</span>);</span><br><span class="line">        map.put(<span class="string">&quot;wang&quot;</span>, <span class="string">&quot;老王&quot;</span>);</span><br><span class="line">        map.put(<span class="string">&quot;wang&quot;</span>, <span class="string">&quot;老王2&quot;</span>);<span class="comment">// 老王被覆盖</span></span><br><span class="line">        map.put(<span class="string">&quot;lao&quot;</span>, <span class="string">&quot;老王&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;-------直接输出hashmap:-------&quot;</span>);</span><br><span class="line">        System.out.println(map);</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 遍历HashMap</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="comment">// 1.获取Map中的所有键</span></span><br><span class="line">        System.out.println(<span class="string">&quot;-------foreach获取Map中所有的键:------&quot;</span>);</span><br><span class="line">        Set&lt;String&gt; keys = map.keySet();</span><br><span class="line">        <span class="keyword">for</span> (String key : keys) &#123;</span><br><span class="line">            System.out.print(key+<span class="string">&quot;  &quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();<span class="comment">//换行</span></span><br><span class="line">        <span class="comment">// 2.获取Map中所有值</span></span><br><span class="line">        System.out.println(<span class="string">&quot;-------foreach获取Map中所有的值:------&quot;</span>);</span><br><span class="line">        Collection&lt;String&gt; values = map.values();</span><br><span class="line">        <span class="keyword">for</span> (String value : values) &#123;</span><br><span class="line">            System.out.print(value+<span class="string">&quot;  &quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();<span class="comment">//换行</span></span><br><span class="line">        <span class="comment">// 3.得到key的值的同时得到key所对应的值</span></span><br><span class="line">        System.out.println(<span class="string">&quot;-------得到key的值的同时得到key所对应的值:-------&quot;</span>);</span><br><span class="line">        Set&lt;String&gt; keys2 = map.keySet();</span><br><span class="line">        <span class="keyword">for</span> (String key : keys2) &#123;</span><br><span class="line">            System.out.print(key + <span class="string">&quot;：&quot;</span> + map.get(key)+<span class="string">&quot;   &quot;</span>);</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * 如果既要遍历key又要value，那么建议这种方式，因为如果先获取keySet然后再执行map.get(key)，map内部会执行两次遍历。</span></span><br><span class="line"><span class="comment">         * 一次是在获取keySet的时候，一次是在遍历所有key的时候。</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="comment">// 当我调用put(key,value)方法的时候，首先会把key和value封装到</span></span><br><span class="line">        <span class="comment">// Entry这个静态内部类对象中，把Entry对象再添加到数组中，所以我们想获取</span></span><br><span class="line">        <span class="comment">// map中的所有键值对，我们只要获取数组中的所有Entry对象，接下来</span></span><br><span class="line">        <span class="comment">// 调用Entry对象中的getKey()和getValue()方法就能获取键值对了</span></span><br><span class="line">        Set&lt;java.util.Map.Entry&lt;String, String&gt;&gt; entrys = map.entrySet();</span><br><span class="line">        <span class="keyword">for</span> (java.util.Map.Entry&lt;String, String&gt; entry : entrys) &#123;</span><br><span class="line">            System.out.println(entry.getKey() + <span class="string">&quot;--&quot;</span> + entry.getValue());</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * HashMap其他常用方法</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        System.out.println(<span class="string">&quot;after map.size()：&quot;</span>+map.size());</span><br><span class="line">        System.out.println(<span class="string">&quot;after map.isEmpty()：&quot;</span>+map.isEmpty());</span><br><span class="line">        System.out.println(map.remove(<span class="string">&quot;san&quot;</span>));</span><br><span class="line">        System.out.println(<span class="string">&quot;after map.remove()：&quot;</span>+map);</span><br><span class="line">        System.out.println(<span class="string">&quot;after map.get(si)：&quot;</span>+map.get(<span class="string">&quot;si&quot;</span>));</span><br><span class="line">        System.out.println(<span class="string">&quot;after map.containsKey(si)：&quot;</span>+map.containsKey(<span class="string">&quot;si&quot;</span>));</span><br><span class="line">        System.out.println(<span class="string">&quot;after containsValue(李四)：&quot;</span>+map.containsValue(<span class="string">&quot;李四&quot;</span>));</span><br><span class="line">        System.out.println(map.replace(<span class="string">&quot;si&quot;</span>, <span class="string">&quot;李四2&quot;</span>));</span><br><span class="line">        System.out.println(<span class="string">&quot;after map.replace(si, 李四2):&quot;</span>+map);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="HashMap源码分析"><a href="#HashMap源码分析" class="headerlink" title="HashMap源码分析"></a>HashMap源码分析</h2><h3 id="构造方法"><a href="#构造方法" class="headerlink" title="构造方法"></a>构造方法</h3><p>HashMap 中有四个构造方法，它们分别如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 默认构造函数。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.loadFactor = DEFAULT_LOAD_FACTOR; <span class="comment">// all   other fields defaulted</span></span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">// 包含另一个“Map”的构造函数</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(Map&lt;? extends K, ? extends V&gt; m)</span> </span>&#123;</span><br><span class="line">     <span class="keyword">this</span>.loadFactor = DEFAULT_LOAD_FACTOR;</span><br><span class="line">     putMapEntries(m, <span class="keyword">false</span>);<span class="comment">//下面会分析到这个方法</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">// 指定“容量大小”的构造函数</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity)</span> </span>&#123;</span><br><span class="line">     <span class="keyword">this</span>(initialCapacity, DEFAULT_LOAD_FACTOR);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"> <span class="comment">// 指定“容量大小”和“加载因子”的构造函数</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">     <span class="keyword">if</span> (initialCapacity &lt; <span class="number">0</span>)</span><br><span class="line">         <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Illegal initial capacity: &quot;</span> + initialCapacity);</span><br><span class="line">     <span class="keyword">if</span> (initialCapacity &gt; MAXIMUM_CAPACITY)</span><br><span class="line">         initialCapacity = MAXIMUM_CAPACITY;</span><br><span class="line">     <span class="keyword">if</span> (loadFactor &lt;= <span class="number">0</span> || Float.isNaN(loadFactor))</span><br><span class="line">         <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Illegal load factor: &quot;</span> + loadFactor);</span><br><span class="line">     <span class="keyword">this</span>.loadFactor = loadFactor;</span><br><span class="line">     <span class="keyword">this</span>.threshold = tableSizeFor(initialCapacity);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>putMapEntries方法：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">putMapEntries</span><span class="params">(Map&lt;? extends K, ? extends V&gt; m, <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> s = m.size();</span><br><span class="line">    <span class="keyword">if</span> (s &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 判断table是否已经初始化</span></span><br><span class="line">        <span class="keyword">if</span> (table == <span class="keyword">null</span>) &#123; <span class="comment">// pre-size</span></span><br><span class="line">            <span class="comment">// 未初始化，s为m的实际元素个数</span></span><br><span class="line">            <span class="keyword">float</span> ft = ((<span class="keyword">float</span>)s / loadFactor) + <span class="number">1.0F</span>;</span><br><span class="line">            <span class="keyword">int</span> t = ((ft &lt; (<span class="keyword">float</span>)MAXIMUM_CAPACITY) ?</span><br><span class="line">                    (<span class="keyword">int</span>)ft : MAXIMUM_CAPACITY);</span><br><span class="line">            <span class="comment">// 计算得到的t大于阈值，则初始化阈值</span></span><br><span class="line">            <span class="keyword">if</span> (t &gt; threshold)</span><br><span class="line">                threshold = tableSizeFor(t);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 已初始化，并且m元素个数大于阈值，进行扩容处理</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (s &gt; threshold)</span><br><span class="line">            resize();</span><br><span class="line">        <span class="comment">// 将m中的所有元素添加至HashMap中</span></span><br><span class="line">        <span class="keyword">for</span> (Map.Entry&lt;? extends K, ? extends V&gt; e : m.entrySet()) &#123;</span><br><span class="line">            K key = e.getKey();</span><br><span class="line">            V value = e.getValue();</span><br><span class="line">            putVal(hash(key), key, value, <span class="keyword">false</span>, evict);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="put方法"><a href="#put方法" class="headerlink" title="put方法"></a>put方法</h3><p>HashMap只提供了put用于添加元素，putVal方法只是给put方法调用的一个方法，并没有提供给用户使用。</p>
+<p><strong>对putVal方法添加元素的分析如下：</strong></p>
+<ul>
+<li><p>空数组有无初始化，没有的话初始化；</p>
+</li>
+<li><p>①如果定位到的数组位置没有元素 就直接插入。</p>
+</li>
+<li><p>②如果定位到的数组位置有元素就和要插入的key比较，如果key相同就直接覆盖，如果key不相同，就判断p是否是一个树节点，如果是就调用<code>e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(this, tab, hash, key, value)</code>将元素添加进入。如果不是就遍历链表插入(插入的是链表尾部)。</p>
+</li>
+</ul>
+<p><img src="https://img1.sycdn.imooc.com/5d5fc7e200016af809121188.jpg" alt="图片描述"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> putVal(hash(key), key, value, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">                   <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">    <span class="comment">// table未初始化或者长度为0，进行扩容</span></span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">        n = (tab = resize()).length;</span><br><span class="line">    <span class="comment">// (n - 1) &amp; hash 确定元素存放在哪个桶中，桶为空，新生成结点放入桶中(此时，这个结点是放在数组中)</span></span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">    <span class="comment">// 桶中已经存在元素</span></span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        Node&lt;K,V&gt; e; K k;</span><br><span class="line">        <span class="comment">// 比较桶中第一个元素(数组中的结点)的hash值相等，key相等</span></span><br><span class="line">        <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">            ((k = p.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                <span class="comment">// 将第一个元素赋值给e，用e来记录</span></span><br><span class="line">                e = p;</span><br><span class="line">        <span class="comment">// hash值不相等，即key不相等；为红黑树结点</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">            <span class="comment">// 放入树中</span></span><br><span class="line">            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="keyword">this</span>, tab, hash, key, value);</span><br><span class="line">        <span class="comment">// 为链表结点</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 在链表最末插入结点</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> binCount = <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">                <span class="comment">// 到达链表的尾部</span></span><br><span class="line">                <span class="keyword">if</span> ((e = p.next) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="comment">// 在尾部插入新结点</span></span><br><span class="line">                    p.next = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">                    <span class="comment">// 结点数量达到阈值，转化为红黑树</span></span><br><span class="line">                    <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">                        treeifyBin(tab, hash);</span><br><span class="line">                    <span class="comment">// 跳出循环</span></span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 判断链表中结点的key值与插入的元素的key值是否相等</span></span><br><span class="line">                <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                    ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                    <span class="comment">// 相等，跳出循环</span></span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="comment">// 用于遍历桶中的链表，与前面的e = p.next组合，可以遍历链表</span></span><br><span class="line">                p = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 表示在桶中找到key值、hash值与插入元素相等的结点</span></span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123; </span><br><span class="line">            <span class="comment">// 记录e的value</span></span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            <span class="comment">// onlyIfAbsent为false或者旧值为null</span></span><br><span class="line">            <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="keyword">null</span>)</span><br><span class="line">                <span class="comment">//用新值替换旧值</span></span><br><span class="line">                e.value = value;</span><br><span class="line">            <span class="comment">// 访问后回调</span></span><br><span class="line">            afterNodeAccess(e);</span><br><span class="line">            <span class="comment">// 返回旧值</span></span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 结构性修改</span></span><br><span class="line">    ++modCount;</span><br><span class="line">    <span class="comment">// 实际大小大于阈值则扩容</span></span><br><span class="line">    <span class="keyword">if</span> (++size &gt; threshold)</span><br><span class="line">        resize();</span><br><span class="line">    <span class="comment">// 插入后回调</span></span><br><span class="line">    afterNodeInsertion(evict);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+
+<p><strong>我们再来对比一下 JDK1.7 put方法的代码</strong></p>
+<p><strong>对于put方法的分析如下：</strong></p>
+<ul>
+<li>①如果定位到的数组位置没有元素 就直接插入。</li>
+<li>②如果定位到的数组位置有元素，遍历以这个元素为头结点的链表，依次和插入的key比较，如果key相同就直接覆盖，不同就采用头插法插入元素。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span></span></span><br><span class="line"><span class="function">    <span class="title">if</span> <span class="params">(table == EMPTY_TABLE)</span> </span>&#123; </span><br><span class="line">    inflateTable(threshold); </span><br><span class="line">&#125;  </span><br><span class="line">    <span class="keyword">if</span> (key == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">return</span> putForNullKey(value);</span><br><span class="line">    <span class="keyword">int</span> hash = hash(key);</span><br><span class="line">    <span class="keyword">int</span> i = indexFor(hash, table.length);</span><br><span class="line">    <span class="keyword">for</span> (Entry&lt;K,V&gt; e = table[i]; e != <span class="keyword">null</span>; e = e.next) &#123; <span class="comment">// 先遍历</span></span><br><span class="line">        Object k;</span><br><span class="line">        <span class="keyword">if</span> (e.hash == hash &amp;&amp; ((k = e.key) == key || key.equals(k))) &#123;</span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            e.value = value;</span><br><span class="line">            e.recordAccess(<span class="keyword">this</span>);</span><br><span class="line">            <span class="keyword">return</span> oldValue; </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    modCount++;</span><br><span class="line">    addEntry(hash, key, value, i);  <span class="comment">// 再插入</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="get方法"><a href="#get方法" class="headerlink" title="get方法"></a>get方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt; e;</span><br><span class="line">    <span class="keyword">return</span> (e = getNode(hash(key), key)) == <span class="keyword">null</span> ? <span class="keyword">null</span> : e.value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> Node&lt;K,V&gt; <span class="title">getNode</span><span class="params">(<span class="keyword">int</span> hash, Object key)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; <span class="keyword">int</span> n; K k;</span><br><span class="line">    <span class="keyword">if</span> ((tab = table) != <span class="keyword">null</span> &amp;&amp; (n = tab.length) &gt; <span class="number">0</span> &amp;&amp;</span><br><span class="line">        (first = tab[(n - <span class="number">1</span>) &amp; hash]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 数组元素相等</span></span><br><span class="line">        <span class="keyword">if</span> (first.hash == hash &amp;&amp; <span class="comment">// always check first node</span></span><br><span class="line">            ((k = first.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">            <span class="keyword">return</span> first;</span><br><span class="line">        <span class="comment">// 桶中不止一个节点</span></span><br><span class="line">        <span class="keyword">if</span> ((e = first.next) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 在树中get</span></span><br><span class="line">            <span class="keyword">if</span> (first <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">                <span class="keyword">return</span> ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);</span><br><span class="line">            <span class="comment">// 在链表中get</span></span><br><span class="line">            <span class="keyword">do</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                    ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                    <span class="keyword">return</span> e;</span><br><span class="line">            &#125; <span class="keyword">while</span> ((e = e.next) != <span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="resize方法"><a href="#resize方法" class="headerlink" title="resize方法"></a>resize方法</h3><p>进行扩容，会伴随着一次重新hash分配，并且会遍历hash表中所有的元素，是非常耗时的。在编写程序中，要尽量避免resize。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">    Node&lt;K,V&gt;[] oldTab = table;</span><br><span class="line">    <span class="keyword">int</span> oldCap = (oldTab == <span class="keyword">null</span>) ? <span class="number">0</span> : oldTab.length;</span><br><span class="line">    <span class="keyword">int</span> oldThr = threshold;</span><br><span class="line">    <span class="keyword">int</span> newCap, newThr = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (oldCap &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 超过最大值就不再扩充了，就只好随你碰撞去吧</span></span><br><span class="line">        <span class="keyword">if</span> (oldCap &gt;= MAXIMUM_CAPACITY) &#123;</span><br><span class="line">            threshold = Integer.MAX_VALUE;</span><br><span class="line">            <span class="keyword">return</span> oldTab;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 没超过最大值，就扩充为原来的2倍</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((newCap = oldCap &lt;&lt; <span class="number">1</span>) &lt; MAXIMUM_CAPACITY &amp;&amp; oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">            newThr = oldThr &lt;&lt; <span class="number">1</span>; <span class="comment">// double threshold</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (oldThr &gt; <span class="number">0</span>) <span class="comment">// initial capacity was placed in threshold</span></span><br><span class="line">        newCap = oldThr;</span><br><span class="line">    <span class="keyword">else</span> &#123; </span><br><span class="line">        <span class="comment">// signifies using defaults</span></span><br><span class="line">        newCap = DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">        newThr = (<span class="keyword">int</span>)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 计算新的resize上限</span></span><br><span class="line">    <span class="keyword">if</span> (newThr == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">float</span> ft = (<span class="keyword">float</span>)newCap * loadFactor;</span><br><span class="line">        newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (<span class="keyword">float</span>)MAXIMUM_CAPACITY ? (<span class="keyword">int</span>)ft : Integer.MAX_VALUE);</span><br><span class="line">    &#125;</span><br><span class="line">    threshold = newThr;</span><br><span class="line">    <span class="meta">@SuppressWarnings(&#123;&quot;rawtypes&quot;,&quot;unchecked&quot;&#125;)</span></span><br><span class="line">        Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node[newCap];</span><br><span class="line">    table = newTab;</span><br><span class="line">    <span class="keyword">if</span> (oldTab != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 把每个bucket都移动到新的buckets中</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; oldCap; ++j) &#123;</span><br><span class="line">            Node&lt;K,V&gt; e;</span><br><span class="line">            <span class="keyword">if</span> ((e = oldTab[j]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                oldTab[j] = <span class="keyword">null</span>;</span><br><span class="line">                <span class="keyword">if</span> (e.next == <span class="keyword">null</span>)</span><br><span class="line">                    newTab[e.hash &amp; (newCap - <span class="number">1</span>)] = e;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (e <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">                    ((TreeNode&lt;K,V&gt;)e).split(<span class="keyword">this</span>, newTab, j, oldCap);</span><br><span class="line">                <span class="keyword">else</span> &#123; </span><br><span class="line">                    Node&lt;K,V&gt; loHead = <span class="keyword">null</span>, loTail = <span class="keyword">null</span>;</span><br><span class="line">                    Node&lt;K,V&gt; hiHead = <span class="keyword">null</span>, hiTail = <span class="keyword">null</span>;</span><br><span class="line">                    Node&lt;K,V&gt; next;</span><br><span class="line">                    <span class="keyword">do</span> &#123;</span><br><span class="line">                        next = e.next;</span><br><span class="line">                        <span class="comment">// 原索引</span></span><br><span class="line">                        <span class="keyword">if</span> ((e.hash &amp; oldCap) == <span class="number">0</span>) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (loTail == <span class="keyword">null</span>)</span><br><span class="line">                                loHead = e;</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                loTail.next = e;</span><br><span class="line">                            loTail = e;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="comment">// 原索引+oldCap</span></span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                            <span class="keyword">if</span> (hiTail == <span class="keyword">null</span>)</span><br><span class="line">                                hiHead = e;</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                hiTail.next = e;</span><br><span class="line">                            hiTail = e;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; <span class="keyword">while</span> ((e = next) != <span class="keyword">null</span>);</span><br><span class="line">                    <span class="comment">// 原索引放到bucket里</span></span><br><span class="line">                    <span class="keyword">if</span> (loTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        loTail.next = <span class="keyword">null</span>;</span><br><span class="line">                        newTab[j] = loHead;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="comment">// 原索引+oldCap放到bucket里</span></span><br><span class="line">                    <span class="keyword">if</span> (hiTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        hiTail.next = <span class="keyword">null</span>;</span><br><span class="line">                        newTab[j + oldCap] = hiHead;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> newTab;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="putTreeVal方法"><a href="#putTreeVal方法" class="headerlink" title="putTreeVal方法"></a>putTreeVal方法</h3><p>红黑树新增节点过程</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//入参 h：key 的hash值</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> TreeNode&lt;K,V&gt; <span class="title">putTreeVal</span><span class="params">(HashMap&lt;K,V&gt; map, Node&lt;K,V&gt;[] tab,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="keyword">int</span> h, K k, V v)</span> </span>&#123;</span><br><span class="line">    Class&lt;?&gt; kc = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">boolean</span> searched = <span class="keyword">false</span>;</span><br><span class="line">    <span class="comment">//找到根节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; root = (parent != <span class="keyword">null</span>) ? root() : <span class="keyword">this</span>;</span><br><span class="line">    <span class="comment">//自旋</span></span><br><span class="line">    <span class="keyword">for</span> (TreeNode&lt;K,V&gt; p = root;;) &#123;</span><br><span class="line">        <span class="keyword">int</span> dir, ph; K pk;</span><br><span class="line">        <span class="comment">// p hash 值大于 h，说明 p 在 h 的右边</span></span><br><span class="line">        <span class="keyword">if</span> ((ph = p.hash) &gt; h)</span><br><span class="line">            dir = -<span class="number">1</span>;</span><br><span class="line">        <span class="comment">// p hash 值小于 h，说明 p 在 h 的左边</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (ph &lt; h)</span><br><span class="line">            dir = <span class="number">1</span>;</span><br><span class="line">        <span class="comment">//要放进去key在当前树中已经存在了(equals来判断)</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((pk = p.key) == k || (k != <span class="keyword">null</span> &amp;&amp; k.equals(pk)))</span><br><span class="line">            <span class="keyword">return</span> p;</span><br><span class="line">        <span class="comment">//自己实现的Comparable的话，不能用hashcode比较了，需要用compareTo</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((kc == <span class="keyword">null</span> &amp;&amp;</span><br><span class="line">                  <span class="comment">//得到key的Class类型，如果key没有实现Comparable就是null</span></span><br><span class="line">                  (kc = comparableClassFor(k)) == <span class="keyword">null</span>) ||</span><br><span class="line">                  <span class="comment">//当前节点pk和入参k不等</span></span><br><span class="line">                 (dir = compareComparables(kc, k, pk)) == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!searched) &#123;</span><br><span class="line">                TreeNode&lt;K,V&gt; q, ch;</span><br><span class="line">                searched = <span class="keyword">true</span>;</span><br><span class="line">                <span class="keyword">if</span> (((ch = p.left) != <span class="keyword">null</span> &amp;&amp;</span><br><span class="line">                     (q = ch.find(h, k, kc)) != <span class="keyword">null</span>) ||</span><br><span class="line">                    ((ch = p.right) != <span class="keyword">null</span> &amp;&amp;</span><br><span class="line">                     (q = ch.find(h, k, kc)) != <span class="keyword">null</span>))</span><br><span class="line">                    <span class="keyword">return</span> q;</span><br><span class="line">            &#125;</span><br><span class="line">            dir = tieBreakOrder(k, pk);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        TreeNode&lt;K,V&gt; xp = p;</span><br><span class="line">        <span class="comment">//找到和当前hashcode值相近的节点(当前节点的左右子节点其中一个为空即可)</span></span><br><span class="line">        <span class="keyword">if</span> ((p = (dir &lt;= <span class="number">0</span>) ? p.left : p.right) == <span class="keyword">null</span>) &#123;</span><br><span class="line">            Node&lt;K,V&gt; xpn = xp.next;</span><br><span class="line">            <span class="comment">//生成新的节点</span></span><br><span class="line">            TreeNode&lt;K,V&gt; x = map.newTreeNode(h, k, v, xpn);</span><br><span class="line">            <span class="comment">//把新节点放在当前子节点为空的位置上</span></span><br><span class="line">            <span class="keyword">if</span> (dir &lt;= <span class="number">0</span>)</span><br><span class="line">                xp.left = x;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                xp.right = x;</span><br><span class="line">            <span class="comment">//当前节点和新节点建立父子，前后关系</span></span><br><span class="line">            xp.next = x;</span><br><span class="line">            x.parent = x.prev = xp;</span><br><span class="line">            <span class="keyword">if</span> (xpn != <span class="keyword">null</span>)</span><br><span class="line">                ((TreeNode&lt;K,V&gt;)xpn).prev = x;</span><br><span class="line">            <span class="comment">//balanceInsertion 对红黑树进行着色或旋转，以达到更多的查找效率，着色或旋转的几种场景如下</span></span><br><span class="line">            <span class="comment">//着色：新节点总是为红色；如果新节点的父亲是黑色，则不需要重新着色；如果父亲是红色，那么必须通过重新着色或者旋转的方法，再次达到红黑树的5个约束条件</span></span><br><span class="line">            <span class="comment">//旋转： 父亲是红色，叔叔是黑色时，进行旋转</span></span><br><span class="line">            <span class="comment">//如果当前节点是父亲的右节点，则进行左旋</span></span><br><span class="line">            <span class="comment">//如果当前节点是父亲的左节点，则进行右旋</span></span><br><span class="line">          </span><br><span class="line">            <span class="comment">//moveRootToFront 方法是把算出来的root放到根节点上</span></span><br><span class="line">            moveRootToFront(tab, balanceInsertion(root, x));</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/30/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E6%8C%81%E4%B9%85%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/30/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E6%8C%81%E4%B9%85%E5%8C%96/" itemprop="url">中间件-redis持久化</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-30T23:39:29+08:00">
+                2021-03-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E6%8C%81%E4%B9%85%E5%8C%96/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis持久化</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="Redis持久化"><a href="#Redis持久化" class="headerlink" title="Redis持久化"></a>Redis持久化</h1><h2 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">* 如果1个缓存更新，则3600 seconds (an hour)后备份</span><br><span class="line">* 如果100个缓存更新，则300 seconds (5 minutes)后备份</span><br><span class="line">* 如果10000个缓存更新，则60 seconds后备份</span><br><span class="line">save 3600 1</span><br><span class="line">save 300 100</span><br><span class="line">save 60 10000</span><br><span class="line"></span><br><span class="line">stop-writes-on-bgsave-error yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> yes:如果save过程出错，则停止写操作</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> no: 可能造成数据不一致</span></span><br><span class="line"></span><br><span class="line">rdbcompression yes</span><br><span class="line"><span class="meta">#</span><span class="bash"> yes:开启rdb压缩模式，会造成cpu耗损</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> no：关闭，但是文件会大</span></span><br><span class="line"></span><br><span class="line">rdbchecksum yes</span><br><span class="line"><span class="meta">#</span><span class="bash">yes：使用CRC64算法校验对rdb进行数据校验</span></span><br><span class="line"><span class="meta">#</span><span class="bash">no：不校验</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> AOF 默认关闭，yes可以开启</span></span><br><span class="line">appendonly no</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> AOF 的文件名</span></span><br><span class="line">appendfilename &quot;appendonly.aof&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> no：不同步</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> everysec：每秒备份，推荐使用</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> always：每次操作都会备份，安全并且数据完整，但是慢性能差</span></span><br><span class="line">appendfsync everysec</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重写的时候是否要同步，no可以保证数据安全</span></span><br><span class="line">no-appendfsync-on-rewrite no</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 重写机制：避免文件越来越大，自动优化压缩指令，会fork一个新的进程去完成重写动作，新进程里的内存数据会被重写，此时旧的aof文件不会被读取使用，类似rdb</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 当前AOF文件的大小是上次AOF大小的100% 并且文件体积达到64m，满足两者则触发重写</span></span><br><span class="line">auto-aof-rewrite-percentage 100</span><br><span class="line">auto-aof-rewrite-min-size 64mb</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="Redis-的持久化机制是什么？各自的优缺点？"><a href="#Redis-的持久化机制是什么？各自的优缺点？" class="headerlink" title="Redis 的持久化机制是什么？各自的优缺点？"></a>Redis 的持久化机制是什么？各自的优缺点？</h1><p>redis 提供两种持久化方式。</p>
+<p><strong>RDB（Redis DataBase）</strong>，用数据集快照的方式，定时将 redis 存储的数据生成快照并存储到磁盘等介质上即在指定目录下生成一个 dump.rdb 文件；</p>
+<p>Redis 提供了 SAVE 和BGSAVE两个命令来生成RDB文件，区别是前者是阻塞的，后者是后台 fork 子进程进行，不会阻塞主进程处理命令请求</p>
+<p>持久化key之前，会检查是否过期，过期的key不进入RDB文件。数据载入数据库之前，会对key先进行过期检查，如果过期，不导入数据库（主库情况）。</p>
+<p>RDB适合大量数据的恢复，但是数据的完整性和一致性可能会不足。</p>
+<p> <strong>AOF（Append -only file）</strong>，Redis默认不开启，它采用日志的形式来记录每个写操作，生成一个appendonly.aof 文件，并将日志追加到文件末尾。Redis重启的会根据日志文件的内容将写指令从前到后执行一次以完成数据的恢复工作</p>
+<p>重写时，会先判断key是否过期，已过期的key不会重写到aof文件。</p>
+<p>如果同时存在<code>RDB</code>和<code>AOF</code>的话会优先使用<code>AOF</code> 重建数据集，因为其保存的数据更完整。</p>
+<h2 id="RDB-的优点："><a href="#RDB-的优点：" class="headerlink" title="RDB 的优点："></a>RDB 的优点：</h2><ol>
+<li><p>每个一段时间备份，全量备份；</p>
+</li>
+<li><p>容灾简单，可以远程传输</p>
+</li>
+<li><p>性能最大化，fork 子进程来完成写操作，让主进程继续处理命令且不会进行任何 IO 操作的，这样就确保了 redis 极高的性能；</p>
+</li>
+<li><p>相对于数据集大时，比 AOF 的启动效率更高。</p>
+</li>
+</ol>
+<h2 id="RDB-的缺点："><a href="#RDB-的缺点：" class="headerlink" title="RDB 的缺点："></a>RDB 的缺点：</h2><p>数据安全性低。RDB 是间隔一段时间进行持久化，如果持久化之间 redis 发 生故障，会发生数据丢失。所以这种方式更适合数据要求不严谨的时候；</p>
+<p>备份时占用内存，因为Redis在备份时会独立创建一个子进程，将数据写入到一个临时文件（此时内存中的数据是原来的两倍），最后再将临时文件替换之前的备份文件</p>
+<h2 id="RDB对过期key的处理"><a href="#RDB对过期key的处理" class="headerlink" title="RDB对过期key的处理"></a>RDB对过期key的处理</h2><p>过期key对RDB没有任何影响</p>
+<ul>
+<li>从内存数据库持久化数据到RDB文件<ul>
+<li>持久化key之前，会检查是否过期，过期的key不进入RDB文件</li>
+</ul>
+</li>
+<li>从RDB文件恢复数据到内存数据库<ul>
+<li>数据载入数据库之前，会对key先进行过期检查，如果过期，不导入数据库（主库情况）</li>
+</ul>
+</li>
+</ul>
+<h2 id="AOF-的优点："><a href="#AOF-的优点：" class="headerlink" title="AOF 的优点："></a>AOF 的优点：</h2><p>A. 数据安全，aof 持久化可以配置 append fsync 属性，比如无 fsync，每秒钟一次 fsync，或者每次执行写入命令时 fsync，一般只会丢失一秒钟的数据，或者最后一次执行的数据，对缓存来说，这已经足够。<br>B. 某些场景下还可以恢复数据。比如说某同学在操作 redis 时，不小心执行了 FLUSHALL，导致 redis 内存中的数据全部被清空了。如果 AOF 文件还没有被重写（rewrite），我们就可以用最快的速度暂停 redis 并编辑 AOF 文件，将最后一行的 FLUSHALL 命令删除，然后重启 redis，就可以恢复 redis 的所有数据到 FLUSHALL 之前的状态了。</p>
+<h2 id="AOF-的缺点："><a href="#AOF-的缺点：" class="headerlink" title="AOF 的缺点："></a>AOF 的缺点：</h2><ol>
+<li>相同的数据，同一份数据，AOF比RDB大</li>
+<li>针对不同的同步机制，AOF会比RDB慢，因为AOF每秒都会备份做写操作，这样相对与RDB来说就略低。 每秒备份fsync没毛病，但是如果客户端的每次写入就做一次备份fsync的话，那么redis的性能就会下降。</li>
+<li>AOF发生过bug，就是数据恢复的时候数据不完整，这样显得AOF会比较脆弱，容易出现bug，因为AOF没有RDB那么简单，但是为了防止bug的产生，AOF就不会根据旧的指令去重构，而是根据当时缓存中存在的数据指令去做重构，这样就更加健壮和可靠了。</li>
+</ol>
+<h2 id="AOF对过期key的处理"><a href="#AOF对过期key的处理" class="headerlink" title="AOF对过期key的处理"></a>AOF对过期key的处理</h2><p>过期key对AOF没有任何影响</p>
+<ul>
+<li>从内存数据库持久化数据到AOF文件：<ul>
+<li>当key过期后，还没有被删除，此时进行执行持久化操作（该key是不会进入aof文件的，因为没有发生修改命令）</li>
+<li>当key过期后，在发生删除操作时，程序会向aof文件追加一条del命令（在将来的以aof文件恢复数据的时候该过期的键就会被删掉）</li>
+</ul>
+</li>
+<li>AOF重写<ul>
+<li>重写时，会先判断key是否过期，已过期的key不会重写到aof文件</li>
+</ul>
+</li>
+</ul>
+<h2 id="RDB-和-AOF-对比："><a href="#RDB-和-AOF-对比：" class="headerlink" title="RDB 和 AOF 对比："></a>RDB 和 AOF 对比：</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>RDB</th>
+<th>AOF</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>启动优先级</td>
+<td>低</td>
+<td>高</td>
+</tr>
+<tr>
+<td>体积</td>
+<td>小</td>
+<td>大</td>
+</tr>
+<tr>
+<td>恢复速度</td>
+<td>快</td>
+<td>慢</td>
+</tr>
+<tr>
+<td>数据安全性</td>
+<td>丢数据</td>
+<td>根据策略决定</td>
+</tr>
+<tr>
+<td>轻重</td>
+<td>重</td>
+<td>轻</td>
+</tr>
+</tbody></table>
+<h2 id="AOF-文件太大会怎么样？"><a href="#AOF-文件太大会怎么样？" class="headerlink" title="AOF 文件太大会怎么样？"></a>AOF 文件太大会怎么样？</h2><p>AOF 文件过大时，后台会自动地对 AOF 进行重写（rewrite)，重写时会压缩 AOF 文件的内容，只保留可以恢复数据的最小指令集。比如说，假如我们调用了 100 次 INCR 指令，在 AOF 文件中就要存储 100 条指令，但这明显是很低效的，完全可以把这 100 条指令合并成一条 SET 指令。</p>
+<p>在进行 AOF 重写时，仍然是采用先写临时文件，全部完成后再替换的流程，所以断电、磁盘满等问题都不会影响 AOF 文件的可用性。</p>
+<h2 id="采用RDB还是AOF"><a href="#采用RDB还是AOF" class="headerlink" title="采用RDB还是AOF"></a>采用RDB还是AOF</h2><ol>
+<li>如果你能接受一段时间的缓存丢失，那么可以使用RDB</li>
+<li>如果你对实时性的数据比较care，那么就用AOF</li>
+<li>使用RDB和AOF结合一起做持久化，RDB做冷备，可以在不同时期对不同版本做恢复，AOF做热备，保证数据仅仅只有1秒的损失。当AOF破损不可用了，那么再用RDB恢复，这样就做到了两者的相互结合，也就是说Redis恢复会先加载AOF，如果AOF有问题会再加载RDB，这样就达到冷热备份的目的了。</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/30/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E9%9B%86%E7%BE%A4%E7%9F%A5%E8%AF%86%E7%82%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/03/30/%E4%B8%AD%E9%97%B4%E4%BB%B6-redis%E9%9B%86%E7%BE%A4%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url">中间件-redis集群知识点</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-30T23:19:01+08:00">
+                2021-03-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/redis-redis%E9%9B%86%E7%BE%A4%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
+                    <span itemprop="name">redis - redis集群知识点</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="主从（复制-集群-同步）"><a href="#主从（复制-集群-同步）" class="headerlink" title="主从（复制|集群|同步）"></a>主从（复制|集群|同步）</h1><p>Redis的主从结构可以采用一主多从或者级联结构，Redis主从复制可以根据是否是全量分为全量同步和增量同步</p>
+<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/redis%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6.png"></p>
+<h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><p>备份数据，这样当一个节点损坏（指不可恢复的硬件损坏）时，数据因为有备份，可以方便恢复。</p>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><p>master节点挂了以后，redis就不能对外提供写服务了，因为剩下的slave不能成为master。</p>
+<h2 id="适用场景"><a href="#适用场景" class="headerlink" title="适用场景"></a>适用场景</h2><p>读请求较多场景</p>
+<h2 id="Redis主从同步策略"><a href="#Redis主从同步策略" class="headerlink" title="Redis主从同步策略"></a>Redis主从同步策略</h2><p>主从刚刚连接的时候，进行全量同步；</p>
+<p>全同步结束后，进行增量同步。</p>
+<p>当然，如果有需要，slave 在任何时候都可以发起全量同步。</p>
+<p>redis 策略是，无论如何，首先会尝试进行增量同步，如不成功，要求从机进行全量同步。</p>
+<h2 id="Redis-的同步机制"><a href="#Redis-的同步机制" class="headerlink" title="Redis 的同步机制"></a>Redis 的同步机制</h2><h3 id="全量同步"><a href="#全量同步" class="headerlink" title="全量同步"></a>全量同步</h3><p>Redis全量复制一般发生在Slave初始化阶段，这时Slave需要将Master上的所有数据都复制一份。具体步骤如下：</p>
+<ul>
+<li> 从服务器连接主服务器，发送SYNC命令；</li>
+<li> 主服务器接收到SYNC命名后，开始执行BGSAVE命令生成RDB文件并使用缓冲区记录此后执行的所有写命令；</li>
+<li> 主服务器BGSAVE执行完后，向所有从服务器发送快照文件，并在发送期间继续记录被执行的写命令；</li>
+<li> 从服务器收到快照文件后丢弃所有旧数据，载入收到的快照；</li>
+<li> 主服务器快照发送完毕后开始向从服务器发送缓冲区中的写命令；</li>
+<li> 从服务器完成对快照的载入，开始接收命令请求，并执行来自主服务器缓冲区的写命令；</li>
+</ul>
+<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/%E5%85%A8%E9%87%8F%E5%90%8C%E6%AD%A5.png" alt="image"></p>
+<p>完成上面几个步骤后就完成了从服务器数据初始化的所有操作，从服务器此时可以接收来自用户的读请求。</p>
+<h3 id="增量同步"><a href="#增量同步" class="headerlink" title="增量同步"></a>增量同步</h3><p>Redis增量复制是指Slave初始化后开始正常工作时主服务器发生的写操作同步到从服务器的过程。<br>增量复制的过程主要是主服务器每执行一个写命令就会向从服务器发送相同的写命令，从服务器接收并执行收到的写命令。</p>
+<h2 id="全量同步时需要注意："><a href="#全量同步时需要注意：" class="headerlink" title="全量同步时需要注意："></a>全量同步时需要注意：</h2><p>如果多个Slave断线了，需重启时，因为只要Slave启动，就会发送sync请求和主机全量同步，当多个同时出现的时候，可能会导致Master IO剧增宕机。</p>
+<h2 id="Redis主从复制重要内容"><a href="#Redis主从复制重要内容" class="headerlink" title="Redis主从复制重要内容"></a>Redis主从复制重要内容</h2><ul>
+<li><p>Redis主从复制不阻塞主服务器端。也就是说当若干个从服务器在进行初始同步时，主服务器仍然可以处理请求。</p>
+</li>
+<li><p>主从复制也不阻塞从服务器端。当从服务器进行初始同步时，它使用旧版本的数据来应对查询请求（假设你在redis.conf配置文件是这么配置的)。如果不想这样，你可以配置当复制流关闭时让从服务器给客户端返回一个错误。但是当初始同步完成后，需删除旧数据集和加载新的数据集，在这个短暂时间内，从服务器会阻塞连接进来的请求。</p>
+</li>
+<li><p>主从服务器之间会定期进行通话，但是如果master上设置了密码，那么如果不给slave设置密码就会导致slave不能跟master进行任何操作</p>
+</li>
+<li><p>在进行主从复制设置时，不能保证主节点不会重启的话，在主服务器上开启持久化。Redis具有自动重启系统，重启了进程，因为主节点关闭了持久化，节点重启后只有一个空的数据集，从节点会进行主从同步而清空自身数据。</p>
+</li>
+<li><p>使用Redis Sentinel（哨兵机制）同样，不能保证主节点不会重启的话，在主服务器上开启持久化。主服务器可能在很短的时间就完成了重启，以至于Sentinel都无法检测到这次失败</p>
+</li>
+</ul>
+<hr>
+<h1 id="Redis无磁盘化复制"><a href="#Redis无磁盘化复制" class="headerlink" title="Redis无磁盘化复制"></a>Redis无磁盘化复制</h1><p>通过内存之间的传输，通过socket实现。</p>
+<p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/Redis%E6%97%A0%E7%A3%81%E7%9B%98%E5%8C%96%E5%A4%8D%E5%88%B6.png" alt="image"></p>
+<ul>
+<li><p>磁盘有普通机械硬盘和SSD固定硬盘。如果是普通机械硬盘，硬盘读写效率低下。这样就出现了无磁盘化复制，从而提高了效率。</p>
+</li>
+<li><p>默认是关闭的</p>
+</li>
+<li><p>开启式将<code>repl-diskless-sync no --&gt;repl-diskless-sync yes</code></p>
+</li>
+</ul>
+<h1 id="哨兵机制"><a href="#哨兵机制" class="headerlink" title="哨兵机制"></a>哨兵机制</h1><h2 id="什么是哨兵"><a href="#什么是哨兵" class="headerlink" title="什么是哨兵"></a>什么是哨兵</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E5%93%A8%E5%85%B5%E6%A8%A1%E5%BC%8F.png"></p>
+<p>Sentinel(哨兵)是用于监控Redis集群中Master状态的工具，是 Redis 高可用解决方案，哨兵可以监视一个或者多个redis master服务，以及这些master服务的所有从服务；当某个master服务宕机后，会把这个master下的某个从服务升级为master来替代已宕机的master继续工作。</p>
+<h2 id="哨兵模式的作用"><a href="#哨兵模式的作用" class="headerlink" title="哨兵模式的作用"></a>哨兵模式的作用</h2><ul>
+<li>通过发送命令，让Redis服务器返回监控其运行状态，包括主服务器和从服务器；</li>
+<li>当哨兵监测到master宕机，会自动将slave切换成master，然后通过发布订阅模式通知其他的从服务器，修改配置文件，让它们切换主机；</li>
+</ul>
+<h2 id="哨兵模式的工作方式："><a href="#哨兵模式的工作方式：" class="headerlink" title="哨兵模式的工作方式："></a>哨兵模式的工作方式：</h2><ul>
+<li>每个Sentinel（哨兵）进程以每秒钟一次的频率向整个集群中的Master主服务器，Slave从服务器以及其他Sentinel（哨兵）进程发送一个 PING 命令。</li>
+<li>如果一个实例（instance）距离最后一次有效回复 PING 命令的时间超过 down-after-milliseconds 选项所指定的值， 则这个实例会被 Sentinel（哨兵）进程标记为主观下线（SDOWN）</li>
+<li>如果一个Master主服务器被标记为主观下线（SDOWN），则正在监视这个Master主服务器的所有 Sentinel（哨兵）进程要以每秒一次的频率确认Master主服务器的确进入了主观下线状态</li>
+<li>当有足够数量的 Sentinel（哨兵）进程（大于等于配置文件指定的值）在指定的时间范围内确认Master主服务器进入了主观下线状态（SDOWN）， 则Master主服务器会被标记为客观下线（ODOWN）</li>
+<li>在一般情况下， 每个 Sentinel（哨兵）进程会以每 10 秒一次的频率向集群中的所有Master主服务器、Slave从服务器发送 INFO 命令。</li>
+<li>当Master主服务器被 Sentinel（哨兵）进程标记为客观下线（ODOWN）时，Sentinel（哨兵）进程向下线的 Master主服务器的所有 Slave从服务器发送 INFO 命令的频率会从 10 秒一次改为每秒一次。</li>
+<li>若没有足够数量的 Sentinel（哨兵）进程同意 Master主服务器下线， Master主服务器的客观下线状态就会被移除。若 Master主服务器重新向 Sentinel（哨兵）进程发送 PING 命令返回有效回复，Master主服务器的主观下线状态就会被移除。</li>
+</ul>
+<h2 id="优点："><a href="#优点：" class="headerlink" title="优点："></a>优点：</h2><p>哨兵模式是基于主从模式的，解决了主从模式下master挂了无法提供写服务的情况</p>
+<h2 id="缺点："><a href="#缺点：" class="headerlink" title="缺点："></a>缺点：</h2><p>当数据量过大到一台服务器存放不下的情况（内存不够时），主从模式或sentinel模式就不能满足需求了</p>
+<h2 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h2><p>存储量不大，单机可承受。</p>
+<h2 id="部署归约"><a href="#部署归约" class="headerlink" title="部署归约"></a>部署归约</h2><ul>
+<li>哨兵节点至少要有3个或奇数个节点</li>
+<li>哨兵分布式部署到不同计算机节点</li>
+<li>一组哨兵只监听一组主从</li>
+</ul>
+<h3 id="哨兵监控"><a href="#哨兵监控" class="headerlink" title="哨兵监控"></a>哨兵监控</h3><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E5%93%A8%E5%85%B5%E7%9B%91%E6%8E%A7.png"></p>
+<h3 id="故障转移"><a href="#故障转移" class="headerlink" title="故障转移"></a>故障转移</h3><blockquote>
+<p>推荐哨兵个数为奇数台，避免对半分</p>
+</blockquote>
+<p>假设主服务器宕机，哨兵1先检测到这个结果，系统并不会马上进行故障转移（ failover） 过程，仅仅是哨兵1主观的认为主服务器不可用，这个现象成为主观下线。</p>
+<p>当后面的哨兵也检测到主服务器不可用，并且数量达到一定值时，那么哨兵之间就会进行一次投票，投票的结果由一个哨兵发起，进行故障转移（ failover）操作。</p>
+<p>切换成功后，就会通过发布订阅模式，让各个哨兵把自己监控的从服务器实现切换主机，这个过程称为客观下线。 </p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redis%E6%95%85%E9%9A%9C%E8%BD%AC%E7%A7%BB%E8%BF%87%E7%A8%8B.png"></p>
+<h3 id="选举Leader"><a href="#选举Leader" class="headerlink" title="选举Leader"></a>选举Leader</h3><blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">剩余的slaves重新和新的master做同步的并行个数</span></span><br><span class="line">sentinel parallel-syncs mymaster 1</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/%E9%80%89%E4%B8%BEleader.png"></p>
+<h3 id="原master恢复"><a href="#原master恢复" class="headerlink" title="原master恢复"></a>原master恢复</h3><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/redismaster%E8%8A%82%E7%82%B9%E6%81%A2%E5%A4%8D.png"></p>
+<h1 id="Cluster集群模式"><a href="#Cluster集群模式" class="headerlink" title="Cluster集群模式"></a>Cluster集群模式</h1><p><img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/Cluster%E9%9B%86%E7%BE%A4%E6%A8%A1%E5%BC%8F.png" alt="image"></p>
+<h2 id="工作模式"><a href="#工作模式" class="headerlink" title="工作模式"></a>工作模式</h2><p>在 Redis 的每一个节点上，都有这么两个东西，一个是<strong>插槽（slot）</strong>，它的的取值范围是：0-16383。还有一个就是<strong>cluster</strong>，可以理解为是一个集群管理的插件。<strong>当我们的存取的 Key到达的时候，Redis 会根据 crc16的算法得出一个结果，然后把结果对 16384 求余数，这样每个 key 都会对应一个编号在 0-16383 之间的哈希槽</strong>，通过这个值，去找到对应的插槽所对应的节点，然后直接自动跳转到这个<strong>对应的节点上</strong>进行存取操作。</p>
+<p>为了保证高可用，redis-cluster集群引入了<strong>主从模式</strong>，一个主节点对应一个或者多个从节点，当主节点宕机的时候，就会启用从节点。当其它主节点ping一个主节点A时，<strong>如果半数以上的主节点与A通信超时，那么认为主节点A宕机了</strong>。如果主节点A和它的从节点A1都宕机了，那么该集群就无法再提供服务了。</p>
+<p><strong>优点</strong>：</p>
+<ol>
+<li>无中心架构：三机房部署，其中一主一从构成一个分片，之间通过异步复制同步数据，异步复制存在数据不一致的时间窗口，保证高性能的同时牺牲了部分一致性一旦某个机房掉线，则分片上位于另一个机房的 slave 会被提升为 master 从而可以继续提供服务</li>
+<li>可扩展性：可线性扩展到 1000 多个节点，节点可动态添加或删除。</li>
+<li>降低运维成本，提高系统的扩展性和可用性。</li>
+</ol>
+<p><strong>使用场景</strong>：数据量大，高并发场景</p>
+<h2 id="说说-Redis-哈希槽的概念？"><a href="#说说-Redis-哈希槽的概念？" class="headerlink" title="说说 Redis 哈希槽的概念？"></a>说说 Redis 哈希槽的概念？</h2><p>Redis 集群没有使用一致性 hash,而是引入了哈希槽的概念，Redis 集群有16384 个哈希槽，每个 key 通过 CRC16 校验后对 16384 取模来决定放置哪个槽，集群的每个节点负责一部分 hash 槽。</p>
+<h2 id="集群容错"><a href="#集群容错" class="headerlink" title="集群容错"></a>集群容错</h2><p>构建Redis集群，需要至少3个节点作为master，以此组成一个高可用的集群，此外每个master都需要配备一个slave，所以整个集群需要6个节点，这也是最经典的Redis集群，也可以称之为三主三从，容错性更佳。所以在搭建的时候需要有6台虚拟机。</p>
+<h2 id="Redis-Cluster-实现的功能："><a href="#Redis-Cluster-实现的功能：" class="headerlink" title="Redis Cluster 实现的功能："></a>Redis Cluster 实现的功能：</h2><ul>
+<li>将数据分片到多个实例 (按照 slot 存储)；</li>
+<li>集群节点宕掉会自动 failover；</li>
+<li>提供相对平滑扩容 (缩容) 节点。</li>
+</ul>
+<h2 id="Redis-Cluster动态扩容和收缩"><a href="#Redis-Cluster动态扩容和收缩" class="headerlink" title="Redis Cluster动态扩容和收缩"></a>Redis Cluster动态扩容和收缩</h2><ul>
+<li>redis 的动态扩容操作都是通过redis源码文件夹中, redis-trib.rb脚本文件来完成的, 运行此脚本需要 ruby环境</li>
+<li>为Cluster动态增加节点(也就是添加的时候不影响正在运行的节点), 需要先主后从, slot迁移在添加主节点之后; 反之, 动态删除节点, 需要先从后主, slot迁移在删除主节点之前</li>
+<li>添加主节点到集群命令 <code>ruby redis-trib.rb add-node &lt;new node&gt; &lt;existing node&gt;</code>, 其中new node和 existing node(Cluster中任意一个master均可) 自行替换</li>
+<li>重新分片, 为新节点迁移slot: <code>ruby redis-trib.rb reshard &lt;existing node&gt;</code>此后按提示操作, 需要指定新的node中迁移的slot数量, 以及从哪些节点迁移</li>
+<li>删除主节点前, 先迁出slot, 移除slot 输入值要比slot总数小</li>
+<li>执行主节点删除:<code> ruby redis-trib.rb del-node &lt;existing node&gt; &lt;node id&gt;</code></li>
+</ul>
+<hr>
+<h1 id="Redis-集群方案什么情况下会导致整个集群不可用？"><a href="#Redis-集群方案什么情况下会导致整个集群不可用？" class="headerlink" title="Redis 集群方案什么情况下会导致整个集群不可用？"></a>Redis 集群方案什么情况下会导致整个集群不可用？</h1><p>有 A，B，C 三个节点的集群,在没有复制模型的情况下,如果节点 B 失败了，那么整个集群就会以为缺少 5501-11000 这个范围的槽而不可用。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/28/%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE-redis%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1810,482 +2674,6 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/%E4%B8%AD%E9%97%B4%E4%BB%B6-nginx%E9%AB%98%E5%8F%AF%E7%94%A8%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/22/%E4%B8%AD%E9%97%B4%E4%BB%B6-nginx%E9%AB%98%E5%8F%AF%E7%94%A8%E7%90%86%E8%AE%BA%E7%9F%A5%E8%AF%86/" itemprop="url">中间件-nginx高可用理论知识</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T22:40:44+08:00">
-                2021-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/LVS-nginx%E5%AE%9E%E7%8E%B0%E9%AB%98%E5%8F%AF%E7%94%A8%E9%9B%86%E7%BE%A4-nginx%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
-                    <span itemprop="name">LVS+nginx实现高可用集群 - nginx知识点</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="Nginx高可用-HA"><a href="#Nginx高可用-HA" class="headerlink" title="Nginx高可用 HA"></a>Nginx高可用 HA</h1><h2 id="单机状态下Nginx"><a href="#单机状态下Nginx" class="headerlink" title="单机状态下Nginx"></a>单机状态下Nginx</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/Nginx%E9%AB%98%E5%8F%AF%E7%94%A8HA1.png"></p>
-<h2 id="主备关系的Nginx"><a href="#主备关系的Nginx" class="headerlink" title="主备关系的Nginx"></a>主备关系的Nginx</h2><blockquote>
-<p>只有一台处于可用状态</p>
-</blockquote>
-<p>主节点Ngin宕机，备用节点Nginx接替服务</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/Nginx%E9%AB%98%E5%8F%AF%E7%94%A8HA2.png"></p>
-<h1 id="实现Nginx高可用——keepalived"><a href="#实现Nginx高可用——keepalived" class="headerlink" title="实现Nginx高可用——keepalived"></a>实现Nginx高可用——keepalived</h1><h2 id="keepalived"><a href="#keepalived" class="headerlink" title="keepalived"></a>keepalived</h2><ul>
-<li>解决单点故障</li>
-<li>组件免费</li>
-<li>可以实现高可用HA机制</li>
-<li>基于VRRP协议</li>
-</ul>
-<h2 id="Keepalived-双机主备原理"><a href="#Keepalived-双机主备原理" class="headerlink" title="Keepalived 双机主备原理"></a>Keepalived 双机主备原理</h2><blockquote>
-<p>主备Nginx服务器的配置需相同，防止大量请求导致低配置的备用机宕机</p>
-</blockquote>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/Keepalived%20%E5%8F%8C%E6%9C%BA%E4%B8%BB%E5%A4%87%E5%8E%9F%E7%90%861.png"></p>
-<p>主节点Nginx发生宕机</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/nginx/Keepalived%20%E5%8F%8C%E6%9C%BA%E4%B8%BB%E5%A4%87%E5%8E%9F%E7%90%862.png"></p>
-<p>虚拟ip指向备用节点Nginx</p>
-<h1 id="高可用集群架构Keepalived双主热备"><a href="#高可用集群架构Keepalived双主热备" class="headerlink" title="高可用集群架构Keepalived双主热备"></a>高可用集群架构Keepalived双主热备</h1><p>使两个节点同时提供服务</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-Java8%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/22/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-Java8%E5%AE%89%E8%A3%85/" itemprop="url">软件安装-Java8安装</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T22:40:31+08:00">
-                2021-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-Java%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
-                    <span itemprop="name">软件安装 - Java安装</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="检查是否安装Java"><a href="#检查是否安装Java" class="headerlink" title="检查是否安装Java"></a>检查是否安装Java</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -version</span><br></pre></td></tr></table></figure>
-
-<h1 id="解压文件"><a href="#解压文件" class="headerlink" title="解压文件"></a>解压文件</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf /usr/<span class="built_in">local</span>/jdk-8u181-linux-x64.tar.gz</span><br></pre></td></tr></table></figure>
-
-<h1 id="重命名"><a href="#重命名" class="headerlink" title="重命名"></a>重命名</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mv /usr/<span class="built_in">local</span>/jdk1.8.0_181 /usr/<span class="built_in">local</span>/java</span><br></pre></td></tr></table></figure>
-
-<h1 id="修改配置文件，配置环境变量，在命令行输入："><a href="#修改配置文件，配置环境变量，在命令行输入：" class="headerlink" title="修改配置文件，配置环境变量，在命令行输入："></a>修改配置文件，配置环境变量，在命令行输入：</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /etc/profile</span><br></pre></td></tr></table></figure>
-
-<h1 id="在最后添加"><a href="#在最后添加" class="headerlink" title="在最后添加"></a>在最后添加</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/<span class="built_in">local</span>/java</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin</span><br><span class="line"><span class="built_in">export</span> CLASSPATH=.:<span class="variable">$JAVA_HOME</span>/lib/dt.jar:<span class="variable">$JAVA_HOME</span>/lib/tools.jar</span><br><span class="line"><span class="built_in">export</span> JRE_HOME=<span class="variable">$JAVA_HOME</span>/jre</span><br></pre></td></tr></table></figure>
-
-<h1 id="使配置文件立即生效"><a href="#使配置文件立即生效" class="headerlink" title="使配置文件立即生效"></a>使配置文件立即生效</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /etc/profile</span><br></pre></td></tr></table></figure>
-
-<h1 id="卸载"><a href="#卸载" class="headerlink" title="卸载"></a>卸载</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm -rf /usr/<span class="built_in">local</span>/java</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/03/22/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-Tomcat%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/03/22/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-Tomcat%E5%AE%89%E8%A3%85/" itemprop="url">软件安装-Tomcat安装</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-22T22:40:13+08:00">
-                2021-03-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85-tomcat%E5%AE%89%E8%A3%85/" itemprop="url" rel="index">
-                    <span itemprop="name">软件安装 - tomcat安装</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="解压下载的Tomcat"><a href="#解压下载的Tomcat" class="headerlink" title="解压下载的Tomcat"></a>解压下载的Tomcat</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf apache-tomcat-8.5.50.tar.gz </span><br></pre></td></tr></table></figure>
-
-<h1 id="安装Java"><a href="#安装Java" class="headerlink" title="安装Java"></a>安装Java</h1><h1 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./startup.sh</span><br></pre></td></tr></table></figure>
-
-<h1 id="检查防火墙"><a href="#检查防火墙" class="headerlink" title="检查防火墙"></a>检查防火墙</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl status firewalld.service</span><br></pre></td></tr></table></figure>
-
-<h2 id="重启防火墙"><a href="#重启防火墙" class="headerlink" title="重启防火墙"></a>重启防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart firewalld.service</span><br></pre></td></tr></table></figure>
-
-<h2 id="停止防火墙"><a href="#停止防火墙" class="headerlink" title="停止防火墙"></a>停止防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld.service</span><br></pre></td></tr></table></figure>
-
-<p><strong>永久关闭防火墙</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl disable firewalld</span><br></pre></td></tr></table></figure>
-
-<h2 id="启动防火墙"><a href="#启动防火墙" class="headerlink" title="启动防火墙"></a>启动防火墙</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start firewalld.service</span><br></pre></td></tr></table></figure>
-
-
-
-<h1 id="开放8080端口"><a href="#开放8080端口" class="headerlink" title="开放8080端口"></a>开放8080端口</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --permanent --zone=public --add-port=8080/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line">firewall-cmd --zone=public --query-port=8080/tcp</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2337,7 +2725,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-count">108</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2348,7 +2736,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">68</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2359,7 +2747,7 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

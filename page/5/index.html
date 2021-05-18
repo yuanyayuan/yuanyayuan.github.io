@@ -261,6 +261,775 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/20/%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE-RabbitMQ%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/20/%E9%AB%98%E5%8F%AF%E7%94%A8%E9%85%8D%E7%BD%AE-RabbitMQ%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/" itemprop="url">高可用配置-RabbitMQ集群配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-20T23:02:25+08:00">
+                2021-04-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/rabbitmq-rabbitmq%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE/" itemprop="url" rel="index">
+                    <span itemprop="name">rabbitmq - rabbitmq集群配置</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="如何保证高可用的"><a href="#如何保证高可用的" class="headerlink" title="如何保证高可用的"></a>如何保证高可用的</h1><p>RabbitMQ 有三种模式：单机模式、普通集群模式、镜像集群模式。</p>
+<ul>
+<li><p><strong>单机模式普通集群模式</strong>(不会去用的)</p>
+<p>多台机器上启动多个 RabbitMQ 实例，每个机器启动一个。你创建的queue，只会放在<br>一个 RabbitMQ 实例上，但是每个实例都同步 queue 的元数据（元数据可以认为是queue 的一些配置<br>信息，通过元数据，可以找到 queue 所在实例）。你消费的时候，实际上如果连接到了另外一个实<br>例，那么那个实例会从 queue 所在实例上拉取数据过来</p>
+<p>这方案主要是提高吞吐量的，就是说让集群中多个节点来服务某个 queue 的读写操作。</p>
+</li>
+<li><p><strong>镜像集群模式</strong></p>
+<p>在镜像集群模式下，你创建的 queue，无论元数据还是 queue 里的消息都会存在于多个实例上，就是说，每<br>个 RabbitMQ 节点都有这个 queue 的一个完整镜像，包含 queue 的全部数据的意思。然后每次你写消息到 queue 的时候，都会自动把消息同步到多个实例的 queue 上。</p>
+<p>好处：你任何一个机器宕机了不影响，其它机器（节点）还包含了这个 queue 的完整数据，别的 consumer 都可以到其它节点上去消费数据。</p>
+<p>坏处在于，第一，这个性能开销也太大了，消息需要同步到所有机器上，导致网络带宽压力和消耗很重！</p>
+</li>
+</ul>
+<h1 id="镜像模式"><a href="#镜像模式" class="headerlink" title="镜像模式"></a>镜像模式</h1><p>你创建的 queue，无论元数据还是 queue 里的消息都会存在于多个实例上，然后每次你写消息到,queue 的时候，都会自动把消息到多个实例的 queue 里进行消息同步。</p>
+<p><strong>好处</strong>:</p>
+<p>你任何一个机器宕机了，别的机器都可以用。</p>
+<p><strong>坏处</strong>:</p>
+<p>第一，这个性能开销也太大了，消息同步所有机器，导致网络带宽压力和消耗很重</p>
+<p>第二，就没有扩展性可言了，如果某个 queue 负载很重，你加机器，新增的机器也包含了这个 queue 的所有数据，并没有办法线性扩展你的 queue</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E9%9B%86%E7%BE%A4.png"></p>
+<table>
+<thead>
+<tr>
+<th>服务器IP</th>
+<th>hostname</th>
+<th>节点说明</th>
+<th>端口</th>
+<th>管控台地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>192.168.159.128</td>
+<td>ly128</td>
+<td>rabbitmq  master</td>
+<td>5672</td>
+<td><a target="_blank" rel="noopener" href="http://192.168.159.128:15672/">http://192.168.159.128:15672</a></td>
+</tr>
+<tr>
+<td>192.168.159.129</td>
+<td>ly129</td>
+<td>rabbitmq  slave</td>
+<td>5672</td>
+<td><a target="_blank" rel="noopener" href="http://192.168.159.129:15672/">http://192.168.159.129:15672</a></td>
+</tr>
+<tr>
+<td>192.168.159.130</td>
+<td>ly130</td>
+<td>rabbitmq  slave</td>
+<td>5672</td>
+<td><a target="_blank" rel="noopener" href="http://192.168.159.130:15672/">http://192.168.159.130:15672</a></td>
+</tr>
+</tbody></table>
+<h2 id="启动三台rabbitmq"><a href="#启动三台rabbitmq" class="headerlink" title="启动三台rabbitmq"></a>启动三台rabbitmq</h2><p>指令操作</p>
+<h2 id="文件同步步骤"><a href="#文件同步步骤" class="headerlink" title="文件同步步骤"></a>文件同步步骤</h2><blockquote>
+<p>选择128、129、130任意一个节点为Master（这里选择128为Master），也就是说我们需要把128的Cookie文件同步到129、130节点上去</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp /var/lib/rabbitmq/.erlang.cookie 192.168.159.129:/var/lib/rabbitmq/</span><br><span class="line">scp /var/lib/rabbitmq/.erlang.cookie 192.168.159.130:/var/lib/rabbitmq/</span><br></pre></td></tr></table></figure>
+
+<h2 id="组成集群步骤"><a href="#组成集群步骤" class="headerlink" title="组成集群步骤"></a>组成集群步骤</h2><ol>
+<li>停止MQ服务</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./rabbitmqctl stop_app</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>修改集群配置</li>
+</ol>
+<blockquote>
+<p>接下来我们就可以使用集群命令，配置128、129、130为集群模式，3个节点（128、129、130）执行启动命令，后续启动集群使用此命令即可</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/rabbitmq/rabbitmq/etc/rabbitmq/</span><br><span class="line">vim rabbitmq-env.conf </span><br></pre></td></tr></table></figure>
+
+<p>添加如下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">RABBITMQ_NODE_IP_ADDRESS&#x3D;192.168.159.128         #这里要与当前服务器ip对应</span><br><span class="line">RABBITMQ_NODE_PORT&#x3D;5672</span><br><span class="line">RABBITMQ_LOG_BASE&#x3D;&#x2F;usr&#x2F;local&#x2F;rabbitmq&#x2F;rabbitmq&#x2F;data</span><br><span class="line">RABBITMQ_MNESIA_BASE&#x3D;&#x2F;usr&#x2F;local&#x2F;rabbitmq&#x2F;rabbitmq&#x2F;data&#x2F;mnesia</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>加入集群操作</li>
+</ol>
+<p>在两台从节点分别使用</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./rabbitmqctl join_cluster rabbit@ly128</span><br><span class="line">./rabbitmqctl start_app</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./rabbitmqctl cluster_status</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/20/%E4%B8%AD%E9%97%B4%E4%BB%B6-RabbitMQ%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/20/%E4%B8%AD%E9%97%B4%E4%BB%B6-RabbitMQ%E5%AD%A6%E4%B9%A0/" itemprop="url">中间件-RabbitMQ学习</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-20T15:37:09+08:00">
+                2021-04-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/rabbitmq-rabbitmq%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">rabbitmq - rabbitmq学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="什么是-rabbitmq"><a href="#什么是-rabbitmq" class="headerlink" title="什么是 rabbitmq"></a>什么是 rabbitmq</h1><p>采用 AMQP 高级消息队列协议的一种消息队列技术,最大的特点就是消费并不需要确保提供方存在,实现了服务之间的高度解耦</p>
+<h1 id="为什么使用MQ？MQ的优点"><a href="#为什么使用MQ？MQ的优点" class="headerlink" title="为什么使用MQ？MQ的优点"></a>为什么使用MQ？MQ的优点</h1><ul>
+<li>异步处理 - 相比于传统的串行、并行方式，提高了系统吞吐量。</li>
+<li>应用解耦 - 系统间通过消息通信，不用关心其他系统的处理。</li>
+<li>流量削锋 - 可以通过消息队列长度控制请求量；可以缓解短时间内的高并发请求。</li>
+<li>日志处理 - 解决大量日志传输。</li>
+<li>消息通讯 - 消息队列一般都内置了高效的通信机制，因此也可以用在纯的消息通讯。比如实现点对点消息队列，或者聊天室等。</li>
+</ul>
+<h1 id="使用消息队列有什么优点、缺点"><a href="#使用消息队列有什么优点、缺点" class="headerlink" title="使用消息队列有什么优点、缺点"></a>使用消息队列有什么优点、缺点</h1><h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><p>异步、解耦、消峰填谷这是消息队列最大的优点</p>
+<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ul>
+<li>系统复杂性增加：加了消息队列，需要保证消息不会重复消费，需要保证消息的可靠性，需要保证消息队列的高可用</li>
+<li>系统的可用性降低：如果消息队列挂了，那么系统也会受到影响</li>
+</ul>
+<h1 id="Kafka、ActiveMQ、RabbitMQ、RocketMQ-有什么优缺点？"><a href="#Kafka、ActiveMQ、RabbitMQ、RocketMQ-有什么优缺点？" class="headerlink" title="Kafka、ActiveMQ、RabbitMQ、RocketMQ 有什么优缺点？"></a>Kafka、ActiveMQ、RabbitMQ、RocketMQ 有什么优缺点？</h1><table>
+<thead>
+<tr>
+<th></th>
+<th>ActiveMQ</th>
+<th>RabbitMQ</th>
+<th>RocketMQ</th>
+<th>Kafka</th>
+<th>ZeroMQ</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单机吞吐量</td>
+<td>比RabbitMQ低</td>
+<td>2.6w/s（消息做持久化）</td>
+<td>11.6w/s</td>
+<td>17.3w/s</td>
+<td>29w/s</td>
+</tr>
+<tr>
+<td>开发语言</td>
+<td>Java</td>
+<td>Erlang</td>
+<td>Java</td>
+<td>Scala/Java</td>
+<td>C</td>
+</tr>
+<tr>
+<td>主要维护者</td>
+<td>Apache</td>
+<td>Mozilla/Spring</td>
+<td>Alibaba</td>
+<td>Apache</td>
+<td>iMatix，创始人已去世</td>
+</tr>
+<tr>
+<td>成熟度</td>
+<td>成熟</td>
+<td>成熟</td>
+<td>开源版本不够成熟</td>
+<td>比较成熟</td>
+<td>只有C、PHP等版本成熟</td>
+</tr>
+<tr>
+<td>订阅形式</td>
+<td>点对点(p2p)、广播（发布-订阅）</td>
+<td>提供了4种：direct, topic ,Headers和fanout。fanout就是广播模式</td>
+<td>基于topic/messageTag以及按照消息类型、属性进行正则匹配的发布订阅模式</td>
+<td>基于topic以及按照topic进行正则匹配的发布订阅模式</td>
+<td>点对点(p2p)</td>
+</tr>
+<tr>
+<td>持久化</td>
+<td>支持少量堆积</td>
+<td>支持少量堆积</td>
+<td>支持大量堆积</td>
+<td>支持大量堆积</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>顺序消息</td>
+<td>不支持</td>
+<td>不支持</td>
+<td>支持</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>性能稳定性</td>
+<td>好</td>
+<td>好</td>
+<td>一般</td>
+<td>较差</td>
+<td>很好</td>
+</tr>
+<tr>
+<td>集群方式</td>
+<td>支持简单集群模式，比如’主-备’，对高级集群模式支持不好。</td>
+<td>支持简单集群，’复制’模式，对高级集群模式支持不好。</td>
+<td>常用 多对’Master-Slave’ 模式，开源版本需手动切换Slave变成Master</td>
+<td>天然的‘Leader-Slave’无状态集群，每台服务器既是Master也是Slave</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>管理界面</td>
+<td>一般</td>
+<td>较好</td>
+<td>一般</td>
+<td>无</td>
+<td>无</td>
+</tr>
+</tbody></table>
+<p>使用建议：</p>
+<ul>
+<li>ActiveMQ，但是现在确实大家用的不多了，没经过大规模吞吐量场景的验证，社区也不是很活跃</li>
+<li>RabbitMQ，但是确实 erlang 语言阻止了大量的Java工程师去深入研究和掌控它，开源，有稳定的支持，活跃度也高</li>
+<li>RocketMQ，GitHub 上的活跃度其实不算高</li>
+<li>大数据领域的实时计算、日志采集等场景，用 Kafka</li>
+</ul>
+<h1 id="消息中间件示例"><a href="#消息中间件示例" class="headerlink" title="消息中间件示例"></a>消息中间件示例</h1><h2 id="服务解耦，异步化"><a href="#服务解耦，异步化" class="headerlink" title="服务解耦，异步化"></a>服务解耦，异步化</h2><p>消息队列采用高可用，可持久化的消息中间件。比如Active MQ，Rabbit MQ，Rocket Mq。</p>
+<p>（1）应用将主干逻辑处理完成后，写入消息队列。消息发送是否成功可以开启消息的确认模式。（消息队列返回消息接收成功状态后，应用再返回，这样保障消息的完整性）</p>
+<p>（2）扩展流程（发短信，配送处理）订阅队列消息。采用推或拉的方式获取消息并处理。</p>
+<p>（3）消息将应用解耦的同时，带来了数据一致性问题，可以采用最终一致性方式解决。比如主数据写入数据库，扩展应用根据消息队列，并结合数据库方式实现基于消息队列的后续处理。</p>
+<h2 id="日志收集系统"><a href="#日志收集系统" class="headerlink" title="日志收集系统"></a>日志收集系统</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/ELK.png"></p>
+<h2 id="数据同步"><a href="#数据同步" class="headerlink" title="数据同步"></a>数据同步</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/Kafka%E5%90%8C%E6%AD%A5%E6%95%B0%E6%8D%AE.png"></p>
+<h1 id="AMQP核心概念"><a href="#AMQP核心概念" class="headerlink" title="AMQP核心概念"></a>AMQP核心概念</h1><ul>
+<li><p>Server：又称Broker，接受客户端的连接，实现AMQP实体服务</p>
+</li>
+<li><p>Channel：网络信道，几乎所有的操作都在Channel中进行，Channel是进行消息读写的通道。客户端可建立多个Channel，每个Channel代表一个会话任务</p>
+</li>
+<li><p>Message：消息，服务器和应用程序之间传送的数据，由Properties和Body组成。Properties可以对消息进行修饰，比如消息的优先级、延迟等高级特性；Body则就是消息体内容。</p>
+</li>
+<li><p>Virtual host：虚拟地址，用于进行逻辑隔离，有最上层的消息路由。一个VH里面可以有若干个Exchange和Queue，同一个Virtual Host里面不能有相同名称的Exchange或Queue</p>
+</li>
+<li><p>Exchange：交换机，接受消息，根据路右键转发消息到绑定的队列</p>
+</li>
+<li><p>Binding：Exchange和Queue之间的虚拟连接,binding中可以包含routing key</p>
+</li>
+<li><p>routing key：一个路由规则，虚拟机可用它来确认如何路由一个特定消息</p>
+</li>
+<li><p>Queue：消息队列，保存消息并将他们转发消费者</p>
+</li>
+</ul>
+<h1 id="RabbitMQ的整体架构"><a href="#RabbitMQ的整体架构" class="headerlink" title="RabbitMQ的整体架构"></a>RabbitMQ的整体架构</h1><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84.png"></p>
+<blockquote>
+<p>Exchange和Queue可以设置多对多关系；但真实开发时使用一个Exchange对应多个队列，因为消息体和内容不一致，实现起来会很麻烦；</p>
+<p>Consume和Queue可以设置1对多，但真实开发也不会使用</p>
+</blockquote>
+<h2 id="消息基于什么传输？"><a href="#消息基于什么传输？" class="headerlink" title="消息基于什么传输？"></a><strong>消息基于什么传输？</strong></h2><p>由于 TCP 连接的创建和销毁开销较大，且并发数受系统资源限制，会造成性能瓶颈。RabbitMQ 使用信道的方式来传输数据。信道是建立在真实的 TCP 连接内的虚拟连接，且每条 TCP 连接上的信道数量没有限制。\</p>
+<h2 id="消息如何分发？"><a href="#消息如何分发？" class="headerlink" title="消息如何分发？"></a>消息如何分发？</h2><p>若该队列至少有一个消费者订阅，消息将以循环（round-robin）的方式发送给消费者。每条消息只会<br>分发给一个订阅的消费者（前提是消费者能够正常处理消息并进行确认）。<br>通过路由可实现多消费的功能</p>
+<h1 id="消息怎么路由？"><a href="#消息怎么路由？" class="headerlink" title="消息怎么路由？"></a>消息怎么路由？</h1><p>消息提供方-&gt;路由-&gt;一至多个队列<br>消息发布到交换机时，消息将拥有一个路由键（routing key），在消息创建时设定。通过队列路由键，可以把队列绑定到交换器上。消息到达交换器后，RabbitMQ 会将消息的路由键与队列的路由键进行匹配（针对不同的交换器有不同的路由规则）；<br>常用的交换器主要分为一下三种<br>fanout：如果交换器收到消息，将会广播到所有绑定的队列上<br>direct：如果路由键完全匹配，消息就被投递到相应的队列<br>topic：可以使来自不同源头的消息能够到达同一个队列。 使用 topic 交换器时，可以使用通配符</p>
+<h2 id="RabbitMQ相关概念"><a href="#RabbitMQ相关概念" class="headerlink" title="RabbitMQ相关概念"></a>RabbitMQ相关概念</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E8%B7%AF%E7%94%B1%E6%A8%A1%E5%BC%8F.png"></p>
+<table>
+<thead>
+<tr>
+<th>标志</th>
+<th>中文名</th>
+<th>英文名</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>P</td>
+<td>生产者</td>
+<td>Producer</td>
+<td>消息的发送者，可以将消息发送到交换机</td>
+</tr>
+<tr>
+<td>C</td>
+<td>消费者</td>
+<td>Consumer</td>
+<td>消息的接收者，从队列中获取消息并进行消费</td>
+</tr>
+<tr>
+<td>X</td>
+<td>交换机</td>
+<td>Exchange</td>
+<td>接收生产者发送的消息，并根据路由键发送给指定队列</td>
+</tr>
+<tr>
+<td>Q</td>
+<td>队列</td>
+<td>Queue</td>
+<td>存储从交换机发来的消息</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong>Exchange属性</strong>：</p>
+<ul>
+<li>Name：交换机名称</li>
+<li><strong>type</strong> 交换机类型，不同类型的交换机转发消息方式不同               <ul>
+<li>fanout发布/订阅模式，广播消息给所有绑定交换机的队列</li>
+<li>direct路由模式，根据路由键发送消息</li>
+<li>topic通配符模式，根据路由键的匹配规则发送消息</li>
+</ul>
+</li>
+<li>Durability：是否开启持久化，true为开启</li>
+<li>Auto Delete：当最后一个绑定到该Exchange上的队列删除后，自动删除该Exchange</li>
+</ul>
+<h2 id="5种消息模式-消息怎么路由"><a href="#5种消息模式-消息怎么路由" class="headerlink" title="5种消息模式(消息怎么路由)"></a>5种消息模式(消息怎么路由)</h2><p>参考<a target="_blank" rel="noopener" href="http://www.macrozheng.com/#/reference/rabbitmq_start?id=%E8%BF%9Erabbitmq%E7%9A%845%E7%A7%8D%E6%A0%B8%E5%BF%83%E6%B6%88%E6%81%AF%E6%A8%A1%E5%BC%8F%E9%83%BD%E4%B8%8D%E6%87%82%EF%BC%8C%E4%B9%9F%E6%95%A2%E8%AF%B4%E8%87%AA%E5%B7%B1%E4%BC%9A%E7%94%A8%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97%EF%BC%81">连RabbitMQ的5种核心消息模式都不懂，也敢说自己会用消息队列！</a></p>
+<h3 id="简单模式"><a href="#简单模式" class="headerlink" title="简单模式"></a>简单模式</h3><blockquote>
+<p>简单模式是最简单的消息模式，它包含一个生产者、一个消费者和一个队列。生产者向队列里发送消息，消费者从队列中获取消息并消费。</p>
+</blockquote>
+<h4 id="示意图"><a href="#示意图" class="headerlink" title="示意图"></a>示意图</h4><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E7%AE%80%E5%8D%95%E6%A8%A1%E5%BC%8F.png" style="zoom:67%;" />
+
+<h3 id="工作模式"><a href="#工作模式" class="headerlink" title="工作模式"></a>工作模式</h3><blockquote>
+<p>工作模式是指向多个互相竞争的消费者发送消息的模式，它包含一个生产者、两个消费者和一个队列。两个消费者同时绑定到一个队列上去，当消费者获取消息处理耗时任务时，空闲的消费者从队列中获取并消费消息。</p>
+</blockquote>
+<h4 id="示意图-1"><a href="#示意图-1" class="headerlink" title="示意图"></a>示意图</h4><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F.png" style="zoom:67%;" />
+
+<h3 id="发布-fanout-模式"><a href="#发布-fanout-模式" class="headerlink" title="发布(fanout)模式"></a>发布(fanout)模式</h3><blockquote>
+<p>发布/订阅模式是指同时向多个消费者发送消息的模式（类似广播的形式），它包含一个生产者、两个消费者、两个队列和一个交换机。两个消费者同时绑定到不同的队列上去，两个队列绑定到交换机上去，生产者通过发送消息到交换机，所有消费者接收并消费消息。</p>
+</blockquote>
+<h4 id="示意图-2"><a href="#示意图-2" class="headerlink" title="示意图"></a>示意图</h4><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85%E6%A8%A1%E5%BC%8F.png" style="zoom:67%;" />
+
+<h3 id="路由-Direct-模式"><a href="#路由-Direct-模式" class="headerlink" title="路由(Direct)模式"></a>路由(Direct)模式</h3><blockquote>
+<p>路由模式是可以根据<code>路由键</code>选择性给多个消费者发送消息的模式，它包含一个生产者、两个消费者、两个队列和一个交换机。两个消费者同时绑定到不同的队列上去，两个队列通过<code>路由键</code>绑定到交换机上去，生产者发送消息到交换机，交换机通过<code>路由键</code>转发到不同队列，队列绑定的消费者接收并消费消息。</p>
+</blockquote>
+<h4 id="示意图-3"><a href="#示意图-3" class="headerlink" title="示意图"></a>示意图</h4><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E8%B7%AF%E7%94%B1%E6%A8%A1%E5%BC%8F.png" style="zoom:67%;" />
+
+<p><em>注意：</em></p>
+<p><strong>Direct模式可以使用RabbitMQ自带的Exchange：default Exchange，所以不用将Exchange进行任何绑定操作，消息传递时，RouteKey必须完全匹配才会被队列接受，否则会被抛弃</strong></p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E8%B7%AF%E7%94%B1%E6%A8%A1%E5%BC%8F2.png" style="zoom:50%;" />
+
+<h3 id="通配符-topic-模式"><a href="#通配符-topic-模式" class="headerlink" title="通配符(topic)模式"></a>通配符(topic)模式</h3><blockquote>
+<p>通配符模式是可以根据<code>路由键匹配规则</code>选择性给多个消费者发送消息的模式，它包含一个生产者、两个消费者、两个队列和一个交换机。两个消费者同时绑定到不同的队列上去，两个队列通过<code>路由键匹配规则</code>绑定到交换机上去，生产者发送消息到交换机，交换机通过<code>路由键匹配规则</code>转发到不同队列，队列绑定的消费者接收并消费消息。</p>
+</blockquote>
+<h4 id="特殊匹配符号"><a href="#特殊匹配符号" class="headerlink" title="特殊匹配符号"></a>特殊匹配符号</h4><ul>
+<li><code>*</code>：只能匹配一个单词；</li>
+<li><code>#</code>：可以匹配零个或多个单词。</li>
+</ul>
+<p>例如：“log.#”能匹配到“log.info.oa”</p>
+<p>​            “log.*”只会匹配到“log.error”</p>
+<h4 id="示意图-4"><a href="#示意图-4" class="headerlink" title="示意图"></a>示意图</h4><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbit%E9%80%9A%E9%85%8D%E7%AC%A6%E6%A8%A1%E5%BC%8F.png" style="zoom:67%;" />
+
+<h1 id="RabbitMQ高级特性"><a href="#RabbitMQ高级特性" class="headerlink" title="RabbitMQ高级特性"></a>RabbitMQ高级特性</h1><h2 id="生产端的可靠性投递"><a href="#生产端的可靠性投递" class="headerlink" title="生产端的可靠性投递"></a>生产端的可靠性投递</h2><ul>
+<li>保障消息的成功发出</li>
+<li>保障MQ节点的成功接收</li>
+<li>发送端收到MQ节点（Broker）确认应答</li>
+<li>完善的消息进行补偿机制</li>
+</ul>
+<h2 id="消费端-幂等性保障"><a href="#消费端-幂等性保障" class="headerlink" title="消费端-幂等性保障"></a>消费端-幂等性保障</h2><ul>
+<li>业务唯一ID（或）指纹码（时间戳之类的唯一证明）机制，利用数据库主键去重</li>
+</ul>
+<h2 id="Confirm确认消息"><a href="#Confirm确认消息" class="headerlink" title="Confirm确认消息"></a>Confirm确认消息</h2><p>将信道设置成 confirm 模式（发送方确认模式），则所有在信道上发布的消息都会被指派一个唯一的 ID。</p>
+<p>一旦消息被投递到目的队列后，或者消息被写入磁盘后（可持久化的消息），信道会发送一个确认给生产者（包含消息唯一 ID）。</p>
+<p>如果 RabbitMQ 发生内部错误从而导致消息丢失，会发送一条 nack（notacknowledged，未确认）消息。</p>
+<p>发送方确认模式是异步的，生产者应用程序在等待确认的同时，可以继续发送消息。当确认消息到达生产者应用程序，生产者应用程序的回调方法就会被触发来处理确认消息。</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/%E7%A1%AE%E8%AE%A4%E6%9C%BA%E5%88%B6%E6%B5%81%E7%A8%8B%E5%9B%BE.png" style="zoom:50%;" />
+
+<h3 id="如何开启Confirm确认消息"><a href="#如何开启Confirm确认消息" class="headerlink" title="如何开启Confirm确认消息"></a>如何开启Confirm确认消息</h3><p>第一步：在channel上开启确认模式：<code>channel.confirmSelect()</code></p>
+<p>第二部：在channel上添加监听：addConfirmListener,监听成功和失败返回结果，根据具体的结果对消息进行重新发送、或记录日志等或许处理</p>
+<h2 id="Renturn消息机制"><a href="#Renturn消息机制" class="headerlink" title="Renturn消息机制"></a>Renturn消息机制</h2><ul>
+<li>Return Listener 用于处理一些不可路由的消息</li>
+<li>生产者指定Exchange和RoutingKey，将消息投递到某个队列，然后消费者监听队列，进行消息处理</li>
+<li>但在某些情况下，在发送消息时，若当前的exchange不存在或指定的路由key路由失败，这时，如果需要监听这种不可达的消息，则要使用return listener</li>
+</ul>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/Return%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6.png" style="zoom:50%;" />
+
+<h3 id="API配置"><a href="#API配置" class="headerlink" title="API配置"></a>API配置</h3><p>Mandatory：如果为true，则监听器会接收到路由不可达的消息，然后进行后续的处理，如果为false,那么broker端会自动删除该消息</p>
+<h2 id="消费端限流"><a href="#消费端限流" class="headerlink" title="消费端限流"></a>消费端限流</h2><p>RabbitMQ提供一种qos(服务质量保证)功能，即在非自动确认消息的前提下，如果一定数目的消息（通过基于consume或者channel设置的Qos值）未被确认前，不进行消费新的消息</p>
+<h2 id="消费端的手工ACK和NACK"><a href="#消费端的手工ACK和NACK" class="headerlink" title="消费端的手工ACK和NACK"></a>消费端的手工ACK和NACK</h2><p>消费端进行消费的时候由于业务异常我们可以进行日志的记录，然后进行补偿</p>
+<p>如果因为服务器宕机等严重问题，那我们就需要手工进行ACK保障消费端消费成功</p>
+<p>成功消费会ack，失败则会NACK</p>
+<h2 id="消费端重回队列（可以忽视）"><a href="#消费端重回队列（可以忽视）" class="headerlink" title="消费端重回队列（可以忽视）"></a>消费端重回队列（可以忽视）</h2><p>消费端重回队列是为了对没有处理成功的消息，把消息重新递给Broker</p>
+<blockquote>
+<p>生产环境不用，影响性能（假设队列只有一条消息，处理失败会一直重新投递，死循环），自己多补偿或兜底</p>
+</blockquote>
+<h2 id="TTL队列（死信队列）"><a href="#TTL队列（死信队列）" class="headerlink" title="TTL队列（死信队列）"></a>TTL队列（死信队列）</h2><ul>
+<li>DLX（死信队列），利用DLX，当消息在一个队列中变成死信（dead message）之后，他能被重新publish到另一个Exchange，这个Exchange就是DLX</li>
+</ul>
+<h3 id="消息变成死信队列的情况"><a href="#消息变成死信队列的情况" class="headerlink" title="消息变成死信队列的情况"></a>消息变成死信队列的情况</h3><ul>
+<li>消息被拒绝(basic.reject/basic.nack)并且requeue=false(重回队列不开启)</li>
+<li>消息TTL过期</li>
+<li>队列打到最大长度</li>
+</ul>
+<h1 id="rabbitmq队列与消费者的关系？"><a href="#rabbitmq队列与消费者的关系？" class="headerlink" title="rabbitmq队列与消费者的关系？"></a>rabbitmq队列与消费者的关系？</h1><ol>
+<li>一个队列列可以绑定多个消费者；</li>
+<li>消息默认以循环的方式发送给消费者；</li>
+<li>消费者收到消息默认自动确认，也可以改成手动确认。</li>
+</ol>
+<h1 id="RabbitMQ消费消息的两种模式：推和拉"><a href="#RabbitMQ消费消息的两种模式：推和拉" class="headerlink" title="RabbitMQ消费消息的两种模式：推和拉"></a>RabbitMQ消费消息的两种模式：推和拉</h1><ul>
+<li>推模式/订阅模式/投递模式（也叫push模式），消息中间件主动将消息推送给消费者</li>
+<li>拉模式/检索模式（也叫pull模式），消费者主动从消息中间件拉取消息</li>
+</ul>
+<h2 id="推模式（push）"><a href="#推模式（push）" class="headerlink" title="推模式（push）"></a>推模式（push）</h2><ul>
+<li>推模式接收消息是最有效的一种消息处理方式</li>
+<li>推模式将消息提前推送给消费者，消费者必须设置一个缓冲区缓存这些消息</li>
+<li>由于推模式是信息到达RabbitMQ后，就会立即被投递给匹配的消费者，所以实时性非常好，消费者能及时得到最新的消息。</li>
+</ul>
+<h2 id="拉模式（pull）"><a href="#拉模式（pull）" class="headerlink" title="拉模式（pull）"></a>拉模式（pull）</h2><ul>
+<li>如果只想从队列中获取单条消息而不是持续订阅</li>
+<li>模式在消费者需要时才去消息中间件拉取消息，这段网络开销会明显增加消息延迟，降低系统吞吐量</li>
+<li>由于拉模式需要消费者手动去RabbitMQ中拉取消息，所以实时性较差</li>
+</ul>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><ol>
+<li>不能在循环中使用拉模式来模拟推模式，因为拉模式每次都需要去消息中间件中拉取消息来消费，所以会严重影响RabbitMQ性能。</li>
+<li>要想实现高吞吐量，消费者需要使用推模式</li>
+</ol>
+<h1 id="RabbitMQ延迟队列"><a href="#RabbitMQ延迟队列" class="headerlink" title="RabbitMQ延迟队列"></a>RabbitMQ延迟队列</h1><ul>
+<li>TTL</li>
+<li>插件</li>
+</ul>
+<h1 id="RabbitMQ消息100-可靠性投递的解决方案实现"><a href="#RabbitMQ消息100-可靠性投递的解决方案实现" class="headerlink" title="RabbitMQ消息100%可靠性投递的解决方案实现"></a>RabbitMQ消息100%可靠性投递的解决方案实现</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/u012211603/article/details/85707760">RabbitMQ消息中间件技术精讲（三）—— 深入RabbitMQ高级特性</a></p>
+</blockquote>
+<p><strong>如何保证消息的可靠传输？如果消息丢了怎么办</strong></p>
+<h2 id="数据丢失问题"><a href="#数据丢失问题" class="headerlink" title="数据丢失问题"></a>数据丢失问题</h2><p>可能出现在生产者、MQ、消费者</p>
+<h3 id="生产者丢失"><a href="#生产者丢失" class="headerlink" title="生产者丢失"></a>生产者丢失</h3><ol>
+<li><p><strong>开启RabbitMQ事务</strong>（同步，不推荐，吞吐量会下来，因为太耗性能）</p>
+<p>生产者发送数据之前开启 RabbitMQ事务channel.txSelect，然后发送消息，如果消息没有成功被 RabbitMQ 接收到，那么生产者会收到异常报错，此时就可以回滚事务channel.txRollback，然后重试发送消息；如果收到了消息，那么可以提交事务channel.txCommit。</p>
+</li>
+<li><p><strong>开启confirm模式</strong>（异步，推荐）</p>
+<p>每次写的消息都会分配一个唯一的 id，然后如果写入了 RabbitMQ 中，RabbitMQ 会给你回传一个ack消息，告诉你说这个消息 ok 了。如果 RabbitMQ 没能处理这个消息，会回调你一个nack接口，告诉你这个消息<br>接收失败，可以重试。</p>
+<p>可以结合这个机制自己在数据库里维护每个消息 id 的状态，如果超过一定时间还没接收到这个消息的回调，那么你可以重发（见常见方案1的strp4左右）</p>
+</li>
+</ol>
+<h3 id="MQ丢失"><a href="#MQ丢失" class="headerlink" title="MQ丢失"></a>MQ丢失</h3><ol>
+<li><p>必须开启 RabbitMQ 的持久化，就是消息写入之后会持久化到磁盘，哪怕是 RabbitMQ 自己挂了，恢复之后会自动读取之前存储的数据。设置持久化有两个步骤：</p>
+<ul>
+<li><p>创建 queue 的时候将其设置为持久化，这样就可以保证 RabbitMQ 持久化 queue 的元数据，但是不会持久化 queue 里的数据。</p>
+</li>
+<li><p>发送消息的时候将消息的deliveryMode 设置为 2，就是将消息设置为持久化的，此时 RabbitMQ 就会将消息持久化到磁盘上去。RabbitMQ 宕机，重启，也会从磁盘上重启恢复queue，恢复这个 queue 里的数据。</p>
+</li>
+</ul>
+</li>
+<li><p>持久化可以跟生产者的confirm机制配合起来，只有消息被持久化到磁盘之后，才会通知生产者ack了，所以哪怕是在持久化到磁盘之前，RabbitMQ 挂了，数据丢了，生产者收不到ack，也是可以自己重发的。</p>
+</li>
+</ol>
+<h3 id="消费端丢失"><a href="#消费端丢失" class="headerlink" title="消费端丢失"></a>消费端丢失</h3><blockquote>
+<p>消费的时候，刚消费到，还没处理，结果进程挂了，RabbitMQ 认为你都消费了，这数据就丢了。这个时候得用 RabbitMQ 提供的ack机制</p>
+</blockquote>
+<p><strong>关闭 RabbitMQ 的自动ack</strong>，可以通过一个 api 来调用，然后每次代码里确保处理完的时候，再在程序里返回ack。如果没有ack，那 RabbitMQ 就认为你还没处理完，这个时候 RabbitMQ 会把这个消费分配给别的consumer 去处理，消息是不会丢的</p>
+<h2 id="如何确保消息正确地发送至-RabbitMQ？如何确保消息接收方消费了消息"><a href="#如何确保消息正确地发送至-RabbitMQ？如何确保消息接收方消费了消息" class="headerlink" title="如何确保消息正确地发送至 RabbitMQ？如何确保消息接收方消费了消息?"></a>如何确保消息正确地发送至 RabbitMQ？如何确保消息接收方消费了消息?</h2><ol>
+<li><p>发送方确认模式<strong>开启confirm模式</strong></p>
+</li>
+<li><p><strong>关闭 RabbitMQ 的自动ack</strong></p>
+</li>
+</ol>
+<h2 id="常见解决方案"><a href="#常见解决方案" class="headerlink" title="常见解决方案"></a>常见解决方案</h2><h3 id="常见方案1：消息落库，对消息状态进行打标"><a href="#常见方案1：消息落库，对消息状态进行打标" class="headerlink" title="常见方案1：消息落库，对消息状态进行打标"></a>常见方案1：消息落库，对消息状态进行打标</h3><p><strong>消息落库（持久化至数据库），对消息状态进行打标，如若消息未响应，进行轮询操作</strong></p>
+<blockquote>
+<p>开启<strong>发送方确认模式</strong>，将信道设置成 confirm 模式（发送方确认模式）</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%92.png"></p>
+<p>Step1：把业务消息落库，再生成一条消息落库到消息DB用来记录（譬如消息刚创建，正在发送中 status: 0）。（缺点：对数据库进行两次持久化，需要使用事务保证两次投递是原子操作）</p>
+<p>Step2：生产端发送消息。</p>
+<p>Step3：Broker端收到后，应答至生产端。<code>Confirm Listener</code>异步监听Broker的应答。</p>
+<p>Step4：应答表明消息投递成功后，去消息DB中抓取到指定的消息记录，更新状态，如status: 1</p>
+<p>Step5：<br>如在Step3中出现网络不稳定等情况，导致Listener未收到消息成功确认的应答。<br>那么消息数据库中的status就还是0，而Broker可能是接收到消息的状态。<br>因此设定一个规则（定时任务），例如消息在落库5分钟后（超时）还是0的状态，就把该条记录抽取出来。</p>
+<p>Step6：重新投递<br>Step7：限制一个重试的次数，譬如3次，如果大于3次，即为投递失败，更新status的值。（用补偿机制去查询消息失败的原因，人工）</p>
+<h3 id="常见方案2：消息的延迟投递，做二次确认，回调检查"><a href="#常见方案2：消息的延迟投递，做二次确认，回调检查" class="headerlink" title="常见方案2：消息的延迟投递，做二次确认，回调检查"></a>常见方案2：消息的延迟投递，做二次确认，回调检查</h3><p><strong>消息的延迟投递，做二次确认，回调检查（高并发场景）</strong></p>
+<blockquote>
+<p>开启<strong>发送方确认模式</strong>，将信道设置成 confirm 模式（发送方确认模式）</p>
+<p>消费者接收每一条消息后都必须进行确认（消息接收和消息确认是两个不同操作）, 消费端的手工ACK和NACK</p>
+</blockquote>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E5%8F%AF%E9%9D%A0%E6%80%A7%E6%8A%95%E9%80%922.png"></p>
+<ul>
+<li>Upstream service：上游服务，可能为生产端</li>
+<li>Downstream service：下游服务，可能为消费端</li>
+<li>MQ Broker：可能为集群</li>
+<li>Callback service：回调服务，监听confirm消息</li>
+</ul>
+<p>Step1：业务消息落库后，发送消息至Broker。</p>
+<p>Step2：紧接着发送第二条延迟（设置延迟时间）检查的消息。</p>
+<p>Step3：消费端监听指定的队列接收到消息进行处理</p>
+<p>Step4：处理完后，生成一条响应消息发送到Broker。</p>
+<p>Step5：由Callback服务去监听该响应消息，收到该响应消息后持久化至消息DB（记录成功状态）。</p>
+<p>Step6：到了延迟时间，延迟发送的消息也被Callback服务的监听器监听到后，去检查消息DB。如果未查询到成功的状态，Callback服务需要做补偿，发起RPC通讯，让生产端重新发送。生产端通过介绍到的命令中所带的id去数据库查询该业务消息，再重新发送，即跳转到Step1。</p>
+<p>该方案减少了对数据库的存储，保证了性能。</p>
+<h1 id="如何避免消息重复投递或重复消费"><a href="#如何避免消息重复投递或重复消费" class="headerlink" title="如何避免消息重复投递或重复消费"></a>如何避免消息重复投递或重复消费</h1><p>在消息生产时，MQ 内部针对每条生产者发送的消息生成一个 inner-msg-id，作为去重的依据（消息投递失败并重传），避免重复的消息进入队列；在消息消费时，要求消息体中必须要有一个 bizId（对于同一业务全局唯一，如支付 ID、订单 ID、帖子ID 等）作为去重和幂等的依据，避免同一条消息被重复消费。</p>
+<h1 id="如何保证消息的顺序性"><a href="#如何保证消息的顺序性" class="headerlink" title="如何保证消息的顺序性"></a>如何保证消息的顺序性</h1><p>会错乱的场景：RabbitMQ：一个 queue，多个 consumer</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E9%A1%BA%E5%BA%8F%E6%8A%95%E9%80%92.png"></p>
+<p><strong>通过合理的设计或者将问题分解来规避。</strong></p>
+<ul>
+<li>不关注乱序的应用实际大量存在</li>
+<li>队列无序并不意味着消息无序</li>
+</ul>
+<p>所以从业务层面来保证消息的顺序而不仅仅是依赖于消息系统，是一种更合理的方式。</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E9%A1%BA%E5%BA%8F%E6%8A%95%E9%80%922.png"></p>
+<h1 id="上千万条消息在mq中积压了几个小时还没解决："><a href="#上千万条消息在mq中积压了几个小时还没解决：" class="headerlink" title="上千万条消息在mq中积压了几个小时还没解决："></a>上千万条消息在mq中积压了几个小时还没解决：</h1><p>1）先修复consumer的问题，确保其恢复消费速度，然后将现有consumer都停掉；<br>2）新建⼀一个topic，partition是原来的10倍，临时建立好原先10倍或者20倍的queue数量量；<br>3）然后写⼀一个临时的分发数据的consumer程序，这个程序部署上去消费积压的数据；<br>消费之后不不做耗时的处理理，直接均匀轮询写⼊入临时建立好的10倍数量量的queue；<br>4）接着临时征用10倍的机器器来部署consumer，每一批consumer消费一个临时queue的数据；<br>5）这种做法相当于是临时将queue资源和consumer资源扩大10倍，以正常的10倍速度来消费数据；<br>6）等快速消费完积压数据之后，得恢复原先部署架构，重新用原先的consumer机器器来消费消息。<br>总结：</p>
+<ol>
+<li>修复并停掉consumer；</li>
+<li>新建一个topic，partition是原来的10倍，建立临时queue，数量是原来的10倍或20倍；</li>
+<li>写临时consumer程序，临时征用10倍的机器器去消费数据；</li>
+<li>消费完成之后，恢复原先consumer；</li>
+</ol>
+<h1 id="rabbitmq设置过期时间，部分消息丢失："><a href="#rabbitmq设置过期时间，部分消息丢失：" class="headerlink" title="rabbitmq设置过期时间，部分消息丢失："></a>rabbitmq设置过期时间，部分消息丢失：</h1><blockquote>
+<p>RabbtiMQ 是可以设置过期时间的，也就是 TTL。如果消息在 queue中积压超过一定的时间就会被 RabbitMQ 给清理掉，</p>
+</blockquote>
+<p>采取批量重导方法：将丢失的那批数据查询导入到mq里面。</p>
+<p>直接丢弃数据了，然后等过了高峰期以后,将丢失的那批数据，写个临时程序，一点一点的查出来，然后重新灌入 mq 里面去，把白天丢的数据给补回来</p>
+<h1 id="为什么不应该对所有的message都使用持久化机制"><a href="#为什么不应该对所有的message都使用持久化机制" class="headerlink" title="为什么不应该对所有的message都使用持久化机制"></a>为什么不应该对所有的message都使用持久化机制</h1><ul>
+<li>性能会下降</li>
+<li>message在rabbitmq内置的cluster方案是会出现问题<ul>
+<li>message设置了persistent而queue未设置durable，那么queue的owner node出现异常后，未在（自己的或其他的）node上重建queue前，发向该queue的message都将被balckhold</li>
+<li>message设置了persistent并且queue设置durable，那么queue的owner node出现异常后，该queue只能在自己的node上重建，发向该queue的message都将被balckhold</li>
+</ul>
+</li>
+</ul>
+<h1 id="mq-的缺点"><a href="#mq-的缺点" class="headerlink" title="mq 的缺点"></a>mq 的缺点</h1><h2 id="系统可用性降低"><a href="#系统可用性降低" class="headerlink" title="系统可用性降低"></a>系统可用性降低</h2><p>系统引入的外部依赖越多，越容易挂掉，本来 A 系统调用 BCD 三个系统的接口就好了系统正常运行，加个 MQ 进来，万一MQ 挂了，整套系统有崩溃风险。</p>
+<h2 id="系统复杂性提高"><a href="#系统复杂性提高" class="headerlink" title="系统复杂性提高"></a>系统复杂性提高</h2><ul>
+<li><p>保证消息没有重复消费</p>
+</li>
+<li><p>处理消息丢失的情况</p>
+</li>
+<li><p>保证消息传递的顺序性</p>
+</li>
+</ul>
+<h2 id="数据一致性"><a href="#数据一致性" class="headerlink" title="数据一致性"></a>数据一致性</h2><h3 id="RabbitMQ如何保证数据一致性？"><a href="#RabbitMQ如何保证数据一致性？" class="headerlink" title="RabbitMQ如何保证数据一致性？"></a>RabbitMQ如何保证数据一致性？</h3><ol>
+<li>生产者确认机制：消息持久化后异步回调通知⽣生产者，保证消息已经发出去；</li>
+<li>消息持久化：设置消息持久化；</li>
+<li>消费者确认机制：消费者成功消费消息之后，手动确认，保证消息已经消费。</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/20/%E4%B8%AD%E9%97%B4%E4%BB%B6-RabbitMQ%E4%B8%9A%E5%8A%A1%E5%9C%BA%E6%99%AFdemo%E5%AE%9E%E7%8E%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1765,6 +2534,72 @@
 <p><strong>分布式</strong>不等于加机器</p>
 <p>加机器更加适用于构建集群，因为它真是只有加机器。而对于分布式来说，你首先需要将业务进行拆分，然后再加机器（不仅仅是加机器那么简单），同时你还要去解决分布式带来的一系列问题。</p>
 <p>比如各个分布式组件如何协调起来，如何减少各个系统之间的耦合度，分布式事务的处理，如何去配置整个分布式系统等等。<code>ZooKeeper</code> 主要就是解决这些问题的。</p>
+<h1 id="Paxos-算法"><a href="#Paxos-算法" class="headerlink" title="Paxos 算法"></a><code>Paxos</code> 算法</h1><p><code>Paxos</code> 算法是基于<strong>消息传递且具有高度容错特性的一致性算法</strong>，是目前公认的解决分布式一致性问题最有效的算法之一，<strong>其解决的问题就是在分布式系统中如何就某个值（决议）达成一致</strong> 。</p>
+<p>在 <code>Paxos</code> 中主要有三个角色，分别为 <code>Proposer提案者</code>、<code>Acceptor表决者</code>、<code>Learner学习者</code>。<code>Paxos</code> 算法和 <code>2PC</code> 一样，也有两个阶段，分别为 <code>Prepare</code> 和 <code>accept</code> 阶段。</p>
+<h2 id="prepare-阶段"><a href="#prepare-阶段" class="headerlink" title="prepare 阶段"></a>prepare 阶段</h2><ul>
+<li><code>Proposer提案者</code>：负责提出 <code>proposal</code>，每个提案者在提出提案时都会首先获取到一个 <strong>具有全局唯一性的、递增的提案编号N</strong>，即在整个集群中是唯一的编号 N，然后将该编号赋予其要提出的提案，在<strong>第一阶段是只将提案编号发送给所有的表决者</strong>。</li>
+<li><code>Acceptor表决者</code>：每个表决者在 <code>accept</code> 某提案后，会将该提案编号N记录在本地，这样每个表决者中保存的已经被 accept 的提案中会存在一个<strong>编号最大的提案</strong>，其编号假设为 <code>maxN</code>。每个表决者仅会 <code>accept</code> 编号大于自己本地 <code>maxN</code> 的提案，在批准提案时表决者会将以前接受过的最大编号的提案作为响应反馈给 <code>Proposer</code> 。</li>
+</ul>
+<blockquote>
+<p>下面是 <code>prepare</code> 阶段的流程图，你可以对照着参考一下。</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/22e8d512d954676bdf0cc92d200af8ef.png?ynotemdtimestamp=1618749953489" alt="paxos第一阶段"></p>
+<h2 id="accept-阶段"><a href="#accept-阶段" class="headerlink" title="accept 阶段"></a>accept 阶段</h2><p>当一个提案被 <code>Proposer</code> 提出后，如果 <code>Proposer</code> 收到了超过半数的 <code>Acceptor</code> 的批准（<code>Proposer</code> 本身同意），那么此时 <code>Proposer</code> 会给所有的 <code>Acceptor</code> 发送真正的提案（你可以理解为第一阶段为试探），这个时候 <code>Proposer</code> 就会发送提案的内容和提案编号。</p>
+<p>表决者收到提案请求后会再次比较本身已经批准过的最大提案编号和该提案编号，如果该提案编号 <strong>大于等于</strong> 已经批准过的最大提案编号，那么就 <code>accept</code> 该提案（此时执行提案内容但不提交），随后将情况返回给 <code>Proposer</code> 。如果不满足则不回应或者返回 NO 。</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/b82536f956f70a584c6a20c10113f225.png?ynotemdtimestamp=1618749953489" alt="paxos第二阶段1"></p>
+<p>当 <code>Proposer</code> 收到超过半数的 <code>accept</code> ，那么它这个时候会向所有的 <code>acceptor</code> 发送提案的提交请求。需要注意的是，因为上述仅仅是超过半数的 <code>acceptor</code> 批准执行了该提案内容，其他没有批准的并没有执行该提案内容，所以这个时候需要<strong>向未批准的 <code>acceptor</code>发送提案内容和提案编号并让它无条件执行和提交</strong>，而对于前面已经批准过该提案的 <code>acceptor</code> 来说 <strong>仅仅需要发送该提案的编号</strong> ，让 <code>acceptor</code> 执行提交就行了。</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/743889b97485fdfe2094e5ef0af6b141.png?ynotemdtimestamp=1618749953489" alt="paxos第二阶段2"></p>
+<p>而如果 <code>Proposer</code> 如果没有收到超过半数的 <code>accept</code> 那么它将会将 <strong>递增</strong> 该 <code>Proposal</code> 的编号，然后 <strong>重新进入 <code>Prepare</code> 阶段</strong> 。</p>
+<blockquote>
+<p>对于 <code>Learner</code> 来说如何去学习 <code>Acceptor</code> 批准的提案内容，这有很多方式，读者可以自己去了解一下，这里不做过多解释。</p>
+</blockquote>
+<h2 id="paxos-算法的死循环问题"><a href="#paxos-算法的死循环问题" class="headerlink" title="paxos 算法的死循环问题"></a><code>paxos</code> 算法的死循环问题</h2><p>其实就有点类似于两个人吵架，小明说我是对的，小红说我才是对的，两个人据理力争的谁也不让谁🤬🤬。</p>
+<p>比如说，此时提案者 P1 提出一个方案 M1，完成了 <code>Prepare</code> 阶段的工作，这个时候 <code>acceptor</code> 则批准了 M1，但是此时提案者 P2 同时也提出了一个方案 M2，它也完成了 <code>Prepare</code> 阶段的工作。然后 P1 的方案已经不能在第二阶段被批准了（因为 <code>acceptor</code> 已经批准了比 M1 更大的 M2），所以 P1 自增方案变为 M3 重新进入 <code>Prepare</code> 阶段，然后 <code>acceptor</code> ，又批准了新的 M3 方案，它又不能批准 M2 了，这个时候 M2 又自增进入 <code>Prepare</code> 阶段。。。</p>
+<p>就这样无休无止的永远提案下去，这就是 <code>paxos</code> 算法的死循环问题。</p>
+<p>那么如何解决呢？很简单，人多了容易吵架，我现在 <strong>就允许一个能提案</strong> 就行了。</p>
+<h1 id="Zookeeper-ZAB协议"><a href="#Zookeeper-ZAB协议" class="headerlink" title="Zookeeper ZAB协议"></a>Zookeeper ZAB协议</h1><p>Zookeeper Automic Broadcast(ZAB)，即Zookeeper原⼦性⼴播，<strong>是Paxos经典实现</strong></p>
+<h2 id="术语："><a href="#术语：" class="headerlink" title="术语："></a>术语：</h2><ul>
+<li><p>quorum：集群过半数的集合</p>
+</li>
+<li><p>ZAB(zookeeper)中节点分四种状态</p>
+<ul>
+<li>looking：选举Leader的状态（崩溃恢复状态下）</li>
+<li>following：跟随者（follower）的状态，服从Leader命令</li>
+<li>leading：当前节点是Leader，负责协调⼯作。</li>
+<li>observing：observer(观察者)，不参与选举，只读节点。</li>
+</ul>
+</li>
+</ul>
+<h2 id="ZAB协议两种模式："><a href="#ZAB协议两种模式：" class="headerlink" title="ZAB协议两种模式："></a>ZAB协议两种模式：</h2><p>（1）消息广播模式：把数据更新到所有的Follower</p>
+<p>（2）崩溃恢复模式：Leader发生崩溃时，如何恢复</p>
+<h3 id="ZAB协议工作原理"><a href="#ZAB协议工作原理" class="headerlink" title="ZAB协议工作原理"></a>ZAB协议工作原理</h3><p>1、消息广播模式：</p>
+<p>（1）Leader将客户端的request转化成一个Proposal（提议）</p>
+<p>（2）Leader为每一个Follower准备了一个FIFO队列，并把Proposal发送到队列上。‘</p>
+<p>（3）leader若收到follower的半数以上ACK反馈</p>
+<p>（4）Leader向所有的follower发送commit。</p>
+<p>2、崩溃恢复模式</p>
+<p>（1）leader服务器选取</p>
+<p>既然是选老大，每个人都想做，于是成员ABC开始了公平选举的过程。但是为了方便，每个人都有一个记录表，来记录当前的信息。</p>
+<p>第一步：成员A告诉BC说我要成为老大，BC记录下来。（A成员广播）</p>
+<p>第二步：B回复可以，C回复不可以。（B成员广播）</p>
+<p>第三步：A和C收到B的消息，更新自己的记录表。</p>
+<p>此时A：2票，B：0票，C：0票。</p>
+<p>第四步：C这时候不满意了，也要选举成为老大。而且还给自己投了一票。</p>
+<p>第五步：A回复可以，B回复可以。更新自己的记录表。</p>
+<p>第六步：C收到AB的回复，更新。</p>
+<p>此时A：0票，B：0，C：3票。于是确定C就是下一届组织老大了。</p>
+<p>这就是整个选举的过程。并且每个人的选举，都代表了一个事件，为了保证分布式系统的时间有序性，因此给每一个事件都分配了一个Zxid。相当于编了一个号。32位是按照数字递增，即每次客户端发起一个proposal,低32位的数字简单加1。高32位是leader周期的epoch编号。</p>
+<p>每当选举出一个新的leader时，新的leader就从本地事物日志中取出ZXID,然后解析出高32位的epoch编号，进行加1，再将32位的全部设置为0。这样就保证了每次新选举的leader后，保证了ZXID的唯一性而且是保证递增的。</p>
+<p>（2）崩溃恢复</p>
+<p>既然要恢复，有些场景是不能恢复的，ZAB协议崩溃恢复要求满足如下2个要求： </p>
+<p>第一： 确保已经被leader提交的proposal必须最终被所有的follower服务器提交。 </p>
+<p>第二：确保丢弃已经被leader提出的但是没有被提交的proposal。</p>
+<p>好了，现在开始进行恢复。</p>
+<p>第一步：选取当前取出最大的ZXID，代表当前的事件是最新的。</p>
+<p>第二步：新leader把这个事件proposal提交给其他的follower节点</p>
+<p>第三步：follower节点会根据leader的消息进行回退或者是数据同步操作。最终目的要保证集群中所有节点的数据副本保持一致。</p>
+<p>这就是整个恢复的过程，其实就是相当于有个日志一样的东西，记录每一次操作，然后把出事前的最新操作恢复，然后进行同步即可。</p>
+<p>OK。这个就是ZAB协议的整个过程。</p>
 
           
         
@@ -1987,15 +2822,15 @@
 <h2 id="简单例子代码"><a href="#简单例子代码" class="headerlink" title="简单例子代码"></a>简单例子代码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedisLockController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> RedisTemplate redisTemplate;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;redisLock&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">redisLock</span><span class="params">()</span></span>&#123;</span><br><span class="line">        log.info(<span class="string">&quot;我进入了方法&quot;</span>);</span><br><span class="line">        String key = <span class="string">&quot;redisKey&quot;</span>;</span><br><span class="line">        String value = UUID.randomUUID().toString();</span><br><span class="line">        RedisCallback&lt;Boolean&gt; redisCallback = connection -&gt; &#123;</span><br><span class="line">            <span class="comment">//设置NX</span></span><br><span class="line">            RedisStringCommands.SetOption setOption = RedisStringCommands.SetOption.SET_IF_ABSENT;</span><br><span class="line">            <span class="comment">//设置过期时间</span></span><br><span class="line">            Expiration expiration = Expiration.seconds(<span class="number">30</span>);</span><br><span class="line">            <span class="comment">//序列化key</span></span><br><span class="line">            <span class="keyword">byte</span>[] redisKey = redisTemplate.getKeySerializer().serialize(key);</span><br><span class="line">            <span class="comment">//序列化value</span></span><br><span class="line">            <span class="keyword">byte</span>[] redisValue = redisTemplate.getValueSerializer().serialize(value);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">assert</span> redisKey != <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">assert</span> redisValue != <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">return</span> connection.set(redisKey, redisValue, expiration, setOption);</span><br><span class="line">        &#125;;</span><br><span class="line">        <span class="comment">//获取分布式锁</span></span><br><span class="line">        Boolean lock = (Boolean)redisTemplate.execute(redisCallback);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(lock!=<span class="keyword">null</span> &amp;&amp; lock)&#123;</span><br><span class="line">            log.info(<span class="string">&quot;我进入了锁&quot;</span>);</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">15000</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">                String script = <span class="string">&quot;if redis.call(\&quot;get\&quot;,KEYS[1]) == ARGV[1] then\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;    return redis.call(\&quot;del\&quot;,KEYS[1])\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;else\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;    return 0\n&quot;</span> +</span><br><span class="line">                        <span class="string">&quot;end&quot;</span>;</span><br><span class="line">                List&lt;String&gt; keys = Collections.singletonList(key);</span><br><span class="line">                RedisScript&lt;Boolean&gt; redisScript = RedisScript.of(script,Boolean.class);</span><br><span class="line">                Boolean result = (Boolean)redisTemplate.execute(redisScript, keys, value);</span><br><span class="line">                log.info(<span class="string">&quot;释放锁的结果：&quot;</span> + result);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        log.info(<span class="string">&quot;方法执行完成&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;方法执行完成&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h1 id="基于Redisson实现分布式锁"><a href="#基于Redisson实现分布式锁" class="headerlink" title="基于Redisson实现分布式锁"></a>基于Redisson实现分布式锁</h1><p><strong>Redisson 适用于</strong>：分布式应用，分布式缓存，分布式回话管理，分布式服务（任务，延迟任务，执行器），分布式redis客户端。</p>
-<h2 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Redisson%E5%8E%9F%E7%90%86.png"></p>
+<h2 id="原理（源码）"><a href="#原理（源码）" class="headerlink" title="原理（源码）"></a>原理（源码）</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/redis/Redisson%E5%8E%9F%E7%90%86.png"></p>
 <h3 id="可重入锁"><a href="#可重入锁" class="headerlink" title="可重入锁"></a>可重入锁</h3><p>Redis分布式锁，其实不具有可重入性</p>
+<h4 id="分布式可重入锁的设计"><a href="#分布式可重入锁的设计" class="headerlink" title="分布式可重入锁的设计"></a>分布式可重入锁的设计</h4><p>需记机器线程id（MAC地址 + jvm进程ID + 线程ID）和重入次数</p>
 <h3 id="获取锁实例"><a href="#获取锁实例" class="headerlink" title="获取锁实例"></a>获取锁实例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RLock lock = client.getLock(<span class="string">&quot;lock1&quot;</span>);</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> RLock <span class="title">getLock</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">RedissonLock</span>(connectionManager.<span class="built_in">getCommandExecutor</span>(), name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><code>RedissonLock</code>构造方法中，主要初始化一些属性</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> RedissonLock(CommandAsyncExecutor commandExecutor, String name) &#123;</span><br><span class="line">    <span class="keyword">super</span>(commandExecutor, name);</span><br><span class="line">    <span class="comment">//命令执行器</span></span><br><span class="line">    <span class="keyword">this</span>.commandExecutor = commandExecutor;</span><br><span class="line">    <span class="comment">//UUID字符串</span></span><br><span class="line">    <span class="keyword">this</span>.id = commandExecutor.getConnectionManager().getId();</span><br><span class="line">    <span class="comment">//内部锁过期时间</span></span><br><span class="line">    <span class="keyword">this</span>.internalLockLeaseTime = commandExecutor.</span><br><span class="line">                getConnectionManager().getCfg().getLockWatchdogTimeout();</span><br><span class="line">    <span class="keyword">this</span>.entryName = id + <span class="string">&quot;:&quot;</span> + name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <h3 id="加锁"><a href="#加锁" class="headerlink" title="加锁"></a>加锁</h3><p>调用<code>lock</code>方法，定位到<code>lockInterruptibly</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">lockInterruptibly</span><span class="params">(<span class="keyword">long</span> leaseTime, TimeUnit unit)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//当前线程ID</span></span><br><span class="line">    <span class="keyword">long</span> threadId = Thread.currentThread().getId();</span><br><span class="line">    <span class="comment">//尝试获取锁</span></span><br><span class="line">    Long ttl = tryAcquire(leaseTime, unit, threadId);</span><br><span class="line">    <span class="comment">// 如果ttl为空，则证明获取锁成功</span></span><br><span class="line">    <span class="keyword">if</span> (ttl == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//如果获取锁失败，则订阅到对应这个锁的channel</span></span><br><span class="line">    RFuture&lt;RedissonLockEntry&gt; future = subscribe(threadId);</span><br><span class="line">    commandExecutor.syncSubscription(future);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="comment">//再次尝试获取锁</span></span><br><span class="line">            ttl = tryAcquire(leaseTime, unit, threadId);</span><br><span class="line">            <span class="comment">//ttl为空，说明成功获取锁，返回</span></span><br><span class="line">            <span class="keyword">if</span> (ttl == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//ttl大于0 则等待ttl时间后继续尝试获取</span></span><br><span class="line">            <span class="keyword">if</span> (ttl &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                getEntry(threadId).getLatch().tryAcquire(ttl, TimeUnit.MILLISECONDS);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                getEntry(threadId).getLatch().acquire();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="comment">//取消对channel的订阅</span></span><br><span class="line">        unsubscribe(future, threadId);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//get(lockAsync(leaseTime, unit));</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -2027,7 +2862,7 @@
 <li><strong>如果解锁的线程和当前锁的线程不是同一个，解锁失败，抛出异常</strong></li>
 <li><strong>通过hincrby递减1，先释放一次锁。若剩余次数还大于0，则证明当前锁是重入锁，刷新过期时间；若剩余次数小于0，删除key并发布锁释放的消息，解锁成功</strong></li>
 </ul>
-<h3 id="简单例子"><a href="#简单例子" class="headerlink" title="简单例子"></a>简单例子</h3><ul>
+<h2 id="简单例子"><a href="#简单例子" class="headerlink" title="简单例子"></a>简单例子</h2><ul>
 <li>引入redission依赖<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.redisson<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>redisson-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.13.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
 <li>SpringBoot集成Redission<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">redis:</span></span><br><span class="line">    <span class="comment"># Redis数据库索引（默认为0）</span></span><br><span class="line">    <span class="attr">database:</span> <span class="number">0</span></span><br><span class="line">    <span class="comment"># Redis服务器地址</span></span><br><span class="line">    <span class="attr">host:</span> <span class="string">localhost</span></span><br><span class="line">    <span class="comment"># Redis服务器连接端口</span></span><br><span class="line">    <span class="attr">port:</span> <span class="number">6379</span></span><br><span class="line">    <span class="comment"># Redis服务器连接密码（默认为空）</span></span><br><span class="line">    <span class="attr">password:</span></span><br><span class="line">    <span class="attr">lettuce:</span></span><br><span class="line">      <span class="attr">pool:</span></span><br><span class="line">        <span class="comment"># 连接池最大连接数（使用负值表示没有限制） 默认 8</span></span><br><span class="line">        <span class="attr">max-active:</span> <span class="number">8</span></span><br><span class="line">        <span class="comment">#  连接池最大阻塞等待时间（使用负值表示没有限制） 默认 -1</span></span><br><span class="line">        <span class="attr">max-wait:</span> <span class="number">-1</span></span><br><span class="line">        <span class="comment"># 连接池中的最大空闲连接 默认 8</span></span><br><span class="line">        <span class="attr">max-idle:</span> <span class="number">8</span></span><br><span class="line">        <span class="comment"># 连接池中的最小空闲连接 默认 0</span></span><br><span class="line">        <span class="attr">min-idle:</span> <span class="number">0</span></span><br><span class="line">    <span class="comment"># 连接超时时间（毫秒）</span></span><br><span class="line">    <span class="attr">timeout:</span> <span class="number">1000</span></span><br></pre></td></tr></table></figure>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RedissionLockController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RedissonClient redisson;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;redissonLock&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">redissonLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        RLock rLock = redisson.getLock(<span class="string">&quot;order&quot;</span>);</span><br><span class="line">        log.info(<span class="string">&quot;我进入了方法！！&quot;</span>);</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            rLock.lock(<span class="number">30</span>, TimeUnit.SECONDS);</span><br><span class="line">            log.info(<span class="string">&quot;我获得了锁！！！&quot;</span>);</span><br><span class="line">            Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;<span class="keyword">finally</span> &#123;</span><br><span class="line">            log.info(<span class="string">&quot;我释放了锁！！&quot;</span>);</span><br><span class="line">            rLock.unlock();</span><br><span class="line">        &#125;</span><br><span class="line">        log.info(<span class="string">&quot;方法执行完成！！&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;方法执行完成！！&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
@@ -2346,522 +3181,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/17/MySQL-MySQl%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2%E7%BB%83%E4%B9%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/17/MySQL-MySQl%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2%E7%BB%83%E4%B9%A0/" itemprop="url">MySQL-MySQl联表查询练习</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-17T23:39:30+08:00">
-                2021-04-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MySQL-MySQL%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
-                    <span itemprop="name">MySQL - MySQL知识点</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/%E7%BB%83%E4%B9%A02.png" style="zoom: 67%;" />
-
-<h1 id="三表连接查询"><a href="#三表连接查询" class="headerlink" title="三表连接查询"></a>三表连接查询</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">TableA (ID, Number, Name, etc.)</span><br><span class="line"></span><br><span class="line">TableB (ID, <span class="keyword">Order</span>, TableA_ID, etc.)</span><br><span class="line"></span><br><span class="line">TableC (ID, <span class="keyword">Order</span>, Action, Device, TableB_ID, etc.) </span><br><span class="line"><span class="keyword">SELECT</span> TableB.Order, TableC.Order, </span><br><span class="line">         TableC.Action, TableC.Device  </span><br><span class="line">    <span class="keyword">FROM</span> TableC  </span><br><span class="line">   <span class="keyword">INNER</span> <span class="keyword">JOIN</span> TableB  </span><br><span class="line">      <span class="keyword">ON</span> TableB.Id <span class="operator">=</span> TableC.TableB_Id  </span><br><span class="line">   <span class="keyword">INNER</span> <span class="keyword">JOIN</span> TableA  </span><br><span class="line">      <span class="keyword">ON</span> TableA.Id <span class="operator">=</span> TableB.TableA_Id  </span><br><span class="line">   <span class="keyword">WHERE</span> TableA.Number  </span><br><span class="line">    <span class="keyword">LIKE</span> &quot;USER INPUT&quot;</span><br></pre></td></tr></table></figure>
-
-<h1 id="练习一"><a href="#练习一" class="headerlink" title="练习一"></a>练习一</h1><h2 id="学生表student（Sid，Sname，Sage，Sex），课程表course（Cid，Cname，Tid），成绩表score（Sid，Cid，Score）"><a href="#学生表student（Sid，Sname，Sage，Sex），课程表course（Cid，Cname，Tid），成绩表score（Sid，Cid，Score）" class="headerlink" title="学生表student（Sid，Sname，Sage，Sex），课程表course（Cid，Cname，Tid），成绩表score（Sid，Cid，Score）"></a>学生表student（Sid，Sname，Sage，Sex），课程表course（Cid，Cname，Tid），成绩表score（Sid，Cid，Score）</h2><p>1.查询课程名称为“java”，成绩从高到低的学生信息（学号，姓名，成绩）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">select stu.Sid,stu.Sname,sc.Score</span><br><span class="line">from student stu,course cou,score sc</span><br><span class="line">where stu.Sid &#x3D; sc.Sid and sc.Cid &#x3D; cou.Cid</span><br><span class="line">and cou.Cname &#x3D; &quot;java&quot;</span><br><span class="line">ORDER BY sc.Score DESC</span><br></pre></td></tr></table></figure>
-
-<p>2.查询所有课程成绩小于60分的学生的信息（学号，姓名，成绩）</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">select stu.Sid,stu.Sname,sc.Score</span><br><span class="line">from student stu left join score sc</span><br><span class="line">on stu.Sid &#x3D; sc.Sid</span><br><span class="line">where Score &lt; 60</span><br></pre></td></tr></table></figure>
-
-<p>3.查询所有学生的学号，姓名，选修课，总成绩</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">select stu.Sid,stu.Sname,count(sc.Score) as &#39;选课数&#39;,sum(sc.Score)</span><br><span class="line">from student stu left join score sc</span><br><span class="line">on stu.Sid &#x3D; sc.Sid</span><br><span class="line">GROUP BY stu.Sid,stu.Sname</span><br></pre></td></tr></table></figure>
-
-<h1 id="练习二"><a href="#练习二" class="headerlink" title="练习二"></a>练习二</h1><h2 id="表student-id-name-department-age-分别代表学员的学号，姓名，所属单位，年龄"><a href="#表student-id-name-department-age-分别代表学员的学号，姓名，所属单位，年龄" class="headerlink" title="表student(id,name,department,age)分别代表学员的学号，姓名，所属单位，年龄"></a>表student(id,name,department,age)分别代表学员的学号，姓名，所属单位，年龄</h2><h2 id="表course-id-name-分别代表课程编号课程名称"><a href="#表course-id-name-分别代表课程编号课程名称" class="headerlink" title="表course(id,name)分别代表课程编号课程名称"></a>表course(id,name)分别代表课程编号课程名称</h2><h2 id="表score-sid-cid-score-分别代表学号，所选的课程编号，学习成绩"><a href="#表score-sid-cid-score-分别代表学号，所选的课程编号，学习成绩" class="headerlink" title="表score(sid,cid,score) 分别代表学号，所选的课程编号，学习成绩"></a>表score(sid,cid,score) 分别代表学号，所选的课程编号，学习成绩</h2><ol>
-<li><p>使用标准SQL嵌套语句查询没有选修课程编号为”C5“的课程的学员姓名和所属单位</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT distinct student.name , student.department</span><br><span class="line">FROM student left join score</span><br><span class="line">on student.id &#x3D; score.sid</span><br><span class="line">where cid not in (select id from course where name &#x3D; &#39;C5&#39;)</span><br></pre></td></tr></table></figure></li>
-<li><p>查询选修了课程的学员人数</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select count(1)</span><br><span class="line">from student</span><br><span class="line">where id in(SELECT distinct score.sid FROM score )</span><br></pre></td></tr></table></figure></li>
-<li><p>每个课选修人数</p>
-</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SELECT course.name ,count(score.cid)</span><br><span class="line">FROM score left join course</span><br><span class="line">on score.cid &#x3D; course.id</span><br><span class="line">GROUP BY score.cid</span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>查询选修课程超过5门的学员学号和所属单位</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">select id,department</span><br><span class="line">from student</span><br><span class="line">where id &#x3D; (</span><br><span class="line">    		select sid</span><br><span class="line">			from score</span><br><span class="line">			GROUP BY sid</span><br><span class="line">			HAVING count(score.cid)&gt;&#x3D;5</span><br><span class="line">           )</span><br></pre></td></tr></table></figure>
-
-<h1 id="练习三"><a href="#练习三" class="headerlink" title="练习三"></a>练习三</h1><p>用户表 sys_user(表字段：userId-用户id，userName-用户名)，</p>
-<p>角色表sys_role(表字段：roleId-角色id，roleName-角色名称)，</p>
-<p>用户角色表sys_userRole（表字段：userId-用户id，roleId-角色id），</p>
-<p>目前sys_user表和sys_role表中都有数据，sys_userRole表是空的。写个sql：把现有的sys_user和sys_role中的数据，插入到sys_userRole中，实现每个用户都有每个角色。（比如一个用户id=1，角色表sys_role中有10个角色，那么对应到sys_userRole表中就应该有10条记录，表示用户id=1，有10个角色）</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">INSERT</span> <span class="keyword">into</span> sys_userrole (user_id,role_id) <span class="keyword">SELECT</span> sys_user.user_id,sys_role.role_id <span class="keyword">FROM</span> sys_user,sys_role</span><br></pre></td></tr></table></figure>
-
-<h1 id="练习四"><a href="#练习四" class="headerlink" title="练习四"></a>练习四</h1><p>mysql中存在订单表order，字段如下：</p>
-<p> <img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E6%95%B0%E6%8D%AE%E5%BA%93/%E7%BB%83%E4%B9%A0.png">                              </p>
-<p>写个sql，求取每个用户中，订单总金额最大的那笔订单（要求查询结果里面包含订单表order里面的所有字段：如图上面的六个字段）</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> a.<span class="operator">*</span> <span class="keyword">from</span> sys_order2 a <span class="keyword">inner</span> <span class="keyword">join</span> (<span class="keyword">select</span> user_id,<span class="built_in">max</span>(order_pay) <span class="keyword">as</span> ma <span class="keyword">from</span> sys_order2 <span class="keyword">GROUP</span> <span class="keyword">BY</span> user_id) b</span><br><span class="line"></span><br><span class="line"><span class="keyword">on</span> a.user_id <span class="operator">=</span> b.user_id <span class="keyword">and</span> a.order_pay <span class="operator">=</span> b.ma</span><br></pre></td></tr></table></figure>
-
-<h1 id="练习五"><a href="#练习五" class="headerlink" title="练习五"></a>练习五</h1><h2 id="MySQL当记录不存在时insert-当记录存在时update，语句怎么写？"><a href="#MySQL当记录不存在时insert-当记录存在时update，语句怎么写？" class="headerlink" title="MySQL当记录不存在时insert,当记录存在时update，语句怎么写？"></a>MySQL当记录不存在时insert,当记录存在时update，语句怎么写？</h2><p>INSERT INTO table (a,b,c) VALUES (1,2,3) ON DUPLICATE KEY UPDATE c=c+1;</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/17/MySQL-MySQL%E4%BC%98%E5%8C%96/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/17/MySQL-MySQL%E4%BC%98%E5%8C%96/" itemprop="url">MySQL-MySQL优化</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-17T23:33:32+08:00">
-                2021-04-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/MySQL-MySQL%E7%9F%A5%E8%AF%86%E7%82%B9/" itemprop="url" rel="index">
-                    <span itemprop="name">MySQL - MySQL知识点</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>摘抄<a target="_blank" rel="noopener" href="https://www.cnblogs.com/huchong/p/10219318.html">原文地址</a><br>摘抄<a target="_blank" rel="noopener" href="https://snailclimb.gitee.io/javaguide/#/docs/database/MySQL%E9%AB%98%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E8%A7%84%E8%8C%83%E5%BB%BA%E8%AE%AE">JavaGuide</a></p>
-<h1 id="是否进行过数据库调优？一般如何性能调优"><a href="#是否进行过数据库调优？一般如何性能调优" class="headerlink" title="是否进行过数据库调优？一般如何性能调优"></a>是否进行过数据库调优？一般如何性能调优</h1><p>两个方面考虑：一是<strong>应用层架构</strong>；二是<strong>数据库架构</strong>；</p>
-<ol>
-<li><strong>应用层架构优化</strong>。核心是减少对数据库的调用次数，本质上是从业务应用层来审视流程是否合理，常用的方案有：</li>
-</ol>
-<ul>
-<li>引入缓存，虚拟一层中间层，减少对数据库的读写；</li>
-<li>将多次单个调用改为批量调用，比如说循环十次主键 select * FROM t where id = ‘xx’改为使用 IN 一性次读取 select * FROM t where id IN (‘xx’,‘xx’,…)；</li>
-<li>使用搜索引擎。</li>
-</ul>
-<ol start="2">
-<li><strong>数据库架构优化</strong>。核心是优化各种配置，提升数据库的性能，可分为：</li>
-</ol>
-<ul>
-<li>优化 SQL 及索引，以达到减少数据访问、返回更少数据、减少交互次数等目标。常用的手段包括：创建并正确地使用索引（比如说减少回表查询）、优化执行计划、数据分页处理、只取需要的字段、慢查询优化、使用搜索引擎等；</li>
-<li>优化数据库表结构。常用的的手段包括：使用占用空间最小的数据类型、使用简单的数据类型、尽可能地使用 NOT NULL 定义字段、尽量少使用 text 字段、分库分表等；</li>
-<li>优化系统配置。包括操作系统的配置优化和数据库的配置优化。<ul>
-<li>操作系统优化。数据库是基于操作系统（多为 Linux 系统）的，所以对于合理使用操作系统也会影响到数据库的性能。比如将数据库服务器应和业务服务器隔离、或者设置 net.ipv4.tcp_max_syn_backlog = 65535 以增加 tcp 支持的队列数等等；</li>
-<li>数据库配置文件优化，以 MySQL 配置为例，可以修改 innodb_buffer_pool_size（设置数据和索引缓存的缓冲池）、max_connections 等参数。</li>
-<li>优化硬件配置。比如说使用更好的服务器、更快的硬盘、更大的内存等等。</li>
-</ul>
-</li>
-</ul>
-<h2 id="切忌上来就说用-explain-去解析执行计划"><a href="#切忌上来就说用-explain-去解析执行计划" class="headerlink" title="切忌上来就说用 explain 去解析执行计划"></a>切忌上来就说用 explain 去解析执行计划</h2><p>应该把调优视为系统化的方案和工程</p>
-<h3 id="使用-explain-查询执行计划需描述其步骤"><a href="#使用-explain-查询执行计划需描述其步骤" class="headerlink" title="使用 explain 查询执行计划需描述其步骤:"></a>使用 explain 查询执行计划需描述其步骤:</h3><p>（1）查看 slowlog，分析 slowlog，分析出查询慢的语句；</p>
-<p>（2）按照一定优先级（比如说调用频率），进行一个一个的排查所有慢语句。</p>
-<p>（3）分析 top sql，进行 explain 调试，查看语句执行时间。</p>
-<p>（4）调整索引或语句本身。</p>
-<h1 id="大表优化"><a href="#大表优化" class="headerlink" title="大表优化"></a>大表优化</h1><p>当MySQL单表记录数过大时，数据库的CRUD性能会明显下降，一些常见的优化措施如下：</p>
-<h2 id="1-限定数据的范围"><a href="#1-限定数据的范围" class="headerlink" title="1. 限定数据的范围"></a>1. 限定数据的范围</h2><p>务必禁止不带任何限制数据范围条件的查询语句。比如：我们当用户在查询订单历史的时候，我们可以控制在一个月的范围内；</p>
-<h2 id="2-读-写分离"><a href="#2-读-写分离" class="headerlink" title="2. 读/写分离"></a>2. 读/写分离</h2><p>经典的数据库拆分方案，主库负责写，从库负责读；</p>
-<h2 id="3-垂直分区"><a href="#3-垂直分区" class="headerlink" title="3. 垂直分区"></a>3. 垂直分区</h2><p> <strong>根据数据库里面数据表的相关性进行拆分。</strong> 例如，用户表中既有用户的登录信息又有用户的基本信息，可以将用户表拆分成两个单独的表，甚至放到单独的库做分库。</p>
-<p> <strong>简单来说垂直拆分是指数据表列的拆分，把一张列比较多的表拆分为多张表。</strong> 如下图所示，这样来说大家应该就更容易理解了。 <img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9E%82%E7%9B%B4%E5%88%86%E5%8C%BA.png" alt="数据库垂直分区"></p>
-<ul>
-<li><strong>垂直拆分的优点：</strong> 可以使得列数据变小，在查询时减少读取的Block数，减少I/O次数。此外，垂直分区可以简化表的结构，易于维护。</li>
-<li><strong>垂直拆分的缺点：</strong> 主键会出现冗余，需要管理冗余列，并会引起Join操作，可以通过在应用层进行Join来解决。此外，垂直分区会让事务变得更加复杂；</li>
-</ul>
-<h2 id="4-水平分区"><a href="#4-水平分区" class="headerlink" title="4. 水平分区"></a>4. 水平分区</h2><p><strong>保持数据表结构不变，通过某种策略存储数据分片。这样每一片数据分散到不同的表或者库中，达到了分布式的目的。 水平拆分可以支撑非常大的数据量。</strong> </p>
-<p> 水平拆分是指数据表行的拆分，表的行数超过200万行时，就会变慢，这时可以把一张的表的数据拆成多张表来存放。举个例子：我们可以将用户信息表拆分成多个用户信息表，这样就可以避免单一表数据量过大对性能造成影响。</p>
-<p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/%E6%95%B0%E6%8D%AE%E5%BA%93%E6%B0%B4%E5%B9%B3%E6%8B%86%E5%88%86.png" alt="数据库水平拆分"></p>
-<p>水平拆分可以支持非常大的数据量。需要注意的一点是：分表仅仅是解决了单一表数据过大的问题，但由于表的数据还是在同一台机器上，其实对于提升MySQL并发能力没有什么意义，所以 <strong>水平拆分最好分库</strong> 。</p>
-<p>水平拆分能够 <strong>支持非常大的数据量存储，应用端改造也少</strong>，但 <strong>分片事务难以解决</strong>  ，跨节点Join性能较差，逻辑复杂。《Java工程师修炼之道》的作者推荐 <strong>尽量不要对数据进行分片，因为拆分会带来逻辑、部署、运维的各种复杂度</strong> ，一般的数据表在优化得当的情况下支撑千万以下的数据量是没有太大问题的。如果实在要分片，尽量选择客户端分片架构，这样可以减少一次和中间件的网络I/O。</p>
-<p><strong>下面补充一下数据库分片的两种常见方案：</strong></p>
-<ul>
-<li><strong>客户端代理：</strong>  <strong>分片逻辑在应用端，封装在jar包中，通过修改或者封装JDBC层来实现。</strong> 当当网的 <strong>Sharding-JDBC</strong> 、阿里的TDDL是两种比较常用的实现。</li>
-<li><strong>中间件代理：</strong> <strong>在应用和数据中间加了一个代理层。分片逻辑统一维护在中间件服务中。</strong> 我们现在谈的 <strong>Mycat</strong> 、360的Atlas、网易的DDB等等都是这种架构的实现。</li>
-</ul>
-<h1 id="数据库规范"><a href="#数据库规范" class="headerlink" title="数据库规范"></a>数据库规范</h1><h2 id="数据库命令规范"><a href="#数据库命令规范" class="headerlink" title="数据库命令规范"></a>数据库命令规范</h2><ul>
-<li>所有数据库对象名称必须使用小写字母并用下划线分割</li>
-<li>所有数据库对象名称禁止使用 MySQL 保留关键字</li>
-<li>数据库对象的命名要能做到见名识意，并且最后不要超过 32 个字符</li>
-<li>临时库表必须以 tmp_为前缀并以日期为后缀，备份表必须以 bak_为前缀并以日期 (时间戳) 为后缀</li>
-<li>所有存储相同数据的列名和列类型必须一致（一般作为关联列，如果查询时关联列类型不一致会自动进行数据类型隐式转换，会造成列上的索引失效，导致查询效率降低）</li>
-</ul>
-<h2 id="数据库基本设计规范"><a href="#数据库基本设计规范" class="headerlink" title="数据库基本设计规范"></a>数据库基本设计规范</h2><h3 id="所有表必须使用-Innodb-存储引擎"><a href="#所有表必须使用-Innodb-存储引擎" class="headerlink" title="所有表必须使用 Innodb 存储引擎"></a>所有表必须使用 Innodb 存储引擎</h3><p>没有特殊要求（即 Innodb 无法满足的功能如：列存储，存储空间数据等）的情况下，所有表必须使用 Innodb 存储引擎（MySQL5.5 之前默认使用 Myisam，5.6 以后默认的为 Innodb）。</p>
-<p>Innodb 支持事务，支持行级锁，更好的恢复性，高并发下性能更好。</p>
-<h3 id="数据库和表的字符集统一使用-UTF8"><a href="#数据库和表的字符集统一使用-UTF8" class="headerlink" title="数据库和表的字符集统一使用 UTF8"></a>数据库和表的字符集统一使用 UTF8</h3><p>兼容性更好，统一字符集可以避免由于字符集转换产生的乱码，不同的字符集进行比较前需要进行转换会造成索引失效，如果数据库中有存储 emoji 表情的需要，字符集需要采用 utf8mb4 字符集。</p>
-<h3 id="所有表和字段都需要添加注释"><a href="#所有表和字段都需要添加注释" class="headerlink" title="所有表和字段都需要添加注释"></a>所有表和字段都需要添加注释</h3><p>使用 comment 从句添加表和列的备注，从一开始就进行数据字典的维护</p>
-<h3 id="尽量控制单表数据量的大小-建议控制在-500-万以内。"><a href="#尽量控制单表数据量的大小-建议控制在-500-万以内。" class="headerlink" title="尽量控制单表数据量的大小,建议控制在 500 万以内。"></a>尽量控制单表数据量的大小,建议控制在 500 万以内。</h3><p>500 万并不是 MySQL 数据库的限制，过大会造成修改表结构，备份，恢复都会有很大的问题。</p>
-<p>可以用历史数据归档（应用于日志数据），分库分表（应用于业务数据）等手段来控制数据量大小</p>
-<h3 id="谨慎使用-MySQL-分区表"><a href="#谨慎使用-MySQL-分区表" class="headerlink" title="谨慎使用 MySQL 分区表"></a>谨慎使用 MySQL 分区表</h3><p>分区表在物理上表现为多个文件，在逻辑上表现为一个表；</p>
-<p>谨慎选择分区键，跨分区查询效率可能更低；</p>
-<p>建议采用物理分表的方式管理大数据。</p>
-<h3 id="尽量做到冷热数据分离-减小表的宽度"><a href="#尽量做到冷热数据分离-减小表的宽度" class="headerlink" title="尽量做到冷热数据分离,减小表的宽度"></a>尽量做到冷热数据分离,减小表的宽度</h3><blockquote>
-<p>MySQL 限制每个表最多存储 4096 列，并且每一行数据的大小不能超过 65535 字节。</p>
-</blockquote>
-<p>减少磁盘 IO,保证热数据的内存缓存命中率（表越宽，把表装载进内存缓冲池时所占用的内存也就越大,也会消耗更多的 IO）；</p>
-<p>更有效的利用缓存，避免读入无用的冷数据；</p>
-<p>经常一起使用的列放到一个表中（避免更多的关联操作）。</p>
-<h3 id="禁止在表中建立预留字段"><a href="#禁止在表中建立预留字段" class="headerlink" title="禁止在表中建立预留字段"></a>禁止在表中建立预留字段</h3><p>预留字段的命名很难做到见名识义。</p>
-<p>预留字段无法确认存储的数据类型，所以无法选择合适的类型。</p>
-<p>对预留字段类型的修改，会对表进行锁定。</p>
-<h3 id="禁止在数据库中存储图片-文件等大的二进制数据"><a href="#禁止在数据库中存储图片-文件等大的二进制数据" class="headerlink" title="禁止在数据库中存储图片,文件等大的二进制数据"></a>禁止在数据库中存储图片,文件等大的二进制数据</h3><p>通常文件很大，会短时间内造成数据量快速增长，数据库进行数据库读取时，通常会进行大量的随机 IO 操作，文件很大时，IO 操作很耗时。</p>
-<p>通常存储于文件服务器，数据库只存储文件地址信息</p>
-<h2 id="数据库字段设计规范"><a href="#数据库字段设计规范" class="headerlink" title="数据库字段设计规范"></a>数据库字段设计规范</h2><h3 id="优先选择符合存储需要的最小的数据类型"><a href="#优先选择符合存储需要的最小的数据类型" class="headerlink" title="优先选择符合存储需要的最小的数据类型"></a>优先选择符合存储需要的最小的数据类型</h3><p><strong>原因：</strong></p>
-<p>列的字段越大，建立索引时所需要的空间也就越大，这样一页中所能存储的索引节点的数量也就越少也越少，在遍历时所需要的 IO 次数也就越多，索引的性能也就越差。</p>
-<p><strong>方法：</strong></p>
-<p><strong>a.将字符串转换成数字类型存储,如:将 IP 地址转换成整形数据</strong></p>
-<p>MySQL 提供了两个方法来处理 ip 地址</p>
-<p>•inet_aton 把 ip 转为无符号整型 (4-8 位)•inet_ntoa 把整型的 ip 转为地址</p>
-<p>插入数据前，先用 inet_aton 把 ip 地址转为整型，可以节省空间，显示数据时，使用 inet_ntoa 把整型的 ip 地址转为地址显示即可。</p>
-<p><strong>b.对于非负型的数据 (如自增 ID,整型 IP) 来说,要优先使用无符号整型来存储</strong></p>
-<p><strong>原因：</strong></p>
-<p>无符号相对于有符号可以多出一倍的存储空间</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SIGNED INT -2147483648~2147483647</span><br><span class="line">UNSIGNED INT 0~4294967295</span><br></pre></td></tr></table></figure>
-
-<p>VARCHAR(N) 中的 N 代表的是字符数，而不是字节数，使用 UTF8 存储 255 个汉字 Varchar(255)=765 个字节。<strong>过大的长度会消耗更多的内存。</strong></p>
-<h3 id="避免使用-TEXT-BLOB-数据类型，最常见的-TEXT-类型可以存储-64k-的数据"><a href="#避免使用-TEXT-BLOB-数据类型，最常见的-TEXT-类型可以存储-64k-的数据" class="headerlink" title="避免使用 TEXT,BLOB 数据类型，最常见的 TEXT 类型可以存储 64k 的数据"></a>避免使用 TEXT,BLOB 数据类型，最常见的 TEXT 类型可以存储 64k 的数据</h3><p><strong>a. 建议把 BLOB 或是 TEXT 列分离到单独的扩展表中</strong></p>
-<p>MySQL 内存临时表不支持 TEXT、BLOB  这样的大数据类型，如果查询中包含这样的数据，在排序等操作时，就不能使用内存临时表，必须使用磁盘临时表进行。而且对于这种数据，MySQL  还是要进行二次查询，会使 sql 性能变得很差，但是不是说一定不能使用这样的数据类型。</p>
-<p>如果一定要使用，建议把 BLOB 或是 TEXT 列分离到单独的扩展表中，查询时一定不要使用 select * 而只需要取出必要的列，不需要 TEXT 列的数据时不要对该列进行查询。</p>
-<p><strong>2、TEXT 或 BLOB 类型只能使用前缀索引</strong></p>
-<p>因为MySQL[1] 对索引字段长度是有限制的，所以 TEXT 类型只能使用前缀索引，并且 TEXT 列上是不能有默认值的</p>
-<h3 id="避免使用-ENUM-类型"><a href="#避免使用-ENUM-类型" class="headerlink" title="避免使用 ENUM 类型"></a>避免使用 ENUM 类型</h3><p>修改 ENUM 值需要使用 ALTER 语句</p>
-<p>ENUM 类型的 ORDER BY 操作效率低，需要额外操作</p>
-<p>禁止使用数值作为 ENUM 的枚举值</p>
-<h3 id="尽可能把所有列定义为-NOT-NULL"><a href="#尽可能把所有列定义为-NOT-NULL" class="headerlink" title="尽可能把所有列定义为 NOT NULL"></a>尽可能把所有列定义为 NOT NULL</h3><p><strong>原因：</strong></p>
-<p>索引 NULL 列需要额外的空间来保存，所以要占用更多的空间</p>
-<p>进行比较和计算时要对 NULL 值做特别的处理</p>
-<h3 id="使用-TIMESTAMP-4-个字节-或-DATETIME-类型-8-个字节-存储时间"><a href="#使用-TIMESTAMP-4-个字节-或-DATETIME-类型-8-个字节-存储时间" class="headerlink" title="使用 TIMESTAMP(4 个字节) 或 DATETIME 类型 (8 个字节) 存储时间"></a>使用 TIMESTAMP(4 个字节) 或 DATETIME 类型 (8 个字节) 存储时间</h3><p>TIMESTAMP 存储的时间范围 1970-01-01 00:00:01 ~ 2038-01-19-03:14:07</p>
-<p>TIMESTAMP 占用 4 字节和 INT 相同，但比 INT 可读性高</p>
-<p>超出 TIMESTAMP 取值范围的使用 DATETIME 类型存储</p>
-<p><strong>经常会有人用字符串存储日期型的数据（不正确的做法）</strong></p>
-<p>•缺点 1：无法用日期函数进行计算和比较•缺点 2：用字符串存储日期要占用更多的空间</p>
-<h3 id="同财务相关的金额类数据必须使用-decimal-类型"><a href="#同财务相关的金额类数据必须使用-decimal-类型" class="headerlink" title="同财务相关的金额类数据必须使用 decimal 类型"></a>同财务相关的金额类数据必须使用 decimal 类型</h3><p>非精准浮点：float,double</p>
-<p>精准浮点：decimal</p>
-<p>Decimal 类型为精准浮点数，在计算时不会丢失精度</p>
-<p>占用空间由定义的宽度决定，每 4 个字节可以存储 9 位数字，并且小数点要占用一个字节</p>
-<p>可用于存储比 bigint 更大的整型数据</p>
-<h2 id="索引设计规范"><a href="#索引设计规范" class="headerlink" title="索引设计规范"></a>索引设计规范</h2><h3 id="限制每张表上的索引数量-建议单张表索引不超过-5-个"><a href="#限制每张表上的索引数量-建议单张表索引不超过-5-个" class="headerlink" title="限制每张表上的索引数量,建议单张表索引不超过 5 个"></a>限制每张表上的索引数量,建议单张表索引不超过 5 个</h3><p>索引并不是越多越好！索引可以提高效率同样可以降低效率。</p>
-<p>索引可以增加查询效率，但同样也会降低插入和更新的效率，甚至有些情况下会降低查询效率。</p>
-<p>因为 MySQL 优化器在选择如何优化查询时，会根据统一信息，对每一个可以用到的索引来进行评估，以生成出一个最好的执行计划，如果同时有很多个索引都可以用于查询，就会增加 MySQL 优化器生成执行计划的时间，同样会降低查询性能。</p>
-<h3 id="禁止给表中的每一列都建立单独的索引"><a href="#禁止给表中的每一列都建立单独的索引" class="headerlink" title="禁止给表中的每一列都建立单独的索引"></a>禁止给表中的每一列都建立单独的索引</h3><p>5.6 版本之前，一个 sql 只能使用到一个表中的一个索引，5.6 以后，虽然有了合并索引的优化方式，但是还是远远没有使用一个联合索引的查询方式好。</p>
-<h3 id="每个-Innodb-表必须有个主键"><a href="#每个-Innodb-表必须有个主键" class="headerlink" title="每个 Innodb 表必须有个主键"></a>每个 Innodb 表必须有个主键</h3><p>Innodb 是一种索引组织表：数据的存储的逻辑顺序和索引的顺序是相同的。每个表都可以有多个索引，但是表的存储顺序只能有一种。</p>
-<p>Innodb 是按照主键索引的顺序来组织表的</p>
-<p>•不要使用更新频繁的列作为主键，不适用多列主键（相当于联合索引）</p>
-<p>•不要使用 UUID,MD5,HASH,字符串列作为主键（无法保证数据的顺序增长）</p>
-<p>•主键建议使用自增 ID 值</p>
-<h3 id="常见索引列建议"><a href="#常见索引列建议" class="headerlink" title="常见索引列建议"></a>常见索引列建议</h3><p>出现在 SELECT、UPDATE、DELETE 语句的 WHERE 从句中的列</p>
-<p>包含在 ORDER BY、GROUP BY、DISTINCT 中的字段</p>
-<p>并不要将符合 1 和 2 中的字段的列都建立一个索引， 通常将 1、2 中的字段建立联合索引效果更好</p>
-<p>多表 join 的关联列</p>
-<h3 id="如何选择索引列的顺序"><a href="#如何选择索引列的顺序" class="headerlink" title="如何选择索引列的顺序"></a>如何选择索引列的顺序</h3><p>建立索引的目的是：希望通过索引进行数据查找，减少随机 IO，增加查询性能 ，索引能过滤出越少的数据，则从磁盘中读入的数据也就越少。</p>
-<p>•区分度最高的放在联合索引的最左侧（区分度=列中不同值的数量/列的总行数）</p>
-<p>•尽量把字段长度小的列放在联合索引的最左侧（因为字段长度越小，一页能存储的数据量越大，IO 性能也就越好）</p>
-<p>•使用最频繁的列放到联合索引的左侧（这样可以比较少的建立一些索引）</p>
-<h3 id="避免建立冗余索引和重复索引（增加了查询优化器生成执行计划的时间）"><a href="#避免建立冗余索引和重复索引（增加了查询优化器生成执行计划的时间）" class="headerlink" title="避免建立冗余索引和重复索引（增加了查询优化器生成执行计划的时间）"></a>避免建立冗余索引和重复索引（增加了查询优化器生成执行计划的时间）</h3><p>•重复索引示例：primary key(id)、index(id)、unique index(id)<br>•冗余索引示例：index(a,b,c)、index(a,b)、index(a)</p>
-<h3 id="对于频繁的查询优先考虑使用覆盖索引"><a href="#对于频繁的查询优先考虑使用覆盖索引" class="headerlink" title="对于频繁的查询优先考虑使用覆盖索引"></a>对于频繁的查询优先考虑使用覆盖索引</h3><p>覆盖索引：就是包含了所有查询字段 (where,select,ordery by,group by 包含的字段) 的索引</p>
-<p>覆盖索引的好处：</p>
-<p>•避免 Innodb 表进行索引的二次查询: Innodb 是以聚集索引的顺序来存储的，对于 Innodb 来说，二级索引在叶子节点中所保存的是行的主键信息，如果是用二级索引查询数据的话，在查找到相应的键值后，还要通过主键进行二次查询才能获取我们真实所需要的数据。而在覆盖索引中，二级索引的键值中可以获取所有的数据，避免了对主键的二次查询 ，减少了 IO 操作，提升了查询效率。</p>
-<p>•可以把随机 IO 变成顺序 IO 加快查询效率: 由于覆盖索引是按键值的顺序存储的，对于 IO 密集型的范围查找来说，对比随机从磁盘读取每一行的数据 IO 要少的多，因此利用覆盖索引在访问时也可以把磁盘的随机读取的 IO 转变成索引查找的顺序 IO。</p>
-<h3 id="索引-SET-规范"><a href="#索引-SET-规范" class="headerlink" title="索引 SET 规范"></a>索引 SET 规范</h3><p>尽量避免使用外键约束</p>
-<p>•不建议使用外键约束（foreign key），但一定要在表与表之间的关联键上建立索引</p>
-<p>•外键可用于保证数据的参照完整性，但建议在业务端实现</p>
-<p>•外键会影响父表和子表的写操作从而降低性能</p>
-<h2 id="数据库-SQL-开发规范"><a href="#数据库-SQL-开发规范" class="headerlink" title="数据库 SQL 开发规范"></a>数据库 SQL 开发规范</h2><h3 id="建议使用预编译语句进行数据库操作"><a href="#建议使用预编译语句进行数据库操作" class="headerlink" title="建议使用预编译语句进行数据库操作"></a>建议使用预编译语句进行数据库操作</h3><p>预编译语句可以重复使用这些计划，减少 SQL 编译所需要的时间，还可以解决动态 SQL 所带来的 SQL 注入的问题。</p>
-<p>只传参数，比传递 SQL 语句更高效。</p>
-<p>相同语句可以一次解析，多次使用，提高处理效率。</p>
-<h3 id="避免数据类型的隐式转换"><a href="#避免数据类型的隐式转换" class="headerlink" title="避免数据类型的隐式转换"></a>避免数据类型的隐式转换</h3><p>隐式转换会导致索引失效如:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select name,phone from customer where id &#x3D; &#39;111&#39;;</span><br></pre></td></tr></table></figure>
-
-<h3 id="充分利用表上已经存在的索引"><a href="#充分利用表上已经存在的索引" class="headerlink" title="充分利用表上已经存在的索引"></a>充分利用表上已经存在的索引</h3><p>避免使用双%号的查询条件。如：a like ‘%123%’，（如果无前置%,只有后置%，是可以用到列上的索引的）</p>
-<p>一个 SQL 只能利用到复合索引中的一列进行范围查询。如：有 a,b,c 列的联合索引，在查询条件中有 a 列的范围查询，则在 b,c 列上的索引将不会被用到。</p>
-<p>在定义联合索引时，如果 a 列要用到范围查找的话，就要把 a 列放到联合索引的右侧，使用 left join 或 not exists 来优化 not in 操作，因为 not in 也通常会使用索引失效。</p>
-<h3 id="数据库设计时，应该要对以后扩展进行考虑"><a href="#数据库设计时，应该要对以后扩展进行考虑" class="headerlink" title="数据库设计时，应该要对以后扩展进行考虑"></a>数据库设计时，应该要对以后扩展进行考虑</h3><h3 id="程序连接不同的数据库使用不同的账号，进制跨库查询"><a href="#程序连接不同的数据库使用不同的账号，进制跨库查询" class="headerlink" title="程序连接不同的数据库使用不同的账号，进制跨库查询"></a>程序连接不同的数据库使用不同的账号，进制跨库查询</h3><ul>
-<li>为数据库迁移和分库分表留出余地</li>
-<li>降低业务耦合度</li>
-<li>避免权限过大而产生的安全风险</li>
-</ul>
-<h3 id="禁止使用-SELECT-必须使用-SELECT-lt-字段列表-gt-查询"><a href="#禁止使用-SELECT-必须使用-SELECT-lt-字段列表-gt-查询" class="headerlink" title="禁止使用 SELECT * 必须使用 SELECT &lt;字段列表&gt; 查询"></a>禁止使用 SELECT * 必须使用 SELECT &lt;字段列表&gt; 查询</h3><p><strong>原因：</strong></p>
-<p>•消耗更多的 CPU 和 IO 以网络带宽资源</p>
-<p>•无法使用覆盖索引</p>
-<p>•可减少表结构变更带来的影响</p>
-<h3 id="禁止使用不含字段列表的-INSERT-语句"><a href="#禁止使用不含字段列表的-INSERT-语句" class="headerlink" title="禁止使用不含字段列表的 INSERT 语句"></a>禁止使用不含字段列表的 INSERT 语句</h3><p>如：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">insert into values (&#39;a&#39;,&#39;b&#39;,&#39;c&#39;);</span><br></pre></td></tr></table></figure>
-
-<p>应使用：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">insert into t(c1,c2,c3) values (&#39;a&#39;,&#39;b&#39;,&#39;c&#39;);</span><br></pre></td></tr></table></figure>
-
-<h3 id="避免使用子查询，可以把子查询优化为-join-操作"><a href="#避免使用子查询，可以把子查询优化为-join-操作" class="headerlink" title="避免使用子查询，可以把子查询优化为 join 操作"></a>避免使用子查询，可以把子查询优化为 join 操作</h3><p>通常子查询在 in 子句中，且子查询中为简单 SQL(不包含 union、group by、order by、limit 从句) 时,才可以把子查询转化为关联查询进行优化。</p>
-<p><strong>子查询性能差的原因：</strong></p>
-<p>子查询的结果集无法使用索引，通常子查询的结果集会被存储到临时表中，不论是内存临时表还是磁盘临时表都不会存在索引，所以查询性能会受到一定的影响。特别是对于返回结果集比较大的子查询，其对查询性能的影响也就越大。</p>
-<p>由于子查询会产生大量的临时表也没有索引，所以会消耗过多的 CPU 和 IO 资源，产生大量的慢查询。</p>
-<h3 id="避免使用-JOIN-关联太多的表"><a href="#避免使用-JOIN-关联太多的表" class="headerlink" title="避免使用 JOIN 关联太多的表"></a>避免使用 JOIN 关联太多的表</h3><p>对于 MySQL 来说，是存在关联缓存的，缓存的大小可以由 join_buffer_size 参数进行设置。</p>
-<p>在 MySQL 中，对于同一个 SQL 多关联（join）一个表，就会多分配一个关联缓存，如果在一个 SQL 中关联的表越多，所占用的内存也就越大。</p>
-<p>如果程序中大量的使用了多表关联的操作，同时 join_buffer_size 设置的也不合理的情况下，就容易造成服务器内存溢出的情况，就会影响到服务器数据库性能的稳定性。</p>
-<p>同时对于关联操作来说，会产生临时表操作，影响查询效率，MySQL 最多允许关联 61 个表，建议不超过 5 个。</p>
-<h3 id="减少同数据库的交互次数"><a href="#减少同数据库的交互次数" class="headerlink" title="减少同数据库的交互次数"></a>减少同数据库的交互次数</h3><p>数据库更适合处理批量操作，合并多个相同的操作到一起，可以提高处理效率。</p>
-<h3 id="对应同一列进行-or-判断时，使用-in-代替-or"><a href="#对应同一列进行-or-判断时，使用-in-代替-or" class="headerlink" title="对应同一列进行 or 判断时，使用 in 代替 or"></a>对应同一列进行 or 判断时，使用 in 代替 or</h3><p>in 的值不要超过 500 个，in 操作可以更有效的利用索引，or 大多数情况下很少能利用到索引。</p>
-<h3 id="禁止使用-order-by-rand-进行随机排序"><a href="#禁止使用-order-by-rand-进行随机排序" class="headerlink" title="禁止使用 order by rand() 进行随机排序"></a>禁止使用 order by rand() 进行随机排序</h3><p>order by rand() 会把表中所有符合条件的数据装载到内存中，然后在内存中对所有数据根据随机生成的值进行排序，并且可能会对每一行都生成一个随机值，如果满足条件的数据集非常大，就会消耗大量的 CPU 和 IO 及内存资源。</p>
-<p>推荐在程序中获取一个随机值，然后从数据库中获取数据的方式。</p>
-<h3 id="WHERE-从句中禁止对列进行函数转换和计算"><a href="#WHERE-从句中禁止对列进行函数转换和计算" class="headerlink" title="WHERE 从句中禁止对列进行函数转换和计算"></a>WHERE 从句中禁止对列进行函数转换和计算</h3><p>对列进行函数转换或计算时会导致无法使用索引</p>
-<p><strong>不推荐：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">where date(create_time)&#x3D;&#39;20190101&#39;</span><br></pre></td></tr></table></figure>
-
-<p><strong>推荐：</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">where create_time &gt;&#x3D; &#39;20190101&#39; and create_time &lt; &#39;20190102&#39;</span><br></pre></td></tr></table></figure>
-
-<h3 id="在明显不会有重复值时使用-UNION-ALL-而不是-UNION"><a href="#在明显不会有重复值时使用-UNION-ALL-而不是-UNION" class="headerlink" title="在明显不会有重复值时使用 UNION ALL 而不是 UNION"></a>在明显不会有重复值时使用 UNION ALL 而不是 UNION</h3><p>•UNION 会把两个结果集的所有数据放到临时表中后再进行去重操作</p>
-<p>•UNION ALL 不会再对结果集进行去重操作</p>
-<h3 id="拆分复杂的大-SQL-为多个小-SQL"><a href="#拆分复杂的大-SQL-为多个小-SQL" class="headerlink" title="拆分复杂的大 SQL 为多个小 SQL"></a>拆分复杂的大 SQL 为多个小 SQL</h3><p>•大 SQL 逻辑上比较复杂，需要占用大量 CPU 进行计算的 SQL</p>
-<p>•MySQL 中，一个 SQL 只能使用一个 CPU 进行计算</p>
-<p>•SQL 拆分后可以通过并行执行来提高处理效率</p>
-<h2 id="数据库操作行为规范"><a href="#数据库操作行为规范" class="headerlink" title="数据库操作行为规范"></a>数据库操作行为规范</h2><h3 id="超-100-万行的批量写-UPDATE-DELETE-INSERT-操作-要分批多次进行操作"><a href="#超-100-万行的批量写-UPDATE-DELETE-INSERT-操作-要分批多次进行操作" class="headerlink" title="超 100 万行的批量写 (UPDATE,DELETE,INSERT) 操作,要分批多次进行操作"></a>超 100 万行的批量写 (UPDATE,DELETE,INSERT) 操作,要分批多次进行操作</h3><p><strong>大批量操作可能会造成严重的主从延迟</strong></p>
-<p>主从环境中,大批量操作可能会造成严重的主从延迟，大批量的写操作一般都需要执行一定长的时间， 而只有当主库上执行完成后，才会在其他从库上执行，所以会造成主库与从库长时间的延迟情况</p>
-<p><strong>binlog 日志为 row 格式时会产生大量的日志</strong></p>
-<p>大批量写操作会产生大量日志，特别是对于 row 格式二进制数据而言，由于在 row 格式中会记录每一行数据的修改，我们一次修改的数据越多，产生的日志量也就会越多，日志的传输和恢复所需要的时间也就越长，这也是造成主从延迟的一个原因</p>
-<p><strong>避免产生大事务操作</strong></p>
-<p>大批量修改数据，一定是在一个事务中进行的，这就会造成表中大批量数据进行锁定，从而导致大量的阻塞，阻塞会对 MySQL 的性能产生非常大的影响。</p>
-<p>特别是长时间的阻塞会占满所有数据库的可用连接，这会使生产环境中的其他应用无法连接到数据库，因此一定要注意大批量写操作要进行分批</p>
-<h3 id="对于大表使用-pt-online-schema-change-修改表结构"><a href="#对于大表使用-pt-online-schema-change-修改表结构" class="headerlink" title="对于大表使用 pt-online-schema-change 修改表结构"></a>对于大表使用 pt-online-schema-change 修改表结构</h3><p>•避免大表修改产生的主从延迟•避免在对表字段进行修改时进行锁表</p>
-<p>对大表数据结构的修改一定要谨慎，会造成严重的锁表操作，尤其是生产环境，是不能容忍的。</p>
-<p>pt-online-schema-change  它会首先建立一个与原表结构相同的新表，并且在新表上进行表结构的修改，然后再把原表中的数据复制到新表中，并在原表中增加一些触发器。把原表中新增的数据也复制到新表中，在行所有数据复制完成之后，把新表命名成原表，并把原来的表删除掉。把原来一个 DDL 操作，分解成多个小的批次进行。</p>
-<h3 id="禁止为程序使用的账号赋予-super-权限"><a href="#禁止为程序使用的账号赋予-super-权限" class="headerlink" title="禁止为程序使用的账号赋予 super 权限"></a>禁止为程序使用的账号赋予 super 权限</h3><p>•当达到最大连接数限制时，还运行 1 个有 super 权限的用户连接<br>•super 权限只能留给 DBA 处理问题的账号使用</p>
-<h3 id="对于程序连接数据库账号-遵循权限最小原则"><a href="#对于程序连接数据库账号-遵循权限最小原则" class="headerlink" title="对于程序连接数据库账号,遵循权限最小原则"></a>对于程序连接数据库账号,遵循权限最小原则</h3><p>•程序使用数据库账号只能在一个 DB 下使用，不准跨库<br>•程序使用的账号原则上不准有 drop 权限**</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2913,7 +3232,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-count">108</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2924,7 +3243,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">68</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2935,7 +3254,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -261,6 +261,846 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/15/Java-%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/15/Java-%E9%94%81/" itemprop="url">Java-锁</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-15T19:44:00+08:00">
+                2021-04-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-Java%E9%94%81/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - Java锁</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/%E9%94%81/%E4%B8%BB%E6%B5%81%E9%94%81.png" alt="image"></p>
+<h1 id="单机场景下常用的并发控制手段有哪些？"><a href="#单机场景下常用的并发控制手段有哪些？" class="headerlink" title="单机场景下常用的并发控制手段有哪些？"></a>单机场景下常用的并发控制手段有哪些？</h1><p>最基础的：synchronized（同步锁）1.同步方法synchronized；2.同步块synchronized。</p>
+<p>进阶的：重入锁ReentrantLock，Semaphore信号量</p>
+<h1 id="Semaphore-信号量"><a href="#Semaphore-信号量" class="headerlink" title="Semaphore 信号量"></a>Semaphore 信号量</h1><p>Semaphore 是一种基于计数的信号量。它可以设定一个阈值，基于此，多个线程竞争获取许可信<br>号，做完自己的申请后归还，超过阈值后，线程申请许可信号将会被阻塞。 Semaphore 可以用来<br>构建一些对象池，资源池之类的， 比如数据库连接池<br><strong>实现互斥锁（计数器为 1）</strong><br>我们也可以创建计数为 1 的 Semaphore，将其作为一种类似互斥锁的机制，这也叫二元信号量，表示两种互斥状态。</p>
+<p><strong>代码实现</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个计数阈值为 5 的信号量对象</span></span><br><span class="line"><span class="comment">// 只能 5 个线程同时访问</span></span><br><span class="line">Semaphore semp = <span class="keyword">new</span> Semaphore(<span class="number">5</span>);</span><br><span class="line"><span class="keyword">try</span> &#123; <span class="comment">// 申请许可</span></span><br><span class="line">	semp.acquire();</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="comment">// 业务逻辑</span></span><br><span class="line">	&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">	&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">	<span class="comment">// 释放许可</span></span><br><span class="line">	semp.release();</span><br><span class="line">	&#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Semaphore-与-ReentrantLock-区别"><a href="#Semaphore-与-ReentrantLock-区别" class="headerlink" title="Semaphore 与 ReentrantLock 区别"></a>Semaphore 与 ReentrantLock 区别</h1><ol>
+<li>Semaphore 基本能完成 ReentrantLock 的所有工作</li>
+<li>Semaphore 也实现了可轮询的锁请求与定时锁的功能，Semaphore 也提供了公平与非公平锁的机制</li>
+<li>Semaphore 的锁释放操作也由手动进行，因此与 ReentrantLock 一样，为避免线程因抛出异常而<br>无法正常释放锁的情况发生，释放锁的操作也必须在 finally 代码块中完成。</li>
+</ol>
+<h1 id="ReentrantLock-和-ReentrantReadWriteLock"><a href="#ReentrantLock-和-ReentrantReadWriteLock" class="headerlink" title="ReentrantLock 和 ReentrantReadWriteLock"></a>ReentrantLock 和 ReentrantReadWriteLock</h1><p>ReentrantLock 和 synchronized 的区别在上面已经讲过了这里就不多做讲解。另外，需要注意的是：读写锁 ReentrantReadWriteLock 可以保证多个线程可以同时读，所以在读操作远大于写操作的时候，读写锁就非常有用了。</p>
+<h1 id="synchronized-和java-util-concurrent-locks-Lock-的异同？（Java锁-可重入锁（递归锁））"><a href="#synchronized-和java-util-concurrent-locks-Lock-的异同？（Java锁-可重入锁（递归锁））" class="headerlink" title="synchronized 和java.util.concurrent.locks.Lock 的异同？（Java锁-可重入锁（递归锁））"></a>synchronized 和java.util.concurrent.locks.Lock 的异同？（Java锁-可重入锁（递归锁））</h1><p>1、相同点：Lock 能完成 synchronized 所实现的所有功能；</p>
+<p>2、不同点：Lock 有比 synchronized更精确的线程语义和更好的性能，而且不强制性的要求一定要获得锁。synchronized 会自动释放锁，而 Lock 则要求手工释放。 </p>
+<p>更具体地来说，有以下差异：</p>
+<p>(1)、含义不同</p>
+<p>Synchronized 是<strong>关键字</strong>，属于<strong>JVM</strong>层面，底层是通过 monitorenter 和 monitorexit 完成，依赖于 monitor 对象来完成；</p>
+<p>Lock 是<strong>java.util.concurrent.locks.lock包</strong>下的，是 JDK1.5 以后引入的新 API 层面的锁；</p>
+<p>(2)、使用方法不同</p>
+<p>Synchronized <strong>不需要用户手动释放锁</strong>，代码完成之后系统自动让线程释放锁；</p>
+<p>ReentrantLock <strong>需要用户手动释放锁</strong>，没有手动释放可能导致死锁；</p>
+<p>(3)、等待是否可以中断</p>
+<p>Synchronized 不可中断，除非抛出异常或者正常运行完成；</p>
+<p>ReentrantLock 可以中断。</p>
+<ul>
+<li>一种是通过 tryLock (long timeout, TimeUnit unit)</li>
+<li>另一种是 lockInterruptibly () 放代码块中，调用 interrupt () 方法进行中断；</li>
+</ul>
+<p>(4)、加锁是否公平</p>
+<p>Synchronized 是非公平锁；</p>
+<p>ReentrantLock 默认非公平锁，可以在构造方法传入 boolean 值，true 代表公平锁，false 代表非公平锁；</p>
+<h1 id="说说-JDK1-6-之后的synchronized-关键字底层做了哪些优化，可以详细介绍一下这些优化吗"><a href="#说说-JDK1-6-之后的synchronized-关键字底层做了哪些优化，可以详细介绍一下这些优化吗" class="headerlink" title="说说 JDK1.6 之后的synchronized 关键字底层做了哪些优化，可以详细介绍一下这些优化吗"></a>说说 JDK1.6 之后的synchronized 关键字底层做了哪些优化，可以详细介绍一下这些优化吗</h1><p>JDK1.6 对锁的实现引入了大量的优化，如偏向锁、轻量级锁、自旋锁、适应性自旋锁、锁消除、锁粗化等技术来减少锁操作的开销。</p>
+<p>1.偏向锁：无竞争条件下,消除整个同步互斥，连CAS都不操作。消除数据在无竞争情况下的同步原语，进一步提高程序的运行性能。即在无竞争的情况下，把 整个同步都消除掉。这个锁会偏向于第一个获得它的线程，如果在接下来的执行过程中，该锁 没有被其他的线程获取，则持有偏向锁的线程将永远不需要同步。</p>
+<p>2.轻量级锁：无竞争条件下,通过CAS消除同步互斥，减少传统的重量级锁使用操作系统互斥量产生的性能消耗。</p>
+<p>3.自旋锁：为了减少线程状态改变带来的消耗,不停地执行当前线程。</p>
+<p>4.自适应自旋锁：自旋的时间不固定了，而是由前一次在同一个锁上的自旋时间及锁的拥有者的状态来决定。 如果一个锁对象，自旋等待刚刚成功获得锁，并且持有锁的线程正在运行，那么虚拟机认 为这次自旋仍然可能成功，进而运行自旋等待更长的时间。 如果对于某个锁，自旋很少成功，那在以后要获取这个锁，可能省略掉自旋过程，以免浪费处理器资源。 有了自适应自旋，随着程序运行和性能监控信息的不断完善，虚拟机对程序锁的状况预测就会 越来越准确，虚拟机也会越来越聪明。</p>
+<p>5.锁消除：不可能存在共享数据竞争的锁进行消除；</p>
+<p>6.锁粗化：将连续的加锁，精简到只加一次锁。原则上，同步块的作用范围要尽量小。但是如果一系列的连续操作都对同一个对象反复加锁和 解锁，甚至加锁操作在循环体内，频繁地进行互斥同步操作也会导致不必要的性能损耗。 锁粗化就是增大锁的作用域；</p>
+<p>其中，锁主要存在四种状态，依次是：无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态，他们会随着竞争的激烈而逐渐升级。注意锁可以升级不可降级，这种策略是为了提高获得锁和释放锁的效率。</p>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/%E9%94%81/%E9%94%81.png" alt="image"></p>
+<h1 id="自旋锁解决什么问题-自旋锁的原理是什么-自旋的缺点"><a href="#自旋锁解决什么问题-自旋锁的原理是什么-自旋的缺点" class="headerlink" title="自旋锁解决什么问题?自旋锁的原理是什么?自旋的缺点?"></a>自旋锁解决什么问题?自旋锁的原理是什么?自旋的缺点?</h1><p>（1）自旋锁解决什么问题？</p>
+<p>互斥同步对性能最大的影响是阻塞的实现，挂起线程和恢复线程的操作都需要转入内核态中完 成，这些操作给系统的并发性带来很大压力。同时很多应用共享数据的锁定状态，只会持续很短的一段时间，为了这段时间去挂起和恢复线程并不值得。先不挂起线程，等一会儿。</p>
+<p>（2）自旋锁的原理是什么?</p>
+<p>如果物理机器有一个以上的处理器，能让两个或以上的线程同时并行执行，让后面请求锁的线程稍等一会，但不放弃处理器的执行时间，看看持有锁的线程是否很快就会释放。为了让线程等待，我们只需让线程执行一个忙循环(自旋)。</p>
+<p>（3）自旋的缺点?</p>
+<p>自旋等待本身虽然避免了线程切换的开销，但它要占用处理器时间。所以如果锁被占用的时间 很短，自旋等待的效果就非常好;如果时间很长，那么自旋的线程只会白白消耗处理器的资 源。所以自旋等待的时间要有一定的限度，如果自旋超过了限定的次数仍然没有成功获得锁， 那就应该使用传统的方式挂起线程了。</p>
+<h1 id="悲观锁与乐观锁（Java锁）"><a href="#悲观锁与乐观锁（Java锁）" class="headerlink" title="悲观锁与乐观锁（Java锁）"></a>悲观锁与乐观锁（Java锁）</h1><blockquote>
+<p>乐观锁对应于生活中乐观的人总是想着事情往好的方向发展，悲观锁对应于生活中悲观的人总是想着事情往坏的方向发展。这两种人各有优缺点，不能不以场景而定说一种人好于另外一种人。</p>
+</blockquote>
+<h2 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h2><p>总是假设最坏的情况，每次去拿数据的时候都认为别人会修改，所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会阻塞直到它拿到锁（共享资源每次只给一个线程使用，其它线程阻塞，用完后再把资源转让给其它线程）。传统的关系型数据库里边就用到了很多这种锁机制，比如行锁，表锁等，读锁，写锁等，都是在做操作之前先上锁。Java中<code>synchronized</code>和<code>ReentrantLock</code>等独占锁就是悲观锁思想的实现。</p>
+<h2 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h2><p>它是假设<strong>一个线程在取数据的时候不会被其他线程更改数据</strong></p>
+<p>总是假设最好的情况，每次去拿数据的时候都认为别人不会修改，所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去更新这个数据，可以使用版本号机制和CAS算法实现。乐观锁适用于多读的应用类型，这样可以提高吞吐量，像数据库提供的类似于write_condition机制，其实都是提供的乐观锁。在Java中java.util.concurrent.atomic包下面的原子变量类就是使用了乐观锁的一种实现方式CAS实现的。</p>
+<h2 id="两种锁的使用场景"><a href="#两种锁的使用场景" class="headerlink" title="两种锁的使用场景"></a>两种锁的使用场景</h2><p>从上面对两种锁的介绍，我们知道两种锁各有优缺点，不可认为一种好于另一种，<strong>像乐观锁适用于写比较少的情况下（多读场景）</strong>，即冲突真的很少发生的时候，这样可以省去了锁的开销，加大了系统的整个吞吐量。<strong>但如果是多写的情况，一般会经常产生冲突，这就会导致上层应用会不断的进行retry，这样反倒是降低了性能，所以一般多写的场景下用悲观锁就比较合适。</strong></p>
+<blockquote>
+<p>应用场景主要是在更新数据，更新数据这个场景也是使用锁的非常主要的场景之一。</p>
+</blockquote>
+<h3 id="更新数据的主要流程如下："><a href="#更新数据的主要流程如下：" class="headerlink" title="更新数据的主要流程如下："></a>更新数据的主要流程如下：</h3><ul>
+<li>检索出要更新的数据，供操作人员查看；</li>
+<li>操作人员更改需要修改的数值；</li>
+<li>点击保存，更新数据；</li>
+</ul>
+<p><strong>A保存数据的时候，系统要给提示，说“您修改的数据已被其他人修改过，请重新查询确认”。那么我们程序中怎么实现呢?</strong></p>
+<ul>
+<li>在检索数据，将数据的版本号（version）或者最后更新时间一并检索出来；</li>
+<li>操作员更改数据以后，点击保存，在数据库执行update操作；<ul>
+<li>执行update操作时，用步骤1检索出的版本号或者最后更新时间与数据库中的记录作比较；</li>
+<li>如果版本号或最后更新时间一致，则可以更新；</li>
+<li>如果不一致，就要给出上面的提示；</li>
+</ul>
+</li>
+</ul>
+<p>上述的流程就是乐观锁的实现方式。<strong>在JAVA中乐观锁并没有确定的方法，或者关键字</strong>，它只是一个处理的流程、策略。</p>
+<h2 id="乐观锁常见的两种实现方式"><a href="#乐观锁常见的两种实现方式" class="headerlink" title="乐观锁常见的两种实现方式"></a>乐观锁常见的两种实现方式</h2><h3 id="版本号机制"><a href="#版本号机制" class="headerlink" title="版本号机制"></a>版本号机制</h3><p>一般是在数据表中加上一个数据版本号version字段，表示数据被修改的次数，当数据被修改时，version值会加一。当线程A要更新数据值时，在读取数据的同时也会读取version值，在提交更新时，若刚才读取到的version值为当前数据库中的version值相等时才更新，否则重试更新操作，直到更新成功。</p>
+<p>举一个简单的例子： 假设数据库中帐户信息表中有一个 version 字段，当前值为 1 ；而当前帐户余额字段（ balance ）为 $100 。</p>
+<ol>
+<li>操作员 A 此时将其读出（ version=1 ），并从其帐户余额中扣除 $50（ $100-$50 ）。</li>
+<li>在操作员 A 操作的过程中，操作员B 也读入此用户信息（ version=1 ），并从其帐户余额中扣除 $20 （ $100-$20 ）。</li>
+<li>操作员 A 完成了修改工作，将数据版本号（ version=1 ），连同帐户扣除后余额（ balance=$50 ），提交至数据库更新，此时由于提交数据版本等于数据库记录当前版本，数据被更新，数据库记录 version 更新为 2 。</li>
+<li>操作员 B 完成了操作，也将版本号（ version=1 ）试图向数据库提交数据（ balance=$80 ），但此时比对数据库记录版本时发现，操作员 B 提交的数据版本号为 1 ，数据库记录当前版本也为 2 ，不满足 “ 提交版本必须等于当前版本才能执行更新 “ 的乐观锁策略，因此，操作员 B 的提交被驳回。</li>
+</ol>
+<p>这样，就避免了操作员 B 用基于 version=1 的旧数据修改的结果覆盖操作员A 的操作结果的可能。</p>
+<h3 id="CAS算法"><a href="#CAS算法" class="headerlink" title="CAS算法"></a>CAS算法</h3><p>即compare and swap（比较与交换），是一种有名的无锁算法。无锁编程，即不使用锁的情况下实现多线程之间的变量同步，也就是在没有线程被阻塞的情况下实现变量的同步，所以也叫非阻塞同步（Non-blocking Synchronization）。CAS算法涉及到三个操作数</p>
+<ul>
+<li>需要读写的内存值 V</li>
+<li>进行比较的值 A</li>
+<li>拟写入的新值 B</li>
+</ul>
+<p>当且仅当 V 的值等于 A时，CAS通过原子方式用新值B来更新V的值，否则不会执行任何操作（比较和替换是一个原子操作）。一般情况下是一个自旋操作，即不断的重试。</p>
+<h2 id="乐观锁的缺点"><a href="#乐观锁的缺点" class="headerlink" title="乐观锁的缺点"></a>乐观锁的缺点</h2><blockquote>
+<p>ABA 问题是乐观锁一个常见的问题</p>
+</blockquote>
+<h3 id="ABA-问题"><a href="#ABA-问题" class="headerlink" title="ABA 问题"></a>ABA 问题</h3><p>如果一个变量V初次读取的时候是A值，并且在准备赋值的时候检查到它仍然是A值，那我们就能说明它的值没有被其他线程修改过了吗？很明显是不能的，因为在这段时间它的值可能被改为其他值，然后又改回A，那CAS操作就会误认为它从来没有被修改过。这个问题被称为CAS操作的 “ABA”问题。</p>
+<p>JDK 1.5 以后的 AtomicStampedReference 类就提供了此种能力，其中的 compareAndSet 方法就是首先检查当前引用是否等于预期引用，并且当前标志是否等于预期标志，如果全部相等，则以原子方式将该引用和该标志的值设置为给定的更新值。</p>
+<h3 id="循环时间长开销大"><a href="#循环时间长开销大" class="headerlink" title="循环时间长开销大"></a>循环时间长开销大</h3><p>自旋CAS（也就是不成功就一直循环执行直到成功）如果长时间不成功，会给CPU带来非常大的执行开销。 如果JVM能支持处理器提供的pause指令那么效率会有一定的提升，pause指令有两个作用，第一它可以延迟流水线执行指令（de-pipeline）,使CPU不会消耗过多的执行资源，延迟的时间取决于具体实现的版本，在一些处理器上延迟时间是零。第二它可以避免在退出循环的时候因内存顺序冲突（memory order violation）而引起CPU流水线被清空（CPU pipeline flush），从而提高CPU的执行效率。</p>
+<h3 id="只能保证一个共享变量的原子操作"><a href="#只能保证一个共享变量的原子操作" class="headerlink" title="只能保证一个共享变量的原子操作"></a>只能保证一个共享变量的原子操作</h3><p>CAS 只对单个共享变量有效，当操作涉及跨多个共享变量时 CAS 无效。但是从 JDK 1.5开始，提供了AtomicReference类来保证引用对象之间的原子性，你可以把多个变量放在一个对象里来进行 CAS 操作.所以我们可以使用锁或者利用AtomicReference类把多个共享变量合并成一个共享变量来操作。</p>
+<h2 id="CAS与synchronized的使用情景"><a href="#CAS与synchronized的使用情景" class="headerlink" title="CAS与synchronized的使用情景"></a>CAS与synchronized的使用情景</h2><blockquote>
+<p>简单的来说CAS适用于写比较少的情况下（多读场景，冲突一般较少），synchronized适用于写比较多的情况下（多写场景，冲突一般较多）</p>
+</blockquote>
+<ol>
+<li>对于资源竞争较少（线程冲突较轻）的情况，使用synchronized同步锁进行线程阻塞和唤醒切换以及用户态内核态间的切换操作额外浪费消耗cpu资源；而CAS基于硬件实现，不需要进入内核，不需要切换线程，操作自旋几率较少，因此可以获得更高的性能。</li>
+<li>对于资源竞争严重（线程冲突严重）的情况，CAS自旋的概率会比较大，从而浪费更多的CPU资源，效率低于synchronized。</li>
+</ol>
+<h2 id="i-乐观锁例子"><a href="#i-乐观锁例子" class="headerlink" title="i++ 乐观锁例子"></a>i++ 乐观锁例子</h2><h3 id="错误例子-不使用乐观锁"><a href="#错误例子-不使用乐观锁" class="headerlink" title="错误例子(不使用乐观锁)"></a>错误例子(不使用乐观锁)</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">	</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> i=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Test test = <span class="keyword">new</span> Test();</span><br><span class="line">        <span class="comment">//线程池：50个线程</span></span><br><span class="line">        ExecutorService es = Executors.newFixedThreadPool(<span class="number">50</span>);</span><br><span class="line">        <span class="comment">//闭锁</span></span><br><span class="line">        CountDownLatch cdl = <span class="keyword">new</span> CountDownLatch(<span class="number">5000</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; <span class="number">5000</span>; i++)&#123;</span><br><span class="line">            es.execute(()-&gt;&#123;</span><br><span class="line">                test.i++;<span class="comment">//i++不是一个原子性的操作</span></span><br><span class="line">                cdl.countDown();</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        es.shutdown();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//等待5000个任务执行完成后，打印出执行结果</span></span><br><span class="line">            cdl.await();</span><br><span class="line">            System.out.println(<span class="string">&quot;执行完成后，i=&quot;</span>+test.i);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>闭锁（CountDownLatch）是 java.util.concurrent 包下的一种同步工具类。闭锁可以用来确保某些活动直到其他活动都完成后才执行。 闭锁相当于一扇门：在闭锁到达结束状态之前，这扇门一直是关闭的，并且没有任何线程能通过，当达到结束状态时，这扇门会打开，并允许所有的线程通过。</p>
+</blockquote>
+<h3 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">执行完成后，i&#x3D;4975</span><br><span class="line">执行完成后，i&#x3D;4986</span><br><span class="line">执行完成后，i&#x3D;4971</span><br></pre></td></tr></table></figure>
+
+<p>这就说明**i++**并不是一个原子性的操作，在多线程的情况下并不安全。</p>
+<ul>
+<li>从内存中取出<strong>i</strong>的当前值；</li>
+<li>将<strong>i</strong>的值加1；</li>
+<li>将计算好的值放入到内存当中；</li>
+</ul>
+<h3 id="使用原子类"><a href="#使用原子类" class="headerlink" title="使用原子类"></a>使用原子类</h3><blockquote>
+<p>（这些类的内部都是基于CAS机制的，也就是使用了乐观锁）改进</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AtomicInteger i = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Test test = <span class="keyword">new</span> Test();</span><br><span class="line">        ExecutorService es = Executors.newFixedThreadPool(<span class="number">50</span>);</span><br><span class="line">        CountDownLatch cdl = <span class="keyword">new</span> CountDownLatch(<span class="number">5000</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; <span class="number">5000</span>; i++)&#123;</span><br><span class="line">            es.execute(()-&gt;&#123;</span><br><span class="line">                test.i.incrementAndGet();<span class="comment">//使用原子类</span></span><br><span class="line">                cdl.countDown();</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        es.shutdown();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            cdl.await();</span><br><span class="line">            System.out.println(<span class="string">&quot;执行完成后，i=&quot;</span>+test.i);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="结果-1"><a href="#结果-1" class="headerlink" title="结果"></a>结果</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">执行完成后，i&#x3D;5000</span><br><span class="line">执行完成后，i&#x3D;5000</span><br><span class="line">执行完成后，i&#x3D;5000</span><br></pre></td></tr></table></figure>
+
+<h2 id="i-悲观锁例子"><a href="#i-悲观锁例子" class="headerlink" title="i++ 悲观锁例子"></a>i++ 悲观锁例子</h2><blockquote>
+<p>synchronized关键字来实现悲观锁</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> i=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Test test = <span class="keyword">new</span> Test();</span><br><span class="line">        ExecutorService es = Executors.newFixedThreadPool(<span class="number">50</span>);</span><br><span class="line">        CountDownLatch cdl = <span class="keyword">new</span> CountDownLatch(<span class="number">5000</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; <span class="number">5000</span>; i++)&#123;</span><br><span class="line">            es.execute(()-&gt;&#123;</span><br><span class="line">                <span class="comment">//修改部分  开始</span></span><br><span class="line">                <span class="keyword">synchronized</span> (test)&#123;</span><br><span class="line">                    test.i++;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//修改部分  结束</span></span><br><span class="line">                cdl.countDown();</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        es.shutdown();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            cdl.await();</span><br><span class="line">            System.out.println(<span class="string">&quot;执行完成后，i=&quot;</span>+test.i);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>唯一的改动就是增加了synchronized块，它锁住的对象是test，在所有线程中，谁获得了test对象的锁，谁才能执行i操作。我们使用了synchronized悲观锁的方式，使得i线程安全。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">执行完成后，i&#x3D;5000</span><br><span class="line">执行完成后，i&#x3D;5000</span><br><span class="line">执行完成后，i&#x3D;5000</span><br></pre></td></tr></table></figure>
+
+<p>ReentrantLock类来实现悲观锁</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="comment">//添加了ReentrantLock锁</span></span><br><span class="line">    Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> i=<span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Test test = <span class="keyword">new</span> Test();</span><br><span class="line">        ExecutorService es = Executors.newFixedThreadPool(<span class="number">50</span>);</span><br><span class="line">        CountDownLatch cdl = <span class="keyword">new</span> CountDownLatch(<span class="number">5000</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; <span class="number">5000</span>; i++)&#123;</span><br><span class="line">            es.execute(()-&gt;&#123;</span><br><span class="line">                <span class="comment">//修改部分  开始</span></span><br><span class="line">                test.lock.lock();</span><br><span class="line">                test.i++;</span><br><span class="line">                test.lock.unlock();</span><br><span class="line">                <span class="comment">//修改部分  结束</span></span><br><span class="line">                cdl.countDown();</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">        es.shutdown();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            cdl.await();</span><br><span class="line">            System.out.println(<span class="string">&quot;执行完成后，i=&quot;</span>+test.i);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在类中显示的增加了Lock lock = new ReentrantLock();，而且在i之前增加了lock.lock(),加锁操作，在i之后增加了lock.unlock()释放锁的操作。我们同样运行3次，看看结果。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">执行完成后，i&#x3D;5000</span><br><span class="line">执行完成后，i&#x3D;5000</span><br><span class="line">执行完成后，i&#x3D;5000</span><br></pre></td></tr></table></figure>
+
+<h1 id="公平锁与非公平锁（Java锁）"><a href="#公平锁与非公平锁（Java锁）" class="headerlink" title="公平锁与非公平锁（Java锁）"></a>公平锁与非公平锁（Java锁）</h1><ul>
+<li><p>公平锁在多线程情况下，对待每一个线程都是公平的；非公平锁恰好与之相反。</p>
+<p>举例说明，场景还是去超市买东西，在储物柜存储东西的例子。储物柜只有一个，同时来了3个人使用储物柜，这时A先抢到了柜子，A去使用，B和C自觉进行排队。A使用完以后，后面排队中的第一个人将继续使用柜子，这就是公平锁。在公平锁当中，所有的线程都自觉排队，一个线程执行完以后，排在后面的线程继续使用。</p>
+</li>
+<li><p>非公平锁则不然，A在使用柜子的时候，B和C并不会排队，A使用完以后，将柜子的钥匙往后一抛，B和C谁抢到了谁用，甚至可能突然跑来一个D，这个D抢到了钥匙，那么D将使用柜子，这个就是非公平锁。</p>
+</li>
+</ul>
+<p>公平锁如图所示：<br><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/%E9%94%81/%E5%85%AC%E5%B9%B3%E9%94%81.png" alt="img" style="zoom:33%;" /></p>
+<p>多个线程同时执行方法，线程A抢到了锁，A可以执行方法。其他线程则在队列里进行排队，A执行完方法后，会从队列里取出下一个线程B，再去执行方法。以此类推，对于每一个线程来说都是公平的，不会存在后加入的线程先执行的情况。</p>
+<p>非公平锁入下图所示：<br><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/%E9%94%81/%E9%9D%9E%E5%85%AC%E5%B9%B3%E9%94%81.png" alt="img" style="zoom:33%;" /></p>
+<p>多个线程同时执行方法，线程A抢到了锁，A可以执行方法。其他的线程并没有排队，A执行完方法，释放锁后，其他的线程谁抢到了锁，谁去执行方法。会存在后加入的线程，反而先抢到锁的情况。</p>
+<h1 id="公平锁与非公平锁都在ReentrantLock类里给出了实现"><a href="#公平锁与非公平锁都在ReentrantLock类里给出了实现" class="headerlink" title="公平锁与非公平锁都在ReentrantLock类里给出了实现"></a>公平锁与非公平锁都在ReentrantLock类里给出了实现</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Creates an instance of &#123;<span class="doctag">@code</span> ReentrantLock&#125;.</span></span><br><span class="line"><span class="comment"> * This is equivalent to using &#123;<span class="doctag">@code</span> ReentrantLock(false)&#125;.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    sync = <span class="keyword">new</span> NonfairSync();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Creates an instance of &#123;<span class="doctag">@code</span> ReentrantLock&#125; with the</span></span><br><span class="line"><span class="comment"> * given fairness policy.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> fair &#123;<span class="doctag">@code</span> true&#125; if this lock should use a fair ordering policy</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">(<span class="keyword">boolean</span> fair)</span> </span>&#123;</span><br><span class="line">    sync = fair ? <span class="keyword">new</span> FairSync() : <span class="keyword">new</span> NonfairSync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ReentrantLock有两个构造方法，默认的构造方法中，sync = new NonfairSync();我们可以从字面意思看出它是一个非公平锁。再看看第二个构造方法，它需要传入一个参数，参数是一个布尔型，true是公平锁，false是非公平锁。从上面的源码我们可以看出sync有两个实现类，分别是FairSync和NonfairSync</p>
+<h2 id="获取锁的核心方法，首先是公平锁FairSync的"><a href="#获取锁的核心方法，首先是公平锁FairSync的" class="headerlink" title="获取锁的核心方法，首先是公平锁FairSync的:"></a>获取锁的核心方法，首先是公平锁FairSync的:</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">@ReservedStackAccess</span><br><span class="line">protected final boolean tryAcquire(int acquires) &#123;</span><br><span class="line">    final Thread current &#x3D; Thread.currentThread();</span><br><span class="line">    int c &#x3D; getState();</span><br><span class="line">    if (c &#x3D;&#x3D; 0) &#123;</span><br><span class="line">        if (!hasQueuedPredecessors() &amp;&amp;</span><br><span class="line">            compareAndSetState(0, acquires)) &#123;java</span><br><span class="line">            setExclusiveOwnerThread(current);</span><br><span class="line">            return true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    else if (current &#x3D;&#x3D; getExclusiveOwnerThread()) &#123;</span><br><span class="line">        int nextc &#x3D; c + acquires;</span><br><span class="line">        if (nextc &lt; 0)</span><br><span class="line">            throw new Error(&quot;Maximum lock count exceeded&quot;);</span><br><span class="line">        setState(nextc);</span><br><span class="line">        return true;</span><br><span class="line">    &#125;</span><br><span class="line">    return false;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="非公平锁NonfairSync"><a href="#非公平锁NonfairSync" class="headerlink" title="非公平锁NonfairSync"></a>非公平锁NonfairSync</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ReservedStackAccess</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">nonfairTryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">    <span class="keyword">int</span> c = getState();</span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">            setExclusiveOwnerThread(current);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">        <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">        <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>) <span class="comment">// overflow</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">&quot;Maximum lock count exceeded&quot;</span>);</span><br><span class="line">        setState(nextc);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>唯一不同<code>!hasQueuedPredecessors()</code>这个方法，很明显这个方法是一个队列，由此可以推断：</p>
+<p>公平锁是将所有的线程放在一个队列中，一个线程执行完成后，从队列中取出下一个线程，而非公平锁则没有这个队列。</p>
+<p>这些都是公平锁与非公平锁底层的实现原理，我们在使用的时候不用追到这么深层次的代码，只需要了解公平锁与非公平锁的含义，并且在调用构造方法时，传入true和false即可。</p>
+<h1 id="ReadWriteLock-读写锁（Java锁）"><a href="#ReadWriteLock-读写锁（Java锁）" class="headerlink" title="ReadWriteLock 读写锁（Java锁）"></a>ReadWriteLock 读写锁（Java锁）</h1><p>为了提高性能， Java 提供了读写锁，在读的地方使用读锁，在写的地方使用写锁，灵活控制，如<br>果没有写锁的情况下，读是无阻塞的,在一定程度上提高了程序的执行效率。 读写锁分为读锁和写<br>锁，多个读锁不互斥，读锁与写锁互斥，这是由 jvm 自己控制的，你只要上好相应的锁即可。<br><strong>读锁</strong><br>如果你的代码只读数据，可以很多人同时读，但不能同时写，那就上读锁<br><strong>写锁</strong><br>如果你的代码修改数据，只能有一个人在写，且不能同时读取，那就上写锁。总之，读的时候上<br>读锁，写的时候上写锁！</p>
+<p>Java 中 读 写 锁 有 个 接 口 java.util.concurrent.locks.ReadWriteLock ， 也 有 具 体 的 实 现<br>ReentrantReadWriteLock。</p>
+<h1 id="共享锁和独占锁（Java锁）"><a href="#共享锁和独占锁（Java锁）" class="headerlink" title="共享锁和独占锁（Java锁）"></a>共享锁和独占锁（Java锁）</h1><p>java 并发包提供的加锁模式分为独占锁和共享锁。<br><strong>独占锁</strong><br>独占锁模式下，每次只能有一个线程能持有锁， ReentrantLock 就是以独占方式实现的互斥锁。<br>独占锁是一种悲观保守的加锁策略，它避免了读/读冲突，如果某个只读线程获取锁，则其他读线<br>程都只能等待，这种情况下就限制了不必要的并发性，因为读操作并不会影响数据的一致性。<br><strong>共享锁</strong><br>共享锁则允许多个线程同时获取锁，并发访问 共享资源，如： ReadWriteLock。 共享锁则是一种<br>乐观锁，它放宽了加锁策略，允许多个执行读操作的线程同时访问共享资源。</p>
+<ol>
+<li>AQS 的内部类 Node 定义了两个常量 SHARED 和 EXCLUSIVE，他们分别标识 AQS 队列中等<br>待线程的锁获取模式。</li>
+<li>java 的并发包中提供了 ReadWriteLock，读-写锁。它允许一个资源可以被多个读操作访问，<br>或者被一个 写操作访问，但两者不能同时进行。</li>
+</ol>
+<h1 id="分布式锁"><a href="#分布式锁" class="headerlink" title="分布式锁"></a>分布式锁</h1><p>两个Tomcat，我们加的锁是JDK提供的锁，这种锁只能在一个JVM下起作用，也就是在一个Tomcat内是没有问题的。当存在两个或两个以上的Tomcat时，大量的并发请求分散到不同的Tomcat上，在每一个Tomcat中都可以防止并发的产生，但是在多个Tomcat之间，每个Tomcat中获得锁的这个请求，又产生了并发，从而产生超卖现象。这也就是单体应用锁的局限性，它只能在一个JVM内加锁，而不能从这个应用层面去加锁。</p>
+<p>两个Tomcat通过第三方的组件实现跨JVM、跨进程的分布式锁。这就是分布式锁的解决思路，找到所有JVM可以共同访问的第三方组件，通过第三方组件实现分布式锁。</p>
+<h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><ol>
+<li>Redisson</li>
+<li>redis</li>
+<li>Zookeeper</li>
+<li>数据库</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/15/Java-Atomic,CAS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/15/Java-Atomic,CAS/" itemprop="url">Java-Atomic,CAS</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-15T18:19:31+08:00">
+                2021-04-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-JUC/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - JUC</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>摘抄<a target="_blank" rel="noopener" href="https://snailclimb.gitee.io/javaguide/#/?id=%e5%b9%b6%e5%8f%91">javaguide</a></p>
+<h1 id="Atomic原子类"><a href="#Atomic原子类" class="headerlink" title="Atomic原子类"></a>Atomic原子类</h1><h2 id="Atomic-原子类介绍"><a href="#Atomic-原子类介绍" class="headerlink" title="Atomic 原子类介绍"></a>Atomic 原子类介绍</h2><p>Atomic 翻译成中文是原子的意思。在化学上，我们知道原子是构成一般物质的最小单位，在化学反应中是不可分割的。在我们这里 Atomic 是指一个操作是不可中断的。即使是在多个线程一起执行的时候，一个操作一旦开始，就不会被其他线程干扰。</p>
+<p>所以，所谓原子类说简单点就是具有原子/原子操作特征的类。</p>
+<p>并发包 <code>java.util.concurrent</code> 的原子类都存放在<code>java.util.concurrent.atomic</code>下,如下图所示。</p>
+<p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/JUC%E5%8E%9F%E5%AD%90%E7%B1%BB%E6%A6%82%E8%A7%88.png?ynotemdtimestamp=1618464916797" alt="JUC原子类概览"></p>
+<p>根据操作的数据类型，可以将JUC包中的原子类分为4类</p>
+<p><strong>基本类型</strong></p>
+<p>使用原子的方式更新基本类型</p>
+<ul>
+<li>AtomicInteger：整型原子类</li>
+<li>AtomicLong：长整型原子类</li>
+<li>AtomicBoolean ：布尔型原子类</li>
+</ul>
+<p><strong>数组类型</strong></p>
+<p>使用原子的方式更新数组里的某个元素</p>
+<ul>
+<li>AtomicIntegerArray：整型数组原子类</li>
+<li>AtomicLongArray：长整型数组原子类</li>
+<li>AtomicReferenceArray ：引用类型数组原子类</li>
+</ul>
+<p><strong>引用类型</strong></p>
+<ul>
+<li>AtomicReference：引用类型原子类</li>
+<li>AtomicMarkableReference：原子更新带有标记的引用类型。该类将 boolean 标记与引用关联起来</li>
+<li>AtomicStampedReference ：原子更新带有版本号的引用类型。该类将整数值与引用关联起来，可用于解决原子的更新数据和数据的版本号，可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。</li>
+</ul>
+<p><strong>对象的属性修改类型</strong></p>
+<ul>
+<li>AtomicIntegerFieldUpdater:原子更新整型字段的更新器</li>
+<li>AtomicLongFieldUpdater：原子更新长整型字段的更新器</li>
+<li>AtomicReferenceFieldUpdater：原子更新引用类型里的字段</li>
+</ul>
+<h2 id="CAS-ABA-问题"><a href="#CAS-ABA-问题" class="headerlink" title="CAS ABA 问题"></a>CAS ABA 问题</h2><blockquote>
+<p>Java线程安全的方法：synchronize，concurrent包下的一些线程安全类，Thread的wait和notify方法</p>
+<p>还有CAS（Compare and swap）机制——比较和替换，使用一个期望值和一个变量的当前值进行比较，如果当前变量的值与我们期望的值相等，就使用一个新值替换当前变量的值<br>操作系统的CAS操作会将内存值和期望值进行比较，如果相等就将参数更新到内存并返回成功，如果不相等就返回失败。操作系统层面这个比较-替换操作是原子性的，所以线程安全。类似乐观锁</p>
+<p>CAS的ABA问题，内存值从A变到B，然后再变回A，假设期望值是A，尽管中途发生了A-&gt;B的变化，但是最终还是变回A，因此CAS操作依然认为没有变化</p>
+<p>解决方法：添加版本号，使用前查询版本号，比对时同时验证版本号，修改后版本号+1</p>
+</blockquote>
+<h3 id="代码例子（以AtomicInteger为例）"><a href="#代码例子（以AtomicInteger为例）" class="headerlink" title="代码例子（以AtomicInteger为例）"></a>代码例子（以<code>AtomicInteger</code>为例）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicInteger;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicIntegerDefectDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        defectOfABA();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">defectOfABA</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> AtomicInteger atomicInteger = <span class="keyword">new</span> AtomicInteger(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        Thread coreThread = <span class="keyword">new</span> Thread(</span><br><span class="line">                () -&gt; &#123;</span><br><span class="line">                    <span class="keyword">final</span> <span class="keyword">int</span> currentValue = atomicInteger.get();</span><br><span class="line">                    System.out.println(Thread.currentThread().getName() + <span class="string">&quot; ------ currentValue=&quot;</span> + currentValue);</span><br><span class="line"></span><br><span class="line">                    <span class="comment">// 这段目的：模拟处理其他业务花费的时间</span></span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        Thread.sleep(<span class="number">300</span>);</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                        e.printStackTrace();</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">boolean</span> casResult = atomicInteger.compareAndSet(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">                    System.out.println(Thread.currentThread().getName()</span><br><span class="line">                            + <span class="string">&quot; ------ currentValue=&quot;</span> + currentValue</span><br><span class="line">                            + <span class="string">&quot;, finalValue=&quot;</span> + atomicInteger.get()</span><br><span class="line">                            + <span class="string">&quot;, compareAndSet Result=&quot;</span> + casResult);</span><br><span class="line">                &#125;</span><br><span class="line">        );</span><br><span class="line">        coreThread.start();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 这段目的：为了让 coreThread 线程先跑起来</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Thread.sleep(<span class="number">100</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Thread amateurThread = <span class="keyword">new</span> Thread(</span><br><span class="line">                () -&gt; &#123;</span><br><span class="line">                    <span class="keyword">int</span> currentValue = atomicInteger.get();</span><br><span class="line">                    <span class="keyword">boolean</span> casResult = atomicInteger.compareAndSet(<span class="number">1</span>, <span class="number">2</span>);</span><br><span class="line">                    System.out.println(Thread.currentThread().getName()</span><br><span class="line">                            + <span class="string">&quot; ------ currentValue=&quot;</span> + currentValue</span><br><span class="line">                            + <span class="string">&quot;, finalValue=&quot;</span> + atomicInteger.get()</span><br><span class="line">                            + <span class="string">&quot;, compareAndSet Result=&quot;</span> + casResult);</span><br><span class="line"></span><br><span class="line">                    currentValue = atomicInteger.get();</span><br><span class="line">                    casResult = atomicInteger.compareAndSet(<span class="number">2</span>, <span class="number">1</span>);</span><br><span class="line">                    System.out.println(Thread.currentThread().getName()</span><br><span class="line">                            + <span class="string">&quot; ------ currentValue=&quot;</span> + currentValue</span><br><span class="line">                            + <span class="string">&quot;, finalValue=&quot;</span> + atomicInteger.get()</span><br><span class="line">                            + <span class="string">&quot;, compareAndSet Result=&quot;</span> + casResult);</span><br><span class="line">                &#125;</span><br><span class="line">        );</span><br><span class="line">        amateurThread.start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出内容如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Thread-0 ------ currentValue&#x3D;1</span><br><span class="line">Thread-1 ------ currentValue&#x3D;1, finalValue&#x3D;2, compareAndSet Result&#x3D;true</span><br><span class="line">Thread-1 ------ currentValue&#x3D;2, finalValue&#x3D;1, compareAndSet Result&#x3D;true</span><br><span class="line">Thread-0 ------ currentValue&#x3D;1, finalValue&#x3D;2, compareAndSet Result&#x3D;true</span><br></pre></td></tr></table></figure>
+
+<h3 id="基本类型原子类"><a href="#基本类型原子类" class="headerlink" title="基本类型原子类"></a>基本类型原子类</h3><p>使用原子的方式更新基本类型</p>
+<ul>
+<li>AtomicInteger：整型原子类</li>
+<li>AtomicLong：长整型原子类</li>
+<li>AtomicBoolean ：布尔型原子类</li>
+</ul>
+<p>上面三个类提供的方法几乎相同，所以我们这里以 AtomicInteger 为例子来介绍。</p>
+<p><strong>AtomicInteger 类常用方法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">get</span><span class="params">()</span> <span class="comment">//获取当前的值</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndSet</span><span class="params">(<span class="keyword">int</span> newValue)</span><span class="comment">//获取当前的值，并设置新的值</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndIncrement</span><span class="params">()</span><span class="comment">//获取当前的值，并自增</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndDecrement</span><span class="params">()</span> <span class="comment">//获取当前的值，并自减</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getAndAdd</span><span class="params">(<span class="keyword">int</span> delta)</span> <span class="comment">//获取当前的值，并加上预期的值</span></span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">int</span> expect, <span class="keyword">int</span> update)</span> <span class="comment">//如果输入的数值等于预期值，则以原子方式将该值设置为输入值（update）</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lazySet</span><span class="params">(<span class="keyword">int</span> newValue)</span><span class="comment">//最终设置为newValue,使用 lazySet 设置之后可能导致其他线程在之后的一小段时间内还是可以读到旧的值。</span></span></span><br></pre></td></tr></table></figure>
+
+<h4 id="AtomicInteger-常见方法使用"><a href="#AtomicInteger-常见方法使用" class="headerlink" title="AtomicInteger 常见方法使用"></a>AtomicInteger 常见方法使用</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicInteger;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicIntegerTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">        <span class="keyword">int</span> temvalue = <span class="number">0</span>;</span><br><span class="line">        AtomicInteger i = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line">        temvalue = i.getAndSet(<span class="number">3</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;temvalue:&quot;</span> + temvalue + <span class="string">&quot;;  i:&quot;</span> + i);<span class="comment">//temvalue:0;  i:3</span></span><br><span class="line">        temvalue = i.getAndIncrement();</span><br><span class="line">        System.out.println(<span class="string">&quot;temvalue:&quot;</span> + temvalue + <span class="string">&quot;;  i:&quot;</span> + i);<span class="comment">//temvalue:3;  i:4</span></span><br><span class="line">        temvalue = i.getAndAdd(<span class="number">5</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;temvalue:&quot;</span> + temvalue + <span class="string">&quot;;  i:&quot;</span> + i);<span class="comment">//temvalue:4;  i:9</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="基本数据类型原子类的优势"><a href="#基本数据类型原子类的优势" class="headerlink" title="基本数据类型原子类的优势"></a>基本数据类型原子类的优势</h4><p>通过一个简单例子带大家看一下基本数据类型原子类的优势</p>
+<p><strong>①多线程环境不使用原子类保证线程安全（基本数据类型）</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">int</span> count = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//若要线程安全执行执行count++，需要加锁</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">increment</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                  count++; </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                  <span class="keyword">return</span> count;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>②多线程环境使用原子类保证线程安全（基本数据类型）</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test2</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> AtomicInteger count = <span class="keyword">new</span> AtomicInteger();</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">increment</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                  count.incrementAndGet();</span><br><span class="line">        &#125;</span><br><span class="line">      <span class="comment">//使用AtomicInteger之后，不需要加锁，也可以实现线程安全。</span></span><br><span class="line">       <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                <span class="keyword">return</span> count.get();</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="AtomicInteger-线程安全原理简单分析"><a href="#AtomicInteger-线程安全原理简单分析" class="headerlink" title="AtomicInteger 线程安全原理简单分析"></a>AtomicInteger 线程安全原理简单分析</h4><p>AtomicInteger 类主要利用 CAS (compare and swap) + volatile 和 native 方法来保证原子操作，从而避免 synchronized 的高开销，执行效率大为提升。</p>
+<p>CAS的原理是拿期望的值和原本的一个值作比较，如果相同则更新成新的值。UnSafe 类的 objectFieldOffset() 方法是一个本地方法，这个方法是用来拿到“原来的值”的内存地址。另外 value 是一个volatile变量，在内存中可见，因此 JVM 可以保证任何时刻任何线程总能拿到该变量的最新值。</p>
+<h3 id="数组类型原子类"><a href="#数组类型原子类" class="headerlink" title="数组类型原子类"></a>数组类型原子类</h3><h4 id="数组类型原子类介绍"><a href="#数组类型原子类介绍" class="headerlink" title="数组类型原子类介绍"></a>数组类型原子类介绍</h4><p>使用原子的方式更新数组里的某个元素</p>
+<ul>
+<li>AtomicIntegerArray：整形数组原子类</li>
+<li>AtomicLongArray：长整形数组原子类</li>
+<li>AtomicReferenceArray ：引用类型数组原子类</li>
+</ul>
+<p>上面三个类提供的方法几乎相同，所以我们这里以 AtomicIntegerArray 为例子来介绍。</p>
+<p><strong>AtomicIntegerArray 类常用方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public final int get(int i) &#x2F;&#x2F;获取 index&#x3D;i 位置元素的值</span><br><span class="line">public final int getAndSet(int i, int newValue)&#x2F;&#x2F;返回 index&#x3D;i 位置的当前的值，并将其设置为新值：newValue</span><br><span class="line">public final int getAndIncrement(int i)&#x2F;&#x2F;获取 index&#x3D;i 位置元素的值，并让该位置的元素自增</span><br><span class="line">public final int getAndDecrement(int i) &#x2F;&#x2F;获取 index&#x3D;i 位置元素的值，并让该位置的元素自减</span><br><span class="line">public final int getAndAdd(int i, int delta) &#x2F;&#x2F;获取 index&#x3D;i 位置元素的值，并加上预期的值</span><br><span class="line">boolean compareAndSet(int i, int expect, int update) &#x2F;&#x2F;如果输入的数值等于预期值，则以原子方式将 index&#x3D;i 位置的元素值设置为输入值（update）</span><br><span class="line">public final void lazySet(int i, int newValue)&#x2F;&#x2F;最终 将index&#x3D;i 位置的元素设置为newValue,使用 lazySet 设置之后可能导致其他线程在之后的一小段时间内还是可以读到旧的值。</span><br></pre></td></tr></table></figure>
+
+<h4 id="AtomicIntegerArray-常见方法使用"><a href="#AtomicIntegerArray-常见方法使用" class="headerlink" title="AtomicIntegerArray 常见方法使用"></a>AtomicIntegerArray 常见方法使用</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicIntegerArray;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicIntegerArrayTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">        <span class="keyword">int</span> temvalue = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">int</span>[] nums = &#123; <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span> &#125;;</span><br><span class="line">        AtomicIntegerArray i = <span class="keyword">new</span> AtomicIntegerArray(nums);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; nums.length; j++) &#123;</span><br><span class="line">            System.out.println(i.get(j));</span><br><span class="line">        &#125;</span><br><span class="line">        temvalue = i.getAndSet(<span class="number">0</span>, <span class="number">2</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;temvalue:&quot;</span> + temvalue + <span class="string">&quot;;  i:&quot;</span> + i);</span><br><span class="line">        temvalue = i.getAndIncrement(<span class="number">0</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;temvalue:&quot;</span> + temvalue + <span class="string">&quot;;  i:&quot;</span> + i);</span><br><span class="line">        temvalue = i.getAndAdd(<span class="number">0</span>, <span class="number">5</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;temvalue:&quot;</span> + temvalue + <span class="string">&quot;;  i:&quot;</span> + i);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="引用类型原子类"><a href="#引用类型原子类" class="headerlink" title="引用类型原子类"></a>引用类型原子类</h3><h4 id="引用类型原子类介绍"><a href="#引用类型原子类介绍" class="headerlink" title="引用类型原子类介绍"></a>引用类型原子类介绍</h4><p>基本类型原子类只能更新一个变量，如果需要原子更新多个变量，需要使用 引用类型原子类。</p>
+<ul>
+<li>AtomicReference：引用类型原子类</li>
+<li>AtomicStampedReference：原子更新带有版本号的引用类型。该类将整数值与引用关联起来，可用于解决原子的更新数据和数据的版本号，可以解决使用 CAS 进行原子更新时可能出现的 ABA 问题。</li>
+<li>AtomicMarkableReference ：原子更新带有标记的引用类型。该类将 boolean 标记与引用关联起来</li>
+</ul>
+<p>上面三个类提供的方法几乎相同，所以我们这里以 AtomicReference 为例子来介绍。</p>
+<h4 id="AtomicReference-类使用示例"><a href="#AtomicReference-类使用示例" class="headerlink" title="AtomicReference 类使用示例"></a>AtomicReference 类使用示例</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicReference;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicReferenceTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        AtomicReference&lt;Person&gt; ar = <span class="keyword">new</span> AtomicReference&lt;Person&gt;();</span><br><span class="line">        Person person = <span class="keyword">new</span> Person(<span class="string">&quot;SnailClimb&quot;</span>, <span class="number">22</span>);</span><br><span class="line">        ar.set(person);</span><br><span class="line">        Person updatePerson = <span class="keyword">new</span> Person(<span class="string">&quot;Daisy&quot;</span>, <span class="number">20</span>);</span><br><span class="line">        ar.compareAndSet(person, updatePerson);</span><br><span class="line"></span><br><span class="line">        System.out.println(ar.get().getName());</span><br><span class="line">        System.out.println(ar.get().getAge());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String name, <span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>();</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述代码首先创建了一个 Person 对象，然后把 Person 对象设置进 AtomicReference 对象中，然后调用 compareAndSet 方法，该方法就是通过 CAS 操作设置 ar。如果 ar 的值为 person 的话，则将其设置为 updatePerson。实现原理与 AtomicInteger 类中的 compareAndSet 方法相同。运行上面的代码后的输出结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Daisy</span><br><span class="line">20</span><br></pre></td></tr></table></figure>
+
+<h4 id="AtomicStampedReference-类使用示例"><a href="#AtomicStampedReference-类使用示例" class="headerlink" title="AtomicStampedReference 类使用示例"></a>AtomicStampedReference 类使用示例</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicStampedReference;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicStampedReferenceDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 实例化、取当前值和 stamp 值</span></span><br><span class="line">        <span class="keyword">final</span> Integer initialRef = <span class="number">0</span>, initialStamp = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">final</span> AtomicStampedReference&lt;Integer&gt; asr = <span class="keyword">new</span> AtomicStampedReference&lt;&gt;(initialRef, initialStamp);</span><br><span class="line">        System.out.println(<span class="string">&quot;currentValue=&quot;</span> + asr.getReference() + <span class="string">&quot;, currentStamp=&quot;</span> + asr.getStamp());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// compare and set</span></span><br><span class="line">        <span class="keyword">final</span> Integer newReference = <span class="number">666</span>, newStamp = <span class="number">999</span>;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> casResult = asr.compareAndSet(initialRef, newReference, initialStamp, newStamp);</span><br><span class="line">        System.out.println(<span class="string">&quot;currentValue=&quot;</span> + asr.getReference()</span><br><span class="line">                + <span class="string">&quot;, currentStamp=&quot;</span> + asr.getStamp()</span><br><span class="line">                + <span class="string">&quot;, casResult=&quot;</span> + casResult);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取当前的值和当前的 stamp 值</span></span><br><span class="line">        <span class="keyword">int</span>[] arr = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">1</span>];</span><br><span class="line">        <span class="keyword">final</span> Integer currentValue = asr.get(arr);</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> currentStamp = arr[<span class="number">0</span>];</span><br><span class="line">        System.out.println(<span class="string">&quot;currentValue=&quot;</span> + currentValue + <span class="string">&quot;, currentStamp=&quot;</span> + currentStamp);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 单独设置 stamp 值</span></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> attemptStampResult = asr.attemptStamp(newReference, <span class="number">88</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;currentValue=&quot;</span> + asr.getReference()</span><br><span class="line">                + <span class="string">&quot;, currentStamp=&quot;</span> + asr.getStamp()</span><br><span class="line">                + <span class="string">&quot;, attemptStampResult=&quot;</span> + attemptStampResult);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 重新设置当前值和 stamp 值</span></span><br><span class="line">        asr.set(initialRef, initialStamp);</span><br><span class="line">        System.out.println(<span class="string">&quot;currentValue=&quot;</span> + asr.getReference() + <span class="string">&quot;, currentStamp=&quot;</span> + asr.getStamp());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// [不推荐使用，除非搞清楚注释的意思了] weak compare and set</span></span><br><span class="line">        <span class="comment">// 困惑！weakCompareAndSet 这个方法最终还是调用 compareAndSet 方法。[版本: jdk-8u191]</span></span><br><span class="line">        <span class="comment">// 但是注释上写着 &quot;May fail spuriously and does not provide ordering guarantees,</span></span><br><span class="line">        <span class="comment">// so is only rarely an appropriate alternative to compareAndSet.&quot;</span></span><br><span class="line">        <span class="comment">// todo 感觉有可能是 jvm 通过方法名在 native 方法里面做了转发</span></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> wCasResult = asr.weakCompareAndSet(initialRef, newReference, initialStamp, newStamp);</span><br><span class="line">        System.out.println(<span class="string">&quot;currentValue=&quot;</span> + asr.getReference()</span><br><span class="line">                + <span class="string">&quot;, currentStamp=&quot;</span> + asr.getStamp()</span><br><span class="line">                + <span class="string">&quot;, wCasResult=&quot;</span> + wCasResult);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">currentValue&#x3D;0, currentStamp&#x3D;0</span><br><span class="line">currentValue&#x3D;666, currentStamp&#x3D;999, casResult&#x3D;true</span><br><span class="line">currentValue&#x3D;666, currentStamp&#x3D;999</span><br><span class="line">currentValue&#x3D;666, currentStamp&#x3D;88, attemptStampResult&#x3D;true</span><br><span class="line">currentValue&#x3D;0, currentStamp&#x3D;0</span><br><span class="line">currentValue&#x3D;666, currentStamp&#x3D;999, wCasResult&#x3D;true</span><br></pre></td></tr></table></figure>
+
+<h4 id="AtomicMarkableReference-类使用示例"><a href="#AtomicMarkableReference-类使用示例" class="headerlink" title="AtomicMarkableReference 类使用示例"></a>AtomicMarkableReference 类使用示例</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicMarkableReference;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicMarkableReferenceDemo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 实例化、取当前值和 mark 值</span></span><br><span class="line">        <span class="keyword">final</span> Boolean initialRef = <span class="keyword">null</span>, initialMark = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">final</span> AtomicMarkableReference&lt;Boolean&gt; amr = <span class="keyword">new</span> AtomicMarkableReference&lt;&gt;(initialRef, initialMark);</span><br><span class="line">        System.out.println(<span class="string">&quot;currentValue=&quot;</span> + amr.getReference() + <span class="string">&quot;, currentMark=&quot;</span> + amr.isMarked());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// compare and set</span></span><br><span class="line">        <span class="keyword">final</span> Boolean newReference1 = <span class="keyword">true</span>, newMark1 = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> casResult = amr.compareAndSet(initialRef, newReference1, initialMark, newMark1);</span><br><span class="line">        System.out.println(<span class="string">&quot;currentValue=&quot;</span> + amr.getReference()</span><br><span class="line">                + <span class="string">&quot;, currentMark=&quot;</span> + amr.isMarked()</span><br><span class="line">                + <span class="string">&quot;, casResult=&quot;</span> + casResult);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取当前的值和当前的 mark 值</span></span><br><span class="line">        <span class="keyword">boolean</span>[] arr = <span class="keyword">new</span> <span class="keyword">boolean</span>[<span class="number">1</span>];</span><br><span class="line">        <span class="keyword">final</span> Boolean currentValue = amr.get(arr);</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> currentMark = arr[<span class="number">0</span>];</span><br><span class="line">        System.out.println(<span class="string">&quot;currentValue=&quot;</span> + currentValue + <span class="string">&quot;, currentMark=&quot;</span> + currentMark);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 单独设置 mark 值</span></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> attemptMarkResult = amr.attemptMark(newReference1, <span class="keyword">false</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;currentValue=&quot;</span> + amr.getReference()</span><br><span class="line">                + <span class="string">&quot;, currentMark=&quot;</span> + amr.isMarked()</span><br><span class="line">                + <span class="string">&quot;, attemptMarkResult=&quot;</span> + attemptMarkResult);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 重新设置当前值和 mark 值</span></span><br><span class="line">        amr.set(initialRef, initialMark);</span><br><span class="line">        System.out.println(<span class="string">&quot;currentValue=&quot;</span> + amr.getReference() + <span class="string">&quot;, currentMark=&quot;</span> + amr.isMarked());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// [不推荐使用，除非搞清楚注释的意思了] weak compare and set</span></span><br><span class="line">        <span class="comment">// 困惑！weakCompareAndSet 这个方法最终还是调用 compareAndSet 方法。[版本: jdk-8u191]</span></span><br><span class="line">        <span class="comment">// 但是注释上写着 &quot;May fail spuriously and does not provide ordering guarantees,</span></span><br><span class="line">        <span class="comment">// so is only rarely an appropriate alternative to compareAndSet.&quot;</span></span><br><span class="line">        <span class="comment">// todo 感觉有可能是 jvm 通过方法名在 native 方法里面做了转发</span></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> wCasResult = amr.weakCompareAndSet(initialRef, newReference1, initialMark, newMark1);</span><br><span class="line">        System.out.println(<span class="string">&quot;currentValue=&quot;</span> + amr.getReference()</span><br><span class="line">                + <span class="string">&quot;, currentMark=&quot;</span> + amr.isMarked()</span><br><span class="line">                + <span class="string">&quot;, wCasResult=&quot;</span> + wCasResult);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">currentValue&#x3D;null, currentMark&#x3D;false</span><br><span class="line">currentValue&#x3D;true, currentMark&#x3D;true, casResult&#x3D;true</span><br><span class="line">currentValue&#x3D;true, currentMark&#x3D;true</span><br><span class="line">currentValue&#x3D;true, currentMark&#x3D;false, attemptMarkResult&#x3D;true</span><br><span class="line">currentValue&#x3D;null, currentMark&#x3D;false</span><br><span class="line">currentValue&#x3D;true, currentMark&#x3D;true, wCasResult&#x3D;true</span><br></pre></td></tr></table></figure>
+
+<h3 id="对象的属性修改类型原子类"><a href="#对象的属性修改类型原子类" class="headerlink" title="对象的属性修改类型原子类"></a>对象的属性修改类型原子类</h3><h4 id="对象的属性修改类型原子类介绍"><a href="#对象的属性修改类型原子类介绍" class="headerlink" title="对象的属性修改类型原子类介绍"></a>对象的属性修改类型原子类介绍</h4><p>如果需要原子更新某个类里的某个字段时，需要用到对象的属性修改类型原子类。</p>
+<ul>
+<li>AtomicIntegerFieldUpdater:原子更新整形字段的更新器</li>
+<li>AtomicLongFieldUpdater：原子更新长整形字段的更新器</li>
+<li>AtomicReferenceFieldUpdater ：原子更新引用类型里的字段的更新器</li>
+</ul>
+<p>要想原子地更新对象的属性需要两步。第一步，因为对象的属性修改类型原子类都是抽象类，所以每次使用都必须使用静态方法 newUpdater()创建一个更新器，并且需要设置想要更新的类和属性。第二步，更新的对象属性必须使用 public volatile 修饰符。</p>
+<p>上面三个类提供的方法几乎相同，所以我们这里以 <code>AtomicIntegerFieldUpdater</code>为例子来介绍。</p>
+<h4 id="AtomicIntegerFieldUpdater-类使用示例"><a href="#AtomicIntegerFieldUpdater-类使用示例" class="headerlink" title="AtomicIntegerFieldUpdater 类使用示例"></a>AtomicIntegerFieldUpdater 类使用示例</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.atomic.AtomicIntegerFieldUpdater;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AtomicIntegerFieldUpdaterTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        AtomicIntegerFieldUpdater&lt;User&gt; a = AtomicIntegerFieldUpdater.newUpdater(User.class, <span class="string">&quot;age&quot;</span>);</span><br><span class="line"></span><br><span class="line">        User user = <span class="keyword">new</span> User(<span class="string">&quot;Java&quot;</span>, <span class="number">22</span>);</span><br><span class="line">        System.out.println(a.getAndIncrement(user));<span class="comment">// 22</span></span><br><span class="line">        System.out.println(a.get(user));<span class="comment">// 23</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">volatile</span> <span class="keyword">int</span> age;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">User</span><span class="params">(String name, <span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>();</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.age = age;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">22</span><br><span class="line">23</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/15/Java-AQS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/04/15/Java-AQS/" itemprop="url">Java-AQS</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-15T18:19:21+08:00">
+                2021-04-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-JUC/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础 - JUC</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>摘抄<a target="_blank" rel="noopener" href="https://snailclimb.gitee.io/javaguide/#/?id=%e5%b9%b6%e5%8f%91">javaguide</a></p>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>AQS 是一个用来构建锁和同步器的框架，使用 AQS 能简单且高效地构造出应用广泛的大量的同步器，比如 <code>ReentrantLock</code>，<code>Semaphore</code>，其他的诸如 <code>ReentrantReadWriteLock</code>，<code>SynchronousQueue</code>，<code>FutureTask</code> 等等皆是基于 AQS 的。当然，我们自己也能利用 AQS 非常轻松容易地构造出符合我们自己需求的同步器。</p>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是用 CLH 队列锁实现的，即将暂时获取不到锁的线程加入到队列中。</p>
+<blockquote>
+<p>CLH(Craig,Landin,and Hagersten)队列是一个虚拟的双向队列（虚拟的双向队列即不存在队列实例，仅存在结点之间的关联关系）。AQS 是将每条请求共享资源的线程封装成一个 CLH 锁队列的一个结点（Node）来实现锁的分配。</p>
+</blockquote>
+<p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/Java%20%E7%A8%8B%E5%BA%8F%E5%91%98%E5%BF%85%E5%A4%87%EF%BC%9A%E5%B9%B6%E5%8F%91%E7%9F%A5%E8%AF%86%E7%B3%BB%E7%BB%9F%E6%80%BB%E7%BB%93/CLH.png?ynotemdtimestamp=1618464916797" alt="enter image description here"></p>
+<p>AQS 使用一个 int 成员变量来表示同步状态，通过内置的 FIFO 队列来完成获取资源线程的排队工作。AQS 使用 CAS 对该同步状态进行原子操作实现对其值的修改。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">int</span> state;<span class="comment">//共享变量，使用volatile修饰保证线程可见性</span></span><br></pre></td></tr></table></figure>
+
+<p>状态信息通过 protected 类型的<code>getState</code>，<code>setState</code>，<code>compareAndSetState</code>进行操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//返回同步状态的当前值</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getState</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> state;</span><br><span class="line">&#125;</span><br><span class="line"> <span class="comment">// 设置同步状态的值</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">setState</span><span class="params">(<span class="keyword">int</span> newState)</span> </span>&#123;</span><br><span class="line">        state = newState;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//原子地（CAS操作）将同步状态值设置为给定值update如果当前同步状态的值等于expect（期望值）</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSetState</span><span class="params">(<span class="keyword">int</span> expect, <span class="keyword">int</span> update)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> unsafe.compareAndSwapInt(<span class="keyword">this</span>, stateOffset, expect, update);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="AQS-对资源的共享方式"><a href="#AQS-对资源的共享方式" class="headerlink" title="AQS 对资源的共享方式"></a>AQS 对资源的共享方式</h2><p><strong>AQS 定义两种资源共享方式</strong></p>
+<ol>
+<li><p><strong>Exclusive</strong>（独占）</p>
+<p>只有一个线程能执行，如 ReentrantLock。又可分为公平锁和非公平锁,ReentrantLock 同时支持两种锁,下面以 ReentrantLock 对这两种锁的定义做介绍：</p>
+<ul>
+<li>公平锁：按照线程在队列中的排队顺序，先到者先拿到锁</li>
+<li>非公平锁( 默认因为考虑获得更好的性能)：当线程要获取锁时，先通过两次 CAS 操作去抢锁，如果没抢到，当前线程再加入到队列中等待唤醒。</li>
+</ul>
+<p> <strong>ReentrantLock 中相关的源代码：</strong></p>
+<p>ReentrantLock 默认采用非公平锁，因为考虑获得更好的性能，通过 boolean 来决定是否用公平锁（传入 true 用公平锁）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** Synchronizer providing all implementation mechanics */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Sync sync;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 默认非公平锁</span></span><br><span class="line">    sync = <span class="keyword">new</span> NonfairSync();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">(<span class="keyword">boolean</span> fair)</span> </span>&#123;</span><br><span class="line">    sync = fair ? <span class="keyword">new</span> FairSync() : <span class="keyword">new</span> NonfairSync();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ReentrantLock 中公平锁的 <code>lock</code> 方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">FairSync</span> <span class="keyword">extends</span> <span class="title">Sync</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        acquire(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// AbstractQueuedSynchronizer.acquire(int arg)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">            acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">            selfInterrupt();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">        <span class="keyword">int</span> c = getState();</span><br><span class="line">        <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="comment">// 1. 和非公平锁相比，这里多了一个判断：是否有线程在等待</span></span><br><span class="line">            <span class="keyword">if</span> (!hasQueuedPredecessors() &amp;&amp;</span><br><span class="line">                compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">                setExclusiveOwnerThread(current);</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">            <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">            <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">&quot;Maximum lock count exceeded&quot;</span>);</span><br><span class="line">            setState(nextc);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>非公平锁的 lock 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">NonfairSync</span> <span class="keyword">extends</span> <span class="title">Sync</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 2. 和公平锁相比，这里会直接先进行一次CAS，成功就返回了</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">            setExclusiveOwnerThread(Thread.currentThread());</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            acquire(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// AbstractQueuedSynchronizer.acquire(int arg)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">            acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">            selfInterrupt();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> nonfairTryAcquire(acquires);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Performs non-fair tryLock.  tryAcquire is implemented in</span></span><br><span class="line"><span class="comment"> * subclasses, but both need nonfair try for trylock method.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">nonfairTryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">    <span class="keyword">int</span> c = getState();</span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// 这里没有对阻塞队列进行判断</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, acquires)) &#123;</span><br><span class="line">            setExclusiveOwnerThread(current);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) &#123;</span><br><span class="line">        <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">        <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>) <span class="comment">// overflow</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">&quot;Maximum lock count exceeded&quot;</span>);</span><br><span class="line">        setState(nextc);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总结：公平锁和非公平锁只有两处不同：</p>
+<ol>
+<li>非公平锁在调用 lock 后，首先就会调用 CAS 进行一次抢锁，如果这个时候恰巧锁没有被占用，那么直接就获取到锁返回了。</li>
+<li>非公平锁在 CAS 失败后，和公平锁一样都会进入到 tryAcquire 方法，在 tryAcquire 方法中，如果发现锁这个时候被释放了（state == 0），非公平锁会直接 CAS 抢锁，但是公平锁会判断等待队列是否有线程处于等待状态，如果有则不去抢锁，乖乖排到后面。</li>
+</ol>
+<p>公平锁和非公平锁就这两点区别，如果这两次 CAS 都不成功，那么后面非公平锁和公平锁是一样的，都要进入到阻塞队列等待唤醒。</p>
+<p>相对来说，非公平锁会有更好的性能，因为它的吞吐量比较大。当然，非公平锁让获取锁的时间变得更加不确定，可能会导致在阻塞队列中的线程长期处于饥饿状态。</p>
+</li>
+<li><p><strong>Share</strong>（共享）</p>
+<p>多个线程可同时执行，如 Semaphore/CountDownLatch。Semaphore、CountDownLatCh、 CyclicBarrier、ReadWriteLock </p>
+<p>ReentrantReadWriteLock 可以看成是组合式，因为 ReentrantReadWriteLock 也就是读写锁允许多个线程同时对某一资源进行读。</p>
+<p>不同的自定义同步器争用共享资源的方式也不同。自定义同步器在实现时只需要实现共享资源 state 的获取与释放方式即可，至于具体线程等待队列的维护（如获取资源失败入队/唤醒出队等），AQS 已经在上层已经帮我们实现好了。</p>
+</li>
+</ol>
+<h2 id="AQS-底层使用了模板方法模式"><a href="#AQS-底层使用了模板方法模式" class="headerlink" title="AQS 底层使用了模板方法模式"></a>AQS 底层使用了模板方法模式</h2><p>同步器的设计是基于模板方法模式的，如果需要自定义同步器一般的方式是这样（模板方法模式很经典的一个应用）：</p>
+<ol>
+<li>使用者继承 AbstractQueuedSynchronizer 并重写指定的方法。（这些重写方法很简单，无非是对于共享资源 state 的获取和释放）</li>
+<li>将 AQS 组合在自定义同步组件的实现中，并调用其模板方法，而这些模板方法会调用使用者重写的方法。</li>
+</ol>
+<p>这和我们以往通过实现接口的方式有很大区别，这是模板方法模式很经典的一个运用，下面简单的给大家介绍一下模板方法模式，模板方法模式是一个很容易理解的设计模式之一。</p>
+<blockquote>
+<p>模板方法模式是基于”继承“的，主要是为了在不改变模板结构的前提下在子类中重新定义模板中的内容以实现复用代码。举个很简单的例子假如我们要去一个地方的步骤是：购票<code>buyTicket()</code>-&gt;安检<code>securityCheck()</code>-&gt;乘坐某某工具回家<code>ride()</code>-&gt;到达目的地<code>arrive()</code>。我们可能乘坐不同的交通工具回家比如飞机或者火车，所以除了<code>ride()</code>方法，其他方法的实现几乎相同。我们可以定义一个包含了这些方法的抽象类，然后用户根据自己的需要继承该抽象类然后修改 <code>ride()</code>方法。</p>
+</blockquote>
+<p><strong>AQS 使用了模板方法模式，自定义同步器时需要重写下面几个 AQS 提供的模板方法：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">isHeldExclusively()&#x2F;&#x2F;该线程是否正在独占资源。只有用到condition才需要去实现它。</span><br><span class="line">tryAcquire(int)&#x2F;&#x2F;独占方式。尝试获取资源，成功则返回true，失败则返回false。</span><br><span class="line">tryRelease(int)&#x2F;&#x2F;独占方式。尝试释放资源，成功则返回true，失败则返回false。</span><br><span class="line">tryAcquireShared(int)&#x2F;&#x2F;共享方式。尝试获取资源。负数表示失败；0表示成功，但没有剩余可用资源；正数表示成功，且有剩余资源。</span><br><span class="line">tryReleaseShared(int)&#x2F;&#x2F;共享方式。尝试释放资源，成功则返回true，失败则返回false。</span><br></pre></td></tr></table></figure>
+
+<p>默认情况下，每个方法都抛出 <code>UnsupportedOperationException</code>。 这些方法的实现必须是内部线程安全的，并且通常应该简短而不是阻塞。AQS 类中的其他方法都是 final ，所以无法被其他类使用，只有这几个方法可以被其他类使用。</p>
+<p>以 ReentrantLock 为例，state 初始化为 0，表示未锁定状态。A 线程 lock()时，会调用 tryAcquire()独占该锁并将 state+1。此后，其他线程再 tryAcquire()时就会失败，直到 A 线程 unlock()到 state=0（即释放锁）为止，其它线程才有机会获取该锁。当然，释放锁之前，A 线程自己是可以重复获取此锁的（state 会累加），这就是可重入的概念。但要注意，获取多少次就要释放多么次，这样才能保证 state 是能回到零态的。</p>
+<p>再以 CountDownLatch 以例，任务分为 N 个子线程去执行，state 也初始化为 N（注意 N 要与线程个数一致）。这 N 个子线程是并行执行的，每个子线程执行完后 countDown()一次，state 会 CAS(Compare and Swap)减 1。等到所有子线程都执行完后(即 state=0)，会 unpark()主调用线程，然后主调用线程就会从 await()函数返回，继续后余动作。</p>
+<p>一般来说，自定义同步器要么是独占方法，要么是共享方式，他们也只需实现<code>tryAcquire-tryRelease</code>、<code>tryAcquireShared-tryReleaseShared</code>中的一种即可。但 AQS 也支持自定义同步器同时实现独占和共享两种方式，如<code>ReentrantReadWriteLock</code>。</p>
+<h1 id="Semaphore-信号量-允许多个线程同时访问"><a href="#Semaphore-信号量-允许多个线程同时访问" class="headerlink" title="Semaphore(信号量)-允许多个线程同时访问"></a>Semaphore(信号量)-允许多个线程同时访问</h1><p><strong>synchronized 和 ReentrantLock 都是一次只允许一个线程访问某个资源，Semaphore(信号量)可以指定多个线程同时访问某个资源。</strong></p>
+<p>示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Snailclimb</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2018年9月30日</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: 需要一次性拿一个许可的情况</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SemaphoreExample1</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 请求的数量</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> threadCount = <span class="number">550</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    <span class="comment">// 创建一个具有固定线程数量的线程池对象（如果这里线程池的线程数量给太少的话你会发现执行的很慢）</span></span><br><span class="line">    ExecutorService threadPool = Executors.newFixedThreadPool(<span class="number">300</span>);</span><br><span class="line">    <span class="comment">// 一次只能允许执行的线程数量。</span></span><br><span class="line">    <span class="keyword">final</span> Semaphore semaphore = <span class="keyword">new</span> Semaphore(<span class="number">20</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; threadCount; i++) &#123;</span><br><span class="line">      <span class="keyword">final</span> <span class="keyword">int</span> threadnum = i;</span><br><span class="line">      threadPool.execute(() -&gt; &#123;<span class="comment">// Lambda 表达式的运用</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          semaphore.acquire();<span class="comment">// 获取一个许可，所以可运行线程数量为20/1=20</span></span><br><span class="line">          test(threadnum);</span><br><span class="line">          semaphore.release();<span class="comment">// 释放一个许可</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">          <span class="comment">// TODO Auto-generated catch block</span></span><br><span class="line">          e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    threadPool.shutdown();</span><br><span class="line">    System.out.println(<span class="string">&quot;finish&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(<span class="keyword">int</span> threadnum)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    Thread.sleep(<span class="number">1000</span>);<span class="comment">// 模拟请求的耗时操作</span></span><br><span class="line">    System.out.println(<span class="string">&quot;threadnum:&quot;</span> + threadnum);</span><br><span class="line">    Thread.sleep(<span class="number">1000</span>);<span class="comment">// 模拟请求的耗时操作</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行 <code>acquire</code> 方法阻塞，直到有一个许可证可以获得然后拿走一个许可证；每个 <code>release</code> 方法增加一个许可证，这可能会释放一个阻塞的 acquire 方法。然而，其实并没有实际的许可证这个对象，Semaphore 只是维持了一个可获得许可证的数量。 Semaphore 经常用于限制获取某种资源的线程数量。</p>
+<p>当然一次也可以一次拿取和释放多个许可，不过一般没有必要这样做：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">semaphore.acquire(5);&#x2F;&#x2F; 获取5个许可，所以可运行线程数量为20&#x2F;5&#x3D;4</span><br><span class="line">test(threadnum);</span><br><span class="line">semaphore.release(5);&#x2F;&#x2F; 获取5个许可，所以可运行线程数量为20&#x2F;5&#x3D;4</span><br></pre></td></tr></table></figure>
+
+<p>除了 <code>acquire</code>方法之外，另一个比较常用的与之对应的方法是<code>tryAcquire</code>方法，该方法如果获取不到许可就立即返回 false。</p>
+<p>Semaphore 有两种模式，公平模式和非公平模式。</p>
+<ul>
+<li><strong>公平模式：</strong> 调用 acquire 的顺序就是获取许可证的顺序，遵循 FIFO；</li>
+<li><strong>非公平模式：</strong> 抢占式的。</li>
+</ul>
+<p><strong>Semaphore 对应的两个构造方法如下：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public Semaphore(int permits) &#123;</span><br><span class="line">     sync &#x3D; new NonfairSync(permits);</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> public Semaphore(int permits, boolean fair) &#123;</span><br><span class="line">     sync &#x3D; fair ? new FairSync(permits) : new NonfairSync(permits);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>这两个构造方法，都必须提供许可的数量，第二个构造方法可以指定是公平模式还是非公平模式，默认非公平模式。</strong></p>
+<h1 id="CountDownLatch-（倒计时器）"><a href="#CountDownLatch-（倒计时器）" class="headerlink" title="CountDownLatch （倒计时器）"></a>CountDownLatch （倒计时器）</h1><p><code>CountDownLatch</code> 允许 <code>count</code> 个线程阻塞在一个地方，直至所有线程的任务都执行完毕。</p>
+<p><code>CountDownLatch</code> 是共享锁的一种实现,它默认构造 AQS 的 <code>state</code> 值为 <code>count</code>。当线程使用 <code>countDown()</code>方法时,其实使用了<code>tryReleaseShared</code>方法以 CAS 的操作来减少 <code>state</code>,直至 <code>state</code> 为 0 。当调用 <code>await()</code>方法的时候，如果 <code>state</code> 不为 0，那就证明任务还没有执行完毕，<code>await()</code> 方法就会一直阻塞，也就是说 <code>await()</code> 方法之后的语句不会被执行。然后，<code>CountDownLatch</code> 会自旋 CAS 判断 <code>state == 0</code>，如果 <code>state == 0</code> 的话，就会释放所有等待的线程，<code>await()</code> 方法之后的语句得到执行。</p>
+<h2 id="CountDownLatch-的两种典型用法"><a href="#CountDownLatch-的两种典型用法" class="headerlink" title="CountDownLatch 的两种典型用法"></a>CountDownLatch 的两种典型用法</h2><ol>
+<li>某一线程在开始运行前等待 n 个线程执行完毕。将 CountDownLatch 的计数器初始化为 n ：<code>new CountDownLatch(n)</code>，每当一个任务线程执行完毕，就将计数器减 1 <code>countdownlatch.countDown()</code>，当计数器的值变为 0 时，在<code>CountDownLatch上 await()</code> 的线程就会被唤醒。一个典型应用场景就是启动一个服务时，主线程需要等待多个组件加载完毕，之后再继续执行。</li>
+<li>实现多个线程开始执行任务的最大并行性。注意是并行性，不是并发，强调的是多个线程在某一时刻同时开始执行。类似于赛跑，将多个线程放到起点，等待发令枪响，然后同时开跑。做法是初始化一个共享的 <code>CountDownLatch</code> 对象，将其计数器初始化为 1 ：<code>new CountDownLatch(1)</code>，多个线程在开始执行任务前首先 <code>coundownlatch.await()</code>，当主线程调用 countDown() 时，计数器变为 0，多个线程同时被唤醒。</li>
+</ol>
+<h2 id="CountDownLatch-的使用示例"><a href="#CountDownLatch-的使用示例" class="headerlink" title="CountDownLatch 的使用示例"></a>CountDownLatch 的使用示例</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> SnailClimb</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2018年10月1日</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: CountDownLatch 使用方法示例</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CountDownLatchExample1</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 请求的数量</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> threadCount = <span class="number">550</span>;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    <span class="comment">// 创建一个具有固定线程数量的线程池对象（如果这里线程池的线程数量给太少的话你会发现执行的很慢）</span></span><br><span class="line">    ExecutorService threadPool = Executors.newFixedThreadPool(<span class="number">300</span>);</span><br><span class="line">    <span class="keyword">final</span> CountDownLatch countDownLatch = <span class="keyword">new</span> CountDownLatch(threadCount);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; threadCount; i++) &#123;</span><br><span class="line">      <span class="keyword">final</span> <span class="keyword">int</span> threadnum = i;</span><br><span class="line">      threadPool.execute(() -&gt; &#123;<span class="comment">// Lambda 表达式的运用</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          test(threadnum);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">          <span class="comment">// TODO Auto-generated catch block</span></span><br><span class="line">          e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">          countDownLatch.countDown();<span class="comment">// 表示一个请求已经被完成</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    countDownLatch.await();</span><br><span class="line">    threadPool.shutdown();</span><br><span class="line">    System.out.println(<span class="string">&quot;finish&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(<span class="keyword">int</span> threadnum)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    Thread.sleep(<span class="number">1000</span>);<span class="comment">// 模拟请求的耗时操作</span></span><br><span class="line">    System.out.println(<span class="string">&quot;threadnum:&quot;</span> + threadnum);</span><br><span class="line">    Thread.sleep(<span class="number">1000</span>);<span class="comment">// 模拟请求的耗时操作</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码中，我们定义了请求的数量为 550，当这 550 个请求被处理完成之后，才会执行<code>System.out.println(&quot;finish&quot;);</code>。</p>
+<p>与 CountDownLatch 的第一次交互是主线程等待其他线程。主线程必须在启动其他线程后立即调用 <code>CountDownLatch.await()</code> 方法。这样主线程的操作就会在这个方法上阻塞，直到其他线程完成各自的任务。</p>
+<p>其他 N 个线程必须引用闭锁对象，因为他们需要通知 <code>CountDownLatch</code> 对象，他们已经完成了各自的任务。这种通知机制是通过 <code>CountDownLatch.countDown()</code>方法来完成的；每调用一次这个方法，在构造函数中初始化的 count 值就减 1。所以当 N 个线程都调 用了这个方法，count 的值等于 0，然后主线程就能通过 <code>await()</code>方法，恢复执行自己的任务。</p>
+<p>再插一嘴：<code>CountDownLatch</code> 的 <code>await()</code> 方法使用不当很容易产生死锁，比如我们上面代码中的 for 循环改为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">for (int i &#x3D; 0; i &lt; threadCount-1; i++) &#123;</span><br><span class="line">.......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样就导致 <code>count</code> 的值没办法等于 0，然后就会导致一直等待。</p>
+<h2 id="CountDownLatch-的不足"><a href="#CountDownLatch-的不足" class="headerlink" title="CountDownLatch 的不足"></a>CountDownLatch 的不足</h2><p>CountDownLatch 是一次性的，计数器的值只能在构造方法中初始化一次，之后没有任何机制再次对其设置值，当 CountDownLatch 使用完毕后，它不能再次被使用。</p>
+<h2 id="CountDownLatch-相常见面试题"><a href="#CountDownLatch-相常见面试题" class="headerlink" title="CountDownLatch 相常见面试题"></a>CountDownLatch 相常见面试题</h2><p>解释一下 CountDownLatch 概念？</p>
+<p>CountDownLatch 和 CyclicBarrier 的不同之处？</p>
+<p>给出一些 CountDownLatch 使用的例子？</p>
+<p>CountDownLatch 类中主要的方法？</p>
+<h1 id="CyclicBarrier-循环栅栏"><a href="#CyclicBarrier-循环栅栏" class="headerlink" title="CyclicBarrier(循环栅栏)"></a>CyclicBarrier(循环栅栏)</h1><p>CyclicBarrier 和 CountDownLatch 非常类似，它也可以实现线程间的技术等待，但是它的功能比 CountDownLatch 更加复杂和强大。主要应用场景和 CountDownLatch 类似。</p>
+<blockquote>
+<p>CountDownLatch 的实现是基于 AQS 的，而 CycliBarrier 是基于 ReentrantLock(ReentrantLock 也属于 AQS 同步器)和 Condition 的.</p>
+</blockquote>
+<p>CyclicBarrier 的字面意思是可循环使用（Cyclic）的屏障（Barrier）。它要做的事情是，让一组线程到达一个屏障（也可以叫同步点）时被阻塞，直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续干活。CyclicBarrier 默认的构造方法是 <code>CyclicBarrier(int parties)</code>，其参数表示屏障拦截的线程数量，每个线程调用<code>await</code>方法告诉 CyclicBarrier 我已经到达了屏障，然后当前线程被阻塞。</p>
+<p>再来看一下它的构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">CyclicBarrier</span><span class="params">(<span class="keyword">int</span> parties)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(parties, <span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">CyclicBarrier</span><span class="params">(<span class="keyword">int</span> parties, Runnable barrierAction)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (parties &lt;= <span class="number">0</span>) <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException();</span><br><span class="line">    <span class="keyword">this</span>.parties = parties;</span><br><span class="line">    <span class="keyword">this</span>.count = parties;</span><br><span class="line">    <span class="keyword">this</span>.barrierCommand = barrierAction;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中，parties 就代表了有拦截的线程的数量，当拦截的线程数量达到这个值的时候就打开栅栏，让所有线程通过。</p>
+<h2 id="CyclicBarrier-的应用场景"><a href="#CyclicBarrier-的应用场景" class="headerlink" title="CyclicBarrier 的应用场景"></a>CyclicBarrier 的应用场景</h2><p>CyclicBarrier 可以用于多线程计算数据，最后合并计算结果的应用场景。比如我们用一个 Excel 保存了用户所有银行流水，每个 Sheet 保存一个帐户近一年的每笔银行流水，现在需要统计用户的日均银行流水，先用多线程处理每个 sheet 里的银行流水，都执行完之后，得到每个 sheet 的日均银行流水，最后，再用 barrierAction 用这些线程的计算结果，计算出整个 Excel 的日均银行流水。</p>
+<h2 id="CyclicBarrier-的使用示例"><a href="#CyclicBarrier-的使用示例" class="headerlink" title="CyclicBarrier 的使用示例"></a>CyclicBarrier 的使用示例</h2><p>示例 1：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Snailclimb</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2018年10月1日</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: 测试 CyclicBarrier 类中带参数的 await() 方法</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CyclicBarrierExample2</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 请求的数量</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> threadCount = <span class="number">550</span>;</span><br><span class="line">  <span class="comment">// 需要同步的线程数量</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> CyclicBarrier cyclicBarrier = <span class="keyword">new</span> CyclicBarrier(<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    <span class="comment">// 创建线程池</span></span><br><span class="line">    ExecutorService threadPool = Executors.newFixedThreadPool(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; threadCount; i++) &#123;</span><br><span class="line">      <span class="keyword">final</span> <span class="keyword">int</span> threadNum = i;</span><br><span class="line">      Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">      threadPool.execute(() -&gt; &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          test(threadNum);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">          <span class="comment">// TODO Auto-generated catch block</span></span><br><span class="line">          e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (BrokenBarrierException e) &#123;</span><br><span class="line">          <span class="comment">// TODO Auto-generated catch block</span></span><br><span class="line">          e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    threadPool.shutdown();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(<span class="keyword">int</span> threadnum)</span> <span class="keyword">throws</span> InterruptedException, BrokenBarrierException </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;threadnum:&quot;</span> + threadnum + <span class="string">&quot;is ready&quot;</span>);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="comment">/**等待60秒，保证子线程完全执行结束*/</span></span><br><span class="line">      cyclicBarrier.await(<span class="number">60</span>, TimeUnit.SECONDS);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">      System.out.println(<span class="string">&quot;-----CyclicBarrierException------&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    System.out.println(<span class="string">&quot;threadnum:&quot;</span> + threadnum + <span class="string">&quot;is finish&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">threadnum:0is ready</span><br><span class="line">threadnum:1is ready</span><br><span class="line">threadnum:2is ready</span><br><span class="line">threadnum:3is ready</span><br><span class="line">threadnum:4is ready</span><br><span class="line">threadnum:4is finish</span><br><span class="line">threadnum:0is finish</span><br><span class="line">threadnum:1is finish</span><br><span class="line">threadnum:2is finish</span><br><span class="line">threadnum:3is finish</span><br><span class="line">threadnum:5is ready</span><br><span class="line">threadnum:6is ready</span><br><span class="line">threadnum:7is ready</span><br><span class="line">threadnum:8is ready</span><br><span class="line">threadnum:9is ready</span><br><span class="line">threadnum:9is finish</span><br><span class="line">threadnum:5is finish</span><br><span class="line">threadnum:8is finish</span><br><span class="line">threadnum:7is finish</span><br><span class="line">threadnum:6is finish</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<p>可以看到当线程数量也就是请求数量达到我们定义的 5 个的时候， <code>await</code>方法之后的方法才被执行。</p>
+<p>另外，CyclicBarrier 还提供一个更高级的构造函数<code>CyclicBarrier(int parties, Runnable barrierAction)</code>，用于在线程到达屏障时，优先执行<code>barrierAction</code>，方便处理更复杂的业务场景。示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> SnailClimb</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2018年10月1日</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>: 新建 CyclicBarrier 的时候指定一个 Runnable</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CyclicBarrierExample3</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 请求的数量</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> threadCount = <span class="number">550</span>;</span><br><span class="line">  <span class="comment">// 需要同步的线程数量</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> CyclicBarrier cyclicBarrier = <span class="keyword">new</span> CyclicBarrier(<span class="number">5</span>, () -&gt; &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;------当线程数达到之后，优先执行------&quot;</span>);</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">    <span class="comment">// 创建线程池</span></span><br><span class="line">    ExecutorService threadPool = Executors.newFixedThreadPool(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; threadCount; i++) &#123;</span><br><span class="line">      <span class="keyword">final</span> <span class="keyword">int</span> threadNum = i;</span><br><span class="line">      Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">      threadPool.execute(() -&gt; &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          test(threadNum);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">          <span class="comment">// TODO Auto-generated catch block</span></span><br><span class="line">          e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (BrokenBarrierException e) &#123;</span><br><span class="line">          <span class="comment">// TODO Auto-generated catch block</span></span><br><span class="line">          e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    threadPool.shutdown();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(<span class="keyword">int</span> threadnum)</span> <span class="keyword">throws</span> InterruptedException, BrokenBarrierException </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;threadnum:&quot;</span> + threadnum + <span class="string">&quot;is ready&quot;</span>);</span><br><span class="line">    cyclicBarrier.await();</span><br><span class="line">    System.out.println(<span class="string">&quot;threadnum:&quot;</span> + threadnum + <span class="string">&quot;is finish&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">threadnum:0is ready</span><br><span class="line">threadnum:1is ready</span><br><span class="line">threadnum:2is ready</span><br><span class="line">threadnum:3is ready</span><br><span class="line">threadnum:4is ready</span><br><span class="line">------当线程数达到之后，优先执行------</span><br><span class="line">threadnum:4is finish</span><br><span class="line">threadnum:0is finish</span><br><span class="line">threadnum:2is finish</span><br><span class="line">threadnum:1is finish</span><br><span class="line">threadnum:3is finish</span><br><span class="line">threadnum:5is ready</span><br><span class="line">threadnum:6is ready</span><br><span class="line">threadnum:7is ready</span><br><span class="line">threadnum:8is ready</span><br><span class="line">threadnum:9is ready</span><br><span class="line">------当线程数达到之后，优先执行------</span><br><span class="line">threadnum:9is finish</span><br><span class="line">threadnum:5is finish</span><br><span class="line">threadnum:6is finish</span><br><span class="line">threadnum:8is finish</span><br><span class="line">threadnum:7is finish</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+
+<h2 id="CyclicBarrier源码分析"><a href="#CyclicBarrier源码分析" class="headerlink" title="CyclicBarrier源码分析"></a><code>CyclicBarrier</code>源码分析</h2><p>当调用 <code>CyclicBarrier</code> 对象调用 <code>await()</code> 方法时，实际上调用的是<code>dowait(false, 0L)</code>方法。 <code>await()</code> 方法就像树立起一个栅栏的行为一样，将线程挡住了，当拦住的线程数量达到 parties 的值时，栅栏才会打开，线程才得以通过执行。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">await</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException, BrokenBarrierException </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> dowait(<span class="keyword">false</span>, <span class="number">0L</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (TimeoutException toe) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> Error(toe); <span class="comment">// cannot happen</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>dowait(false, 0L)</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 当线程数量或者请求数量达到 count 时 await 之后的方法才会被执行。上面的示例中 count 的值就为 5。</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> count;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Main barrier code, covering the various policies.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">dowait</span><span class="params">(<span class="keyword">boolean</span> timed, <span class="keyword">long</span> nanos)</span></span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> InterruptedException, BrokenBarrierException,</span></span><br><span class="line"><span class="function">           TimeoutException </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    <span class="comment">// 锁住</span></span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">final</span> Generation g = generation;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (g.broken)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> BrokenBarrierException();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果线程中断了，抛出异常</span></span><br><span class="line">        <span class="keyword">if</span> (Thread.interrupted()) &#123;</span><br><span class="line">            breakBarrier();</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> InterruptedException();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// cout减1</span></span><br><span class="line">        <span class="keyword">int</span> index = --count;</span><br><span class="line">        <span class="comment">// 当 count 数量减为 0 之后说明最后一个线程已经到达栅栏了，也就是达到了可以执行await 方法之后的条件</span></span><br><span class="line">        <span class="keyword">if</span> (index == <span class="number">0</span>) &#123;  <span class="comment">// tripped</span></span><br><span class="line">            <span class="keyword">boolean</span> ranAction = <span class="keyword">false</span>;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">final</span> Runnable command = barrierCommand;</span><br><span class="line">                <span class="keyword">if</span> (command != <span class="keyword">null</span>)</span><br><span class="line">                    command.run();</span><br><span class="line">                ranAction = <span class="keyword">true</span>;</span><br><span class="line">                <span class="comment">// 将 count 重置为 parties 属性的初始化值</span></span><br><span class="line">                <span class="comment">// 唤醒之前等待的线程</span></span><br><span class="line">                <span class="comment">// 下一波执行开始</span></span><br><span class="line">                nextGeneration();</span><br><span class="line">                <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (!ranAction)</span><br><span class="line">                    breakBarrier();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// loop until tripped, broken, interrupted, or timed out</span></span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (!timed)</span><br><span class="line">                    trip.await();</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (nanos &gt; <span class="number">0L</span>)</span><br><span class="line">                    nanos = trip.awaitNanos(nanos);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException ie) &#123;</span><br><span class="line">                <span class="keyword">if</span> (g == generation &amp;&amp; ! g.broken) &#123;</span><br><span class="line">                    breakBarrier();</span><br><span class="line">                    <span class="keyword">throw</span> ie;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// We&#x27;re about to finish waiting even if we had not</span></span><br><span class="line">                    <span class="comment">// been interrupted, so this interrupt is deemed to</span></span><br><span class="line">                    <span class="comment">// &quot;belong&quot; to subsequent execution.</span></span><br><span class="line">                    Thread.currentThread().interrupt();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (g.broken)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> BrokenBarrierException();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (g != generation)</span><br><span class="line">                <span class="keyword">return</span> index;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (timed &amp;&amp; nanos &lt;= <span class="number">0L</span>) &#123;</span><br><span class="line">                breakBarrier();</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> TimeoutException();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总结：<code>CyclicBarrier</code> 内部通过一个 count 变量作为计数器，cout 的初始值为 parties 属性的初始化值，每当一个线程到了栅栏这里了，那么就将计数器减一。如果 count 值为 0 了，表示这是这一代最后一个线程到达栅栏，就尝试执行我们构造方法中输入的任务。</p>
+<h2 id="CyclicBarrier-和-CountDownLatch-的区别"><a href="#CyclicBarrier-和-CountDownLatch-的区别" class="headerlink" title="CyclicBarrier 和 CountDownLatch 的区别"></a>CyclicBarrier 和 CountDownLatch 的区别</h2><p>对于 CountDownLatch 来说，重点是“一个线程（多个线程）等待”，而其他的 N 个线程在完成“某件事情”之后，可以终止，也可以等待。而对于 CyclicBarrier，重点是多个线程，在任意一个线程没有完成，所有的线程都必须等待。</p>
+<p>CountDownLatch 是计数器，线程完成一个记录一个，只不过计数不是递增而是递减，而 CyclicBarrier 更像是一个阀门，需要所有线程都到达，阀门才能打开，然后继续执行。</p>
+<h1 id="Semaphore-CountDownLatch-CyclicBarrier-这些同步器各自的原理和应用场景"><a href="#Semaphore-CountDownLatch-CyclicBarrier-这些同步器各自的原理和应用场景" class="headerlink" title="Semaphore/CountDownLatch/CyclicBarrier 这些同步器各自的原理和应用场景"></a>Semaphore/CountDownLatch/CyclicBarrier 这些同步器各自的原理和应用场景</h1><p><strong>A、Semaphore (信号量)</strong>:synchronized 和 ReentrantLock 都是一次只允许一个线程访问某个资源，Semaphore (信号量) 可以指定多个线程同时访问某个资源。</p>
+<p><strong>B、CountDownLatch （闭锁）</strong>： CountDownLatch 是一个同步工具类，用来协调多个线程之间的同步。这个工具通常用来控制线程等待，它可以让某一个线程等待直到倒计时结束，再开始执行。比如有一个任务 A，它要等待其他 4 个任务执行完毕之后才能执行，此时就可以利用 CountDownLatch 来实现这种功能了。</p>
+<p>**C、CyclicBarrier (循环栅栏)**： CyclicBarrier 和 CountDownLatch 非常类似，主要应用场景也差不多，它也可以实现线程间的技术等待，但是它的功能比 CountDownLatch 更加复杂和强大。CyclicBarrier 的字面意思是可循环使用（Cyclic）的屏障（Barrier）。它要做的事情是，让一组线程到达一个屏障时被阻塞，直到最后一个线程到达屏障时，屏障才会开门，所有被屏障拦截的线程才会继续干活。</p>
+<p>简单地说，CountDownLatch 表示一个或者多个线程，等待其他多个线程完成某件事情之后才能执行；CyclicBarrier 表示多个线程互相等待，直到达到同一个同步点（屏障），再继续一起执行。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/15/Java-%E7%BA%BF%E7%A8%8B%E6%B1%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2178,737 +3018,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/14/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/14/Java-%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%A0%86%E5%92%8C%E6%A0%88%E7%9A%84%E5%8C%BA%E5%88%AB/" itemprop="url">Java-虚拟机堆和栈的区别</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-14T19:04:08+08:00">
-                2021-04-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">Java基础 - JVM</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="堆和栈的区别"><a href="#堆和栈的区别" class="headerlink" title="堆和栈的区别"></a>堆和栈的区别</h1><ul>
-<li><p>栈内存:栈内存首先是一片内存区域，存储的都是局部变量，凡是定义在方法中的都是局部变量（方法外的是全局变量），for循环内部定义的也是局部变量，是先加载函数才能进行局部变量的定义，所以方法先进栈，然后再定义变量，变量有自己的作用域，一旦离开作用域，变量就会被释放。栈内存的更新速度很快，因为局部变量的生命周期都很短。</p>
-</li>
-<li><p>堆内存:存储的是数组和对象（其实数组就是对象），凡是new建立的都是在堆中，堆中存放的都是实体（对象），实体用于封装数据，而且是封装多个（实体的多个属性），如果一个数据消失，这个实体也没有消失，还可以用，所以堆是不会随时释放的，但是栈不一样，栈里存放的都是单个变量，变量被释放了，那就没有了。堆里的实体虽然不会被释放，但是会被当成垃圾，Java有垃圾回收机制不定时的收取。</p>
-</li>
-</ul>
-<p>比如主函数里的语句 int [] arr=new int [3];在内存中是怎么被定义的：</p>
-<blockquote>
-<p>主函数先进栈，在栈中定义一个变量arr,接下来为arr赋值，但是右边不是一个具体值，是一个实体。实体创建在堆里，在堆里首先通过new关键字开辟一个空间，内存在存储数据的时候都是通过地址来体现的，地址是一块连续的二进制，然后给这个实体分配一个内存地址。数组都是有一个索引，数组这个实体在堆内存中产生之后每一个空间都会进行默认的初始化（这是堆内存的特点，未初始化的数据是不能用的，但在堆里是可以用的，因为初始化过了，但是在栈里没有），不同的类型初始化的值不一样。所以堆和栈里就创建了变量和实体：</p>
-<p><img src="https://img-blog.csdn.net/20170427194056991?ynotemdtimestamp=1618390160630" alt="img"> 那么堆和栈是怎么联系起来的呢? 我们刚刚说过给堆分配了一个地址，把堆的地址赋给arr，arr就通过地址指向了数组。所以arr想操纵数组时，就通过地址，而不是直接把实体都赋给它。这种我们不再叫他基本数据类型，而叫引用数据类型。称为arr引用了堆内存当中的实体。</p>
-<p><img src="https://img-blog.csdn.net/20170427194553696?ynotemdtimestamp=1618390160630" alt="img"></p>
-</blockquote>
-<p>如果当int [] arr=null;</p>
-<p>arr不做任何指向，null的作用就是取消引用数据类型的指向。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">当一个实体，没有引用数据类型指向的时候，它在堆内存中不会被释放，而被当做一个垃圾，在不定时的时间内自动回收，因为Java有一个自动回收机制。自动回收机制（程序）自动监测堆里是否有垃圾，如果有，就会自动的做垃圾回收的动作，但是什么时候收不一定。</span><br></pre></td></tr></table></figure>
-
-<p>所以堆与栈的区别很明显：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1.栈内存存储的是局部变量而堆内存存储的是实体；</span><br><span class="line"></span><br><span class="line">2.栈内存的更新速度要快于堆内存，因为局部变量的生命周期很短；</span><br><span class="line"></span><br><span class="line">3.栈内存存放的变量生命周期一旦结束就会被释放，而堆内存存放的实体会被垃圾回收机制不定时的回收。</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/Java-JVM/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/13/Java-JVM/" itemprop="url">Java-JVM</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T22:49:23+08:00">
-                2021-04-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-JVM/" itemprop="url" rel="index">
-                    <span itemprop="name">Java基础 - JVM</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="JVM参数主要有几种分类"><a href="#JVM参数主要有几种分类" class="headerlink" title="JVM参数主要有几种分类"></a>JVM参数主要有几种分类</h1><ul>
-<li><p>标准参数</p>
-<p>标准参数中包括功能以及输出的结果都是很稳定的，基本上不会随着JVM版本的<br>变化而变化</p>
-</li>
-<li><p>非标准参数</p>
-<p>非标准参数以-X开头，是标准参数的扩展</p>
-</li>
-<li><p>不稳定参数</p>
-<p>不稳定参数以-XX 开头，此类参数的设置很容易引起JVM 性能上的差异，使JVM存在极大的不稳定性</p>
-</li>
-</ul>
-<h1 id="Java中会存在内存泄漏吗，简述一下。"><a href="#Java中会存在内存泄漏吗，简述一下。" class="headerlink" title="Java中会存在内存泄漏吗，简述一下。"></a>Java中会存在内存泄漏吗，简述一下。</h1><p>理论上Java因为有垃圾回收机制（GC）不会存在内存泄露问题；然而在实际开发中，可能会存在无用但可达的对象，这些对象不能被GC回收，因此也会导致内存泄露的发生。例如hibernate的Session（一级缓存）中的对象属于持久态，垃圾回收器是不会回收这些对象的，然而这些对象中可能存在无用的垃圾对象，如果不及时关闭（close）或清空（flush）一级缓存就可能导致内存泄露。</p>
-<h1 id="Java-中都有哪些引用类型以及他们和gc的关系"><a href="#Java-中都有哪些引用类型以及他们和gc的关系" class="headerlink" title="Java 中都有哪些引用类型以及他们和gc的关系"></a>Java 中都有哪些引用类型以及他们和gc的关系</h1><p>强引用：发生 gc 的时候不会被回收<br>软引用：有用但不是必须的对象，在发生内存溢出之前会被回收<br>弱引用：有用但不是必须的对象，在下一次GC时会被回收<br>虚引用：无法通过虚引用获得对象，用 PhantomReference 实现虚引用，虚引<br>用的用途是在 gc 时返回一个通知。</p>
-<h1 id="Java-内存结构（或者说-Java-内存分布）和-Java-内存模型（Java-Memory-Model）"><a href="#Java-内存结构（或者说-Java-内存分布）和-Java-内存模型（Java-Memory-Model）" class="headerlink" title="Java 内存结构（或者说 Java 内存分布）和 Java 内存模型（Java Memory Model）"></a>Java 内存结构（或者说 Java 内存分布）和 Java 内存模型（Java Memory Model）</h1><ul>
-<li>java 内存结构（或者说 java 内存分布）就是下文提到的五大区块的划分。</li>
-<li>java 内存模型是为了屏蔽各种硬件和操作系统差异，保证 Java 程序在各种平台下对内存的访问都能保证效果一致而提出的一套规范。其主要解决问题的手段是 限制处理器优化和使用内存屏障。</li>
-</ul>
-<h1 id="解释一下内存中的栈（stack）、堆（heap）和静态存储区的用法"><a href="#解释一下内存中的栈（stack）、堆（heap）和静态存储区的用法" class="headerlink" title="解释一下内存中的栈（stack）、堆（heap）和静态存储区的用法"></a>解释一下内存中的栈（stack）、堆（heap）和静态存储区的用法</h1><ul>
-<li><p>通常我们定义一个基本数据类型的变量，一个对象的引用，还有就是函数调用的现场保存都使用内存中的栈空间；</p>
-</li>
-<li><p>通过 new 关键字和构造器创建的对象放在堆空间</p>
-</li>
-<li><p>程序中直接书写的100、“hello”和常量都是放在静态存储区中。</p>
-</li>
-<li><p>栈空间操作最快但是也很小，通常大量的对象都是放在堆空间，整个内存包括硬盘上的虚拟内存都可以被当成堆空间来使用</p>
-<blockquote>
-<p>String str = new String(“hello”); 上面的语句中 str 放在栈上，用 new 创建出来的字符串对象放在堆上，而“hello”这个字面量放在静态存储区</p>
-</blockquote>
-</li>
-</ul>
-<h1 id="Java-内存区域"><a href="#Java-内存区域" class="headerlink" title="Java 内存区域"></a>Java 内存区域</h1><p><strong>JDK 1.8 之前：</strong></p>
-<img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/JVM%E8%BF%90%E8%A1%8C%E6%97%B6%E6%95%B0%E6%8D%AE%E5%8C%BA%E5%9F%9F.png?ynotemdtimestamp=1618323664761" alt="img" style="zoom: 67%;" />
-
-<p><strong>JDK 1.8：</strong></p>
-<img src="https://nexus-oss-test.oss-cn-shanghai.aliyuncs.com/JDK8%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84.png?ynotemdtimestamp=1618323664761" alt="image" style="zoom: 67%;" />
-
-<p><strong>线程私有的：</strong></p>
-<ul>
-<li>程序计数器</li>
-<li>虚拟机栈</li>
-<li>本地方法栈</li>
-</ul>
-<p><strong>线程共享的：</strong></p>
-<ul>
-<li>堆</li>
-<li>方法区</li>
-<li>直接内存 (非运行时数据区的一部分)</li>
-</ul>
-<h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><p>程序计数器其实就是一个<strong>指针</strong>，它指向了我们程序中<strong>下一句需要执行的指令</strong>,它也是内存区域中唯一一个不会出现OutOfMemoryError的区域，而且占用内存空间小到基本可以忽略不计。<strong>为了线程切换后能恢复到正确的执行位置，每条线程都需要有一个独立的程序计数器</strong></p>
-<h2 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h2><p>虚拟机栈管运行，负责运行代码<strong>（也就是字节码’.class文件’）</strong></p>
-<p> <strong>Java 虚拟机栈会出现两种错误：<code>StackOverFlowError</code> 和 <code>OutOfMemoryError</code>。</strong></p>
-<ul>
-<li><p><strong><code>StackOverFlowError</code>：</strong> 若 Java 虚拟机栈的内存大小不允许动态扩展，那么当线程请求栈的深度超过当前 Java 虚拟机栈的最大深度的时候，就抛出 StackOverFlowError 错误。</p>
-<blockquote>
-<p>StackOverflow异常有没有遇到过？一般你猜测会在什么情况下被触发？</p>
-<p>答：栈内存溢出，一般由栈内存的局部变量过爆了，导致内存溢出。出现在递归方法，参数个数过多，<br>递归过深，递归没有出口。</p>
-</blockquote>
-</li>
-<li><p><strong><code>OutOfMemoryError</code>：</strong> 若 Java 虚拟机堆中没有空闲内存，并且垃圾回收器也无法提供更多内存的话。就会抛出 OutOfMemoryError 错误。</p>
-</li>
-</ul>
-<p><strong>虚拟机栈的生命周期</strong> 对于栈来说，不存在垃圾回收。只要程序运行结束，栈的空间自然就会释放了。栈的生命周期和所处的线程是一致的。</p>
-<p><strong>虚拟机栈的执行</strong> 我们经常说的栈帧数据，说白了在JVM中叫栈帧，放到Java中其实就是方法，它也是存放在栈中的。</p>
-<p><strong>局部变量的复用</strong> 局部变量表用于存放方法参数和方法内部所定义的局部变量。</p>
-<h3 id="栈帧"><a href="#栈帧" class="headerlink" title="栈帧"></a>栈帧</h3><p>栈帧(Stack Frame)是用于⽀持虚拟机进⾏⽅法调用和⽅法执⾏的数据结构。栈帧存<br>储了方法的局部变量表、操作数栈、动态连接和⽅法返回地址等信息。每⼀个⽅法从调用⾄执⾏完成的<br>过程，都对应着⼀个栈帧在虚拟机栈⾥从⼊栈到出栈的过程。</p>
-<h2 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h2><p><strong>为虚拟机使用到的 Native 方法服务</strong></p>
-<p>本地方法栈也会创建一个栈帧，用于存放该本地方法的局部变量表、操作数栈、动态链接、出口信息。</p>
-<p>方法执行完毕后相应的栈帧也会出栈并释放内存空间，也会出现 <code>StackOverFlowError</code> 和 <code>OutOfMemoryError</code> 两种错误。</p>
-<h2 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h2><ul>
-<li><p>Java 堆是所有线程共享的一块内存区域，在虚拟机启动时创建。</p>
-</li>
-<li><p><strong>此内存区域的唯一目的就是存放对象实例，几乎所有的对象实例以及数组都在这里分配内存。</strong>，属于 <strong>线程共享区域</strong> 。也就是说<strong>线程不安全</strong></p>
-<blockquote>
-<p>从jdk <strong>1.7开始已经默认开启逃逸分析</strong>，如果某些方法中的对象引用没有被返回或者未被外面使用<strong>（也就是未逃逸出去）</strong>，那么对象可以直接在<strong>栈上分配内存</strong>。</p>
-</blockquote>
-</li>
-<li><p>Java 堆是垃圾收集器管理的主要区域，因此也被称作<strong>GC 堆</strong></p>
-</li>
-<li><p>Java 堆可以细分为：新生代和老年代：再细致一点有：Eden 空间、From Survivor、To Survivor 空间等。<strong>进一步划分的目的是更好地回收内存，或者更快地分配内存。</strong></p>
-<p>  <img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-11/c02ecba3c33f43429a765987b928e423-new-image93b46f3d-33f9-46f9-a825-ec7129b004f6.png?ynotemdtimestamp=1618390160630" alt="img"></p>
-</li>
-<li><p>堆内存空间在物理上可以不连续，逻辑上连续即可。</p>
-</li>
-<li><p>堆的大小可通过参数 –Xms（堆的初始容量）、-Xmx（堆的最大容量） 来指定。</p>
-</li>
-</ul>
-<h2 id="方法区-是Java虚拟机规范中的定义"><a href="#方法区-是Java虚拟机规范中的定义" class="headerlink" title="方法区(是Java虚拟机规范中的定义)"></a>方法区(是Java虚拟机规范中的定义)</h2><ul>
-<li><p>用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据</p>
-</li>
-<li><p>方法区也被称为永久代，<strong>方法区和永久代的关系很像 Java 中接口和类的关系，永久代就是方法区的一种实现方式</strong></p>
-</li>
-<li><p>jkd1.8将永久代替换为元空间</p>
-</li>
-<li><p>会出现<code>java.lang.OutOfMemoryError</code></p>
-</li>
-</ul>
-<h2 id="为什么要将永久代-PermGen-替换为元空间-MetaSpace-呢"><a href="#为什么要将永久代-PermGen-替换为元空间-MetaSpace-呢" class="headerlink" title="为什么要将永久代 (PermGen) 替换为元空间 (MetaSpace) 呢?"></a>为什么要将永久代 (PermGen) 替换为元空间 (MetaSpace) 呢?</h2><ol>
-<li>整个永久代有一个 JVM 本身设置固定大小上限，无法进行调整，而元空间使用的是直接内存，受本机可用内存的限制，虽然元空间仍旧可能溢出，但是比原来出现的几率会更小。</li>
-<li>元空间里面存放的是类的元数据，这样加载多少类的元数据就不由 <code>MaxPermSize</code> 控制了, 而由系统的实际可用空间来控制，这样能加载的类就更多了。  </li>
-<li>在 JDK8，合并 HotSpot 和 JRockit 的代码时, JRockit 从来没有一个叫永久代的东西, 合并之后就没有必要额外的设置这么一个永久代的地方了。</li>
-</ol>
-<h1 id="Java堆的结构是什么样子的，什么是堆中的永久代"><a href="#Java堆的结构是什么样子的，什么是堆中的永久代" class="headerlink" title="Java堆的结构是什么样子的，什么是堆中的永久代"></a>Java堆的结构是什么样子的，什么是堆中的永久代</h1><p>堆内存是由存活的和死亡的对象组成，存活的对象是应用可以访问的，不会被垃圾回收。死亡的对象是应用不可访问并且还没有被垃圾收集器回收的对象，</p>
-<p>方法区(用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据)也被称为永久代，<strong>方法区和永久代的关系很像 Java 中接口和类的关系，永久代就是方法区的一种实现方式</strong></p>
-<p>jkd1.8将永久代替换为元空间</p>
-<h1 id="GC-是什么？为什么要有-GC？"><a href="#GC-是什么？为什么要有-GC？" class="headerlink" title="GC 是什么？为什么要有 GC？"></a>GC 是什么？为什么要有 GC？</h1><p>GC（garbage collection）是垃圾收集。</p>
-<p>Java 提供的 GC 功能可以自动监测对象是否超过作用域从而达到自动回收内存的目的（Java 语言没有提供释放已分配内存的显示操作方法）。垃圾回收可以有效的防止内存泄露，有效的使用可以使用的内存。</p>
-<h1 id="Java虚拟机堆和栈的区别"><a href="#Java虚拟机堆和栈的区别" class="headerlink" title="Java虚拟机堆和栈的区别"></a>Java虚拟机堆和栈的区别</h1><p>1.栈内存存储的是局部变量而堆内存存储的是实体；</p>
-<p>2.栈内存的更新速度要快于堆内存，因为局部变量的生命周期很短；</p>
-<p>3.栈内存存放的变量生命周期一旦结束就会被释放，而堆内存存放的实体会被垃圾回收机制不定时的回收。</p>
-<h1 id="Java类加载过程"><a href="#Java类加载过程" class="headerlink" title="Java类加载过程"></a>Java类加载过程</h1><ul>
-<li><strong>加载</strong></li>
-</ul>
-<ol>
-<li><p>将class文件加载到内存</p>
-<blockquote>
-<p>什么是class文件： 8为字节为基础单位的二进制流</p>
-</blockquote>
-</li>
-<li><p>将静态数据结构转化成方法区中运行时的数据结构</p>
-</li>
-<li><p>在堆中生成一个代表这个类的 java.lang.Class对象作为数据访问的入口</p>
-</li>
-</ol>
-<ul>
-<li><strong>验证</strong></li>
-</ul>
-<p>确保加载的类符合 JVM 规范和安全，保证被校验类的方法在运行时不会做出危害虚拟机的事件，其实就是一个安全检查，包含了四个验证动作：文件格式验证，原数据验证，字节码验证，符号引用验证</p>
-<ul>
-<li><strong>准备</strong></li>
-</ul>
-<p>为static变量在方法区中分配内存空间，设置变量的初始值</p>
-<ul>
-<li><strong>解析</strong></li>
-</ul>
-<p>虚拟机将常量池内的符号引用替换为直接引用的过程</p>
-<ul>
-<li><strong>初始化</strong></li>
-</ul>
-<p>类变量进行初始化，真正开始执行类中的定义的java代码程序</p>
-<ul>
-<li><strong>使用</strong></li>
-<li><strong>卸载</strong></li>
-</ul>
-<h1 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h1><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/Java%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%BF%87%E7%A8%8B.png?ynotemdtimestamp=1618390160630" alt="Java创建对象的过程"></p>
-<ul>
-<li><p><strong>Step1:类加载检查</strong></p>
-<p>虚拟机遇到一条 new 指令时，首先将去检查这个指令的参数是否能在常量池中定位到这个类的符号引用，并且检查这个符号引用代表的类是否已被加载过、解析和初始化过。如果没有，那必须先执行相应的类加载过程。</p>
-</li>
-<li><p><strong>Step2:分配内存</strong></p>
-<p>在<strong>类加载检查</strong>通过后，接下来虚拟机将为新生对象<strong>分配内存</strong>。对象所需的内存大小在类加载完成后便可确定，为对象分配空间的任务等同于把一块确定大小的内存从 Java 堆中划分出来。<strong>分配方式</strong>有 <strong>“指针碰撞”</strong> 和 <strong>“空闲列表”</strong> 两种，<strong>选择哪种分配方式由 Java 堆是否规整决定，而 Java 堆是否规整又取决于 GC 收集器的算法是”标记-清除”，还是”标记-整理”（也称作”标记-压缩”）</strong>。</p>
-<p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%9A%84%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F.png?ynotemdtimestamp=1618390160630" alt="内存分配的两种方式"><br><strong>内存分配并发问题</strong></p>
-<p>在创建对象的时候有一个很重要的问题，就是线程安全，因为在实际开发过程中，创建对象是很频繁的事情，作为虚拟机来说，必须要保证线程是安全的，通常来讲，虚拟机采用两种方式来保证线程安全：</p>
-<ul>
-<li><strong>CAS+失败重试：</strong> CAS 是乐观锁的一种实现方式。所谓乐观锁就是，每次不加锁而是假设没有冲突而去完成某项操作，如果因为冲突失败就重试，直到成功为止。<strong>虚拟机采用 CAS 配上失败重试的方式保证更新操作的原子性。</strong></li>
-<li><strong>TLAB：</strong> 为每一个线程预先在 Eden 区分配一块儿内存，JVM 在给线程中的对象分配内存时，首先在 TLAB 分配，当对象大于 TLAB 中的剩余内存或 TLAB 的内存已用尽时，再采用上述的 CAS 进行内存分配</li>
-</ul>
-</li>
-<li><p><strong>Step3:初始化零值</strong></p>
-<p>内存分配完成后，虚拟机需要将分配到的内存空间都初始化为零值（不包括对象头），这一步操作保证了对象的实例字段在 Java 代码中可以不赋初始值就直接使用，程序能访问到这些字段的数据类型所对应的零值。</p>
-</li>
-<li><p><strong>Step4:设置对象头</strong></p>
-<p>初始化零值完成之后，<strong>虚拟机要对对象进行必要的设置</strong>，例如这个对象是哪个类的实例、如何才能找到类的元数据信息、对象的哈希码、对象的 GC 分代年龄等信息。 <strong>这些信息存放在对象头中。</strong> 另外，根据虚拟机当前运行状态的不同，如是否启用偏向锁等，对象头会有不同的设置方式。</p>
-</li>
-<li><p><strong>Step5:执行 init 方法</strong></p>
-<p>在上面工作都完成之后，从虚拟机的视角来看，一个新的对象已经产生了，但从 Java 程序的视角来看，对象创建才刚开始，<code>&lt;init&gt;</code> 方法还没有执行，所有的字段都还为零。所以一般来说，执行 new 指令之后会接着执行 <code>&lt;init&gt;</code> 方法，把对象按照程序员的意愿进行初始化，这样一个真正可用的对象才算完全产生出来。</p>
-</li>
-</ul>
-<h1 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h1><p>对象在内存中的布局可以分为 3 块区域：<strong>对象头</strong>、<strong>实例数据</strong>和<strong>对齐填充</strong>。</p>
-<h1 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h1><p>建立对象就是为了使用对象，我们的 Java 程序通过栈上的 reference 数据来操作堆上的具体对象</p>
-<p>访问方式有<strong>①使用句柄</strong>和<strong>②直接指针</strong>两种：</p>
-<ol>
-<li><p><strong>句柄：</strong> 如果使用句柄的话，那么 Java 堆中将会划分出一块内存来作为句柄池，reference 中存储的就是对象的句柄地址，而句柄中包含了对象实例数据与类型数据各自的具体地址信息；</p>
-<img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D-%E4%BD%BF%E7%94%A8%E5%8F%A5%E6%9F%84.png?ynotemdtimestamp=1618390160630" alt="对象的访问定位-使用句柄" style="zoom: 33%;" /></li>
-<li><p><strong>直接指针：</strong> 如果使用直接指针访问，那么 Java 堆对象的布局中就必须考虑如何放置访问类型数据的相关信息，而 reference 中存储的直接就是对象的地址。</p>
-</li>
-</ol>
-<img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/%E5%AF%B9%E8%B1%A1%E7%9A%84%E8%AE%BF%E9%97%AE%E5%AE%9A%E4%BD%8D-%E7%9B%B4%E6%8E%A5%E6%8C%87%E9%92%88.png?ynotemdtimestamp=1618390160630" alt="对象的访问定位-直接指针" style="zoom:33%;" />
-
-<p><strong>这两种对象访问方式各有优势。使用句柄来访问的最大好处是 reference 中存储的是稳定的句柄地址，在对象被移动时只会改变句柄中的实例数据指针，而 reference 本身不需要修改。使用直接指针访问方式最大的好处就是速度快，它节省了一次指针定位的时间开销。</strong></p>
-<h1 id="Java-虚拟机是如何判定两个-Java-类是相同的？"><a href="#Java-虚拟机是如何判定两个-Java-类是相同的？" class="headerlink" title="Java 虚拟机是如何判定两个 Java 类是相同的？"></a>Java 虚拟机是如何判定两个 Java 类是相同的？</h1><p>①类的全限定名是否相等<br>②类加载器是否相等<br>即便是同样的字节代码，被不同的类加载器加载之后所得到的类，也是不同的。比如一个 Java 类<br>com.example.Sample，编译之后生成了字节代码文件 Sample.class。两个不同的类加载器<br>ClassLoaderA和 ClassLoaderB分别读取了这个 Sample.class文件，并定义出两个 java.lang.Class类的<br>实例来表示这个类。这两个实例是不相同的。对于 Java 虚拟机来说，它们是不同的类。</p>
-<h1 id="64-位-JVM-中，int-的长度是多数？"><a href="#64-位-JVM-中，int-的长度是多数？" class="headerlink" title="64 位 JVM 中，int 的长度是多数？"></a>64 位 JVM 中，int 的长度是多数？</h1><p>Java 中，int 类型变量的长度是一个固定值，与平台无关，都是 32 位。意思就是说，在 32 位 和 64 位<br>的 Java 虚拟机中，int 类型的长度是相同的。</p>
-<h1 id="尝试回答下列问题"><a href="#尝试回答下列问题" class="headerlink" title="尝试回答下列问题"></a>尝试回答下列问题</h1><ol>
-<li>介绍下 Java 内存区域（运行时数据区）</li>
-<li>Java 对象的创建过程（五步，建议能默写出来并且要知道每一步虚拟机做了什么）</li>
-<li>对象的访问定位的两种方式（句柄和直接指针两种方式）</li>
-<li>Java 中会存在内存泄漏吗</li>
-</ol>
-<h1 id="类加载器总结"><a href="#类加载器总结" class="headerlink" title="类加载器总结"></a>类加载器总结</h1><p>VM 中内置了三个重要的 ClassLoader，除了 BootstrapClassLoader 其他类加载器均由 Java 实现且全部继承自java.lang.ClassLoader：</p>
-<ol>
-<li><strong>BootstrapClassLoader(启动类加载器)</strong> ：最顶层的加载类，由C++实现，负责加载 <code>%JAVA_HOME%/lib</code>目录下的jar包和类或者或被 <code>-Xbootclasspath</code>参数指定的路径中的所有类。</li>
-<li><strong>ExtensionClassLoader(扩展类加载器)</strong> ：主要负责加载目录 <code>%JRE_HOME%/lib/ext</code> 目录下的jar包和类，或被 <code>java.ext.dirs</code> 系统变量所指定的路径下的jar包。</li>
-<li><strong>AppClassLoader(应用程序类加载器)</strong> :面向我们用户的加载器，负责加载当前应用classpath下的所有jar包和类。</li>
-</ol>
-<h3 id="类加载器的加载顺序"><a href="#类加载器的加载顺序" class="headerlink" title="类加载器的加载顺序"></a>类加载器的加载顺序</h3><p>加载一个Class类的顺序也是有优先级的，类加载器从最底层开始往上的顺序是这样的</p>
-<ol>
-<li>BootStrap ClassLoader：rt.jar</li>
-<li>Extension ClassLoader: 加载扩展的jar包</li>
-<li>App ClassLoader：指定的classpath下面的jar包</li>
-<li>Custom ClassLoader：自定义的类加载器</li>
-</ol>
-<h1 id="双亲委派模型"><a href="#双亲委派模型" class="headerlink" title="双亲委派模型"></a>双亲委派模型</h1><h2 id="双亲委派模型介绍"><a href="#双亲委派模型介绍" class="headerlink" title="双亲委派模型介绍"></a>双亲委派模型介绍</h2><p>当一个类收到了加载请求时，它是不会先自己去尝试加载的，而是委派给父类去完成，比如我现在要new一个Person，这个Person是我们自定义的类，如果我们要加载它，就会先委派App ClassLoader，只有当父类加载器都反馈自己无法完成这个请求（也就是父类加载器都没有找到加载所需的Class）时，子类加载器才会自行尝试加载</p>
-<p><img src="https://my-blog-to-use.oss-cn-beijing.aliyuncs.com/2019-6/classloader_WPS%E5%9B%BE%E7%89%87.png?ynotemdtimestamp=1618390160630" alt="ClassLoader"></p>
-<h2 id="双亲委派模型的好处"><a href="#双亲委派模型的好处" class="headerlink" title="双亲委派模型的好处"></a>双亲委派模型的好处</h2><p>双亲委派模型保证了Java程序的稳定运行，可以避免类的重复加载（JVM 区分不同类的方式不仅仅根据类名，相同的类文件被不同的类加载器加载产生的是两个不同的类），也保证了 Java 的核心 API 不被篡改。如果没有使用双亲委派模型，而是每个类加载器加载自己的话就会出现一些问题，比如我们编写一个称为 java.lang.Object 类的话，那么程序运行的时候，系统就会出现多个不同的 Object 类。</p>
-<h2 id="如果我们不想用双亲委派模型怎么办？"><a href="#如果我们不想用双亲委派模型怎么办？" class="headerlink" title="如果我们不想用双亲委派模型怎么办？"></a>如果我们不想用双亲委派模型怎么办？</h2><p>这样做的好处是，加载位于rt.jar包中的类时不管是哪个加载器加载，最终都会委托到BootStrap ClassLoader进行加载，这样保证了使用不同的类加载器得到的都是同一个结果。</p>
-<p>其实这个也是一个隔离的作用，避免了我们的代码影响了JDK的代码，比如我现在要来一个</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class String()&#123;</span><br><span class="line">    public static void main()&#123;sout;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这种时候，我们的代码肯定会报错，因为在加载的时候其实是找到了rt.jar中的String.class，然后发现这也没有main方法</p>
-<h3 id="自定义类加载器"><a href="#自定义类加载器" class="headerlink" title="自定义类加载器"></a>自定义类加载器</h3><p>除了 BootstrapClassLoader 其他类加载器均由 Java 实现且全部继承自java.lang.ClassLoader。如果我们要自定义自己的类加载器，很明显需要继承 ClassLoader。</p>
-<h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><h2 id="CPU占用过高"><a href="#CPU占用过高" class="headerlink" title="CPU占用过高"></a>CPU占用过高</h2><ol>
-<li><code>top</code>查看当前CPU情况，找到占用CPU过高的进程PID，如<code>PID=123</code></li>
-<li><code>top -H -p123</code>找出两个CPU占用较高的线程，记录下来PID，如<code>PID=2345,PID=3456</code>转为十六进制</li>
-<li><code>jstack -l 123 &gt; temp.txt</code>打印出当前进程的线程栈</li>
-<li>查找到对应于第二部的两个线程运行栈，分析代码</li>
-</ol>
-<h2 id="OOM异常排查"><a href="#OOM异常排查" class="headerlink" title="OOM异常排查"></a>OOM异常排查</h2><ol>
-<li><code>top</code>查看当前CPU情况</li>
-<li><code>jps</code>或<code>ps -ef | grep java</code>找出当前Java进程的PID</li>
-<li><code>jstat -gcutil pid interval</code> 查询当前的GC状态</li>
-<li><code>jmap -histo:live pid</code> 可用统计存活对象的分布情况，从高到低查看占据内存最多的对象</li>
-<li><code>jmap -dump:format=b,file=文件名[pid]</code></li>
-<li>使用性能分析器工具对上一步dump出来的文件进行分析，工具有MAT等 </li>
-</ol>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/13/Java-%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hikari的Java之路">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/04/13/Java-%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/" itemprop="url">Java-并发容器</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-13T22:36:51+08:00">
-                2021-04-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java%E5%9F%BA%E7%A1%80-JUC/" itemprop="url" rel="index">
-                    <span itemprop="name">Java基础 - JUC</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="JDK-提供的并发容器总结"><a href="#JDK-提供的并发容器总结" class="headerlink" title="JDK 提供的并发容器总结"></a>JDK 提供的并发容器总结</h1><p>JDK 提供的这些容器大部分在 <code>java.util.concurrent</code> 包中。</p>
-<ul>
-<li><strong>ConcurrentHashMap:</strong> 线程安全的 HashMap</li>
-<li><strong>CopyOnWriteArrayList:</strong> 线程安全的 List，在读多写少的场合性能非常好，远远好于 Vector.</li>
-<li><strong>ConcurrentLinkedQueue:</strong> 高效的并发队列，使用链表实现。可以看做一个线程安全的 LinkedList，这是一个非阻塞队列。</li>
-<li><strong>BlockingQueue:</strong> 这是一个接口，JDK 内部通过链表、数组等方式实现了这个接口。表示阻塞队列，非常适合用于作为数据共享的通道。</li>
-<li><strong>ConcurrentSkipListMap:</strong> 跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。</li>
-</ul>
-<h1 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h1><h2 id="特征："><a href="#特征：" class="headerlink" title="特征："></a>特征：</h2><ol>
-<li>所有的操作都是线程安全的，我们在使用时，无需再加锁；</li>
-<li>多个线程同时进行 put、remove 等操作时并不会阻塞，可以同时进行，和 HashTable 不同，HashTable 在操作时，会锁住整个 Map；</li>
-<li>迭代过程中，即使 Map 结构被修改，也不会抛 ConcurrentModificationException 异常；</li>
-<li>除了数组 + 链表 + 红黑树的基本结构外，新增了转移节点，是为了保证扩容时的线程安全的节点；</li>
-<li>提供了很多 Stream 流式方法，比如说：forEach、search、reduce 等等。</li>
-</ol>
-<h2 id="Concurrenthashmap为什么键和值不能为null？"><a href="#Concurrenthashmap为什么键和值不能为null？" class="headerlink" title="Concurrenthashmap为什么键和值不能为null？"></a>Concurrenthashmap为什么键和值不能为null？</h2><p>因为concurrenthashmap它们是用于<strong>多线程</strong>的，<strong>并发的</strong> ，如果map.get(key)得到了null，不能判断到底是映射的value是null,还是因为没有找到对应的key而为空，而用于单线程状态的hashmap却可以用containKey（key） 去判断到底是否包含了这个null。</p>
-<ul>
-<li>concurrenthashmap为什么就不能containKey(key) ？一个线程先get(key)再containKey(key)，这两个方法的中间时刻，其他线程怎么操作这个key都会可能发生，例如删掉这个key</li>
-</ul>
-<h2 id="实现线程安全的方式"><a href="#实现线程安全的方式" class="headerlink" title="实现线程安全的方式"></a>实现线程安全的方式</h2><h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>通过自旋 + CAS +  双重 check 等手段保证了数组初始化时的线程安全</p>
-<h3 id="新增槽点值时的线程安全"><a href="#新增槽点值时的线程安全" class="headerlink" title="新增槽点值时的线程安全"></a>新增槽点值时的线程安全</h3><ol>
-<li>通过自旋死循环保证一定可以新增成功。</li>
-<li>当前槽点为空时，通过 CAS 新增。</li>
-<li>当前槽点有值，锁住当前槽点。</li>
-<li>红黑树旋转时，锁住红黑树的根节点，保证同一时刻，当前红黑树只能被一个线程旋转，</li>
-</ol>
-<h3 id="扩容时线程安全"><a href="#扩容时线程安全" class="headerlink" title="扩容时线程安全"></a>扩容时线程安全</h3><ol>
-<li>拷贝槽点时，会把原数组的槽点锁住；</li>
-<li>拷贝成功之后，会把原数组的槽点设置成转移节点</li>
-<li>从尾到头进行拷贝，拷贝成功就把原数组的槽点设置成转移节点</li>
-<li>等扩容拷贝都完成之后，直接把新数组的值赋值给数组容器，之前等待 put 的数据才能继续 put。</li>
-</ol>
-<h1 id="CopyOnWriteArrayList"><a href="#CopyOnWriteArrayList" class="headerlink" title="CopyOnWriteArrayList"></a>CopyOnWriteArrayList</h1><h2 id="特征：-1"><a href="#特征：-1" class="headerlink" title="特征："></a>特征：</h2><ol>
-<li>线程安全的，多线程环境下可以直接使用，无需加锁；</li>
-<li>通过锁 + 数组拷贝 + volatile 关键字保证了线程安全；<ul>
-<li>加锁：保证同一时刻数组只能被一个线程操作；</li>
-<li>数组拷贝：保证数组的内存地址被修改，修改后触发 volatile 的可见性，其它线程可以立马知道数组已经被修改；</li>
-<li>volatile：值被修改后，其它线程能够立马感知最新值。</li>
-</ul>
-</li>
-<li>每次数组操作，都会把数组拷贝一份出来，在新数组上进行操作，操作成功之后再赋值回去。</li>
-</ol>
-<p><a target="_blank" rel="noopener" href="https://www.imooc.com/read/47/article/857">源码学习</a></p>
-<h1 id="ConcurrentLinkedQueue（非阻塞队列）"><a href="#ConcurrentLinkedQueue（非阻塞队列）" class="headerlink" title="ConcurrentLinkedQueue（非阻塞队列）"></a>ConcurrentLinkedQueue（非阻塞队列）</h1><ol>
-<li>主要使用 CAS 非阻塞算法来实现线程安全</li>
-<li>使用链表作为其数据结构</li>
-<li> 适合在对性能要求相对较高，同时对队列的读写存在多个线程同时进行的场景(即如果对队列加锁的成本较高则适合使用无锁的 ConcurrentLinkedQueue 来替代)</li>
-</ol>
-<h1 id="BlockingQueue（阻塞队列）"><a href="#BlockingQueue（阻塞队列）" class="headerlink" title="BlockingQueue（阻塞队列）"></a>BlockingQueue（阻塞队列）</h1><p>被广泛使用在“生产者-消费者”问题中，其原因是 BlockingQueue 提供了可阻塞的插入和移除的方法。当队列容器已满，生产者线程会被阻塞，直到队列未满；当队列容器为空时，消费者线程会被阻塞，直至队列非空时为止。</p>
-<p>BlockingQueue 是一个接口，继承自 Queue，所以其实现类也可以作为 Queue 的实现来使用，而 Queue 又继承自 Collection 接口，<strong>ArrayBlockingQueue、LinkedBlockingQueue、PriorityBlockingQueue，这三个 BlockingQueue 的实现类。</strong></p>
-<h2 id="ArrayBlockingQueue（BlockingQueue-接口的有界队列实现类）"><a href="#ArrayBlockingQueue（BlockingQueue-接口的有界队列实现类）" class="headerlink" title="ArrayBlockingQueue（BlockingQueue 接口的有界队列实现类）"></a>ArrayBlockingQueue（BlockingQueue 接口的有界队列实现类）</h2><ol>
-<li>底层采用<strong>数组</strong>来实现。</li>
-<li> 一旦创建，容量不能改变</li>
-<li>并发控制采用可重入锁来控制，不管是插入操作还是读取操作，都需要获取到锁才能进行操作</li>
-<li>当队列容量满时，尝试将元素放入队列将导致操作阻塞;尝试从一个空队列中取一个元素也会同样阻塞</li>
-</ol>
-<h2 id="LinkedBlockingQueue（可以当做无界队列也可以当做有界队列来使用）"><a href="#LinkedBlockingQueue（可以当做无界队列也可以当做有界队列来使用）" class="headerlink" title="LinkedBlockingQueue（可以当做无界队列也可以当做有界队列来使用）"></a>LinkedBlockingQueue（可以当做无界队列也可以当做有界队列来使用）</h2><ol>
-<li>底层基于<strong>单向链表</strong>实现的阻塞队列</li>
-<li>可以当做无界队列也可以当做有界队列来使用，同样满足 FIFO 的特性</li>
-<li>与 ArrayBlockingQueue 相比起来具有更高的吞吐量，为了防止 LinkedBlockingQueue 容量迅速增，损耗大量内存。通常在创建 LinkedBlockingQueue 对象时，会指定其大小，如果未指定，容量等于 Integer.MAX_VALUE。</li>
-</ol>
-<h2 id="PriorityBlockingQueue（支持优先级的无界阻塞队列）"><a href="#PriorityBlockingQueue（支持优先级的无界阻塞队列）" class="headerlink" title="PriorityBlockingQueue（支持优先级的无界阻塞队列）"></a>PriorityBlockingQueue（支持优先级的无界阻塞队列）</h2><ol>
-<li>支持优先级的无界阻塞队列，默认情况下元素采用自然顺序进行排序，也可以通过自定义类实现 <code>compareTo()</code> 方法来指定元素排序规则，或者初始化时通过构造器参数 <code>Comparator</code>来指定排序规则。</li>
-<li>并发控制采用的是 <strong>ReentrantLock</strong>，队列为无界队列</li>
-<li>不可以插入 null 值，同时，插入队列的对象必须是可比较大小的（comparable），否则报 ClassCastException 异常。它的插入操作 put 方法不会 block，因为它是无界队列（take 方法在队列为空的时候会阻塞）。</li>
-</ol>
-<h1 id="ConcurrentSkipListMap（跳表的实现）"><a href="#ConcurrentSkipListMap（跳表的实现）" class="headerlink" title="ConcurrentSkipListMap（跳表的实现）"></a>ConcurrentSkipListMap（跳表的实现）</h1><p>跳表是一种利用空间换时间的算法</p>
-<h1 id="同步容器器"><a href="#同步容器器" class="headerlink" title="同步容器器"></a>同步容器器</h1><p>1、主要代表有Vector和Hashtable，以及Collections.synchronizedXxx等。<br>2、锁的粒度为当前对象整体。<br>3、迭代器器是及时失败的，即在迭代的过程中发现被修改，就会抛出ConcurrentModificationException。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2960,7 +3069,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-count">108</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2971,7 +3080,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">68</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2982,7 +3091,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

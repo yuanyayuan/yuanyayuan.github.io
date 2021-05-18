@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Sentinel,Apollo,流量防控," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Sentinel作用 流量控制 熔断降级 系统保护 服务安全  Sentinel特性 应用场景丰富 例如秒杀（即突发流量控制在系统容量可以承受的范围）、消息削峰填谷、集群流量控制、实时熔断下游不可用应用等  完备的实时监控 可以在控制台中看到接入应用的单台机器秒级数据，甚至 500 台以下规模的集群的汇总运行情况  广泛的开源生态 例如与 Spring Cloud、Dubbo、gRPC 的整合。您">
+<meta property="og:type" content="article">
+<meta property="og:title" content="中间件-Sentinel流量防控">
+<meta property="og:url" content="https://yuanyayuan.github.io/2021/05/17/%E4%B8%AD%E9%97%B4%E4%BB%B6-Sentinel%E6%B5%81%E9%87%8F%E9%98%B2%E6%8E%A7/index.html">
+<meta property="og:site_name" content="Hikari的Java之路">
+<meta property="og:description" content="Sentinel作用 流量控制 熔断降级 系统保护 服务安全  Sentinel特性 应用场景丰富 例如秒杀（即突发流量控制在系统容量可以承受的范围）、消息削峰填谷、集群流量控制、实时熔断下游不可用应用等  完备的实时监控 可以在控制台中看到接入应用的单台机器秒级数据，甚至 500 台以下规模的集群的汇总运行情况  广泛的开源生态 例如与 Spring Cloud、Dubbo、gRPC 的整合。您">
+<meta property="og:locale">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Sentinel/Sentinel1.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Sentinel/Sentinel2.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Sentinel/Sentinel3.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Sentinel/Sentinel4.png">
+<meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Sentinel/Sentinel5.png">
+<meta property="article:published_time" content="2021-05-17T07:11:26.000Z">
+<meta property="article:modified_time" content="2021-05-17T11:47:46.891Z">
+<meta property="article:author" content="LiYuan">
+<meta property="article:tag" content="Sentinel">
+<meta property="article:tag" content="Apollo">
+<meta property="article:tag" content="流量防控">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Sentinel/Sentinel1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://yuanyayuan.github.io/2021/05/17/中间件-Sentinel流量防控/"/>
+
+
+
+
+
+  <title>中间件-Sentinel流量防控 | Hikari的Java之路</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hikari的Java之路</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Hello,world</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/05/17/%E4%B8%AD%E9%97%B4%E4%BB%B6-Sentinel%E6%B5%81%E9%87%8F%E9%98%B2%E6%8E%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hikari的Java之路">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">中间件-Sentinel流量防控</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-05-17T15:11:26+08:00">
+                2021-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Sentinel-Sentinel%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index">
+                    <span itemprop="name">Sentinel - Sentinel学习</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Sentinel作用"><a href="#Sentinel作用" class="headerlink" title="Sentinel作用"></a>Sentinel作用</h1><ul>
+<li>流量控制</li>
+<li>熔断降级</li>
+<li>系统保护</li>
+<li>服务安全</li>
+</ul>
+<h1 id="Sentinel特性"><a href="#Sentinel特性" class="headerlink" title="Sentinel特性"></a>Sentinel特性</h1><ul>
+<li><p>应用场景丰富</p>
+<p>例如秒杀（即突发流量控制在系统容量可以承受的范围）、消息削峰填谷、集群流量控制、实时熔断下游不可用应用等</p>
+</li>
+<li><p>完备的实时监控</p>
+<p>可以在控制台中看到接入应用的单台机器秒级数据，甚至 500 台以下规模的集群的汇总运行情况</p>
+</li>
+<li><p>广泛的开源生态</p>
+<p>例如与 Spring Cloud、Dubbo、gRPC 的整合。您只需要引入相应的依赖并进行简单的配置即可快速地接入 Sentinel</p>
+</li>
+<li><p>完善的SPI扩展点</p>
+<p>可以通过实现扩展接口来快速地定制逻辑。例如定制规则管理、适配动态数据源等</p>
+</li>
+</ul>
+<h1 id="Sentinel组成部分"><a href="#Sentinel组成部分" class="headerlink" title="Sentinel组成部分"></a>Sentinel组成部分</h1><ul>
+<li>控制库：sentinel-core</li>
+<li>控制台：sentinel-dashboard</li>
+<li>第三方支持组件：如spring、dubbo、rocketmq</li>
+</ul>
+<h1 id="快速入门"><a href="#快速入门" class="headerlink" title="快速入门"></a>快速入门</h1><h2 id="在应用中引入Sentinel-Jar包"><a href="#在应用中引入Sentinel-Jar包" class="headerlink" title="在应用中引入Sentinel Jar包"></a>在应用中引入Sentinel Jar包</h2><p>如果应用使用 pom 工程，则在 <code>pom.xml</code> 文件中加入以下代码即可：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.csp<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>sentinel-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.8.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--一个应用如果要接入Sentinel，需接入sentinel-core包，用于实现核心流控功能。</span></span><br><span class="line"><span class="comment">而想要接入Dashboard并与之通信则需要引入transport组件，Sentinel提供了两种选择：--&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- sentinel-transport-simple-http：基于jdk net包实现的，通过http协议传输数据 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.csp<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>sentinel-transport-simple-http<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;sentinel.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- sentinel-transport-netty-http：在netty的基础上实现，通过http协议传输数据 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.csp<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>sentinel-transport-netty-http<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;sentinel.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="定义资源"><a href="#定义资源" class="headerlink" title="定义资源"></a>定义资源</h2><p>接下来，我们把需要控制流量的代码用 Sentinel API <code>SphU.entry(&quot;HelloWorld&quot;)</code> 和 <code>entry.exit()</code> 包围起来即可。在下面的例子中，我们将 <code>System.out.println(&quot;hello world&quot;);</code> 这端代码作为资源，用 API 包围起来（埋点）。参考代码如下:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    initFlowRules();</span><br><span class="line">    <span class="comment">//2.定义资源</span></span><br><span class="line">    <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">        Entry entry = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//2.1 定义资源名称</span></span><br><span class="line">	    	entry = SphU.entry(<span class="string">&quot;HelloWorld&quot;</span>);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//2.2 执行资源逻辑代码</span></span><br><span class="line">            <span class="comment">/*您的业务逻辑 - 开始*/</span></span><br><span class="line">            System.out.println(<span class="string">&quot;hello world：访问数据库&quot;</span>);</span><br><span class="line">            System.out.println(<span class="string">&quot;hello world：远程访问redis&quot;</span>);</span><br><span class="line">            System.out.println(<span class="string">&quot;hello world：数据库持久化操作&quot;</span>);</span><br><span class="line">            Thread.sleep(<span class="number">20</span>);</span><br><span class="line">            <span class="comment">/*您的业务逻辑 - 结束*/</span></span><br><span class="line">        &#125; <span class="keyword">catch</span> (BlockException e1) &#123;</span><br><span class="line">                <span class="comment">/*流控逻辑处理 - 开始*/</span></span><br><span class="line">            System.out.println(<span class="string">&quot;要访问的资源被流控了，执行流控操控逻辑&quot;</span>);</span><br><span class="line">                <span class="comment">/*流控逻辑处理 - 结束*/</span></span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">           <span class="keyword">if</span> (entry != <span class="keyword">null</span>) &#123;</span><br><span class="line">               entry.exit();</span><br><span class="line">           &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>完成以上两步后，代码端的改造就完成了。当然，我们也提供了 <a target="_blank" rel="noopener" href="https://github.com/alibaba/Sentinel/wiki/%E6%B3%A8%E8%A7%A3%E6%94%AF%E6%8C%81">注解支持模块</a>，可以以低侵入性的方式定义资源。</p>
+<p><strong>相比基于注解的断路器，密度更短</strong></p>
+<h2 id="定义规则"><a href="#定义规则" class="headerlink" title="定义规则"></a>定义规则</h2><p>接下来，通过规则来指定允许该资源通过的请求次数，例如下面的代码定义了资源 <code>HelloWorld</code> 每秒最多只能通过 20 个请求。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">initFlowRules</span><span class="params">()</span></span>&#123;</span><br><span class="line">    List&lt;FlowRule&gt; rules = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    FlowRule rule = <span class="keyword">new</span> FlowRule();</span><br><span class="line">    <span class="comment">//需要和entry = SphU.entry(&quot;HelloWorld&quot;);一致进行绑定</span></span><br><span class="line">    rule.setResource(<span class="string">&quot;HelloWorld&quot;</span>);</span><br><span class="line">    rule.setGrade(RuleConstant.FLOW_GRADE_QPS);</span><br><span class="line">    <span class="comment">// Set limit QPS to 20.</span></span><br><span class="line">    rule.setCount(<span class="number">20</span>);</span><br><span class="line">    rules.add(rule);</span><br><span class="line">    FlowRuleManager.loadRules(rules);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="检查效果"><a href="#检查效果" class="headerlink" title="检查效果"></a>检查效果</h2><p>Demo 运行之后，我们可以在日志 <code>~/logs/csp/$&#123;appName&#125;-metrics.log.xxx</code> 里看到下面的输出:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">|--timestamp-|------date time----|-resource-|p |block|s |e|rt</span><br><span class="line">1529998904000|2018-06-26 15:41:44|HelloWorld|20|0    |20|0|0</span><br><span class="line">1529998905000|2018-06-26 15:41:45|HelloWorld|20|5579 |20|0|728</span><br><span class="line">1529998906000|2018-06-26 15:41:46|HelloWorld|20|15698|20|0|0</span><br><span class="line">1529998907000|2018-06-26 15:41:47|HelloWorld|20|19262|20|0|0</span><br><span class="line">1529998908000|2018-06-26 15:41:48|HelloWorld|20|19502|20|0|0</span><br><span class="line">1529998909000|2018-06-26 15:41:49|HelloWorld|20|18386|20|0|0</span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>p</code> 代表通过的请求, <code>block</code> 代表被阻止的请求, <code>s</code> 代表成功执行完成的请求个数, <code>e</code> 代表用户自定义的异常, <code>rt</code> 代表平均响应时长。</p>
+<p>可以看到，这个程序每秒稳定输出 “hello world” 20 次，和规则中预先设定的阈值是一样的。</p>
+<h1 id="流控策略"><a href="#流控策略" class="headerlink" title="流控策略"></a>流控策略</h1><p>对主流的5种流控策略做了 底层的抽象和资源的封装</p>
+<ul>
+<li> 对于规则： FlowRule（流量控制） 、DegradeRule（服务降级）、ParamFlowRule（热点参数）、SystemRule（系统自适应）、AuthorityRule（黑白名单）</li>
+<li> 对于管理器：FlowRuleManager、DegradeRuleManager、ParamFlowRuleManager、SystemRuleManager、AuthorityRuleManager</li>
+<li> 对于异常：FlowException、DegradeException、ParamFlowException、SystemBlockException、AuthorityException</li>
+</ul>
+<h2 id="流量控制"><a href="#流量控制" class="headerlink" title="流量控制"></a>流量控制</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>监控应用流量的QPS或并发线程数等指标，当达到指定的阈值时对流量进行控制。</p>
+<p>限流的直接表现为执行<code>Entry nodeA = SphU.entry(resourceName)</code>的时候抛出<code>FlowException</code>。<code>FlowException</code>为<code>BlockException</code>的子类。通过捕捉<code>BlockException</code>来自定义被限流后的处理逻辑。</p>
+<h3 id="配置参数"><a href="#配置参数" class="headerlink" title="配置参数"></a>配置参数</h3><ul>
+<li>resource：资源名，及限流规则的作用对象</li>
+<li>count：限流阈值</li>
+<li>grade：限流阈值类型（QPS或并发线程数）</li>
+<li>limitApp：流控针对的调用来源，若为default则不区分调用来源</li>
+<li>strategy：调用关系限流对策</li>
+<li>controlBehavior：限流控制效果（直接拒绝、Warm Up、均速排队）</li>
+</ul>
+<h4 id="限流控制效果"><a href="#限流控制效果" class="headerlink" title="限流控制效果"></a>限流控制效果</h4><h5 id="QPS流量控制"><a href="#QPS流量控制" class="headerlink" title="QPS流量控制"></a>QPS流量控制</h5><p>当QPS超过某个阈值的时候，则采取措施进行流量控制：</p>
+<ul>
+<li><p>直接拒绝（默认）</p>
+<p>新的请求会被立即拒绝</p>
+</li>
+<li><p>Warm UP（预热/冷启动）</p>
+<p>当系统长期处于低水位的情况下，当流量突然增加时，直接把系统拉升到高水位可能瞬间把系统压垮。通过冷启动让通过的流量缓慢增加，在一定时间内逐步增加到阈值上限，给冷系统一个预热时间，避免冷系统被压垮。</p>
+</li>
+<li><p>匀速排队</p>
+<p>严格控制请求通过的间隔时间，让请求以均匀的速度通过，对应算法为漏桶算法。</p>
+<p>主要用于处理间隔性突发的流量，例如消息队列。（在某一秒有大量请求到来，而接下来的几秒则处于空闲状态，希望接下来的空闲期间逐步处理这些请求，而不是第一秒直接拒绝多余的请求）</p>
+<h5 id="并发线程数流量控制"><a href="#并发线程数流量控制" class="headerlink" title="并发线程数流量控制"></a>并发线程数流量控制</h5><p>用于保护业务线程数不被耗尽。Sentinel并发线程数限流通过统计当前请求上下文的线程数目，如果超出阈值,新的请求会被立即拒绝。</p>
+<h2 id="热点参数限流"><a href="#热点参数限流" class="headerlink" title="热点参数限流"></a>热点参数限流</h2></li>
+</ul>
+<h3 id="热点数据"><a href="#热点数据" class="headerlink" title="热点数据"></a>热点数据</h3><ul>
+<li>商品ID为参数 ，统计一段时间内最常购买的商品ID并进行限制。</li>
+<li>用户ID为参数，针对一段时间内频繁访问的用户ID进行限制。</li>
+</ul>
+<h3 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h3><p>统计传入参数中的热点参数，并根据配置的限流阈值与模式，对包含热点参数的资源调用进行限流。可看作特殊的流量控制，仅对包含热点参数的资源调用生效。</p>
+<img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Sentinel/Sentinel1.png" style="zoom:67%;" />
+
+<p>利用LRU策略统计最近最长访问的热点参数，结合令牌桶算法来进行参数级别的流控。</p>
+<h2 id="黑白名单"><a href="#黑白名单" class="headerlink" title="黑白名单"></a>黑白名单</h2><h3 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h3><p>根据资源的请求来源闲置资源是否通过。若配置白名单则只有请求来源位于白名单时才可通过。若配置黑名单自来源位于黑名单时不通过，其他请求通过</p>
+<h2 id="系统自使用限流"><a href="#系统自使用限流" class="headerlink" title="系统自使用限流"></a>系统自使用限流</h2><p>用初始负载策略作为启动流量控制的值，而允许通过的流量由请求的能力，即请求的响应时间以及当前系统正在处理的请求速率来决定。</p>
+<h1 id="使用Sentinel注解实现流控"><a href="#使用Sentinel注解实现流控" class="headerlink" title="使用Sentinel注解实现流控"></a>使用Sentinel注解实现流控</h1><h2 id="引入以下依赖："><a href="#引入以下依赖：" class="headerlink" title="引入以下依赖："></a>引入以下依赖：</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.csp<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>sentinel-annotation-aspectj<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>x.y.z<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="SentinelResource-注解"><a href="#SentinelResource-注解" class="headerlink" title="@SentinelResource 注解"></a>@SentinelResource 注解</h2><ul>
+<li><p>value：资源名称，必需项（不能为空）</p>
+</li>
+<li><p>entryType：entry 类型，可选项（默认为 EntryType.OUT[出站流量]）</p>
+</li>
+<li><p><strong>blockHandler</strong> / <strong>blockHandlerClass</strong>: blockHandler 对应处理 BlockException 的函数名称，可选项。blockHandler 函数访问范围需要是 public，返回类型需要与原方法相匹配，参数类型需要和原方法相匹配并且最后加一个额外的参数，类型为 BlockException。blockHandler 函数默认需要和原方法在同一个类中。<strong>若希望使用其他类的函数，则可以指定 blockHandlerClass 为对应的类的 Class 对象，注意对应的函数必需为 static 函数，否则无法解析</strong>。</p>
+</li>
+<li><p><strong>fallback</strong> / <strong>fallbackClass</strong>：fallback 函数名称，可选项，用于在抛出异常的时候提供 fallback 处理逻辑。fallback 函数可以针对所有类型的异常（除了 exceptionsToIgnore 里面排除掉的异常类型）进行处理。fallback 函数签名和位置要求：</p>
+<ul>
+<li>返回值类型必须与原函数返回值类型一致；</li>
+<li>方法参数列表需要和原函数一致，或者可以额外多一个 Throwable 类型的参数用于接收对应的异常</li>
+<li>fallback 函数默认需要和原方法在同一个类中。若希望使用其他类的函数，则可以指定 fallbackClass 为对应的类的 Class 对象，注意对应的函数必需为 static 函数，否则无法解析。</li>
+</ul>
+</li>
+<li><p>defaultFallback（since 1.6.0）：默认的 fallback 函数名称，可选项，通常用于通用的 fallback 逻辑（即可以用于很多服务或方法）。默认 fallback 函数可以针对所有类型的异常（除了exceptionsToIgnore 里面排除掉的异常类型）进行处理。若同时配置了 fallback 和 defaultFallback，则只有 fallback 会生效。defaultFallback 函数签名要求：</p>
+<ul>
+<li><p>返回值类型必须与原函数返回值类型一致；</p>
+</li>
+<li><p>方法参数列表需要为空，或者可以额外多一个 Throwable 类型的参数用于接收对应的异常。</p>
+</li>
+<li><p>defaultFallback 函数默认需要和原方法在同一个类中。若希望使用其他类的函数，则可以指定 fallbackClass 为对应的类的 Class 对象，注意对应的函数必需为 static 函数，否则无法解析。</p>
+</li>
+</ul>
+</li>
+<li><p>exceptionsToIgnore（since 1.6.0）：用于指定哪些异常被排除掉，不会计入异常统计中，也不会进入 fallback 逻辑中，而是会原样抛出。</p>
+</li>
+</ul>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><h3 id="Spring-AOP"><a href="#Spring-AOP" class="headerlink" title="Spring AOP"></a>Spring AOP</h3><p>若您的应用使用了 Spring AOP（无论是 Spring Boot 还是传统 Spring 应用），您需要通过配置的方式将 <code>SentinelResourceAspect</code> 注册为一个 Spring Bean：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SentinelAspectConfiguration</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> SentinelResourceAspect <span class="title">sentinelResourceAspect</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> SentinelResourceAspect();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><blockquote>
+<ul>
+<li>blockHandler: 流控降级的时候进入的兜底函数</li>
+<li>fallback: 抛出异常的时候进入的兜底函数</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(1.6.0 之前的版本 fallback 函数只针对降级异常（DegradeException）进行处理，不能针对业务异常进行处理)</span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>blockHandler 和 fallback 都进行了配置，则被限流降级而抛出 <code>BlockException</code> 时只会进入 <code>blockHandler</code> 处理逻辑。</p>
+<h3 id="blockHandler"><a href="#blockHandler" class="headerlink" title="blockHandler "></a><code>blockHandler </code></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FlowService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 原函数</span></span><br><span class="line">    <span class="meta">@SentinelResource(</span></span><br><span class="line"><span class="meta">        value = &quot;com.Sentinel.demo.service.TestService:flow&quot;, </span></span><br><span class="line"><span class="meta">        blockHandler = &quot;flowBlockHandler&quot;, </span></span><br><span class="line"><span class="meta">   		fallback = &quot;&quot;</span></span><br><span class="line"><span class="meta">    )</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">flow</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.err.println(<span class="string">&quot;----&gt; 正常执行flow方法&quot;</span>);</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;flow&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">flowBlockHandler</span><span class="params">(BlockException ex)</span> </span>&#123;</span><br><span class="line">		System.err.println(<span class="string">&quot;----&gt; 触发 流控策略:&quot;</span> + ex);</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;执行 流控方法&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="fallback"><a href="#fallback" class="headerlink" title="fallback"></a><code>fallback</code></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DegradeService</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> AtomicInteger count = <span class="keyword">new</span> AtomicInteger(<span class="number">0</span>);</span><br><span class="line">	<span class="meta">@SentinelResource(</span></span><br><span class="line"><span class="meta">			value = &quot;com.Sentinel.demo.service.DegradeService:degrade&quot;,</span></span><br><span class="line"><span class="meta">			blockHandler = &quot;degradeBlockHandler&quot;,</span></span><br><span class="line"><span class="meta">			fallback = &quot;degradeFallback&quot;)</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">degrade</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.err.println(<span class="string">&quot;----&gt; 正常执行degrade方法&quot;</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">if</span>(count.incrementAndGet() % <span class="number">3</span> == <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;抛出业务异常&quot;</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;degrade&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">degradeBlockHandler</span><span class="params">(BlockException ex)</span> </span>&#123;</span><br><span class="line">		System.err.println(<span class="string">&quot;----&gt; 触发 降级流控策略:&quot;</span> + ex);</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;执行 降级流控方法&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">degradeFallback</span><span class="params">(Throwable t)</span> </span>&#123;</span><br><span class="line">		System.err.println(<span class="string">&quot;----&gt; 触发 异常时的降级策略:&quot;</span> + t);</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;执行 异常降级方法&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>若未配置 <code>blockHandler</code>、<code>fallback</code> 和 <code>defaultFallback</code>，则被限流降级时会将 <code>BlockException</code> <strong>直接抛出</strong></p>
+<h1 id="哨兵集群流控与替代方案"><a href="#哨兵集群流控与替代方案" class="headerlink" title="哨兵集群流控与替代方案"></a>哨兵集群流控与替代方案</h1><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Sentinel/Sentinel2.png" style="zoom:50%;" />
+
+<p>找一个 server 来专门来统计总的调用量，其它的实例都与这台 server 通信来判断是否可以调用。这就是最基础的集群流控的方式</p>
+<p>集群流控还可以解决流量不均匀导致总体限流效果不佳的问题。假设集群中有 10 台机器，我们给每台机器设置单机限流阈值为 10  QPS，理想情况下整个集群的限流阈值就为 100 QPS。不过实际情况下流量到每台机器可能会不均匀，会导致总量没有到的情况下某些机器就开始限流</p>
+<p>集群流控中共有两种身份：</p>
+<ul>
+<li>Token Client：集群流控客户端，用于向所属 Token Server 通信请求 token。集群限流服务端会返回给客户端结果，决定是否限流。</li>
+<li>Token Server：即集群流控服务端，处理来自 Token Client 的请求，根据配置的集群规则判断是否应该发放 token（是否允许通过）。</li>
+</ul>
+<p><strong>若在生产环境使用集群限流，管控端还需要关注以下的问题：</strong></p>
+<ul>
+<li>Token Server 自动管理、调度（分配/选举 Token Server）</li>
+<li>Token Server 高可用，在某个 server 不可用时自动 failover 到其它机器</li>
+</ul>
+<h2 id="替代方案-使用Gateway"><a href="#替代方案-使用Gateway" class="headerlink" title="替代方案-使用Gateway"></a>替代方案-使用Gateway</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Sentinel/Sentinel3.png" style="zoom:50%;" />
+
+<p>使用Gateway的与Eureka集成来解决上述问题</p>
+<h1 id="生产环境使用Sentinel"><a href="#生产环境使用Sentinel" class="headerlink" title="生产环境使用Sentinel"></a><strong>生产环境使用Sentinel</strong></h1><ul>
+<li>规则管理（基于内存的应做可靠性持久化）</li>
+<li>格则推送</li>
+<li>流量监控</li>
+</ul>
+<h2 id="规则管理及推送模式"><a href="#规则管理及推送模式" class="headerlink" title="规则管理及推送模式"></a>规则管理及推送模式</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Sentinel/Sentinel4.png" style="zoom:50%;" />
+
+<h2 id="Push模式"><a href="#Push模式" class="headerlink" title="Push模式"></a>Push模式</h2><h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Sentinel/Sentinel5.png" style="zoom: 50%;" />
+
+<h3 id="Apollo"><a href="#Apollo" class="headerlink" title="Apollo"></a>Apollo</h3><p>集中化管理应用不同环境、不同集群的配置，配置修改后能够实时推送到应用端，并且具备规范的权限、流程治理等特性，适用于微服务配置管理场景。</p>
+<ul>
+<li>生产环境参数分支</li>
+<li>灰度发布</li>
+</ul>
+<h3 id="基于Apollo，客户端使用配置"><a href="#基于Apollo，客户端使用配置" class="headerlink" title="基于Apollo，客户端使用配置"></a>基于Apollo，客户端使用配置</h3><ol>
+<li>引入依赖</li>
+</ol>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.csp<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>sentinel-core<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.8.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.csp<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>sentinel-transport-netty-http<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>$&#123;sentinel.version&#125;<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.csp<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>sentinel-annotation-aspectj<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>x.y.z<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--Apollo的依赖--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.ctrip.framework.apollo<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>apollo-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.8.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>开启Apollo</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@EnableApolloConfig</span>		<span class="comment">//	开启apoll 客户端注解(配置文件的方式)</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		SpringApplication.run(Application.class, args);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>application.yml配置</li>
+</ol>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## apollo配置如下</span></span><br><span class="line"></span><br><span class="line"><span class="comment">## apollo应用id(app.id)</span></span><br><span class="line"><span class="attr">app.id:</span></span><br><span class="line">  <span class="string">apollo-test</span></span><br><span class="line"><span class="comment">## apollo-config-service 地址</span></span><br><span class="line"><span class="attr">app.meta:</span></span><br><span class="line">  <span class="string">http://192.168.11.111:8080</span></span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>Apollo上新增配置</li>
+<li>JavaConfigBean读取配置</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Date</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JavaConfigBean</span> </span>&#123;</span><br><span class="line">	<span class="meta">@Value(&quot;$&#123;timeout:20&#125;&quot;)</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> timeout;</span><br><span class="line">	<span class="meta">@Value(&quot;$&#123;newKey:&#x27;hello&#x27;&#125;&quot;)</span></span><br><span class="line">	<span class="keyword">private</span> String newKey;	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Apollo开放平台（通过代码实现Apollo配置修改）"><a href="#Apollo开放平台（通过代码实现Apollo配置修改）" class="headerlink" title="Apollo开放平台（通过代码实现Apollo配置修改）"></a>Apollo开放平台（通过代码实现Apollo配置修改）</h2><ul>
+<li><p><a target="_blank" rel="noopener" href="https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_21-%E6%B3%A8%E5%86%8C%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%94%E7%94%A8">注册第三方应用</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_22-%E7%BB%99%E5%B7%B2%E6%B3%A8%E5%86%8C%E7%9A%84%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%94%E7%94%A8%E6%8E%88%E6%9D%83">给已注册的第三方应用授权</a>（创建第三方应用获取token）</p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_23-%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%94%E7%94%A8%E8%B0%83%E7%94%A8apollo-open-api">第三方应用调用Apollo Open API</a></p>
+<ul>
+<li><h5 id="调用Http-REST接口"><a href="#调用Http-REST接口" class="headerlink" title=" 调用Http REST接口"></a><a target="_blank" rel="noopener" href="https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_231-%E8%B0%83%E7%94%A8http-rest%E6%8E%A5%E5%8F%A3"> 调用Http REST接口</a></h5><p>任何语言的第三方应用都可以调用Apollo的Open API，在调用接口时，需要设置注意以下两点：</p>
+<ul>
+<li>Http Header中增加一个Authorization字段，字段值为申请的token</li>
+<li>Http Header的Content-Type字段需要设置成application/json;charset=UTF-8</li>
+</ul>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.apolloconfig.com/#/zh/usage/apollo-open-api-platform?id=_232-java%E5%BA%94%E7%94%A8%E9%80%9A%E8%BF%87apollo-openapi%E8%B0%83%E7%94%A8apollo-open-api">Java应用通过apollo-openapi调用Apollo Open API</a></p>
+<p>从1.1.0版本开始，Apollo提供了<a target="_blank" rel="noopener" href="https://github.com/ctripcorp/apollo/tree/master/apollo-openapi">apollo-openapi</a>客户端，所以Java语言的第三方应用可以更方便地调用Apollo Open API。</p>
+</li>
+</ul>
+<p>首先引入<code>apollo-openapi</code>依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.ctrip.framework.apollo<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>apollo-openapi<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.7.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在程序中构造<code>ApolloOpenApiClient</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">String portalUrl = <span class="string">&quot;http://localhost:8070&quot;</span>; <span class="comment">// portal url</span></span><br><span class="line">String token = <span class="string">&quot;e16e5cd903fd0c97a116c873b448544b9d086de9&quot;</span>; <span class="comment">// 申请的token</span></span><br><span class="line">ApolloOpenApiClient client = ApolloOpenApiClient.newBuilder()</span><br><span class="line">                                                .withPortalUrl(portalUrl)</span><br><span class="line">                                                .withToken(token)</span><br><span class="line">                                                .build();</span><br></pre></td></tr></table></figure>
+
+<p>后续就可以通过<code>ApolloOpenApiClient</code>的接口直接操作Apollo Open API了</p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Sentinel/" rel="tag"># Sentinel</a>
+          
+            <a href="/tags/Apollo/" rel="tag"># Apollo</a>
+          
+            <a href="/tags/%E6%B5%81%E9%87%8F%E9%98%B2%E6%8E%A7/" rel="tag"># 流量防控</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/05/13/Spring-SpringCloud(OAuth2)%E5%AD%A6%E4%B9%A0/" rel="next" title="Spring-SpringCloud(OAuth2)学习">
+                <i class="fa fa-chevron-left"></i> Spring-SpringCloud(OAuth2)学习
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <!--<a href="/archives/%7C%7Carchive">-->
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">108</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/yuanyayuan" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:liyuan0707@outlook.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Sentinel%E4%BD%9C%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">Sentinel作用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Sentinel%E7%89%B9%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">Sentinel特性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Sentinel%E7%BB%84%E6%88%90%E9%83%A8%E5%88%86"><span class="nav-number">3.</span> <span class="nav-text">Sentinel组成部分</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BF%AB%E9%80%9F%E5%85%A5%E9%97%A8"><span class="nav-number">4.</span> <span class="nav-text">快速入门</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9C%A8%E5%BA%94%E7%94%A8%E4%B8%AD%E5%BC%95%E5%85%A5Sentinel-Jar%E5%8C%85"><span class="nav-number">4.1.</span> <span class="nav-text">在应用中引入Sentinel Jar包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E8%B5%84%E6%BA%90"><span class="nav-number">4.2.</span> <span class="nav-text">定义资源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E8%A7%84%E5%88%99"><span class="nav-number">4.3.</span> <span class="nav-text">定义规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E6%95%88%E6%9E%9C"><span class="nav-number">4.4.</span> <span class="nav-text">检查效果</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B5%81%E6%8E%A7%E7%AD%96%E7%95%A5"><span class="nav-number">5.</span> <span class="nav-text">流控策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="nav-number">5.1.</span> <span class="nav-text">流量控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">5.1.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0"><span class="nav-number">5.1.2.</span> <span class="nav-text">配置参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%99%90%E6%B5%81%E6%8E%A7%E5%88%B6%E6%95%88%E6%9E%9C"><span class="nav-number">5.1.2.1.</span> <span class="nav-text">限流控制效果</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#QPS%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="nav-number">5.1.2.1.1.</span> <span class="nav-text">QPS流量控制</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%BA%BF%E7%A8%8B%E6%95%B0%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="nav-number">5.1.2.1.2.</span> <span class="nav-text">并发线程数流量控制</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%83%AD%E7%82%B9%E5%8F%82%E6%95%B0%E9%99%90%E6%B5%81"><span class="nav-number">5.2.</span> <span class="nav-text">热点参数限流</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%83%AD%E7%82%B9%E6%95%B0%E6%8D%AE"><span class="nav-number">5.2.1.</span> <span class="nav-text">热点数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-1"><span class="nav-number">5.2.2.</span> <span class="nav-text">原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%BB%91%E7%99%BD%E5%90%8D%E5%8D%95"><span class="nav-number">5.3.</span> <span class="nav-text">黑白名单</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-2"><span class="nav-number">5.3.1.</span> <span class="nav-text">原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E8%87%AA%E4%BD%BF%E7%94%A8%E9%99%90%E6%B5%81"><span class="nav-number">5.4.</span> <span class="nav-text">系统自使用限流</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8Sentinel%E6%B3%A8%E8%A7%A3%E5%AE%9E%E7%8E%B0%E6%B5%81%E6%8E%A7"><span class="nav-number">6.</span> <span class="nav-text">使用Sentinel注解实现流控</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E5%85%A5%E4%BB%A5%E4%B8%8B%E4%BE%9D%E8%B5%96%EF%BC%9A"><span class="nav-number">6.1.</span> <span class="nav-text">引入以下依赖：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SentinelResource-%E6%B3%A8%E8%A7%A3"><span class="nav-number">6.2.</span> <span class="nav-text">@SentinelResource 注解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">6.3.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-AOP"><span class="nav-number">6.3.1.</span> <span class="nav-text">Spring AOP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E5%AD%90"><span class="nav-number">6.4.</span> <span class="nav-text">例子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#blockHandler"><span class="nav-number">6.4.1.</span> <span class="nav-text">blockHandler </span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fallback"><span class="nav-number">6.4.2.</span> <span class="nav-text">fallback</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%93%A8%E5%85%B5%E9%9B%86%E7%BE%A4%E6%B5%81%E6%8E%A7%E4%B8%8E%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88"><span class="nav-number">7.</span> <span class="nav-text">哨兵集群流控与替代方案</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%A1%88-%E4%BD%BF%E7%94%A8Gateway"><span class="nav-number">7.1.</span> <span class="nav-text">替代方案-使用Gateway</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E4%BD%BF%E7%94%A8Sentinel"><span class="nav-number">8.</span> <span class="nav-text">生产环境使用Sentinel</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%84%E5%88%99%E7%AE%A1%E7%90%86%E5%8F%8A%E6%8E%A8%E9%80%81%E6%A8%A1%E5%BC%8F"><span class="nav-number">8.1.</span> <span class="nav-text">规则管理及推送模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Push%E6%A8%A1%E5%BC%8F"><span class="nav-number">8.2.</span> <span class="nav-text">Push模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84"><span class="nav-number">8.2.1.</span> <span class="nav-text">架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Apollo"><span class="nav-number">8.2.2.</span> <span class="nav-text">Apollo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EApollo%EF%BC%8C%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BD%BF%E7%94%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">8.2.3.</span> <span class="nav-text">基于Apollo，客户端使用配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Apollo%E5%BC%80%E6%94%BE%E5%B9%B3%E5%8F%B0%EF%BC%88%E9%80%9A%E8%BF%87%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0Apollo%E9%85%8D%E7%BD%AE%E4%BF%AE%E6%94%B9%EF%BC%89"><span class="nav-number">8.3.</span> <span class="nav-text">Apollo开放平台（通过代码实现Apollo配置修改）</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B0%83%E7%94%A8Http-REST%E6%8E%A5%E5%8F%A3"><span class="nav-number">8.3.0.0.1.</span> <span class="nav-text"> 调用Http REST接口</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiYuan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

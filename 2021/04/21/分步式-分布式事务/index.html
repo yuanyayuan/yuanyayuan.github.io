@@ -92,11 +92,8 @@
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/%E5%9F%BA%E4%BA%8E%E6%9C%AC%E5%9C%B0%E6%B6%88%E6%81%AF%E8%A1%A8.png">
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/9/6/16d0588ae2844970?imageView2/0/w/1280/h/960/ignore-error/1">
 <meta property="og:image" content="https://user-gold-cdn.xitu.io/2019/9/6/16d0588aeba679cf?imageView2/0/w/1280/h/960/ignore-error/1&ynotemdtimestamp=1619092644755">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/22e8d512d954676bdf0cc92d200af8ef.png?ynotemdtimestamp=1618749953489">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/b82536f956f70a584c6a20c10113f225.png?ynotemdtimestamp=1618749953489">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/img_convert/743889b97485fdfe2094e5ef0af6b141.png?ynotemdtimestamp=1618749953489">
 <meta property="article:published_time" content="2021-04-21T10:42:15.000Z">
-<meta property="article:modified_time" content="2021-05-08T16:40:37.581Z">
+<meta property="article:modified_time" content="2021-05-18T07:40:30.233Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="面试">
 <meta property="article:tag" content="分步式">
@@ -433,7 +430,7 @@
 </ul>
 <h3 id="具体实现方式"><a href="#具体实现方式" class="headerlink" title="具体实现方式"></a>具体实现方式</h3><p> Java 中的 JTA：它是基于XA规范实现的事务接口，基于数据库的 XA 规范来实现的 2PC（Atomikos）</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>2PC 是一种<strong>尽量保证强一致性</strong>的分布式事务，因此它是<strong>同步阻塞</strong>的，而同步阻塞就导致长久的资源锁定问题，<strong>总体而言效率低</strong>，并且存在<strong>单点故障</strong>问题，在极端条件下存在<strong>数据不一致</strong>的风险。</p>
-<p>2PC 适用于<strong>数据库层面的分布式事务场景</strong>，而我们业务需求有时候不仅仅关乎数据库，也有可能是上传一张图片或者发送一条短信。</p>
+<p>2PC 适用于<strong>数据库层面的分布式事务场景</strong>，一台服务配置多数据源实现事务，而我们业务需求有时候不仅仅关乎数据库，也有可能是上传一张图片或者发送一条短信。</p>
 <h2 id="3PC（三阶段提交）-强一致"><a href="#3PC（三阶段提交）-强一致" class="headerlink" title="3PC（三阶段提交）[强一致]"></a>3PC（三阶段提交）[强一致]</h2><p>3PC 包含了三个阶段，分别是<strong>准备阶段、预提交阶段和提交阶段</strong>，对应的英文就是：<code>CanCommit、PreCommit 和 DoCommit</code>。</p>
 <p>3PC 的准备阶段协调者只是询问参与者的自身状况，比如你现在还好吗？负载重不重？这类的。而预提交阶段就是和 2PC 的准备阶段一样，除了事务的提交该做的都做了。</p>
 <p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/3PC.png"></p>
@@ -534,29 +531,6 @@
 <p>事务消息也是一样，当半消息被commit了之后确实就是普通消息了，如果订阅者一直不消费或者消费不了则会一直重试，到最后进入死信队列。其实这也算最大努力。</p>
 <p>所以<strong>最大努力通知其实只是表明了一种柔性事务的思想</strong>：我已经尽力我最大的努力想达成事务的最终一致了。</p>
 <p>适用于对时间不敏感的业务，例如短信通知。</p>
-<h2 id="Paxos-算法"><a href="#Paxos-算法" class="headerlink" title="Paxos 算法"></a><code>Paxos</code> 算法</h2><p><code>Paxos</code> 算法是基于<strong>消息传递且具有高度容错特性的一致性算法</strong>，是目前公认的解决分布式一致性问题最有效的算法之一，<strong>其解决的问题就是在分布式系统中如何就某个值（决议）达成一致</strong> 。</p>
-<p>在 <code>Paxos</code> 中主要有三个角色，分别为 <code>Proposer提案者</code>、<code>Acceptor表决者</code>、<code>Learner学习者</code>。<code>Paxos</code> 算法和 <code>2PC</code> 一样，也有两个阶段，分别为 <code>Prepare</code> 和 <code>accept</code> 阶段。</p>
-<h3 id="prepare-阶段"><a href="#prepare-阶段" class="headerlink" title="prepare 阶段"></a>prepare 阶段</h3><ul>
-<li><code>Proposer提案者</code>：负责提出 <code>proposal</code>，每个提案者在提出提案时都会首先获取到一个 <strong>具有全局唯一性的、递增的提案编号N</strong>，即在整个集群中是唯一的编号 N，然后将该编号赋予其要提出的提案，在<strong>第一阶段是只将提案编号发送给所有的表决者</strong>。</li>
-<li><code>Acceptor表决者</code>：每个表决者在 <code>accept</code> 某提案后，会将该提案编号N记录在本地，这样每个表决者中保存的已经被 accept 的提案中会存在一个<strong>编号最大的提案</strong>，其编号假设为 <code>maxN</code>。每个表决者仅会 <code>accept</code> 编号大于自己本地 <code>maxN</code> 的提案，在批准提案时表决者会将以前接受过的最大编号的提案作为响应反馈给 <code>Proposer</code> 。</li>
-</ul>
-<blockquote>
-<p>下面是 <code>prepare</code> 阶段的流程图，你可以对照着参考一下。</p>
-</blockquote>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/22e8d512d954676bdf0cc92d200af8ef.png?ynotemdtimestamp=1618749953489" alt="paxos第一阶段"></p>
-<h3 id="accept-阶段"><a href="#accept-阶段" class="headerlink" title="accept 阶段"></a>accept 阶段</h3><p>当一个提案被 <code>Proposer</code> 提出后，如果 <code>Proposer</code> 收到了超过半数的 <code>Acceptor</code> 的批准（<code>Proposer</code> 本身同意），那么此时 <code>Proposer</code> 会给所有的 <code>Acceptor</code> 发送真正的提案（你可以理解为第一阶段为试探），这个时候 <code>Proposer</code> 就会发送提案的内容和提案编号。</p>
-<p>表决者收到提案请求后会再次比较本身已经批准过的最大提案编号和该提案编号，如果该提案编号 <strong>大于等于</strong> 已经批准过的最大提案编号，那么就 <code>accept</code> 该提案（此时执行提案内容但不提交），随后将情况返回给 <code>Proposer</code> 。如果不满足则不回应或者返回 NO 。</p>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/b82536f956f70a584c6a20c10113f225.png?ynotemdtimestamp=1618749953489" alt="paxos第二阶段1"></p>
-<p>当 <code>Proposer</code> 收到超过半数的 <code>accept</code> ，那么它这个时候会向所有的 <code>acceptor</code> 发送提案的提交请求。需要注意的是，因为上述仅仅是超过半数的 <code>acceptor</code> 批准执行了该提案内容，其他没有批准的并没有执行该提案内容，所以这个时候需要<strong>向未批准的 <code>acceptor</code>发送提案内容和提案编号并让它无条件执行和提交</strong>，而对于前面已经批准过该提案的 <code>acceptor</code> 来说 <strong>仅仅需要发送该提案的编号</strong> ，让 <code>acceptor</code> 执行提交就行了。</p>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/743889b97485fdfe2094e5ef0af6b141.png?ynotemdtimestamp=1618749953489" alt="paxos第二阶段2"></p>
-<p>而如果 <code>Proposer</code> 如果没有收到超过半数的 <code>accept</code> 那么它将会将 <strong>递增</strong> 该 <code>Proposal</code> 的编号，然后 <strong>重新进入 <code>Prepare</code> 阶段</strong> 。</p>
-<blockquote>
-<p>对于 <code>Learner</code> 来说如何去学习 <code>Acceptor</code> 批准的提案内容，这有很多方式，读者可以自己去了解一下，这里不做过多解释。</p>
-</blockquote>
-<h3 id="paxos-算法的死循环问题"><a href="#paxos-算法的死循环问题" class="headerlink" title="paxos 算法的死循环问题"></a><code>paxos</code> 算法的死循环问题</h3><p>其实就有点类似于两个人吵架，小明说我是对的，小红说我才是对的，两个人据理力争的谁也不让谁🤬🤬。</p>
-<p>比如说，此时提案者 P1 提出一个方案 M1，完成了 <code>Prepare</code> 阶段的工作，这个时候 <code>acceptor</code> 则批准了 M1，但是此时提案者 P2 同时也提出了一个方案 M2，它也完成了 <code>Prepare</code> 阶段的工作。然后 P1 的方案已经不能在第二阶段被批准了（因为 <code>acceptor</code> 已经批准了比 M1 更大的 M2），所以 P1 自增方案变为 M3 重新进入 <code>Prepare</code> 阶段，然后 <code>acceptor</code> ，又批准了新的 M3 方案，它又不能批准 M2 了，这个时候 M2 又自增进入 <code>Prepare</code> 阶段。。。</p>
-<p>就这样无休无止的永远提案下去，这就是 <code>paxos</code> 算法的死循环问题。</p>
-<p>那么如何解决呢？很简单，人多了容易吵架，我现在 <strong>就允许一个能提案</strong> 就行了。</p>
 
       
     </div>
@@ -679,7 +653,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-count">108</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -690,7 +664,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">68</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -701,7 +675,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -750,7 +724,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%EF%BC%8C%E6%98%AF%E6%80%8E%E4%B9%88%E4%BB%8EACID%E8%A7%A3%E8%84%B1%EF%BC%8C%E6%8A%95%E8%BA%ABCAP-BASE"><span class="nav-number">1.</span> <span class="nav-text">分布式事务，是怎么从ACID解脱，投身CAP&#x2F;BASE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">分布式一致性问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E5%8D%8F%E8%AE%AE%E5%92%8C%E7%AE%97%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">一致性协议和算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1"><span class="nav-number">4.</span> <span class="nav-text">分布式事务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2PC%EF%BC%88%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%EF%BC%89-%E5%BC%BA%E4%B8%80%E8%87%B4"><span class="nav-number">4.1.</span> <span class="nav-text">2PC（两阶段提交）[强一致]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.1.</span> <span class="nav-text">具体实现方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.1.2.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3PC%EF%BC%88%E4%B8%89%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%EF%BC%89-%E5%BC%BA%E4%B8%80%E8%87%B4"><span class="nav-number">4.2.</span> <span class="nav-text">3PC（三阶段提交）[强一致]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E6%AF%942PC%EF%BC%8C3PC%E5%BC%95%E5%85%A5%E8%B6%85%E6%97%B6%E6%9C%BA%E5%88%B6"><span class="nav-number">4.2.1.</span> <span class="nav-text">相比2PC，3PC引入超时机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3PC-%E7%9A%84%E5%BC%95%E5%85%A5%E7%9B%AE%E7%9A%84"><span class="nav-number">4.2.2.</span> <span class="nav-text">3PC 的引入目的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-number">4.2.3.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A5%E5%81%BF%E4%BA%8B%E5%8A%A1%EF%BC%88TCC%EF%BC%89-%E8%A1%A5%E5%81%BF%E6%80%A7%E4%BA%8B%E5%8A%A1%E6%80%9D%E6%83%B3"><span class="nav-number">4.3.</span> <span class="nav-text">补偿事务（TCC）[补偿性事务思想]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#example"><span class="nav-number">4.3.1.</span> <span class="nav-text">example</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%B6%88%E6%81%AF%E8%A1%A8-%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-number">4.4.</span> <span class="nav-text">本地消息表[最终一致性]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EMQ%E7%9A%84%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%96%B9%E6%A1%88-%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-number">4.5.</span> <span class="nav-text">基于MQ的最终一致方案[最终一致性]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E5%8A%AA%E5%8A%9B%E9%80%9A%E7%9F%A5"><span class="nav-number">4.6.</span> <span class="nav-text">最大努力通知</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Paxos-%E7%AE%97%E6%B3%95"><span class="nav-number">4.7.</span> <span class="nav-text">Paxos 算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#prepare-%E9%98%B6%E6%AE%B5"><span class="nav-number">4.7.1.</span> <span class="nav-text">prepare 阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#accept-%E9%98%B6%E6%AE%B5"><span class="nav-number">4.7.2.</span> <span class="nav-text">accept 阶段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#paxos-%E7%AE%97%E6%B3%95%E7%9A%84%E6%AD%BB%E5%BE%AA%E7%8E%AF%E9%97%AE%E9%A2%98"><span class="nav-number">4.7.3.</span> <span class="nav-text">paxos 算法的死循环问题</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1%EF%BC%8C%E6%98%AF%E6%80%8E%E4%B9%88%E4%BB%8EACID%E8%A7%A3%E8%84%B1%EF%BC%8C%E6%8A%95%E8%BA%ABCAP-BASE"><span class="nav-number">1.</span> <span class="nav-text">分布式事务，是怎么从ACID解脱，投身CAP&#x2F;BASE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%B8%80%E8%87%B4%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">分布式一致性问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E8%87%B4%E6%80%A7%E5%8D%8F%E8%AE%AE%E5%92%8C%E7%AE%97%E6%B3%95"><span class="nav-number">3.</span> <span class="nav-text">一致性协议和算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1"><span class="nav-number">4.</span> <span class="nav-text">分布式事务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2PC%EF%BC%88%E4%B8%A4%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%EF%BC%89-%E5%BC%BA%E4%B8%80%E8%87%B4"><span class="nav-number">4.1.</span> <span class="nav-text">2PC（两阶段提交）[强一致]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.1.</span> <span class="nav-text">具体实现方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.1.2.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3PC%EF%BC%88%E4%B8%89%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4%EF%BC%89-%E5%BC%BA%E4%B8%80%E8%87%B4"><span class="nav-number">4.2.</span> <span class="nav-text">3PC（三阶段提交）[强一致]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E6%AF%942PC%EF%BC%8C3PC%E5%BC%95%E5%85%A5%E8%B6%85%E6%97%B6%E6%9C%BA%E5%88%B6"><span class="nav-number">4.2.1.</span> <span class="nav-text">相比2PC，3PC引入超时机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3PC-%E7%9A%84%E5%BC%95%E5%85%A5%E7%9B%AE%E7%9A%84"><span class="nav-number">4.2.2.</span> <span class="nav-text">3PC 的引入目的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-number">4.2.3.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A5%E5%81%BF%E4%BA%8B%E5%8A%A1%EF%BC%88TCC%EF%BC%89-%E8%A1%A5%E5%81%BF%E6%80%A7%E4%BA%8B%E5%8A%A1%E6%80%9D%E6%83%B3"><span class="nav-number">4.3.</span> <span class="nav-text">补偿事务（TCC）[补偿性事务思想]</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#example"><span class="nav-number">4.3.1.</span> <span class="nav-text">example</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%B6%88%E6%81%AF%E8%A1%A8-%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-number">4.4.</span> <span class="nav-text">本地消息表[最终一致性]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8EMQ%E7%9A%84%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%96%B9%E6%A1%88-%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7"><span class="nav-number">4.5.</span> <span class="nav-text">基于MQ的最终一致方案[最终一致性]</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E5%8A%AA%E5%8A%9B%E9%80%9A%E7%9F%A5"><span class="nav-number">4.6.</span> <span class="nav-text">最大努力通知</span></a></li></ol></li></ol></div>
             
 
           </div>

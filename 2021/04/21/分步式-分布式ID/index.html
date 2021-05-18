@@ -79,15 +79,15 @@
 
 
 
-<meta name="description" content="UUID通用唯一标识码，保证每一条记录的id都是不同的 缺点：只是一个单纯的id，没有实际意义，长度32位，太长 MyCat不支持UUID，Sharding-Jdbc支持UUID的方式 MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID）） ID的值统一的从一个集中的ID序列生成器中获取 MyCat支持ID序列生成器，Sharding-Jdbc不支持ID序列生成器  MyCat中有两种">
+<meta name="description" content="UUID通用唯一标识码，保证每一条记录的id都是不同的 缺点：只是一个单纯的id，没有实际意义，长度32位，太长 MyCat不支持UUID，Sharding-Jdbc支持UUID的方式 数据库自增长序列或字段优点：简单，代码方便 缺点：在单个数据库或读写分离或一主多从的情况下，只有一个主库可以生成。有单点故障风险；如果遇见多个系统需要合并或者涉及数据迁移会相当痛苦；分表分库时候会有麻烦 优化方案：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="分步式-分布式ID">
 <meta property="og:url" content="https://yuanyayuan.github.io/2021/04/21/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%B8%83%E5%BC%8FID/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="UUID通用唯一标识码，保证每一条记录的id都是不同的 缺点：只是一个单纯的id，没有实际意义，长度32位，太长 MyCat不支持UUID，Sharding-Jdbc支持UUID的方式 MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID）） ID的值统一的从一个集中的ID序列生成器中获取 MyCat支持ID序列生成器，Sharding-Jdbc不支持ID序列生成器  MyCat中有两种">
+<meta property="og:description" content="UUID通用唯一标识码，保证每一条记录的id都是不同的 缺点：只是一个单纯的id，没有实际意义，长度32位，太长 MyCat不支持UUID，Sharding-Jdbc支持UUID的方式 数据库自增长序列或字段优点：简单，代码方便 缺点：在单个数据库或读写分离或一主多从的情况下，只有一个主库可以生成。有单点故障风险；如果遇见多个系统需要合并或者涉及数据迁移会相当痛苦；分表分库时候会有麻烦 优化方案：">
 <meta property="og:locale">
 <meta property="article:published_time" content="2021-04-21T09:15:57.000Z">
-<meta property="article:modified_time" content="2021-05-09T08:25:02.782Z">
+<meta property="article:modified_time" content="2021-05-18T10:41:24.985Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="面试">
 <meta property="article:tag" content="分步式">
@@ -356,6 +356,24 @@
         <h1 id="UUID"><a href="#UUID" class="headerlink" title="UUID"></a>UUID</h1><p>通用唯一标识码，保证每一条记录的id都是不同的</p>
 <p>缺点：只是一个单纯的id，没有实际意义，长度32位，太长</p>
 <p><strong>MyCat不支持UUID</strong>，<strong>Sharding-Jdbc</strong>支持UUID的方式</p>
+<h1 id="数据库自增长序列或字段"><a href="#数据库自增长序列或字段" class="headerlink" title="数据库自增长序列或字段"></a>数据库自增长序列或字段</h1><p>优点：简单，代码方便</p>
+<p>缺点：在单个数据库或读写分离或一主多从的情况下，只有一个主库可以生成。有单点故障风险；如果遇见多个系统需要合并或者涉及数据迁移会相当痛苦；分表分库时候会有麻烦</p>
+<p><strong>优化方案</strong>：多个Master库，则每个Master库设置的起始数字不一样，步长一样，可以是Master的个数：比如：Master1 生成的是 1，4，7，10，Master2生成的是2,5,8,11 Master3生成的是 3,6,9,12</p>
+<h1 id="数据库sequence表以及乐观锁"><a href="#数据库sequence表以及乐观锁" class="headerlink" title="数据库sequence表以及乐观锁"></a>数据库sequence表以及乐观锁</h1><p>单独设置一张表，来存储所有表的下一个主键的值</p>
+<p>每当需要获取下一个主键值得时候，首先使用select询句获取主键，然后使用数据库得乐观锁机制去update 这个sequence表，更新成功则说明获取主键成功，更新失败则说明存在并发，当前主键被别的机器抢走了，需要重新select出新的主键，再update。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> id <span class="keyword">from</span> sequence <span class="keyword">where</span> name<span class="operator">=</span>B</span><br><span class="line"><span class="operator">/</span><span class="operator">/</span>获得id<span class="operator">=</span><span class="number">100</span>,更新sequence表</span><br><span class="line">update sequence <span class="keyword">set</span> id<span class="operator">=</span>id<span class="operator">+</span><span class="number">1</span> <span class="keyword">where</span> name<span class="operator">=</span>B <span class="keyword">and</span> id<span class="operator">=</span><span class="number">100</span></span><br></pre></td></tr></table></figure>
+
+<p>优点：操作简单，使用乐观锁可以提高性能，可适用于分布式环境，可以进行分库分表</p>
+<p>缺点：需要单独设置一张表，浪费存储空间，数据库更新比较频繁，写压力太大</p>
+<p><strong>优化方案</strong>：可以将每次获取一个主键，改为每次获取500个或者更多，然后缓存到当前机器中，用完返500个后，再去请求数据库，做更新操作，可以减少数据库的读写压力，但是会造成主键不连续</p>
+<h1 id="Redis生成ID"><a href="#Redis生成ID" class="headerlink" title="Redis生成ID"></a>Redis生成ID</h1><p>当使用数据库来生成ID性能不够要求得时候，我们可以尝试使用Redis来生成ID。返主要依赖Redis是单线程程， 所以也可以用生成全局唯一的ID。可以用Redis的原子操作 INCR与INCRBY来实现。</p>
+<p>可以使用Redis集群来获取更高的吞吐量，防止单点故障。</p>
+<p>假如一个集群中有5台Redis。可以初始化每台Redis的值分别是1,2,3,4,5，然后步长都是5。各个Redis生成的ID为：A：1,6,11,16,21 B：2,7,12,17,22 C：3,8,13,18,23 D：4,9,14,19,24 E：5,10,15,20,25</p>
+<p>另外，比较适合使用Redis来生成每天从0开始的流水号。比如订单号=日期+当日自增长号。可以每天在Redis中生 成一个Key，使用INCR进行累加。</p>
+<p>优点：不依赖于数据库，灵活方便，且性能优于数据库。数字ID天然排序，对分页或者需要排序的结果很有帮助。</p>
+<p>缺点：如果系统中没有Redis，还需要引入新的组件，增加系统复杂度</p>
+<h1 id="Twitter的snowflake算法"><a href="#Twitter的snowflake算法" class="headerlink" title="Twitter的snowflake算法"></a>Twitter的snowflake算法</h1><p>优点：简单，全球唯一</p>
+<p>缺点：只是一个单纯的id，没有实际意义，长度32位，太长</p>
 <h1 id="MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID））"><a href="#MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID））" class="headerlink" title="MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID））"></a>MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID））</h1><ul>
 <li><p>ID的值统一的从一个集中的ID序列生成器中获取</p>
 <p><strong>MyCat支持ID序列生成器</strong>，<strong>Sharding-Jdbc不支持ID序列生成器</strong></p>
@@ -429,6 +447,14 @@
 <p><strong>WORKID和DATAACENTERID不能超过32，因为5bit是2的5次方=32</strong></p>
 </li>
 </ul>
+<p>优点：</p>
+<ol>
+<li><p>不依赖二数据库，灵活方便，性能优于数据库。</p>
+</li>
+<li><p>ID按照时间在单机上是递增的。</p>
+</li>
+</ol>
+<p>缺点：<br>在单机上是递增的，但是由于涉及分布式环境，每台机器上的时钟不可能完全同步，也许有时候也会出现不是全 是递增的情况。</p>
 <h1 id="程序方式"><a href="#程序方式" class="headerlink" title="程序方式"></a>程序方式</h1><ul>
 <li>Snowflake</li>
 <li>UUID</li>
@@ -556,7 +582,7 @@
                 <!--<a href="/archives/%7C%7Carchive">-->
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">105</span>
+                  <span class="site-state-item-count">108</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -567,7 +593,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">68</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -578,7 +604,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -627,7 +653,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#UUID"><span class="nav-number">1.</span> <span class="nav-text">UUID</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MyCat%E5%85%A8%E5%B1%80Id%EF%BC%88%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%EF%BC%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E3%80%82%E6%9C%AC%E5%9C%B0%E6%97%B6%E9%97%B4%E6%88%B3%E6%96%B9%E5%BC%8F%EF%BC%88%E9%9B%AA%E8%8A%B1ID%EF%BC%89%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID））</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE"><span class="nav-number">2.1.</span> <span class="nav-text">本地文件配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">数据库配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95"><span class="nav-number">2.3.</span> <span class="nav-text">雪花算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-number">2.3.1.</span> <span class="nav-text">算法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E6%96%B9%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">程序方式</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#UUID"><span class="nav-number">1.</span> <span class="nav-text">UUID</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E8%87%AA%E5%A2%9E%E9%95%BF%E5%BA%8F%E5%88%97%E6%88%96%E5%AD%97%E6%AE%B5"><span class="nav-number">2.</span> <span class="nav-text">数据库自增长序列或字段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93sequence%E8%A1%A8%E4%BB%A5%E5%8F%8A%E4%B9%90%E8%A7%82%E9%94%81"><span class="nav-number">3.</span> <span class="nav-text">数据库sequence表以及乐观锁</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis%E7%94%9F%E6%88%90ID"><span class="nav-number">4.</span> <span class="nav-text">Redis生成ID</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Twitter%E7%9A%84snowflake%E7%AE%97%E6%B3%95"><span class="nav-number">5.</span> <span class="nav-text">Twitter的snowflake算法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MyCat%E5%85%A8%E5%B1%80Id%EF%BC%88%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%EF%BC%8C%E6%95%B0%E6%8D%AE%E5%BA%93%E3%80%82%E6%9C%AC%E5%9C%B0%E6%97%B6%E9%97%B4%E6%88%B3%E6%96%B9%E5%BC%8F%EF%BC%88%E9%9B%AA%E8%8A%B1ID%EF%BC%89%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">MyCat全局Id（本地文件，数据库。本地时间戳方式（雪花ID））</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E6%96%87%E4%BB%B6%E9%85%8D%E7%BD%AE"><span class="nav-number">6.1.</span> <span class="nav-text">本地文件配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E9%85%8D%E7%BD%AE"><span class="nav-number">6.2.</span> <span class="nav-text">数据库配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9B%AA%E8%8A%B1%E7%AE%97%E6%B3%95"><span class="nav-number">6.3.</span> <span class="nav-text">雪花算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-number">6.3.1.</span> <span class="nav-text">算法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E6%96%B9%E5%BC%8F"><span class="nav-number">7.</span> <span class="nav-text">程序方式</span></a></li></ol></div>
             
 
           </div>
