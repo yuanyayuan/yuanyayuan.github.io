@@ -2670,14 +2670,30 @@
       
         
           
-            <h1 id="JVM-配置常用参数"><a href="#JVM-配置常用参数" class="headerlink" title="JVM 配置常用参数"></a>JVM 配置常用参数</h1><ol>
+            <h1 id="linux查看Java程序运行"><a href="#linux查看Java程序运行" class="headerlink" title="linux查看Java程序运行"></a>linux查看Java程序运行</h1><ul>
+<li>jps :虚拟机进程状态工具 </li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps -v | grep pid</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>jinfo：</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jinfo -flages pid</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>jstat</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jsata -gcutil pid</span><br></pre></td></tr></table></figure>
+
+<p>S0</p>
+<h1 id="JVM-配置常用参数"><a href="#JVM-配置常用参数" class="headerlink" title="JVM 配置常用参数"></a>JVM 配置常用参数</h1><ol>
 <li>Java内存区域常见配置参数概览</li>
 <li>堆参数；</li>
 <li>回收器参数；</li>
 <li>项目中常用配置；</li>
 <li>常用组合；</li>
 </ol>
-<h1 id="你们生产环境线上服务器的-JVM-启动参数配置是什么样的？"><a href="#你们生产环境线上服务器的-JVM-启动参数配置是什么样的？" class="headerlink" title="你们生产环境线上服务器的 JVM 启动参数配置是什么样的？"></a>你们生产环境线上服务器的 JVM 启动参数配置是什么样的？</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-Xms4096m -Xmx4096m -Xmn2048m -Xss512k -XX:MetaspaceSize&#x3D;384m -XX:MaxMetaspaceSize&#x3D;384m -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:CMSFullGCsBeforeCompaction&#x3D;5 -XX:+UseCMSCompactAtFullCollection -XX:+DisableExplicitGC -verbose:gc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -Xloggc:&#x2F;home&#x2F;admin&#x2F;logs&#x2F;gc.log -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath&#x3D;&#x2F;home&#x2F;admin&#x2F;logs </span><br></pre></td></tr></table></figure>
+<h1 id="你们生产环境线上服务器的-JVM-启动参数配置是什么样的？"><a href="#你们生产环境线上服务器的-JVM-启动参数配置是什么样的？" class="headerlink" title="你们生产环境线上服务器的 JVM 启动参数配置是什么样的？"></a>你们生产环境线上服务器的 JVM 启动参数配置是什么样的？</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">-Xms4096m </span><br><span class="line">-Xmx4096m </span><br><span class="line">-Xmn2048m </span><br><span class="line">-Xss512k </span><br><span class="line">-XX:MetaspaceSize&#x3D;384m </span><br><span class="line">-XX:MaxMetaspaceSize&#x3D;384m </span><br><span class="line">-XX:+UseConcMarkSweepGC </span><br><span class="line">-XX:+UseParNewGC </span><br><span class="line">-XX:CMSFullGCsBeforeCompaction&#x3D;5 </span><br><span class="line">-XX:+UseCMSCompactAtFullCollection </span><br><span class="line">-XX:+DisableExplicitGC </span><br><span class="line">-verbose:gc </span><br><span class="line">-XX:+PrintGCDetails </span><br><span class="line">-XX:+PrintGCTimeStamps </span><br><span class="line">-Xloggc:&#x2F;home&#x2F;admin&#x2F;logs&#x2F;gc.log </span><br><span class="line">-XX:+HeapDumpOnOutOfMemoryError </span><br><span class="line">-XX:HeapDumpPath&#x3D;&#x2F;home&#x2F;admin&#x2F;logs </span><br></pre></td></tr></table></figure>
 
 <h2 id="Java内存区域常见配置参数概览"><a href="#Java内存区域常见配置参数概览" class="headerlink" title="Java内存区域常见配置参数概览"></a>Java内存区域常见配置参数概览</h2><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E5%B8%B8%E8%A7%81%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0.png" alt="img"></p>
 <h2 id="堆参数"><a href="#堆参数" class="headerlink" title="堆参数"></a>堆参数</h2><p><img src="https://snailclimb.gitee.io/javaguide/media/pictures/jvm/java_jvm_heap_parameters.png" alt="堆参数"></p>

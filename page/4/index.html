@@ -1724,7 +1724,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/22/%E5%88%86%E6%AD%A5%E5%BC%8F-%E9%99%90%E6%B5%81/">
+    <link itemprop="mainEntityOfPage" href="https://yuanyayuan.github.io/2021/04/22/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -1743,7 +1743,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/04/22/%E5%88%86%E6%AD%A5%E5%BC%8F-%E9%99%90%E6%B5%81/" itemprop="url">分步式-限流</a></h1>
+                <a class="post-title-link" href="/2021/04/22/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/" itemprop="url">分步式-分布式限流</a></h1>
         
 
         <div class="post-meta">
@@ -1939,7 +1939,7 @@
 <ul>
 <li>ratelimiter.lua</li>
 </ul>
-<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 获取方法签名特征、</span></span><br><span class="line"><span class="comment">-- 用作限流的key</span></span><br><span class="line"><span class="keyword">local</span> methodKey = KEYS[<span class="number">1</span>]</span><br><span class="line">redis.<span class="built_in">log</span>(redis.LOG_DEBUG, <span class="string">&#x27;key is&#x27;</span>, methodKey)</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 调用脚本传入的限流大小</span></span><br><span class="line"><span class="keyword">local</span> limit = <span class="built_in">tonumber</span>(ARGV[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 获取当前流量大小</span></span><br><span class="line"><span class="keyword">local</span> count = <span class="built_in">tonumber</span>(redis.call(<span class="string">&#x27;get&#x27;</span>, methodKey) <span class="keyword">or</span> <span class="string">&quot;0&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 是否超出限流阈值</span></span><br><span class="line"><span class="keyword">if</span> count + <span class="number">1</span> &gt; limit <span class="keyword">then</span></span><br><span class="line">    <span class="comment">-- 拒绝服务访问</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="comment">-- 没有超过阈值</span></span><br><span class="line">    <span class="comment">-- 设置当前访问的数量+1</span></span><br><span class="line">    redis.call(<span class="string">&quot;INCRBY&quot;</span>, methodKey, <span class="number">1</span>)</span><br><span class="line">    <span class="comment">-- 设置过期时间</span></span><br><span class="line">    redis.call(<span class="string">&quot;EXPIRE&quot;</span>, methodKey, <span class="number">1</span>)</span><br><span class="line">    <span class="comment">-- 放行</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 获取方法签名特征</span></span><br><span class="line"><span class="comment">-- 用作限流的key</span></span><br><span class="line"><span class="keyword">local</span> methodKey = KEYS[<span class="number">1</span>]</span><br><span class="line">redis.<span class="built_in">log</span>(redis.LOG_DEBUG, <span class="string">&#x27;key is&#x27;</span>, methodKey)</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 调用脚本传入的限流大小</span></span><br><span class="line"><span class="keyword">local</span> limit = <span class="built_in">tonumber</span>(ARGV[<span class="number">1</span>])</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 获取当前流量大小</span></span><br><span class="line"><span class="keyword">local</span> count = <span class="built_in">tonumber</span>(redis.call(<span class="string">&#x27;get&#x27;</span>, methodKey) <span class="keyword">or</span> <span class="string">&quot;0&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 是否超出限流阈值</span></span><br><span class="line"><span class="keyword">if</span> count + <span class="number">1</span> &gt; limit <span class="keyword">then</span></span><br><span class="line">    <span class="comment">-- 拒绝服务访问</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="comment">-- 没有超过阈值</span></span><br><span class="line">    <span class="comment">-- 设置当前访问的数量+1</span></span><br><span class="line">    redis.call(<span class="string">&quot;INCRBY&quot;</span>, methodKey, <span class="number">1</span>)</span><br><span class="line">    <span class="comment">-- 设置过期时间</span></span><br><span class="line">    redis.call(<span class="string">&quot;EXPIRE&quot;</span>, methodKey, <span class="number">1</span>)</span><br><span class="line">    <span class="comment">-- 放行</span></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>AccessLimiter.java</li>
@@ -2174,6 +2174,7 @@
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiOperation(value = &quot;用户下单&quot;, notes = &quot;用户下单&quot;, httpMethod = &quot;POST&quot;)</span></span><br><span class="line"><span class="meta">@PostMapping(&quot;/create&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ServerResponse <span class="title">create</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="meta">@RequestBody</span> SubmitOrderBO submitOrderBO,</span></span></span><br><span class="line"><span class="function"><span class="params">    HttpServletRequest request,HttpServletResponse response)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span>&#123;</span><br><span class="line">        String orderTokenKey = <span class="string">&quot;ORDER_TOKEN_&quot;</span>+request.getSession().getId();</span><br><span class="line">        String lockKey = <span class="string">&quot;LOCK_KEY_&quot;</span>+request.getSession().getId();</span><br><span class="line">        <span class="comment">//防止并发操作导致Token出错</span></span><br><span class="line">        Rlock lock = redissonClinet.getLock(lockKey);</span><br><span class="line">        lock.lock(<span class="number">5</span>,TimeUnit.SECONDS);</span><br><span class="line">        String orderToken = redisOperator.get(orderTokenKey);</span><br><span class="line">        <span class="keyword">if</span>(orderToken.isBlank(orderToken)) <span class="keyword">throw</span> RunTimeException(<span class="string">&quot;OrderToken不存在&quot;</span>);</span><br><span class="line">        Boolean currentToken = orderToken.equals(submitOrderBO.getToken());</span><br><span class="line">        <span class="keyword">if</span>(!currentToken) <span class="keyword">throw</span> RunTimeException(<span class="string">&quot;OrderToken不正确&quot;</span>);</span><br><span class="line">        <span class="comment">//保证Token只被消费一次</span></span><br><span class="line">        redisOperator.del(orderTokenKey);</span><br><span class="line">    &#125;<span class="keyword">finally</span>(</span><br><span class="line">        lock.unlock();</span><br><span class="line">    )</span><br><span class="line">    ...<span class="comment">//业务代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p>进入结算页是访问<code>/getOrderToken</code>获取订单Token，在访问<code>/create</code>判断前端传入的和redis存储的是否相同，相同则允许进行后续业务并删除Token，实现幂等，防止多次下单操作。</p>
 
           
         
@@ -2345,59 +2346,36 @@
 <p>PC:phase-commit 的缩写，即阶段提交。</p>
 </blockquote>
 <p><strong>二阶段提交是一种强一致性设计</strong></p>
-<p>在两阶段提交中，主要涉及到两个角色，分别是协调者（事务管理器TM）和参与者（资源管理器Rm）。</p>
-<p>**准备阶段(第一阶段)**协调者会给各参与者发送准备命令，</p>
-<p>同步等待所有资源的响应之后就进入第二阶段即提交阶段（注意提交阶段不一定是提交事务，也可能是回滚事务）。假如在第一阶段所有参与者都返回准备成功，那么协调者则向所有参与者发送提交事务命令，然后等待所有事务都提交成功之后，返回事务执行成功。假如在第一阶段有一个参与者返回失败，那么协调者就会向所有参与者发送回滚事务的请求，即分布式事务执行失败。</p>
-<p>2PC 是一个<strong>同步阻塞协议</strong>，像第一阶段协调者会等待所有参与者响应才会进行下一步操作，当然第一阶段的<strong>协调者有超时机制</strong>，假设因为网络原因没有收到某参与者的响应或某参与者挂了，那么超时后就会判断事务失败，向所有参与者发送回滚命令。</p>
-<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1-%E4%BA%8C%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4.png" alt="image"></p>
-<p>**提交阶段(第二阶段)**提交失败的话有两种情况</p>
-<ul>
-<li><p>第一种是<strong>第二阶段执行的是回滚事务操作</strong>，那么答案是不断重试，直到所有参与者都回滚了，不然那些在第一阶段准备成功的参与者会一直阻塞着。</p>
+<p><strong>client</strong>向<strong>协调者</strong>（事务管理器TM）发送事务操作请求</p>
+<p>在两阶段提交中，主要涉及到两个角色，分别是事务管理器（transaction manager）和资源管理器（server）。</p>
+<p><strong>正常情况</strong>：</p>
+<p>**准备阶段(第一阶段)**：</p>
+<ol>
+<li><p>transaction manager会给各server发送准备命令</p>
 </li>
-<li><p>第二种是<strong>第二阶段执行的是提交事务操作</strong>，那么答案也是不断重试，因为有可能一些参与者的事务已经提交成功了，这个时候只有一条路，就是头铁往前冲，不断的重试，直到提交成功，到最后真的不行只能人工介入处理。</p>
+<li><p>各个server开启本地事务，执行sql语句但不提交事务，向transaction manager发送成功ack</p>
 </li>
-</ul>
-<p>第二阶段协调者的没法超时，所以只能不断重试！</p>
-<p><strong>事实上2PC（两阶段提交）只解决了各个事务的原子性问题，随之也带来了很多的问题。</strong></p>
-<ul>
-<li><p><strong>单点故障问题</strong></p>
-<ul>
-<li>假设协调者在<strong>发送准备命令之前</strong>挂了，还行等于事务还没开始。</li>
-<li>假设协调者在<strong>发送准备命令之后</strong>挂了，这就不太行了，有些参与者等于都执行了处于事务资源锁定的状态。不仅事务执行不下去，还会因为锁定了一些公共资源而阻塞系统其它操作。</li>
-<li>假设协调者在<strong>发送回滚事务命令之前</strong>挂了，那么事务也是执行不下去，且在第一阶段那些准备成功参与者都阻塞着。</li>
-<li>假设协调者在<strong>发送回滚事务命令之后</strong>挂了，这个还行，至少命令发出去了，很大的概率都会回滚成功，资源都会释放。但是如果出现网络分区问题，某些参与者将因为收不到命令而阻塞着。</li>
-<li>假设协调者在<strong>发送提交事务命令之前</strong>挂了，这个不行，傻了！这下是所有资源都阻塞着。</li>
-<li>假设协调者在<strong>发送提交事务命令之后</strong>挂了，这个还行，也是至少命令发出去了，很大概率都会提交成功，然后释放资源，但是如果出现网络分区问题某些参与者将因为收不到命令而阻塞着。</li>
-</ul>
-</li>
-<li><p>协调者故障，通过选举得到新协调者</p>
+</ol>
+<p>**提交阶段(第二阶段)**：</p>
+<ol start="2">
+<li>transaction manager根据第一阶段的情况会给各server发送commit命令或rollback命令</li>
+<li>只有各个server都成功执行commit并且返回给transaction manager成功，transaction manager才会给client反馈成功</li>
+</ol>
+<p><strong>异常情况</strong>：</p>
+<p>**准备阶段(第一阶段)**：正常执行</p>
+<p>**提交阶段(第二阶段)**：server1正常执行commit命令并返回ack，server2未收到commit命令或执行commit命令过慢甚至出错，导致一段时间内server2和server1不同步，会导致server2被添加排它锁造成阻塞，无法读操作。</p>
 <blockquote>
-<p>因为协调者单点问题，因此我们可以通过选举等操作选出一个新协调者来顶替。</p>
+<p>2PC 是一个<strong>同步阻塞协议</strong>，像第一阶段transaction manager会等待所有server响应才会进行下一步操作，当然第一阶段的<strong>transaction manager有超时机制</strong>，假设因为网络原因没有收到某参与者的响应或某参与者挂了，那么超时后就会判断事务失败，向所有参与者发送回滚命令。</p>
 </blockquote>
-<p>如果处于第一阶段，其实影响不大都回滚好了，在第一阶段事务肯定还没提交。</p>
-<p>如果处于第二阶段:</p>
-<p>假设参与者都没挂，此时新协调者可以向所有参与者确认它们自身情况来推断下一步的操作。</p>
-<p>假设有个别参与者挂了 ,比如协调者发送了回滚命令，此时第一个参与者收到了并执行，然后协调者和第一个参与者都挂了。此时其他参与者都没收到请求，然后新协调者来了，它询问其他参与者都说OK，但它不知道挂了的那个参与者的执行情况。问题其实就出在<strong>每个参与者自身的状态只有自己和协调者知道</strong>，因此新协调者无法通过在场的参与者的状态推断出挂了的参与者是什么情况。</p>
-<p>不过在实现的时候我们可以灵活的让协调者将自己发过的请求在哪个地方记一下，也就是日志记录，这样新协调者来的时候不就知道此时该不该发了?(就算协调者知道自己该发提交请求，那么在参与者也一起挂了的情况下没用，因为你不知道参与者在挂之前有没有提交事务)</p>
-<p>如果参与者在挂之前事务提交成功，新协调者确定存活着的参与者都没问题，那肯定得向其他参与者发送提交事务命令才能<strong>保证数据一致</strong>。</p>
-<p>如果参与者在挂之前事务还未提交成功，参与者恢复了之后数据是回滚的，此时协调者必须是向其他参与者发送回滚事务命令才能保持<strong>事务的一致</strong>。</p>
-</li>
-</ul>
+<p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1-%E4%BA%8C%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4.png" alt="image"></p>
 <h3 id="具体实现方式"><a href="#具体实现方式" class="headerlink" title="具体实现方式"></a>具体实现方式</h3><p> Java 中的 JTA：它是基于XA规范实现的事务接口，基于数据库的 XA 规范来实现的 2PC（Atomikos）</p>
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>2PC 是一种<strong>尽量保证强一致性</strong>的分布式事务，因此它是<strong>同步阻塞</strong>的，而同步阻塞就导致长久的资源锁定问题，<strong>总体而言效率低</strong>，并且存在<strong>单点故障</strong>问题，在极端条件下存在<strong>数据不一致</strong>的风险。</p>
 <p>2PC 适用于<strong>数据库层面的分布式事务场景</strong>，一台服务配置多数据源实现事务，而我们业务需求有时候不仅仅关乎数据库，也有可能是上传一张图片或者发送一条短信。</p>
 <h2 id="3PC（三阶段提交）-强一致"><a href="#3PC（三阶段提交）-强一致" class="headerlink" title="3PC（三阶段提交）[强一致]"></a>3PC（三阶段提交）[强一致]</h2><p>3PC 包含了三个阶段，分别是<strong>准备阶段、预提交阶段和提交阶段</strong>，对应的英文就是：<code>CanCommit、PreCommit 和 DoCommit</code>。</p>
 <p>3PC 的准备阶段协调者只是询问参与者的自身状况，比如你现在还好吗？负载重不重？这类的。而预提交阶段就是和 2PC 的准备阶段一样，除了事务的提交该做的都做了。</p>
 <p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E4%BA%8B%E5%8A%A1/3PC.png"></p>
-<p>不管哪一个阶段有参与者返回失败都会宣布事务失败，这和 2PC 是一样的（当然到最后的提交阶段和 2PC 一样只要是提交请求就只能不断重试）。</p>
 <p><strong>准备阶段的变更成不会直接执行事务</strong>，而是会先去询问此时的参与者是否有条件接这个事务，因此<strong>不会一来就干活直接锁资源</strong>，使得在某些资源不可用的情况下所有参与者都阻塞着。</p>
 <p><strong>预提交阶段的引入起到了一个统一状态的作用</strong>，它像一道栅栏，表明在预提交阶段前所有参与者其实还未都回应，在预处理阶段表明所有参与者都已经回应了。</p>
-<h3 id="相比2PC，3PC引入超时机制"><a href="#相比2PC，3PC引入超时机制" class="headerlink" title="相比2PC，3PC引入超时机制"></a>相比2PC，3PC引入超时机制</h3><blockquote>
-<p>2PC 是同步阻塞的，协调者挂在提交请求还未发出去的时候是最伤的，所有参与者都已经锁定资源并且阻塞等待着。</p>
-</blockquote>
-<p><strong>如果是等待提交命令超时，那么参与者就会提交事务了</strong>，因为都到了这一阶段了大概率是提交的，</p>
-<p><strong>如果是等待预提交命令超时，那该干啥就干啥了，反正本来啥也没干</strong>。</p>
-<p>然而超时机制也会带来数据不一致的问题，比如在等待提交命令时候超时了，参与者默认执行的是提交事务操作，但是<strong>有可能执行的是回滚操作，这样一来数据就不一致了</strong>。当然 3PC 协调者超时还是在的。</p>
 <h3 id="3PC-的引入目的"><a href="#3PC-的引入目的" class="headerlink" title="3PC 的引入目的"></a>3PC 的引入目的</h3><blockquote>
 <p> 为了解决提交阶段 2PC 协调者和某参与者都挂了之后新选举的协调者不知道当前应该提交还是回滚的问题</p>
 </blockquote>
@@ -2405,7 +2383,6 @@
 <p>所以说 3PC 就是通过引入预提交阶段来使得参与者之间的状态得到统一，也就是留了一个阶段让大家同步一下。</p>
 <p>但是这也只能让协调者知道该如果做，但不能保证这样做一定对，这其实和上面 2PC 分析一致，因为挂了的参与者到底有没有执行事务无法断定。</p>
 <p>所以说 3PC 通过预提交阶段可以减少故障恢复时候的复杂性，但是不能保证数据一致，除非挂了的那个参与者恢复。</p>
-<h3 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h3><p>3PC 相对于 2PC 做了一定的改进：引入了参与者超时机制，并且增加了预提交阶段使得故障恢复之后协调者的决策复杂度降低，但整体的交互过程更长了，性能有所下降，并且还是会存在数据不一致问题。所以 2PC 和 3PC 都不能保证数据100%一致，因此一般都需要有定时扫描补偿机制。 3PC 没有找到具体的实现，所以认为 3PC 只是纯的理论上的东西，而且可以看到相比于 2PC 它是做了一些努力但是效果甚微，所以只做了解即可。</p>
 <h2 id="补偿事务（TCC）-补偿性事务思想"><a href="#补偿事务（TCC）-补偿性事务思想" class="headerlink" title="补偿事务（TCC）[补偿性事务思想]"></a>补偿事务（TCC）[补偿性事务思想]</h2><blockquote>
 <p>适用的范围更广，在业务层面实现，因此对业务的侵入性较大，每一个操作都需要实现对应的三个方法。</p>
 </blockquote>
@@ -2427,8 +2404,7 @@
 <p>相对于 2PC、3PC ，TCC 适用的范围更大，但是开发量也更大，毕竟都在业务上实现，而且有时候你会发现这三个方法还真不好写。不过也因为是在业务上实现的，所以<strong>TCC可以跨数据库、跨不同的业务系统来实现事务</strong>。</p>
 <h3 id="example"><a href="#example" class="headerlink" title="example"></a>example</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AccountService</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> AccountAMapper accountAMapper;</span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> AccountBMapper accountBMapper;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Transactional(transactionManager = &quot;tm131&quot;,rollbackFor = Exception.class)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">transferAccount</span><span class="params">()</span></span>&#123;</span><br><span class="line">        AccountA accountA = accountAMapper.selectByPrimaryKey(<span class="number">1</span>);</span><br><span class="line">        accountA.setBalance(accountA.getBalance().subtract(<span class="keyword">new</span> BigDecimal(<span class="number">200</span>)));</span><br><span class="line">        accountAMapper.updateByPrimaryKey(accountA);</span><br><span class="line"></span><br><span class="line">        AccountB accountB = accountBMapper.selectByPrimaryKey(<span class="number">2</span>);</span><br><span class="line">        accountB.setBalance(accountB.getBalance().add(<span class="keyword">new</span> BigDecimal(<span class="number">200</span>)));</span><br><span class="line">        accountBMapper.updateByPrimaryKey(accountB);</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            <span class="keyword">int</span> i = <span class="number">1</span>/<span class="number">0</span>;</span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            <span class="keyword">try</span>&#123;</span><br><span class="line">                AccountB accountb = accountBMapper.selectByPrimaryKey(<span class="number">2</span>);</span><br><span class="line">                accountb.setBalance(accountb.getBalance().subtract(<span class="keyword">new</span> BigDecimal(<span class="number">200</span>)));</span><br><span class="line">                accountBMapper.updateByPrimaryKey(accountb);</span><br><span class="line">            &#125;<span class="keyword">catch</span> (Exception e1)&#123;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">throw</span> e;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
-
+<p><strong>严选、阿里、蚂蚁金服自己封装的DTX</strong></p>
 <h2 id="本地消息表-最终一致性"><a href="#本地消息表-最终一致性" class="headerlink" title="本地消息表[最终一致性]"></a>本地消息表[最终一致性]</h2><p>本地消息表其实就是利用了 <strong>各系统本地的事务</strong>来实现分布式事务。</p>
 <p>本地消息表顾名思义就是会有一张存放本地消息的表，一般都是放在数据库中，然后在执行业务的时候 <strong>将业务的执行和将消息放入消息表中的操作放在同一个事务中</strong>，这样就能保证消息放入本地表中业务肯定是执行成功的。</p>
 <p>然后再去调用下一个操作，如果下一个操作调用成功了好说，消息表的消息状态可以直接改成已成功。</p>
@@ -2456,7 +2432,7 @@
 <li>原理、流程与本地消息表类似</li>
 <li>不同点：本地消息表改为MQ，定时任务改为MQ的消费者</li>
 </ul>
-<p>RocketMQ中实现了分布式事务，实际上是对本地消息表的一个封装，将本地消息表移动到了MQ内部。</p>
+<h3 id="RocketMQ中实现了分布式事务"><a href="#RocketMQ中实现了分布式事务" class="headerlink" title="RocketMQ中实现了分布式事务"></a>RocketMQ中实现了分布式事务</h3><p>RocketMQ中实现了分布式事务，实际上是对本地消息表的一个封装，将本地消息表移动到了MQ内部。</p>
 <p><img src="https://user-gold-cdn.xitu.io/2019/9/6/16d0588ae2844970?imageView2/0/w/1280/h/960/ignore-error/1" alt="image"></p>
 <ol>
 <li>业务系统1操作数据，将数据保存到DB1，另外写一条消息存入消息队列</li>
@@ -2473,7 +2449,24 @@
 <li>如果是 RollBack 那么订阅方收不到这条消息，等于事务就没执行过。</li>
 </ol>
 <p>MQ事务是对本地消息表的一层封装，将本地消息表移动到了MQ内部，所以也是基于BASE理论，是最终一致性模式，对强一致性要求不那么高的事务适用，同时MQ事务将整个流程异步化了，也非常适合在高并发情况下使用。</p>
-<ul>
+<h3 id="RibbtMQ实现分布式业务"><a href="#RibbtMQ实现分布式业务" class="headerlink" title="RibbtMQ实现分布式业务"></a>RibbtMQ实现分布式业务</h3><h4 id="核心5个概念"><a href="#核心5个概念" class="headerlink" title="核心5个概念:"></a>核心5个概念:</h4><ol>
+<li>Queue: 真正存储数据的地方</li>
+<li>Exchange: 接收请求，转存数据</li>
+<li>Bind: 收到请求后存储到哪里</li>
+<li>消息生产者:发送数据的应用</li>
+<li>消息消费者: 取出数据处理的应用</li>
+</ol>
+<h4 id="MQ实现分布式业务要求"><a href="#MQ实现分布式业务要求" class="headerlink" title="MQ实现分布式业务要求"></a>MQ实现分布式业务要求</h4><ol>
+<li><p>可靠生产:保证消息一定要发送到Rabitmq服务</p>
+</li>
+<li><p>可靠消费:保证消息取出来一定正确消费掉</p>
+</li>
+<li><p>最终使多方数据达到一致。</p>
+</li>
+</ol>
+<h4 id="步骤1-可靠的消息生产记录消息发送"><a href="#步骤1-可靠的消息生产记录消息发送" class="headerlink" title="步骤1- 可靠的消息生产记录消息发送"></a>步骤1- 可靠的消息生产记录消息发送</h4><p>在同一事务中，<strong>增加一个记录表的操作</strong>, 记录每一条发往MQ的数据以及它的发送状态</p>
+<h4 id="步骤2-可靠消息生产-修改消息发送状态"><a href="#步骤2-可靠消息生产-修改消息发送状态" class="headerlink" title="步骤2- 可靠消息生产(修改消息发送状态)"></a>步骤2- 可靠消息生产(修改消息发送状态)</h4><p>利用RabbitMQ事务发布确认机制(confirm)，开启后，MQ准确受理消息会返回回执<br>根据ACK</p>
+<h3 id="MQ实现分布式业务的优缺点"><a href="#MQ实现分布式业务的优缺点" class="headerlink" title="MQ实现分布式业务的优缺点"></a>MQ实现分布式业务的优缺点</h3><ul>
 <li><p>优点：不依赖定时任务，基于MQ更高效 , 适用于一些对时间不敏感的业务。</p>
 </li>
 <li><p>适合于公司内部系统</p>

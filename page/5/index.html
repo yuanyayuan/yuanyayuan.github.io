@@ -2574,7 +2574,7 @@
 <p>（2）崩溃恢复模式：Leader发生崩溃时，如何恢复</p>
 <h3 id="ZAB协议工作原理"><a href="#ZAB协议工作原理" class="headerlink" title="ZAB协议工作原理"></a>ZAB协议工作原理</h3><p>1、消息广播模式：</p>
 <p>（1）Leader将客户端的request转化成一个Proposal（提议）</p>
-<p>（2）Leader为每一个Follower准备了一个FIFO队列，并把Proposal发送到队列上。‘</p>
+<p>（2）Leader为每一个Follower准备了一个FIFO队列，并把Proposal发送到队列上。</p>
 <p>（3）leader若收到follower的半数以上ACK反馈</p>
 <p>（4）Leader向所有的follower发送commit。</p>
 <p>2、崩溃恢复模式</p>
