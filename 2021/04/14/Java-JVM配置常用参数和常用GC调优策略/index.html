@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="linux查看Java程序运行 jps :虚拟机进程状态工具   1jps -v | grep pid   jinfo：  1jinfo -flages pid   jstat  1jsata -gcutil pid  S0 JVM 配置常用参数 Java内存区域常见配置参数概览 堆参数； 回收器参数； 项目中常用配置； 常用组合；  你们生产环境线上服务器的 JVM 启动参数配置是什么样的？12">
+<meta name="description" content="linux查看Java程序运行 jps :虚拟机进程状态工具   1jps -v | grep pid   jinfo：  1jinfo -flages pid   jstat  1jsata -gcutil pid  S0：新生代Survivor space 0区已使用空间的百分比 S0：新生代Survivor space 1区已使用空间的百分比 E： JVM 配置常用参数 Java内存区域常见">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java-JVM配置常用参数和常用GC调优策略">
 <meta property="og:url" content="https://yuanyayuan.github.io/2021/04/14/Java-JVM%E9%85%8D%E7%BD%AE%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0%E5%92%8C%E5%B8%B8%E7%94%A8GC%E8%B0%83%E4%BC%98%E7%AD%96%E7%95%A5/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="linux查看Java程序运行 jps :虚拟机进程状态工具   1jps -v | grep pid   jinfo：  1jinfo -flages pid   jstat  1jsata -gcutil pid  S0 JVM 配置常用参数 Java内存区域常见配置参数概览 堆参数； 回收器参数； 项目中常用配置； 常用组合；  你们生产环境线上服务器的 JVM 启动参数配置是什么样的？12">
+<meta property="og:description" content="linux查看Java程序运行 jps :虚拟机进程状态工具   1jps -v | grep pid   jinfo：  1jinfo -flages pid   jstat  1jsata -gcutil pid  S0：新生代Survivor space 0区已使用空间的百分比 S0：新生代Survivor space 1区已使用空间的百分比 E： JVM 配置常用参数 Java内存区域常见">
 <meta property="og:locale">
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E5%B8%B8%E8%A7%81%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0.png">
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/media/pictures/jvm/java_jvm_heap_parameters.png">
@@ -92,7 +92,7 @@
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/media/pictures/jvm/java_jvm_suggest_parameters.png">
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/media/pictures/jvm/java_jvm_compose_garbage_collector.png">
 <meta property="article:published_time" content="2021-04-14T13:32:31.000Z">
-<meta property="article:modified_time" content="2021-05-20T08:25:11.974Z">
+<meta property="article:modified_time" content="2021-05-20T08:31:38.050Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="面试">
@@ -375,7 +375,9 @@
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jsata -gcutil pid</span><br></pre></td></tr></table></figure>
 
-<p>S0</p>
+<p>S0：新生代Survivor space 0区已使用空间的百分比</p>
+<p>S0：新生代Survivor space 1区已使用空间的百分比</p>
+<p>E：</p>
 <h1 id="JVM-配置常用参数"><a href="#JVM-配置常用参数" class="headerlink" title="JVM 配置常用参数"></a>JVM 配置常用参数</h1><ol>
 <li>Java内存区域常见配置参数概览</li>
 <li>堆参数；</li>
