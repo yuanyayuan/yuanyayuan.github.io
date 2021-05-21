@@ -721,6 +721,14 @@
 
 <p>这种时候，我们的代码肯定会报错，因为在加载的时候其实是找到了rt.jar中的String.class，然后发现这也没有main方法</p>
 <h3 id="自定义类加载器"><a href="#自定义类加载器" class="headerlink" title="自定义类加载器"></a>自定义类加载器</h3><p>除了 BootstrapClassLoader 其他类加载器均由 Java 实现且全部继承自java.lang.ClassLoader。如果我们要自定义自己的类加载器，很明显需要继承 ClassLoader。</p>
+<h1 id="制约程序性能的根源"><a href="#制约程序性能的根源" class="headerlink" title="制约程序性能的根源"></a>制约程序性能的根源</h1><h2 id="常用的性能评估指标"><a href="#常用的性能评估指标" class="headerlink" title="常用的性能评估指标"></a>常用的性能评估指标</h2><ul>
+<li>并发：同一时间多少请求访问</li>
+<li>TPS：1s中多少写操作</li>
+<li>QPS：1s中多少读操作</li>
+<li>耗时：端到端耗时，服务端耗时、应用程序耗时</li>
+<li>95线：95%的请求落在什么范围内</li>
+<li>99线：99%的请求落在什么范围内</li>
+</ul>
 <h1 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h1><h2 id="CPU占用过高"><a href="#CPU占用过高" class="headerlink" title="CPU占用过高"></a>CPU占用过高</h2><ol>
 <li><code>top</code>查看当前CPU情况，找到占用CPU过高的进程PID，如<code>PID=123</code></li>
 <li><code>top -H -p123</code>找出两个CPU占用较高的线程，记录下来PID，如<code>PID=2345,PID=3456</code>转为十六进制</li>
@@ -2310,7 +2318,7 @@
 <li>ARQ协议： 也是为了实现可靠传输的，它的基本原理就是每发完一个分组就停止发送，等待对方确认。在收到确认后再发下一个分组。</li>
 <li>超时重传： 当 TCP 发出一个段后，它启动一个定时器，等待目的端确认收到这个报文段。如果不能及时收到一个确认，将重发这个报文段。</li>
 </ol>
-<h1 id="Http与Https的区别："><a href="#Http与Https的区别：" class="headerlink" title="Http与Https的区别："></a>Http与Https的区别：</h1><ol>
+<h1 id="Http与Https的区别"><a href="#Http与Https的区别" class="headerlink" title="Http与Https的区别"></a>Http与Https的区别</h1><ol>
 <li>HTTP 的URL 以http:// 开头，而HTTPS 的URL 以https:// 开头</li>
 <li>HTTP 是不安全的，而 HTTPS 是安全的</li>
 <li>HTTP 标准端口是80 ，而 HTTPS 的标准端口是443</li>
@@ -2390,6 +2398,19 @@
 <p>URI的作用像身份证号一样，URL的作用更像家庭住址一样。URL是一种具体的URI，它不仅唯一标识资源，而且还提供了定位该资源的信息。</p>
 <h1 id="Socket"><a href="#Socket" class="headerlink" title="Socket"></a>Socket</h1><p>Socket是对TCp/IP协议的抽象，是操作系统对外开放的接口</p>
 <h2 id="Socket通信流程"><a href="#Socket通信流程" class="headerlink" title="Socket通信流程"></a>Socket通信流程</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E7%BD%91%E7%BB%9C/Socket.png"></p>
+<h1 id="Select和epoll的区别"><a href="#Select和epoll的区别" class="headerlink" title="Select和epoll的区别"></a>Select和epoll的区别</h1><h2 id="Select模型"><a href="#Select模型" class="headerlink" title="Select模型"></a>Select模型</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/select%E6%A8%A1%E5%9E%8B.png" style="zoom: 33%;" />
+
+<h3 id="缺陷"><a href="#缺陷" class="headerlink" title="缺陷"></a>缺陷</h3><ol>
+<li>1024数组个数的限制</li>
+<li>遍历轮询触发找到真正有信息号的socket连接</li>
+</ol>
+<h2 id="epoll模型"><a href="#epoll模型" class="headerlink" title="epoll模型"></a>epoll模型</h2><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Java%E5%9F%BA%E7%A1%80/epoll%E6%A8%A1%E5%9E%8B.png" style="zoom: 50%;" />
+
+<h3 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h3><ol>
+<li>没有1024数组个数限制</li>
+<li>遍历轮询触发找到真正有信号的socker连接</li>
+<li>异步回调的方式去执行handler操作</li>
+</ol>
 <h1 id="HTTP是不保存状态的协议-如何保存用户状态"><a href="#HTTP是不保存状态的协议-如何保存用户状态" class="headerlink" title="HTTP是不保存状态的协议,如何保存用户状态?"></a>HTTP是不保存状态的协议,如何保存用户状态?</h1><p>HTTP 是一种不保存状态，即无状态（stateless）协议。也就是说 HTTP 协议自身不对请求和响应之间的通信状态进行保存。那么我们保存用户状态呢？Session 机制的存在就是为了解决这个问题，Session 的主要作用就是通过服务端记录用户的状态。典型的场景是购物车，当你要添加商品到购物车的时候，系统不知道是哪个用户操作的，因为 HTTP 协议是无状态的。服务端给特定的用户创建特定的 Session 之后就可以标识这个用户并且跟踪这个用户了（一般情况下，服务器会在一定时间内保存这个 Session，过了时间限制，就会销毁这个Session）。在服务端保存 Session 的方法很多，最常用的就是内存和数据库(比如是使用内存数据库redis保存)。既然 Session 存放在服务器端。</p>
 <p>那么我们如何实现 Session 跟踪呢？大部分情况下，我们都是通过在 Cookie 中附加一个 Session ID 来方式来跟踪。Cookie 被禁用怎么办?最常用的就是利用 URL 重写把 Session ID 直接附加在URL路径的后面。</p>
 <h1 id="Cookie和Session"><a href="#Cookie和Session" class="headerlink" title="Cookie和Session"></a>Cookie和Session</h1><h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>HTTP 协议是一种无状态协议，即每次服务端接收到客户端的请求时，都是一个全新的请求，服务器并不知道客户端的历史请求记录；Session 和 Cookie 的主要目的就是为了弥补 HTTP 的无状态特性。</p>

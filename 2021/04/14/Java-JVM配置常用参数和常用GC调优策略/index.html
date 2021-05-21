@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="linux查看Java程序运行 jps :虚拟机进程状态工具   1jps -v | grep pid   jinfo：  1jinfo -flages pid   jstat  1jsata -gcutil pid  S0：新生代Survivor space 0区已使用空间的百分比 S0：新生代Survivor space 1区已使用空间的百分比 E： JVM 配置常用参数 Java内存区域常见">
+<meta name="description" content="linux查看Java程序运行 jps :虚拟机进程状态工具   1jps -v | grep pid   jinfo：JVM参数信息工具  1jinfo -flages pid   jstat：查看虚拟机各种运算状态  1jsata -gcutil pid  S0：新生代Survivor space 0区已使用空间的百分比 S0：新生代Survivor space 1区已使用空间的百分比 E：新">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java-JVM配置常用参数和常用GC调优策略">
 <meta property="og:url" content="https://yuanyayuan.github.io/2021/04/14/Java-JVM%E9%85%8D%E7%BD%AE%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0%E5%92%8C%E5%B8%B8%E7%94%A8GC%E8%B0%83%E4%BC%98%E7%AD%96%E7%95%A5/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="linux查看Java程序运行 jps :虚拟机进程状态工具   1jps -v | grep pid   jinfo：  1jinfo -flages pid   jstat  1jsata -gcutil pid  S0：新生代Survivor space 0区已使用空间的百分比 S0：新生代Survivor space 1区已使用空间的百分比 E： JVM 配置常用参数 Java内存区域常见">
+<meta property="og:description" content="linux查看Java程序运行 jps :虚拟机进程状态工具   1jps -v | grep pid   jinfo：JVM参数信息工具  1jinfo -flages pid   jstat：查看虚拟机各种运算状态  1jsata -gcutil pid  S0：新生代Survivor space 0区已使用空间的百分比 S0：新生代Survivor space 1区已使用空间的百分比 E：新">
 <meta property="og:locale">
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E5%B8%B8%E8%A7%81%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0.png">
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/media/pictures/jvm/java_jvm_heap_parameters.png">
@@ -92,7 +92,7 @@
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/media/pictures/jvm/java_jvm_suggest_parameters.png">
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/media/pictures/jvm/java_jvm_compose_garbage_collector.png">
 <meta property="article:published_time" content="2021-04-14T13:32:31.000Z">
-<meta property="article:modified_time" content="2021-05-20T08:31:38.050Z">
+<meta property="article:modified_time" content="2021-05-20T10:16:10.958Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="面试">
@@ -366,18 +366,37 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps -v | grep pid</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li>jinfo：</li>
+<li>jinfo：JVM参数信息工具</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jinfo -flages pid</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li>jstat</li>
+<li>jstat：查看虚拟机各种运算状态</li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jsata -gcutil pid</span><br></pre></td></tr></table></figure>
 
 <p>S0：新生代Survivor space 0区已使用空间的百分比</p>
 <p>S0：新生代Survivor space 1区已使用空间的百分比</p>
-<p>E：</p>
+<p>E：新生代已使用空间的百分比</p>
+<p>O：老年代已使用空间的百分比</p>
+<p>M：元数据已使用空间的百分比</p>
+<p>CCS：压缩类空间利用率百分比</p>
+<p>YGC：从应用程序启动到当前，发生Yang GC的次数</p>
+<p>YGCT：从应用程序启动到当前，Yang GC所用的时间</p>
+<p>FGC：从应用程序启动到当前，发生Full GC的次数</p>
+<p>FGCT：从应用程序启动到当前，Full GC所用的时间</p>
+<p>GCT：从应用程序启动到当前，用于垃圾回收总时间</p>
+<ul>
+<li>jstack：线程快照工具</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jstack -l pid</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>jmap：HeapDump工具</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jmap -head pid 查看堆信息</span><br><span class="line">jamp -dump:format-b,file&#x3D;heapDump.hprof pid 导出堆文件并用jhat查看</span><br><span class="line">jhat -port 8899 heapDump.hprof 浏览器访问：http:&#x2F;&#x2F;ip:8899</span><br></pre></td></tr></table></figure>
+
+<h2 id="使用工具查看"><a href="#使用工具查看" class="headerlink" title="使用工具查看"></a>使用工具查看</h2><p>jprofiler</p>
 <h1 id="JVM-配置常用参数"><a href="#JVM-配置常用参数" class="headerlink" title="JVM 配置常用参数"></a>JVM 配置常用参数</h1><ol>
 <li>Java内存区域常见配置参数概览</li>
 <li>堆参数；</li>
@@ -385,7 +404,7 @@
 <li>项目中常用配置；</li>
 <li>常用组合；</li>
 </ol>
-<h1 id="你们生产环境线上服务器的-JVM-启动参数配置是什么样的？"><a href="#你们生产环境线上服务器的-JVM-启动参数配置是什么样的？" class="headerlink" title="你们生产环境线上服务器的 JVM 启动参数配置是什么样的？"></a>你们生产环境线上服务器的 JVM 启动参数配置是什么样的？</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">-Xms4096m </span><br><span class="line">-Xmx4096m </span><br><span class="line">-Xmn2048m </span><br><span class="line">-Xss512k </span><br><span class="line">-XX:MetaspaceSize&#x3D;384m </span><br><span class="line">-XX:MaxMetaspaceSize&#x3D;384m </span><br><span class="line">-XX:+UseConcMarkSweepGC </span><br><span class="line">-XX:+UseParNewGC </span><br><span class="line">-XX:CMSFullGCsBeforeCompaction&#x3D;5 </span><br><span class="line">-XX:+UseCMSCompactAtFullCollection </span><br><span class="line">-XX:+DisableExplicitGC </span><br><span class="line">-verbose:gc </span><br><span class="line">-XX:+PrintGCDetails </span><br><span class="line">-XX:+PrintGCTimeStamps </span><br><span class="line">-Xloggc:&#x2F;home&#x2F;admin&#x2F;logs&#x2F;gc.log </span><br><span class="line">-XX:+HeapDumpOnOutOfMemoryError </span><br><span class="line">-XX:HeapDumpPath&#x3D;&#x2F;home&#x2F;admin&#x2F;logs </span><br></pre></td></tr></table></figure>
+<h2 id="你们生产环境线上服务器的-JVM-启动参数配置是什么样的？"><a href="#你们生产环境线上服务器的-JVM-启动参数配置是什么样的？" class="headerlink" title="你们生产环境线上服务器的 JVM 启动参数配置是什么样的？"></a>你们生产环境线上服务器的 JVM 启动参数配置是什么样的？</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">-Xms4096m </span><br><span class="line">-Xmx4096m </span><br><span class="line">-Xmn2048m </span><br><span class="line">-Xss512k </span><br><span class="line">-XX:MetaspaceSize&#x3D;384m </span><br><span class="line">-XX:MaxMetaspaceSize&#x3D;384m </span><br><span class="line">-XX:+UseConcMarkSweepGC </span><br><span class="line">-XX:+UseParNewGC </span><br><span class="line">-XX:CMSFullGCsBeforeCompaction&#x3D;5 </span><br><span class="line">-XX:+UseCMSCompactAtFullCollection </span><br><span class="line">-XX:+DisableExplicitGC </span><br><span class="line">-verbose:gc </span><br><span class="line">-XX:+PrintGCDetails </span><br><span class="line">-XX:+PrintGCTimeStamps </span><br><span class="line">-Xloggc:&#x2F;home&#x2F;admin&#x2F;logs&#x2F;gc.log </span><br><span class="line">-XX:+HeapDumpOnOutOfMemoryError </span><br><span class="line">-XX:HeapDumpPath&#x3D;&#x2F;home&#x2F;admin&#x2F;logs </span><br></pre></td></tr></table></figure>
 
 <h2 id="Java内存区域常见配置参数概览"><a href="#Java内存区域常见配置参数概览" class="headerlink" title="Java内存区域常见配置参数概览"></a>Java内存区域常见配置参数概览</h2><p><img src="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E5%B8%B8%E8%A7%81%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0.png" alt="img"></p>
 <h2 id="堆参数"><a href="#堆参数" class="headerlink" title="堆参数"></a>堆参数</h2><p><img src="https://snailclimb.gitee.io/javaguide/media/pictures/jvm/java_jvm_heap_parameters.png" alt="堆参数"></p>
@@ -396,54 +415,25 @@
 </blockquote>
 <p><img src="https://snailclimb.gitee.io/javaguide/media/pictures/jvm/java_jvm_suggest_parameters.png" alt="项目中垃圾回收器常用配置"></p>
 <h2 id="常用组合"><a href="#常用组合" class="headerlink" title="常用组合"></a>常用组合</h2><p><img src="https://snailclimb.gitee.io/javaguide/media/pictures/jvm/java_jvm_compose_garbage_collector.png" alt="垃圾回收器常用组合"></p>
-<h2 id="是否进行过-GC-优化？如何优化？"><a href="#是否进行过-GC-优化？如何优化？" class="headerlink" title="是否进行过 GC 优化？如何优化？"></a>是否进行过 GC 优化？如何优化？</h2><ol>
-<li>评估现状及设定目标。评估是否需要调优及调优的目标优先级。比如说降低 Full GC 的的执行时间，降低 Young GC 的执行时间等等；</li>
-<li>调优。根据 gc 日志等找到优化空间，比如说 Full GC 执行时间太长可能是因为老年代太大了，看能否调整为并行 GC 或者增加并行 GC 的线程数或者减少老年代大小等；</li>
-<li>评估效果。根据 gc 日志、jstat 等命令、Mat/Visual VM 等工具来监控调优效果；</li>
-<li>细微调整。 根据评估效果来进一步调整相关参数。</li>
+<h2 id="是否进行过-GC-优化？如何优化？"><a href="#是否进行过-GC-优化？如何优化？" class="headerlink" title="是否进行过 GC 优化？如何优化？"></a>是否进行过 GC 优化？如何优化？</h2><h3 id="内存大小取舍"><a href="#内存大小取舍" class="headerlink" title="内存大小取舍"></a>内存大小取舍</h3><h4 id="将java堆最大值与初始java堆最小值两个参数配置成相同的值，其目的防止扩容。"><a href="#将java堆最大值与初始java堆最小值两个参数配置成相同的值，其目的防止扩容。" class="headerlink" title="将java堆最大值与初始java堆最小值两个参数配置成相同的值，其目的防止扩容。"></a>将java堆最大值与初始java堆最小值两个参数配置成相同的值，其目的防止扩容。</h4><p>–Xmx：指定java堆最大值（默认值是物理内存的1/4(&lt;1GB)）</p>
+<p>–Xms：初始java堆最小值（默认值是物理内存的1/64(&lt;1GB))</p>
+<ol>
+<li>扩大内存可以更少的触发gc</li>
+<li>内存太大触发gc时候停顿时间会长</li>
 </ol>
-<h2 id="常用-GC-调优策略"><a href="#常用-GC-调优策略" class="headerlink" title="常用 GC 调优策略"></a>常用 GC 调优策略</h2><ol>
-<li>GC 调优原则；</li>
-<li>GC 调优目的；</li>
-<li>GC 调优策略；</li>
-</ol>
-<h2 id="GC-调优原则"><a href="#GC-调优原则" class="headerlink" title="GC 调优原则"></a>GC 调优原则</h2><p>在调优之前，我们需要记住下面的原则：</p>
-<blockquote>
-<p>多数的 Java 应用不需要在服务器上进行 GC 优化； 多数导致 GC 问题的 Java  应用，都不是因为我们参数设置错误，而是代码问题； 在应用上线之前，先考虑将机器的 JVM 参数设置到最优（最适合）； 减少创建对象的数量；  减少使用全局变量和大对象； GC 优化是到最后不得已才采用的手段； 在实际使用中，分析 GC 情况优化代码比优化 GC 参数要多得多。</p>
-</blockquote>
-<h2 id="GC-调优目的"><a href="#GC-调优目的" class="headerlink" title="GC 调优目的"></a>GC 调优目的</h2><p>将转移到老年代的对象数量降低到最小； 减少 GC 的执行时间。</p>
-<h2 id="GC-调优策略"><a href="#GC-调优策略" class="headerlink" title="GC 调优策略"></a>GC 调优策略</h2><p><strong>策略 1</strong></p>
-<p>将新对象预留在新生代，由于 Full GC 的成本远高于 Minor GC，因此尽可能将对象分配在新生代是明智的做法，实际项目中根据 GC 日志分析新生代空间大小分配是否合理，适当通过“-Xmn”命令调节新生代大小，最大限度降低新对象直接进入老年代的情况。</p>
-<p><strong>策略 2</strong></p>
-<p>大对象进入老年代，虽然大部分情况下，将对象分配在新生代是合理的。但是对于大对象这种做法却值得商榷，大对象如果首次在新生代分配可能会出现空间不足导致很多年龄不够的小对象被分配的老年代，破坏新生代的对象结构，可能会出现频繁的 full gc。因此，对于大对象，可以设置直接进入老年代（当然短命的大对象对于垃圾回收来说简直就是噩梦）。<code>-XX:PretenureSizeThreshold</code> 可以设置直接进入老年代的对象大小。</p>
-<p><strong>策略 3</strong></p>
-<p>合理设置进入老年代对象的年龄，<code>-XX:MaxTenuringThreshold</code> 设置对象进入老年代的年龄大小，减少老年代的内存占用，降低 full gc 发生的频率。</p>
-<p><strong>策略 4</strong></p>
-<p>设置稳定的堆大小，堆大小设置有两个参数：<code>-Xms</code> 初始化堆大小，<code>-Xmx</code> 最大堆大小。</p>
-<p><strong>策略5</strong></p>
-<p>注意： 如果满足下面的指标，<strong>则一般不需要进行 GC 优化：</strong></p>
-<blockquote>
-<p>MinorGC 执行时间不到50ms； Minor GC 执行不频繁，约10秒一次； Full GC 执行时间不到1s； Full GC 执行频率不算频繁，不低于10分钟1次。</p>
-</blockquote>
-<h3 id="调优具体操作"><a href="#调优具体操作" class="headerlink" title="调优具体操作"></a>调优具体操作</h3><h4 id="1-调整最大堆内存和最小堆内存"><a href="#1-调整最大堆内存和最小堆内存" class="headerlink" title="1 调整最大堆内存和最小堆内存"></a>1 调整最大堆内存和最小堆内存</h4><p>-Xmx –Xms：指定java堆最大值（默认值是物理内存的1/4(&lt;1GB)）和初始java堆最小值（默认值是物理内存的1/64(&lt;1GB))</p>
-<p>默认(MinHeapFreeRatio参数可以调整)空余堆内存小于40%时，JVM就会增大堆直到-Xmx的最大限制.，默认(MaxHeapFreeRatio参数可以调整)空余堆内存大于70%时，JVM会减少堆直到 -Xms的最小限制。简单点来说，你不停地往堆内存里面丢数据，等它剩余大小小于40%了，JVM就会动态申请内存空间不过会小于-Xmx，如果剩余大小大于70%，又会动态缩小不过不会小于–Xms。就这么简单</p>
-<p>开发过程中，通常会将 -Xms 与 -Xmx两个参数配置成相同的值，其目的是为了能够在java垃圾回收机制清理完堆区后不需要重新分隔计算堆区的大小而浪费资源。</p>
-<h4 id="2-调整新生代和老年代的比值"><a href="#2-调整新生代和老年代的比值" class="headerlink" title="2 调整新生代和老年代的比值"></a>2 调整新生代和老年代的比值</h4><p>-XX:NewRatio — 新生代（eden+2*Survivor）和老年代（不包含永久区）的比值</p>
-<p>例如：-XX:NewRatio=4，表示新生代:老年代=1:4，即新生代占整个堆的1/5。在Xms=Xmx并且设置了Xmn的情况下，该参数不需要进行设置。</p>
-<h4 id="3-调整Survivor区和Eden区的比值"><a href="#3-调整Survivor区和Eden区的比值" class="headerlink" title="3 调整Survivor区和Eden区的比值"></a>3 调整Survivor区和Eden区的比值</h4><p>-XX:SurvivorRatio（幸存代）— 设置两个Survivor区和eden的比值</p>
-<p>例如：8，表示两个Survivor:eden=2:8，即一个Survivor占年轻代的1/10</p>
-<h4 id="4-设置年轻代和老年代的大小"><a href="#4-设置年轻代和老年代的大小" class="headerlink" title="4 设置年轻代和老年代的大小"></a>4 设置年轻代和老年代的大小</h4><p>-XX:NewSize — 设置年轻代大小</p>
+<h4 id="XX-NewSize和-xxMaxNewSize两个参数配置成相同的值，其目的防止扩容。"><a href="#XX-NewSize和-xxMaxNewSize两个参数配置成相同的值，其目的防止扩容。" class="headerlink" title="-XX:NewSize和-xxMaxNewSize两个参数配置成相同的值，其目的防止扩容。"></a>-XX:NewSize和-xxMaxNewSize两个参数配置成相同的值，其目的防止扩容。</h4><p>-XX:NewSize — 设置年轻代大小</p>
 <p>-XX:MaxNewSize — 设置年轻代最大值</p>
-<p>可以通过设置不同参数来测试不同的情况，反正最优解当然就是官方的Eden和Survivor的占比为8:1:1，然后在刚刚介绍这些参数的时候都已经附带了一些说明，感兴趣的也可以看看。反正最大堆内存和最小堆内存如果数值不同会导致多次的gc，需要注意。</p>
-<h4 id="5-永久区的设置"><a href="#5-永久区的设置" class="headerlink" title="5 永久区的设置"></a>5 永久区的设置</h4><p>-XX:PermSize -XX:MaxPermSize</p>
-<p>初始空间（默认为物理内存的1/64）和最大空间（默认为物理内存的1/4）。也就是说，jvm启动时，永久区一开始就占用了PermSize大小的空间，如果空间还不够，可以继续扩展，但是不能超过MaxPermSize，否则会OOM。</p>
-<p>tips：如果堆空间没有用完也抛出了OOM，有可能是永久区导致的。堆空间实际占用非常少，但是永久区溢出 一样抛出OOM。</p>
-<h4 id="6-JVM的栈参数调优"><a href="#6-JVM的栈参数调优" class="headerlink" title="6 JVM的栈参数调优"></a>6 JVM的栈参数调优</h4><h5 id="调整每个线程栈空间的大小"><a href="#调整每个线程栈空间的大小" class="headerlink" title="调整每个线程栈空间的大小"></a>调整每个线程栈空间的大小</h5><p>可以通过-Xss：调整每个线程栈空间的大小</p>
-<p>JDK5.0以后每个线程堆栈大小为1M，以前每个线程堆栈大小为256K。在相同物理内存下,减小这个值能生成更多的线程。但是操作系统对一个进程内的线程数还是有限制的，不能无限生成，经验值在3000~5000左右</p>
-<h5 id="设置线程栈的大小"><a href="#设置线程栈的大小" class="headerlink" title="设置线程栈的大小"></a>设置线程栈的大小</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-XXThreadStackSize：</span><br><span class="line">    设置线程栈的大小(0 means use default stack size)</span><br></pre></td></tr></table></figure>
-
-
-<p>​    </p>
+<h4 id="Eden需要比Survivor尽可能大"><a href="#Eden需要比Survivor尽可能大" class="headerlink" title="Eden需要比Survivor尽可能大"></a>Eden需要比Survivor尽可能大</h4><p>防止多次触发young GC导致年龄快速增长到可以进入老年代</p>
+<h4 id="元空间不建议配置，交给JVM"><a href="#元空间不建议配置，交给JVM" class="headerlink" title="元空间不建议配置，交给JVM"></a>元空间不建议配置，交给JVM</h4><p>-XX:MetaspaceSize 元空间初始化空间大小</p>
+<p>-XX:MaxMetaspaceSize  元空间最大空间，默认没有限制</p>
+<h3 id="将转移到老年代的对象数量降低到最小-减少-GC-的执行时间"><a href="#将转移到老年代的对象数量降低到最小-减少-GC-的执行时间" class="headerlink" title="将转移到老年代的对象数量降低到最小(减少 GC 的执行时间)"></a>将转移到老年代的对象数量降低到最小(减少 GC 的执行时间)</h3><ul>
+<li><p>yong gc : 40ms内</p>
+</li>
+<li><p>major gc : stop the world时间和100ms内</p>
+</li>
+<li><p>full gc :  尽可能少，且时间在1s内</p>
+</li>
+</ul>
 
       
     </div>
@@ -639,7 +629,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#linux%E6%9F%A5%E7%9C%8BJava%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C"><span class="nav-number">1.</span> <span class="nav-text">linux查看Java程序运行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JVM-%E9%85%8D%E7%BD%AE%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">JVM 配置常用参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%A0%E4%BB%AC%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E7%BA%BF%E4%B8%8A%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84-JVM-%E5%90%AF%E5%8A%A8%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E6%98%AF%E4%BB%80%E4%B9%88%E6%A0%B7%E7%9A%84%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">你们生产环境线上服务器的 JVM 启动参数配置是什么样的？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E5%B8%B8%E8%A7%81%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0%E6%A6%82%E8%A7%88"><span class="nav-number">3.1.</span> <span class="nav-text">Java内存区域常见配置参数概览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E5%8F%82%E6%95%B0"><span class="nav-number">3.2.</span> <span class="nav-text">堆参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9E%E6%94%B6%E5%99%A8%E5%8F%82%E6%95%B0"><span class="nav-number">3.3.</span> <span class="nav-text">回收器参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">3.4.</span> <span class="nav-text">项目中常用配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%BB%84%E5%90%88"><span class="nav-number">3.5.</span> <span class="nav-text">常用组合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%AF%E5%90%A6%E8%BF%9B%E8%A1%8C%E8%BF%87-GC-%E4%BC%98%E5%8C%96%EF%BC%9F%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%EF%BC%9F"><span class="nav-number">3.6.</span> <span class="nav-text">是否进行过 GC 优化？如何优化？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8-GC-%E8%B0%83%E4%BC%98%E7%AD%96%E7%95%A5"><span class="nav-number">3.7.</span> <span class="nav-text">常用 GC 调优策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GC-%E8%B0%83%E4%BC%98%E5%8E%9F%E5%88%99"><span class="nav-number">3.8.</span> <span class="nav-text">GC 调优原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GC-%E8%B0%83%E4%BC%98%E7%9B%AE%E7%9A%84"><span class="nav-number">3.9.</span> <span class="nav-text">GC 调优目的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GC-%E8%B0%83%E4%BC%98%E7%AD%96%E7%95%A5"><span class="nav-number">3.10.</span> <span class="nav-text">GC 调优策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B0%83%E4%BC%98%E5%85%B7%E4%BD%93%E6%93%8D%E4%BD%9C"><span class="nav-number">3.10.1.</span> <span class="nav-text">调优具体操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E8%B0%83%E6%95%B4%E6%9C%80%E5%A4%A7%E5%A0%86%E5%86%85%E5%AD%98%E5%92%8C%E6%9C%80%E5%B0%8F%E5%A0%86%E5%86%85%E5%AD%98"><span class="nav-number">3.10.1.1.</span> <span class="nav-text">1 调整最大堆内存和最小堆内存</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E8%B0%83%E6%95%B4%E6%96%B0%E7%94%9F%E4%BB%A3%E5%92%8C%E8%80%81%E5%B9%B4%E4%BB%A3%E7%9A%84%E6%AF%94%E5%80%BC"><span class="nav-number">3.10.1.2.</span> <span class="nav-text">2 调整新生代和老年代的比值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E8%B0%83%E6%95%B4Survivor%E5%8C%BA%E5%92%8CEden%E5%8C%BA%E7%9A%84%E6%AF%94%E5%80%BC"><span class="nav-number">3.10.1.3.</span> <span class="nav-text">3 调整Survivor区和Eden区的比值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E8%AE%BE%E7%BD%AE%E5%B9%B4%E8%BD%BB%E4%BB%A3%E5%92%8C%E8%80%81%E5%B9%B4%E4%BB%A3%E7%9A%84%E5%A4%A7%E5%B0%8F"><span class="nav-number">3.10.1.4.</span> <span class="nav-text">4 设置年轻代和老年代的大小</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E6%B0%B8%E4%B9%85%E5%8C%BA%E7%9A%84%E8%AE%BE%E7%BD%AE"><span class="nav-number">3.10.1.5.</span> <span class="nav-text">5 永久区的设置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-JVM%E7%9A%84%E6%A0%88%E5%8F%82%E6%95%B0%E8%B0%83%E4%BC%98"><span class="nav-number">3.10.1.6.</span> <span class="nav-text">6 JVM的栈参数调优</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%B0%83%E6%95%B4%E6%AF%8F%E4%B8%AA%E7%BA%BF%E7%A8%8B%E6%A0%88%E7%A9%BA%E9%97%B4%E7%9A%84%E5%A4%A7%E5%B0%8F"><span class="nav-number">3.10.1.6.1.</span> <span class="nav-text">调整每个线程栈空间的大小</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E7%BA%BF%E7%A8%8B%E6%A0%88%E7%9A%84%E5%A4%A7%E5%B0%8F"><span class="nav-number">3.10.1.6.2.</span> <span class="nav-text">设置线程栈的大小</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#linux%E6%9F%A5%E7%9C%8BJava%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C"><span class="nav-number">1.</span> <span class="nav-text">linux查看Java程序运行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%B7%A5%E5%85%B7%E6%9F%A5%E7%9C%8B"><span class="nav-number">1.1.</span> <span class="nav-text">使用工具查看</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JVM-%E9%85%8D%E7%BD%AE%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">JVM 配置常用参数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%A0%E4%BB%AC%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E7%BA%BF%E4%B8%8A%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84-JVM-%E5%90%AF%E5%8A%A8%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E6%98%AF%E4%BB%80%E4%B9%88%E6%A0%B7%E7%9A%84%EF%BC%9F"><span class="nav-number">2.1.</span> <span class="nav-text">你们生产环境线上服务器的 JVM 启动参数配置是什么样的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E5%B8%B8%E8%A7%81%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0%E6%A6%82%E8%A7%88"><span class="nav-number">2.2.</span> <span class="nav-text">Java内存区域常见配置参数概览</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A0%86%E5%8F%82%E6%95%B0"><span class="nav-number">2.3.</span> <span class="nav-text">堆参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9E%E6%94%B6%E5%99%A8%E5%8F%82%E6%95%B0"><span class="nav-number">2.4.</span> <span class="nav-text">回收器参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%B8%B8%E7%94%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">2.5.</span> <span class="nav-text">项目中常用配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%BB%84%E5%90%88"><span class="nav-number">2.6.</span> <span class="nav-text">常用组合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%AF%E5%90%A6%E8%BF%9B%E8%A1%8C%E8%BF%87-GC-%E4%BC%98%E5%8C%96%EF%BC%9F%E5%A6%82%E4%BD%95%E4%BC%98%E5%8C%96%EF%BC%9F"><span class="nav-number">2.7.</span> <span class="nav-text">是否进行过 GC 优化？如何优化？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%A4%A7%E5%B0%8F%E5%8F%96%E8%88%8D"><span class="nav-number">2.7.1.</span> <span class="nav-text">内存大小取舍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B0%86java%E5%A0%86%E6%9C%80%E5%A4%A7%E5%80%BC%E4%B8%8E%E5%88%9D%E5%A7%8Bjava%E5%A0%86%E6%9C%80%E5%B0%8F%E5%80%BC%E4%B8%A4%E4%B8%AA%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E6%88%90%E7%9B%B8%E5%90%8C%E7%9A%84%E5%80%BC%EF%BC%8C%E5%85%B6%E7%9B%AE%E7%9A%84%E9%98%B2%E6%AD%A2%E6%89%A9%E5%AE%B9%E3%80%82"><span class="nav-number">2.7.1.1.</span> <span class="nav-text">将java堆最大值与初始java堆最小值两个参数配置成相同的值，其目的防止扩容。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#XX-NewSize%E5%92%8C-xxMaxNewSize%E4%B8%A4%E4%B8%AA%E5%8F%82%E6%95%B0%E9%85%8D%E7%BD%AE%E6%88%90%E7%9B%B8%E5%90%8C%E7%9A%84%E5%80%BC%EF%BC%8C%E5%85%B6%E7%9B%AE%E7%9A%84%E9%98%B2%E6%AD%A2%E6%89%A9%E5%AE%B9%E3%80%82"><span class="nav-number">2.7.1.2.</span> <span class="nav-text">-XX:NewSize和-xxMaxNewSize两个参数配置成相同的值，其目的防止扩容。</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Eden%E9%9C%80%E8%A6%81%E6%AF%94Survivor%E5%B0%BD%E5%8F%AF%E8%83%BD%E5%A4%A7"><span class="nav-number">2.7.1.3.</span> <span class="nav-text">Eden需要比Survivor尽可能大</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%83%E7%A9%BA%E9%97%B4%E4%B8%8D%E5%BB%BA%E8%AE%AE%E9%85%8D%E7%BD%AE%EF%BC%8C%E4%BA%A4%E7%BB%99JVM"><span class="nav-number">2.7.1.4.</span> <span class="nav-text">元空间不建议配置，交给JVM</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86%E8%BD%AC%E7%A7%BB%E5%88%B0%E8%80%81%E5%B9%B4%E4%BB%A3%E7%9A%84%E5%AF%B9%E8%B1%A1%E6%95%B0%E9%87%8F%E9%99%8D%E4%BD%8E%E5%88%B0%E6%9C%80%E5%B0%8F-%E5%87%8F%E5%B0%91-GC-%E7%9A%84%E6%89%A7%E8%A1%8C%E6%97%B6%E9%97%B4"><span class="nav-number">2.7.2.</span> <span class="nav-text">将转移到老年代的对象数量降低到最小(减少 GC 的执行时间)</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
