@@ -1852,6 +1852,12 @@ logstash_system 账号：拥有 logstash_system 角色。用户 Logstash 在 Ela
 <p>（2）支持丰富数据类型，支持 string，list，set，Zset，hash 等</p>
 <p>（3）支持事务，操作都是原子性，所谓的原子性就是对数据的更改要么全部执行，要么全部不执行</p>
 <p>（4）丰富的特性：可用于缓存，消息，按 key 设置过期时间，过期后将会自动删除</p>
+<h1 id="Redis底层数据结构"><a href="#Redis底层数据结构" class="headerlink" title="Redis底层数据结构"></a>Redis底层数据结构</h1><p>redis把所有的key都存储在一个大字典中，和<code>Java</code>的<code>HaspMap</code>相似</p>
+<p>数组+链表的结构，我们知道的Java中的HashMap每次扩容方式是当大于LoadFactor阈值时，就需要重新分配一个2倍的数组，就需要把所有元素都重新计算hash值操作(rehash)挂载到新的数组中, 数组的大小是2n，空间大小加倍 就变成了2n+1</p>
+<h1 id="渐进式hash"><a href="#渐进式hash" class="headerlink" title="渐进式hash"></a>渐进式hash</h1><p>扩容的时候也会创建一个新数组，同时保留旧数组和新数组</p>
+<p>当访问的时候需要同时访问新数组跟旧数组，当在旧数组找不到元素他旧会去新数组中找元素</p>
+<p>当在旧数组找到元素后，Redis会把旧数组的元素通过在新数组hash操作计算添加到那个位置上面</p>
+<p>慢慢的把旧数组中的元素添加到新数组里面来</p>
 <h1 id="Redis如何解决key冲突？"><a href="#Redis如何解决key冲突？" class="headerlink" title="Redis如何解决key冲突？"></a>Redis如何解决key冲突？</h1><p>拉链法。</p>
 <p>这个问题可以考虑到另一个问题，HashMap是如何解决key冲突的，同样也是采用拉链地址法。</p>
 <p>如果被问到解决key值冲突还有什么方法？一般来说解决key值冲突的方法有俩种，一种是开放地址法，另一种就是拉链法。</p>

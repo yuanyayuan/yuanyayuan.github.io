@@ -699,7 +699,7 @@
 
 <p>http请求先被转发到服务节点（Eureka Clinet）上，此时服务节点（Eureka Clinet）仍然通过服务发现获取了所有服务节点的物理地址，但服务节点（Eureka Clinet）不知道该调用哪一个，所以把请求转到ribbon手中<br>1、IPing IPing是Ribbon的一套healthcheck机制，即Ping一下目标机器是否在线，一般情况下IPing并不会主动向服务节点发起healthcheck请求，Ribbon后台通过静默处理返回true默认表示所有节点都处于存活状态（和Eureka集成的时候回去检查节点UP状态）。</p>
 <p>2、IRule ribbon组件库，各种负载均衡策略都继承自IRule接口，所有经过ribbon的请求都会去请示IRule，找到负载均衡策略选定的目标机器，再把请求转发过去。</p>
-<h1 id="Ribbon懒加载机制"><a href="#Ribbon懒加载机制" class="headerlink" title="Ribbon懒加载机制"></a>Ribbon懒加载机制</h1><p>ribbon及有懒加载，第一次去调用时才初始化LoadBalance，如果http方法本身比较耗时，再加上loadbalance创建耗时，而且超时时间又设置的比较短，很可能出现第一次http调用失败。</p>
+<h1 id="Ribbon懒加载机制"><a href="#Ribbon懒加载机制" class="headerlink" title="Ribbon懒加载机制"></a>Ribbon懒加载机制</h1><p>ribbon懒加载，第一次去调用时才初始化LoadBalance，如果http方法本身比较耗时，再加上loadbalance创建耗时，而且超时时间又设置的比较短，很可能出现第一次http调用失败。</p>
 <p><strong>解决方法</strong>:</p>
 <figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启饥饿加载模式</span></span><br><span class="line"><span class="meta">ribbon.eager-load.enabled</span>=<span class="string">true </span></span><br><span class="line"><span class="comment"># 指定饥饿加载的服务名称</span></span><br><span class="line"><span class="meta">ribbon.eager-load.clients</span>=<span class="string">ribbon-consumer</span></span><br></pre></td></tr></table></figure>
 
@@ -1152,7 +1152,7 @@
 </li>
 <li><p>Nacos（AP，CP）</p>
 <ul>
-<li>性能块</li>
+<li>性能快</li>
 <li>HTTP&amp;DNS&amp;UDP</li>
 </ul>
 </li>
@@ -1220,7 +1220,7 @@
 </ul>
 <img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E5%9F%BA%E4%BA%8E%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0.png" style="zoom:50%;" />
 
-<p>网络服务节点将自己的服务信息以及IP地址发送给注册中心，调用方从注册中心后去所有的可用服务列表，然后从中选择一个访问。</p>
+<p>网络服务节点将自己的服务信息以及IP地址发送给注册中心，调用方从注册中心获取所有的可用服务列表，然后从中选择一个访问。</p>
 <p><strong>应用</strong>：Eureka定时拉取，Dubbo订阅模式</p>
 <ul>
 <li>基于服务端的服务发现</li>
@@ -1236,9 +1236,9 @@
 <li>服务续约 ：底层也是心跳服务</li>
 </ul>
 <h3 id="心跳传输的信息"><a href="#心跳传输的信息" class="headerlink" title="心跳传输的信息"></a>心跳传输的信息</h3><ul>
-<li><p>访问地址：Eureka注册中心的地址</p>
+<li><p>注册中心的地址：Eureka注册中心的地址</p>
 </li>
-<li><p>访问地址：节点的个人信息——<code>instance-id: $&#123;spring.application.name&#125;:$&#123;spring.cloud.client.ip-address&#125;:$&#123;server.port&#125;</code></p>
+<li><p>节点的个人信息：<code>instance-id: $&#123;spring.application.name&#125;:$&#123;spring.cloud.client.ip-address&#125;:$&#123;server.port&#125;</code></p>
 </li>
 <li><p>服务状态：反应节点状态<code>UP</code>,<code>DOWN</code>,<code>STARTING</code>,<code>out_of_service</code>,<code>UNKNOWN</code></p>
 </li>
@@ -1251,7 +1251,7 @@
 
 <ol>
 <li>启动定时任务：注册中心在启动时会开启一个后台任务，默认每隔60s触发服务剔除任务，可使用<code>eureka.server.eviction-interval-timer-in-ms=30000</code>配置。</li>
-<li>调用服务提出方法<ul>
+<li>调用服务剔除方法<ul>
 <li>自保开启（Eureka不在从注册列表中移除因为长时间没有收到心跳而应该过期的服务）</li>
 </ul>
 </li>
@@ -1281,7 +1281,7 @@
 </ul>
 <h3 id="注册中心续约校验"><a href="#注册中心续约校验" class="headerlink" title="注册中心续约校验"></a>注册中心续约校验</h3><ul>
 <li>接受请求</li>
-<li>尝试续约，没有注册和UnKnown状态，续约失败，需要重新注册</li>
+<li>尝试续约，没有注册状态和UnKnown状态，续约失败，需要重新注册</li>
 <li>脏数据校验 ，如果注册中心的<code>lastDirtytimestamp</code>大于节点的<code>lastDirtytimestamp</code>，说明从服务节点上次注册到这次注册之间，发生了数据不同步，续约不通过，返回404</li>
 </ul>
 <h2 id="服务自保（面试点）"><a href="#服务自保（面试点）" class="headerlink" title="服务自保（面试点）"></a>服务自保（面试点）</h2><p>Eureka还有自我保护机制（应对因网络故障导致部分节点失去联系的情况），如果在15分钟内超过85%的节点没有正常的心跳，那么Eureka就认为客户端与注册中心发生了网络故障，自我保护期间：</p>
@@ -1314,7 +1314,9 @@
 <p><strong>解决方式</strong>：数据的新旧一般是通过<em>版本号</em>来定义的，Eureka 是通过 <code>lastDirtyTimestamp</code> （当前服务节点最后一次与服务中心失去同步时的时间）这个类似版本号的属性来实现的</p>
 <p> Eureka Server A 向 Eureka Server B 复制数据，数据冲突有2种情况：</p>
 <p>（1）A 的数据比 B 的新，B 返回 404，A 重新把这个应用实例注册到 B。</p>
+<p>如果A的<code>lastDirtytimestamp</code>大于B的<code>lastDirtytimestamp</code></p>
 <p>（2）A 的数据比 B 的旧，B 返回 409，要求 A 同步 B 的数据。</p>
+<p>如果A的<code>lastDirtytimestamp</code>小于B的<code>lastDirtytimestamp</code></p>
 <img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5.png" style="zoom:50%;" />
 
 <h1 id="Eureka集群挂掉后消费者和提供者之间关系"><a href="#Eureka集群挂掉后消费者和提供者之间关系" class="headerlink" title="Eureka集群挂掉后消费者和提供者之间关系"></a>Eureka集群挂掉后消费者和提供者之间关系</h1><h2 id="如果eureka集群突然宕机的情况下，会出现什么情况呢，服务之间还能不能正常访问"><a href="#如果eureka集群突然宕机的情况下，会出现什么情况呢，服务之间还能不能正常访问" class="headerlink" title="如果eureka集群突然宕机的情况下，会出现什么情况呢，服务之间还能不能正常访问"></a>如果eureka集群突然宕机的情况下，会出现什么情况呢，服务之间还能不能正常访问</h2><p><strong>可以</strong></p>

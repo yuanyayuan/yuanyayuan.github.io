@@ -92,7 +92,7 @@
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/Kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B53.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/Kafka/Kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B54.png">
 <meta property="article:published_time" content="2021-05-10T06:08:07.000Z">
-<meta property="article:modified_time" content="2021-05-11T07:02:58.604Z">
+<meta property="article:modified_time" content="2021-05-23T10:19:32.121Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="面试">
 <meta property="article:tag" content="消息队列">
@@ -537,7 +537,7 @@
 <h1 id="kafka如何实现延迟队列"><a href="#kafka如何实现延迟队列" class="headerlink" title="kafka如何实现延迟队列"></a>kafka如何实现延迟队列</h1><p>基于时间轮自定义了一个用于实现延迟功能的定时器</p>
 <h1 id="Kafka消息是采用Pull模式，还是Push模式"><a href="#Kafka消息是采用Pull模式，还是Push模式" class="headerlink" title="Kafka消息是采用Pull模式，还是Push模式"></a>Kafka消息是采用Pull模式，还是Push模式</h1><p>producer将消息推送到broker，consumer从broker拉取消息</p>
 <p>Pull模式的好处是consumer可以自主决定是否批量的从broker拉取数据，consumer就可以根据自己的消费能力去决定这些策略</p>
-<p>Pull有个缺点是，如果broker没有可供消费的消息，将导致consumer不断在循环中轮询，Kafka可以设置可以让consumer阻塞知道新消息到达</p>
+<p>Pull有个缺点是，如果broker没有可供消费的消息，将导致consumer不断在循环中轮询，Kafka可以设置可以让consumer阻塞直到新消息到达</p>
 
       
     </div>

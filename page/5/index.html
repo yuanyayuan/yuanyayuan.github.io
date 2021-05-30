@@ -861,7 +861,7 @@
 </ul>
 <h2 id="拉模式（pull）"><a href="#拉模式（pull）" class="headerlink" title="拉模式（pull）"></a>拉模式（pull）</h2><ul>
 <li>如果只想从队列中获取单条消息而不是持续订阅</li>
-<li>模式在消费者需要时才去消息中间件拉取消息，这段网络开销会明显增加消息延迟，降低系统吞吐量</li>
+<li>模式在消费者需要时才去消息中间件拉取消息</li>
 <li>由于拉模式需要消费者手动去RabbitMQ中拉取消息，所以实时性较差</li>
 </ul>
 <h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><ol>
@@ -936,7 +936,7 @@
 <p>Step3：消费端监听指定的队列接收到消息进行处理</p>
 <p>Step4：处理完后，生成一条响应消息发送到Broker。</p>
 <p>Step5：由Callback服务去监听该响应消息，收到该响应消息后持久化至消息DB（记录成功状态）。</p>
-<p>Step6：到了延迟时间，延迟发送的消息也被Callback服务的监听器监听到后，去检查消息DB。如果未查询到成功的状态，Callback服务需要做补偿，发起RPC通讯，让生产端重新发送。生产端通过介绍到的命令中所带的id去数据库查询该业务消息，再重新发送，即跳转到Step1。</p>
+<p>Step6：到了延迟时间，延迟发送的消息也被Callback服务的监听器监听到后，去检查消息DB。如果未查询到成功的状态，Callback服务需要做补偿，发起RPC通讯，让生产端重新发送。生产端通过接受到的命令中所带的id去数据库查询该业务消息，再重新发送，即跳转到Step1。</p>
 <p>该方案减少了对数据库的存储，保证了性能。</p>
 <h1 id="如何避免消息重复投递或重复消费"><a href="#如何避免消息重复投递或重复消费" class="headerlink" title="如何避免消息重复投递或重复消费"></a>如何避免消息重复投递或重复消费</h1><p>在消息生产时，MQ 内部针对每条生产者发送的消息生成一个 inner-msg-id，作为去重的依据（消息投递失败并重传），避免重复的消息进入队列；在消息消费时，要求消息体中必须要有一个 bizId（对于同一业务全局唯一，如支付 ID、订单 ID、帖子ID 等）作为去重和幂等的依据，避免同一条消息被重复消费。</p>
 <h1 id="如何保证消息的顺序性"><a href="#如何保证消息的顺序性" class="headerlink" title="如何保证消息的顺序性"></a>如何保证消息的顺序性</h1><p>会错乱的场景：RabbitMQ：一个 queue，多个 consumer</p>
@@ -948,7 +948,7 @@
 </ul>
 <p>所以从业务层面来保证消息的顺序而不仅仅是依赖于消息系统，是一种更合理的方式。</p>
 <p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/rabbitmq/rabbitmq%E9%A1%BA%E5%BA%8F%E6%8A%95%E9%80%922.png"></p>
-<h1 id="上千万条消息在mq中积压了几个小时还没解决："><a href="#上千万条消息在mq中积压了几个小时还没解决：" class="headerlink" title="上千万条消息在mq中积压了几个小时还没解决："></a>上千万条消息在mq中积压了几个小时还没解决：</h1><p>1）先修复consumer的问题，确保其恢复消费速度，然后将现有consumer都停掉；<br>2）新建⼀一个topic，partition是原来的10倍，临时建立好原先10倍或者20倍的queue数量量；<br>3）然后写⼀一个临时的分发数据的consumer程序，这个程序部署上去消费积压的数据；<br>消费之后不不做耗时的处理理，直接均匀轮询写⼊入临时建立好的10倍数量量的queue；<br>4）接着临时征用10倍的机器器来部署consumer，每一批consumer消费一个临时queue的数据；<br>5）这种做法相当于是临时将queue资源和consumer资源扩大10倍，以正常的10倍速度来消费数据；<br>6）等快速消费完积压数据之后，得恢复原先部署架构，重新用原先的consumer机器器来消费消息。<br>总结：</p>
+<h1 id="上千万条消息在mq中积压了几个小时还没解决："><a href="#上千万条消息在mq中积压了几个小时还没解决：" class="headerlink" title="上千万条消息在mq中积压了几个小时还没解决："></a>上千万条消息在mq中积压了几个小时还没解决：</h1><p>1）先修复consumer的问题，确保其恢复消费速度，然后将现有consumer都停掉；<br>2）新建一个topic，partition是原来的10倍，临时建立好原先10倍或者20倍的queue数量量；<br>3）然后写一个临时的分发数据的consumer程序，这个程序部署上去消费积压的数据；<br>消费之后不不做耗时的处理理，直接均匀轮询写入临时建立好的10倍数量量的queue；<br>4）接着临时征用10倍的机器器来部署consumer，每一批consumer消费一个临时queue的数据；<br>5）这种做法相当于是临时将queue资源和consumer资源扩大10倍，以正常的10倍速度来消费数据；<br>6）等快速消费完积压数据之后，得恢复原先部署架构，重新用原先的consumer机器器来消费消息。<br>总结：</p>
 <ol>
 <li>修复并停掉consumer；</li>
 <li>新建一个topic，partition是原来的10倍，建立临时queue，数量是原来的10倍或20倍；</li>
@@ -978,7 +978,7 @@
 </li>
 </ul>
 <h2 id="数据一致性"><a href="#数据一致性" class="headerlink" title="数据一致性"></a>数据一致性</h2><h3 id="RabbitMQ如何保证数据一致性？"><a href="#RabbitMQ如何保证数据一致性？" class="headerlink" title="RabbitMQ如何保证数据一致性？"></a>RabbitMQ如何保证数据一致性？</h3><ol>
-<li>生产者确认机制：消息持久化后异步回调通知⽣生产者，保证消息已经发出去；</li>
+<li>生产者确认机制：消息持久化后异步回调通知生产者，保证消息已经发出去；</li>
 <li>消息持久化：设置消息持久化；</li>
 <li>消费者确认机制：消费者成功消费消息之后，手动确认，保证消息已经消费。</li>
 </ol>
@@ -2360,7 +2360,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2021/04/19/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA/" itemprop="url">分步式-分布式理论</a></h1>
+                <a class="post-title-link" href="/2021/04/19/%E5%88%86%E6%AD%A5%E5%BC%8F-%E5%88%86%E5%B8%83%E5%BC%8F%E7%90%86%E8%AE%BA/" itemprop="url">未命名</a></h1>
         
 
         <div class="post-meta">

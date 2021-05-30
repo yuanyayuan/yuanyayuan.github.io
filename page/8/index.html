@@ -2392,8 +2392,8 @@
 <li>带宽优化及网络连接的使用 :HTTP1.0中，存在一些浪费带宽的现象，例如客户端只是需要某个对象的一部分，而服务器却将整个对象送过来了，并且不支持断点续传功能，HTTP1.1则在请求头引入了range头域，它允许只请求资源的某个部分，即返回码是206（Partial Content），这样就方便了开发者自由的选择以便于充分利用带宽和连接。</li>
 </ol>
 <h1 id="URI和URL的区别是什么"><a href="#URI和URL的区别是什么" class="headerlink" title="URI和URL的区别是什么?"></a>URI和URL的区别是什么?</h1><ul>
-<li>URI(Uniform Resource Identifier) 是同一资源标志符，可以唯一标识一个资源。</li>
-<li>URL(Uniform Resource Location) 是同一资源定位符，可以提供该资源的路径。它是一种具体的 URI，即 URL 可以用来标识一个资源，而且还指明了如何 locate 这个资源。</li>
+<li>URI(Uniform Resource Identifier) 是唯一资源标志符，可以唯一标识一个资源。</li>
+<li>URL(Uniform Resource Location) 是唯一资源定位符，可以提供该资源的路径。它是一种具体的 URI，即 URL 可以用来标识一个资源，而且还指明了如何 locate 这个资源。</li>
 </ul>
 <p>URI的作用像身份证号一样，URL的作用更像家庭住址一样。URL是一种具体的URI，它不仅唯一标识资源，而且还提供了定位该资源的信息。</p>
 <h1 id="Socket"><a href="#Socket" class="headerlink" title="Socket"></a>Socket</h1><p>Socket是对TCp/IP协议的抽象，是操作系统对外开放的接口</p>
@@ -2431,7 +2431,7 @@
 <h3 id="cookie分类"><a href="#cookie分类" class="headerlink" title="cookie分类"></a>cookie分类</h3><h4 id="会话-Cookies（Session-Cookies）"><a href="#会话-Cookies（Session-Cookies）" class="headerlink" title="会话 Cookies（Session Cookies）"></a>会话 Cookies（Session Cookies）</h4><p>如果 Cookie 不包含到期日期，则将其视为会话 Cookie。会话 Cookie 存储在内存中，永远不会写入磁盘，当浏览器关闭时，此后 Cookie 将永久丢失</p>
 <h4 id="永久性-Cookies（Persistent-Cookies）"><a href="#永久性-Cookies（Persistent-Cookies）" class="headerlink" title="永久性 Cookies（Persistent Cookies）"></a>永久性 Cookies（Persistent Cookies）</h4><p>Cookie 包含有效期 ，则将其视为持久性 Cookie。在到期指定的日期，Cookie 将从磁盘中删除。</p>
 <h2 id="Session和Cookie的区别"><a href="#Session和Cookie的区别" class="headerlink" title="Session和Cookie的区别"></a>Session和Cookie的区别</h2><p>1、cookie数据存放在客户的浏览器上，session数据放在服务器上。</p>
-<p>2、cookie不是很安全，别人可以分析存放在本地的COOKIE并进行COOKIE欺骗，考虑到安全应当使用session。</p>
+<p>2、cookie不是很安全，别人可以分析存放在本地的cookie并进行cookie欺骗，考虑到安全应当使用session。</p>
 <p>3、session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能，考虑到减轻服务器性能方面，应当使用COOKIE。</p>
 <p>4、单个cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。</p>
 <h1 id="什么是Json-Web-Tokens"><a href="#什么是Json-Web-Tokens" class="headerlink" title="什么是Json Web Tokens"></a>什么是Json Web Tokens</h1><p>Json Web Token 的简称就是 JWT，通常可以称为 Json 令牌。JWT 中存储的信息是经过数字签名的，因此可以被信任和理解</p>

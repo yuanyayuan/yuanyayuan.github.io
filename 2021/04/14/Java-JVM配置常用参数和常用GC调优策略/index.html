@@ -79,12 +79,12 @@
 
 
 
-<meta name="description" content="linux查看Java程序运行 jps :虚拟机进程状态工具   1jps -v | grep pid   jinfo：JVM参数信息工具  1jinfo -flages pid   jstat：查看虚拟机各种运算状态  1jsata -gcutil pid  S0：新生代Survivor space 0区已使用空间的百分比 S0：新生代Survivor space 1区已使用空间的百分比 E：新">
+<meta name="description" content="这一块没有基础过，网上找来的学习下 linux查看Java程序运行 jps :虚拟机进程状态工具   1jps -v | grep pid   jinfo：JVM参数信息工具  1jinfo -flages pid   jstat：查看虚拟机各种运算状态  1jsata -gcutil pid  S0：新生代Survivor space 0区已使用空间的百分比 S0：新生代Survivor spa">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java-JVM配置常用参数和常用GC调优策略">
 <meta property="og:url" content="https://yuanyayuan.github.io/2021/04/14/Java-JVM%E9%85%8D%E7%BD%AE%E5%B8%B8%E7%94%A8%E5%8F%82%E6%95%B0%E5%92%8C%E5%B8%B8%E7%94%A8GC%E8%B0%83%E4%BC%98%E7%AD%96%E7%95%A5/index.html">
 <meta property="og:site_name" content="Hikari的Java之路">
-<meta property="og:description" content="linux查看Java程序运行 jps :虚拟机进程状态工具   1jps -v | grep pid   jinfo：JVM参数信息工具  1jinfo -flages pid   jstat：查看虚拟机各种运算状态  1jsata -gcutil pid  S0：新生代Survivor space 0区已使用空间的百分比 S0：新生代Survivor space 1区已使用空间的百分比 E：新">
+<meta property="og:description" content="这一块没有基础过，网上找来的学习下 linux查看Java程序运行 jps :虚拟机进程状态工具   1jps -v | grep pid   jinfo：JVM参数信息工具  1jinfo -flages pid   jstat：查看虚拟机各种运算状态  1jsata -gcutil pid  S0：新生代Survivor space 0区已使用空间的百分比 S0：新生代Survivor spa">
 <meta property="og:locale">
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/docs/java/jvm/pictures/%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F%E5%B8%B8%E8%A7%81%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0.png">
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/media/pictures/jvm/java_jvm_heap_parameters.png">
@@ -92,7 +92,7 @@
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/media/pictures/jvm/java_jvm_suggest_parameters.png">
 <meta property="og:image" content="https://snailclimb.gitee.io/javaguide/media/pictures/jvm/java_jvm_compose_garbage_collector.png">
 <meta property="article:published_time" content="2021-04-14T13:32:31.000Z">
-<meta property="article:modified_time" content="2021-05-20T10:16:10.958Z">
+<meta property="article:modified_time" content="2021-05-28T03:00:58.893Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="面试">
@@ -360,7 +360,8 @@
       
 
       
-        <h1 id="linux查看Java程序运行"><a href="#linux查看Java程序运行" class="headerlink" title="linux查看Java程序运行"></a>linux查看Java程序运行</h1><ul>
+        <p>这一块没有基础过，网上找来的学习下</p>
+<h1 id="linux查看Java程序运行"><a href="#linux查看Java程序运行" class="headerlink" title="linux查看Java程序运行"></a>linux查看Java程序运行</h1><ul>
 <li>jps :虚拟机进程状态工具 </li>
 </ul>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jps -v | grep pid</span><br></pre></td></tr></table></figure>
@@ -394,7 +395,7 @@
 <ul>
 <li>jmap：HeapDump工具</li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jmap -head pid 查看堆信息</span><br><span class="line">jamp -dump:format-b,file&#x3D;heapDump.hprof pid 导出堆文件并用jhat查看</span><br><span class="line">jhat -port 8899 heapDump.hprof 浏览器访问：http:&#x2F;&#x2F;ip:8899</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jmap -head pid 查看堆信息</span><br><span class="line">jmap -dump:format-b,file&#x3D;heapDump.hprof pid 导出堆文件并用jhat查看</span><br><span class="line">jhat -port 8899 heapDump.hprof 浏览器访问：http:&#x2F;&#x2F;ip:8899</span><br></pre></td></tr></table></figure>
 
 <h2 id="使用工具查看"><a href="#使用工具查看" class="headerlink" title="使用工具查看"></a>使用工具查看</h2><p>jprofiler</p>
 <h1 id="JVM-配置常用参数"><a href="#JVM-配置常用参数" class="headerlink" title="JVM 配置常用参数"></a>JVM 配置常用参数</h1><ol>

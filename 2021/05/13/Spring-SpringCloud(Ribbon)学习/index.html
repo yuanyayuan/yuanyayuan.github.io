@@ -91,7 +91,7 @@
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%AF%94%E8%BE%83.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/SpringCloud/Ribbon%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.png">
 <meta property="article:published_time" content="2021-05-12T16:38:53.000Z">
-<meta property="article:modified_time" content="2021-05-18T05:42:06.040Z">
+<meta property="article:modified_time" content="2021-05-24T08:30:39.169Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="面试">
 <meta property="article:tag" content="SpringCloud">
@@ -372,7 +372,7 @@
 
 <p>http请求先被转发到服务节点（Eureka Clinet）上，此时服务节点（Eureka Clinet）仍然通过服务发现获取了所有服务节点的物理地址，但服务节点（Eureka Clinet）不知道该调用哪一个，所以把请求转到ribbon手中<br>1、IPing IPing是Ribbon的一套healthcheck机制，即Ping一下目标机器是否在线，一般情况下IPing并不会主动向服务节点发起healthcheck请求，Ribbon后台通过静默处理返回true默认表示所有节点都处于存活状态（和Eureka集成的时候回去检查节点UP状态）。</p>
 <p>2、IRule ribbon组件库，各种负载均衡策略都继承自IRule接口，所有经过ribbon的请求都会去请示IRule，找到负载均衡策略选定的目标机器，再把请求转发过去。</p>
-<h1 id="Ribbon懒加载机制"><a href="#Ribbon懒加载机制" class="headerlink" title="Ribbon懒加载机制"></a>Ribbon懒加载机制</h1><p>ribbon及有懒加载，第一次去调用时才初始化LoadBalance，如果http方法本身比较耗时，再加上loadbalance创建耗时，而且超时时间又设置的比较短，很可能出现第一次http调用失败。</p>
+<h1 id="Ribbon懒加载机制"><a href="#Ribbon懒加载机制" class="headerlink" title="Ribbon懒加载机制"></a>Ribbon懒加载机制</h1><p>ribbon懒加载，第一次去调用时才初始化LoadBalance，如果http方法本身比较耗时，再加上loadbalance创建耗时，而且超时时间又设置的比较短，很可能出现第一次http调用失败。</p>
 <p><strong>解决方法</strong>:</p>
 <figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启饥饿加载模式</span></span><br><span class="line"><span class="meta">ribbon.eager-load.enabled</span>=<span class="string">true </span></span><br><span class="line"><span class="comment"># 指定饥饿加载的服务名称</span></span><br><span class="line"><span class="meta">ribbon.eager-load.clients</span>=<span class="string">ribbon-consumer</span></span><br></pre></td></tr></table></figure>
 

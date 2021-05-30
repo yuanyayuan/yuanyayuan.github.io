@@ -96,7 +96,7 @@
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%96%87%E6%A1%A3%E5%86%99%E5%8E%9F%E7%90%86.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%96%87%E6%A1%A3%E8%AF%BB%E5%8E%9F%E7%90%86.png">
 <meta property="article:published_time" content="2021-05-09T05:57:17.000Z">
-<meta property="article:modified_time" content="2021-05-10T07:50:55.349Z">
+<meta property="article:modified_time" content="2021-05-23T06:09:00.306Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="分布式">
 <meta property="article:tag" content="elasticsearch">
@@ -412,8 +412,7 @@
 <li>客户端会选择某一个节点作为协调节点，负责接收用户请求</li>
 <li>协调节点会根据文档进行路由，数据要写到哪一个主分片里面（根据文档id进行hash算法）</li>
 <li>数据同步至副本分片</li>
-<li>请求返回协调节点</li>
-<li>告知客户端</li>
+<li>请求返回协调节点，告知客户端</li>
 </ol>
 <h2 id="文档读原理"><a href="#文档读原理" class="headerlink" title="文档读原理"></a>文档读原理</h2><p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/elasticsearch/%E5%88%86%E9%A1%B5/%E6%96%87%E6%A1%A3%E8%AF%BB%E5%8E%9F%E7%90%86.png"></p>
 <ol>

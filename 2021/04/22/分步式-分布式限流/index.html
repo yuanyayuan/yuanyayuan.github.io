@@ -91,7 +91,7 @@
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3.png">
 <meta property="og:image" content="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/%E5%9F%BA%E4%BA%8Eredis.png">
 <meta property="article:published_time" content="2021-04-22T12:45:58.000Z">
-<meta property="article:modified_time" content="2021-05-18T18:59:33.155Z">
+<meta property="article:modified_time" content="2021-05-22T18:49:44.954Z">
 <meta property="article:author" content="LiYuan">
 <meta property="article:tag" content="面试">
 <meta property="article:tag" content="分步式">
@@ -372,11 +372,11 @@
 <h2 id="目前比较主流的限流方案"><a href="#目前比较主流的限流方案" class="headerlink" title="目前比较主流的限流方案"></a>目前比较主流的限流方案</h2><p>1、网管层限流 将限流规则应用在所有流量的入口处</p>
 <p>2、中间件限流 将限流信息存储在分布式环境中某个中间件里（如Redis缓存），每个组件都可以从这里获取到当前时刻的流量统计，从而决定是拒绝服务还是放行流量</p>
 <h2 id="常见限流算法"><a href="#常见限流算法" class="headerlink" title="常见限流算法"></a>常见限流算法</h2><ol>
-<li><strong>令牌桶算法</strong><br>a、令牌 获取到令牌的Request才会被处理，其他Request要么排队，要么被丢弃<br>b、桶 用来装令牌的地方，所有Request都从这个桶里获取令牌</li>
+<li><strong>令牌桶算法</strong><br>a、令牌——获取到令牌的Request才会被处理，其他Request要么排队，要么被丢弃<br>b、桶——用来装令牌的地方，所有Request都从这个桶里获取令牌</li>
 </ol>
 <p><img src="https://nexus-oss-blog.oss-cn-beijing.aliyuncs.com/%E5%88%86%E5%B8%83%E5%BC%8F/%E5%88%86%E5%B8%83%E5%BC%8F%E9%99%90%E6%B5%81/%E4%BB%A4%E7%89%8C%E6%A1%B6%E7%AE%97%E6%B3%95.png"></p>
 <p>​    <strong>令牌生成</strong></p>
-<p>​    根据一个预定的速率相同中添加令牌（<strong>发放的速率是匀速</strong>，并非是每个时间窗口刚开始就一次性发放，而是会    在这个时间窗口内匀速发放）令牌桶的容量是有限的，如果当前已经放满了额定容量的令牌，那么信赖的令牌    就会被丢弃掉</p>
+<p>​    根据一个预定的速率向桶中添加令牌（<strong>发放的速率是匀速</strong>，并非是每个时间窗口刚开始就一次性发放，而是会    在这个时间窗口内匀速发放）令牌桶的容量是有限的，如果当前已经放满了额定容量的令牌，那么多余的令牌    就会被丢弃掉</p>
 <p>​    <strong>令牌获取</strong></p>
 <p>​    每个请求到来后，必须拿到令牌才能执行后面的逻辑。假如遇到令牌少而请求多的情况，可以设置一个”缓冲队    列”来暂存这些多余的令牌（“缓冲队列”是一个可选方案）</p>
 <p>​    实际应用中也可以对缓存队列添加一些特性，比如队列中请求存活时间，或者将队列改造为<code>PriorityQueue</code>，    根据某种优先级排序</p>
@@ -441,7 +441,7 @@
 <p>以上配置表示，限制每个 IP 访问的速度为 2r/s，因为 Nginx 的限流统计是基于毫秒的，我们设置的速度是 2r/s，转换一下就是 500ms 内单个 IP 只允许通过 1 个请求，从 501ms 开始才允许通过第 2 个请求。</p>
 <p><strong>速率限制升级版</strong></p>
 <p>上面的速率控制虽然很精准但是应用于真实环境未免太苛刻了，真实情况下我们应该控制一个 IP 单位总时间内的总访问次数，而不是像上面那么精确但毫秒，我们可以使用 burst 关键字开启此设置，示例配置如下：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">limit_req_zone $binary_remote_addr zone=mylimit:10m rate=2r/s;</span><br><span class="line">server &#123; </span><br><span class="line">    location / &#123; </span><br><span class="line">        limit_req zone=mylimit burst=4;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">limit_req_zone</span> <span class="string">$binary_remote_addr zone=mylimit:10m rate=2r/s;</span></span><br><span class="line"><span class="attr">server</span> <span class="string">&#123; </span></span><br><span class="line">    <span class="attr">location</span> <span class="string">/ &#123; </span></span><br><span class="line">        <span class="attr">limit_req</span> <span class="string">zone=mylimit burst=4;</span></span><br><span class="line">    <span class="attr">&#125;</span></span><br><span class="line"><span class="attr">&#125;</span></span><br></pre></td></tr></table></figure>
 
 <p>burst=4 表示每个 IP 最多允许4个突发请求</p>
 <h1 id="服务限流"><a href="#服务限流" class="headerlink" title="服务限流"></a>服务限流</h1><h2 id="Guava-RateLimiter客户端限流"><a href="#Guava-RateLimiter客户端限流" class="headerlink" title="Guava RateLimiter客户端限流"></a>Guava RateLimiter客户端限流</h2><h3 id="Guava-RateLimiter客户端限流（阻塞模式）"><a href="#Guava-RateLimiter客户端限流（阻塞模式）" class="headerlink" title="Guava RateLimiter客户端限流（阻塞模式）"></a>Guava RateLimiter客户端限流（阻塞模式）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">RateLimiter limiter = RateLimiter.create(<span class="number">2.0</span>);</span><br><span class="line"><span class="comment">// 同步阻塞限流</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/acquire&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">acquire</span><span class="params">(Integer count)</span> </span>&#123;</span><br><span class="line">    limiter.acquire(count);</span><br><span class="line">    log.info(<span class="string">&quot;success, rate is &#123;&#125;&quot;</span>, limiter.getRate());</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;success&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

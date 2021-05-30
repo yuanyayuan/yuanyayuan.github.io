@@ -1179,8 +1179,8 @@
 <td>MyISAM用一个变量保存了整个表的行数，执行上述语句时只需要读出该变量即可</td>
 </tr>
 </tbody></table>
-<h2 id="介绍一下mysql的MVCC机制："><a href="#介绍一下mysql的MVCC机制：" class="headerlink" title="介绍一下mysql的MVCC机制："></a>介绍一下mysql的MVCC机制：</h2><p>MVCC是一种多版本并发控制机制InnoDB存储引擎实现隔离级别的一种具体方式，用于实现提交读和可重复读这两种隔离级别，不可提交读不能使用它的原因是不能读取符合事物版本的行版本。它们总是读取最新的行版本</p>
-<p><strong>InnoDB实现MVCC的方法</strong>：它存储了每一行的两个额外的隐藏字段，这两个隐藏字段分别记录了行的创建的时间和删除的时间。在每个事件发生的时 候，每行存储版本号，而不是存储事件实际发生的时间。每次事务的开始这个版本号都会增加</p>
+<h2 id="介绍一下mysql的MVCC机制："><a href="#介绍一下mysql的MVCC机制：" class="headerlink" title="介绍一下mysql的MVCC机制："></a>介绍一下mysql的MVCC机制：</h2><p>MVCC是一种多版本并发控制机制InnoDB存储引擎实现隔离级别的一种具体方式，用于实现提交读和可重复读这两种隔离级别，不可提交读不能使用它的原因是不能读取符合事务版本的行版本。它们总是读取最新的行版本</p>
+<p><strong>InnoDB实现MVCC的方法</strong>：它存储了每一行的两个额外的隐藏字段，这两个隐藏字段分别记录了行的创建的时间和删除的时间。在每个事件发生的时候，每行存储版本号，而不是存储事件实际发生的时间。每次事务的开始这个版本号都会增加</p>
 <h1 id="范式"><a href="#范式" class="headerlink" title="范式"></a>范式</h1><p>第一范式：列不可再分<br>第二范式：行可以唯一区分，主键约束<br>第三范式：表的非主属性不能依赖与其他表的非主属性 外键约束<br>且三大范式是一级一级依赖的，第二范式建立在第一范式上，第三范式建立第一第二范式上 。</p>
 <h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><h2 id="什么是索引"><a href="#什么是索引" class="headerlink" title="什么是索引"></a>什么是索引</h2><p>索引是数据结构，可以帮助我们快速的进行数据的查找</p>
 <p>**MySQL索引使用的数据结构为B+树 **</p>
@@ -1248,10 +1248,13 @@
 </li>
 </ul>
 <h2 id="最左匹配原则"><a href="#最左匹配原则" class="headerlink" title="最左匹配原则"></a>最左匹配原则</h2><p>MySQL中的索引可以以一定顺序引用多列，这种索引叫作联合索引。如User表的name和city加联合索引就是(name,city)，而最左前缀原则指的是，如果查询的时候查询条件精确匹配索引的左边连续一列或几列，则此列就可以被用到。如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">select * from user where name&#x3D;xx and city&#x3D;xx ; ／／可以命中索引</span><br><span class="line">select * from user where name&#x3D;xx ; &#x2F;&#x2F; 可以命中索引</span><br><span class="line">select * from user where city&#x3D;xx ; &#x2F;&#x2F; 无法命中索引            </span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name<span class="operator">=</span>xx <span class="keyword">and</span> city<span class="operator">=</span>xx ; ／／可以命中索引</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> name<span class="operator">=</span>xx ; <span class="operator">/</span><span class="operator">/</span> 可以命中索引</span><br><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> city<span class="operator">=</span>xx ; <span class="operator">/</span><span class="operator">/</span> 无法命中索引            </span><br></pre></td></tr></table></figure>
 
-<p>这里需要注意的是，查询的时候如果两个条件都用上了，但是顺序不同，如 city= xx and name ＝xx，那么现在的查询引擎会自动优化为匹配联合索引的顺序，这样是能够命中索引的。</p>
+<p>这里需要注意的是，查询的时候如果两个条件都用上了，但是顺序不同，如 city= xx and name ＝xx，那么现在的<strong>查询引擎会自动优化为匹配联合索引的顺序</strong>，这样是能够命中索引的。</p>
 <p>由于最左前缀原则，在创建联合索引时，索引字段的顺序需要考虑字段值去重之后的个数，较多的放前面。ORDER BY子句也遵循此规则。</p>
+<h3 id="mysql会一直向右匹配直到遇到范围查询"><a href="#mysql会一直向右匹配直到遇到范围查询" class="headerlink" title="mysql会一直向右匹配直到遇到范围查询"></a>mysql会一直向右匹配直到遇到范围查询</h3><p><strong>（&gt;、&lt;、between、like）就停止匹配</strong></p>
+<p>比如：<br>建立联合索引（a,b,c,d），如果查询a=3 and b=4 and c&gt;5 and d=6，d是用不到做索引的<br>但是如果建立（a,b,d,c），则都可以用到，abd的顺序可以任意调整</p>
+<h3 id="和-in-可以乱序"><a href="#和-in-可以乱序" class="headerlink" title="= 和 in 可以乱序"></a>= 和 in 可以乱序</h3><p>比如a = 1 and b = 2 and c=3 建立（a,b,c）索引可以任意顺序，mysql的查询优化器会帮你优化成索引可以识别的形式</p>
 <h2 id="索引这么多优点，为什么不对表中的每一个列创建一个索引呢？（索引建立不是越多越好）"><a href="#索引这么多优点，为什么不对表中的每一个列创建一个索引呢？（索引建立不是越多越好）" class="headerlink" title="索引这么多优点，为什么不对表中的每一个列创建一个索引呢？（索引建立不是越多越好）"></a>索引这么多优点，为什么不对表中的每一个列创建一个索引呢？（索引建立不是越多越好）</h2><ol>
 <li>当对表中的数据进行增加、删除和修改的时候，索引也要动态的维护，这样就降低了数据的维护速度。</li>
 <li>索引需要占物理空间，除了数据表占数据空间之外，每一个索引还要占一定的物理空间，如果要建立聚簇索引，那么需要的空间就会更大。</li>
@@ -1270,10 +1273,7 @@
 <li>基于一个范围的检索,一般查询返回结果集小于表中记录数的30%</li>
 <li>基于非唯一性索引的检索</li>
 </ul>
-<h2 id="为什么索引能提高查询速度"><a href="#为什么索引能提高查询速度" class="headerlink" title="为什么索引能提高查询速度"></a>为什么索引能提高查询速度</h2><p>MySQL的基本存储结构是页(记录都存在页里边)</p>
-<p>各个数据页可以组成一个双向链表</p>
-<p>每个数据页中的记录又可以组成一个单向链表</p>
-<p>如果不用索引：定位到记录所在的页需要遍历双向链表，找到所在的页，从所在的页内中查找相应的记录。由于不是根据主键查询，只能遍历所在页的单链表了</p>
+<h2 id="为什么索引能提高查询速度"><a href="#为什么索引能提高查询速度" class="headerlink" title="为什么索引能提高查询速度"></a>为什么索引能提高查询速度</h2><p>DB在执行一条Sql语句的时候，默认的方式是根据搜索条件进行全表扫描，遇到匹配条件的就加入搜索结果集合。如果我们对某一字段增加索引，查询时就会先去索引列表中一次定位到特定值的行数，大大减少遍历匹配的行数，所以能明显增加查询的速度</p>
 <h1 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h1><h2 id="事务有哪些特性？"><a href="#事务有哪些特性？" class="headerlink" title="事务有哪些特性？"></a>事务有哪些特性？</h2><p>1、原子性（Atomicity）：事务是一个不可分割的单位，事务中的所有SQL等操作要么都发生，要么都不发生。</p>
 <p>2、一致性（Consistency）：事务发生前和发生后，数据的完整性必须保持一致。</p>
 <p>3、隔离性（Isolation）：当并发访问数据库时，一个正在执行的事务在执行完毕前，对应其他的会话是不可见的，多个并发事务之间的数据是相互隔离的。备份的参数 –single-transaction</p>
@@ -2230,7 +2230,7 @@
 </ul>
 </li>
 </ol>
-<h2 id="第二部分（用户在次访问MUSIC系统）"><a href="#第二部分（用户在次访问MUSIC系统）" class="headerlink" title="第二部分（用户在次访问MUSIC系统）"></a>第二部分（用户在次访问MUSIC系统）</h2><ol>
+<h2 id="第二部分（用户再次访问MUSIC系统）"><a href="#第二部分（用户再次访问MUSIC系统）" class="headerlink" title="第二部分（用户再次访问MUSIC系统）"></a>第二部分（用户再次访问MUSIC系统）</h2><ol>
 <li><p>用户在次访问<a target="_blank" rel="noopener" href="http://www.music.com:8080/sso-music/index.html">http://www.music.com:8080/sso-music/index.html</a></p>
 </li>
 <li><p>music系统在Cookie中未获取到用户信息</p>
